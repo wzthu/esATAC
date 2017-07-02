@@ -1,0 +1,8 @@
+useDynLib(atacpipe)
+exportPattern("^[[:alpha:]]+")
+importFrom(Rcpp, evalCpp)
+importFrom(R6, R6Class)
+importFrom(igraph, graph)
+importFrom(igraph,vertex.attributes)
+importFrom(igraph,are.connected)
+importFrom(Rcpp,sourceCpp)

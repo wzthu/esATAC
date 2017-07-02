@@ -1,0 +1,91 @@
+BaseProc <- R6Class(
+  classname = "BaseProc",
+  public = list(
+    fileType = list(fq="fq",fastq="fq",fa="fa",fasta="fa"),
+    initialize = function(procName,editable,atacProcs){
+      private$graphMng<-GraphMng$new()
+      private$procName<-procName
+      private$editable<-editable
+      if(private$editable){
+        private$finish <- TRUE;
+      }
+      argSize <- length(atacProcs)
+      if(argSize>=1&&!is.null(atacProcs[[1]])){
+        if(!atacProcs[[1]]$isReady()){
+          stop(paste(atacProcs[[1]]$getProcName(),"is not ready"))
+        }
+        if(!private$graphMng$checkRelation1(atacProcs[[1]]$getProcName(),procName)){
+          stop(paste(atacProcs[[1]]$getProcName(),"is not valid input"))
+        }
+      }
+    },
+    processing = function(){
+      if(private$editable){
+        stop("The \"processing\" method can not be call in editable result object");
+      }
+      #stop("processing function has not been implemented")
+    },
+    getNextProcList = function(){
+      return(private$graphMng$getNextList())
+    },
+    getProcName = function(){
+      return(private$procName)
+    },
+    printGraph = function(){
+      private$graphMng$printGraph()
+    },
+    finalize = function(){
+      #rm(private$graphMng)
+      #rm(private$paramlist)
+      #rm(private$procName)
+    },
+    getParam = function(item){
+      return(private$paramlist[[item]])
+    },
+    setResultParam = function(){
+      if(!private$editable){
+        stop("This object can not be edited");
+      }
+    },
+    isReady = function(){
+      if(private$editable){
+        return(TRUE);
+      }else if(private$finish){
+        return(TRUE);
+      }else{
+        return(FALSE);
+      }
+
+    }
+
+  ),
+  private = list(
+    paramlist = list(),
+    procName = "",
+    completObj = TRUE,
+    editable = FALSE,
+    finish = FALSE,
+    graphMng = NULL,
+    checkRequireParam = function(){
+      stop("processing function has not been implemented")
+    },
+    checkFileExist = function(filePath){
+      if(!is.null(filePath)){
+        if(!file.exists(filePath)){
+          stop(paste("error, file does not exist:",filePath))
+        }
+      }
+    },
+    checkPathExist = function(filePath){
+      if(!is.null(filePath)){
+        if(!dir.exists(dirname(filePath))){
+          stop(paste("error, path does not exist:",filePath))
+        }
+      }
+    }
+
+  )
+
+)
+
+
