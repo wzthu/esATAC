@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU General Public License     *
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 \*************************************************************************/
-#include <sys/ioctl.h>
+//#include <sys/ioctl.h>
 #include <unistd.h>
 
 #include "strutils.h"
@@ -113,10 +113,11 @@ cli_formatter::cli_formatter()
   , m_columns(DEFAULT_MAX_COLUMNS)
   , m_indentation(4)
 {
-    struct winsize size;
+    /*struct winsize size;
     if (!ioctl(STDOUT_FILENO, TIOCGWINSZ, &size)) {
         m_columns = size.ws_col;
-    }
+    }*/
+    m_columns = 80 ;
 }
 
 

@@ -145,9 +145,9 @@ void timer::do_print(size_t rate, double current_time, bool finalize) const
     print_locker lock;
 
     if (finalize) {
-        std::cerr << "\rProcessed a total of ";
+        std::cerr << "Processed a total of ";
     } else {
-        std::cerr << "\rProcessed ";
+        std::cerr << "Processed ";
     }
 
     if (rate > 10000) {
@@ -156,12 +156,12 @@ void timer::do_print(size_t rate, double current_time, bool finalize) const
 
     std::cerr << thousands_sep(m_total) << " " << m_what << " in "
               << format_time(current_time - m_first_time) << "; "
-              << thousands_sep(rate) << " " << m_what << " per second ";
-
+              << thousands_sep(rate) << " " << m_what << " per second "
+              << std::endl;
     if (finalize) {
         std::cerr << "on average ..." << std::endl;
     } else {
-        std::cerr << "...";
+        //std::cerr << "...";
         std::cerr.flush();
     }
 }

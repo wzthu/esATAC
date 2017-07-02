@@ -43,3 +43,6 @@ vignettes/*.pdf
 
 # C++ code
 /src/*.o
+/src/*.dll
+/src/*.so
+.Rproj.user
