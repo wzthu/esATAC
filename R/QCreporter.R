@@ -11,8 +11,34 @@ QCreporter <- R6::R6Class(
       private$checkRequireParam()
       if((!is.null(atacProc)) && (class(atacProc)[1] == "SeqFile")){ # atacproc from seqfile
         print("SeqFile")
+        if(is.null(atacProc$getParam("fastqOutput2"))){ # single end
+          private$paramlist[["Input1"]] <- as.vector(unlist(atacProc$getParam("fastqOutput1")))
+          # input file check
+          private$checkFileExist(private$paramlist[["Input1"]]);
+          private$paramlist[["Input"]] <- c(private$paramlist[["Input1"]])
+        }else{ # paired end
+          private$paramlist[["Input1"]] <- as.vector(unlist(atacProc$getParam("fastqOutput1")))
+          private$paramlist[["Input2"]] <- as.vector(unlist(atacProc$getParam("fastqOutput2")))
+          # input file check
+          private$checkFileExist(private$paramlist[["Input1"]]);
+          private$checkFileExist(private$paramlist[["Input2"]]);
+          private$paramlist[["Input"]] <- c(private$paramlist[["Input1"]], private$paramlist[["Input2"]])
+        }
       }else if((!is.null(atacProc)) && (class(atacProc)[1] == "Renamer")){ # atacproc from renamer
         print("Renamer")
+        if(is.null(atacProc$getParam("fastqOutput2"))){ # single end
+          private$paramlist[["Input1"]] <- as.vector(unlist(atacProc$getParam("fastqOutput1")))
+          # input file check
+          private$checkFileExist(private$paramlist[["Input1"]]);
+          private$paramlist[["Input"]] <- c(private$paramlist[["Input1"]])
+        }else{ # paired end
+          private$paramlist[["Input1"]] <- as.vector(unlist(atacProc$getParam("fastqOutput1")))
+          private$paramlist[["Input2"]] <- as.vector(unlist(atacProc$getParam("fastqOutput2")))
+          # input file check
+          private$checkFileExist(private$paramlist[["Input1"]]);
+          private$checkFileExist(private$paramlist[["Input2"]]);
+          private$paramlist[["Input"]] <- c(private$paramlist[["Input1"]], private$paramlist[["Input2"]])
+        }
       }else if((!is.null(atacProc)) && (class(atacProc)[1] == "SamToBam")){
         print("SamToBam")
         private$paramlist[["Input1"]] <- as.vector(unlist(atacProc$getParam("bamOutput")))
