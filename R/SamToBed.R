@@ -43,7 +43,7 @@ SamToBed <- R6::R6Class(
 
     setResultParam = function(bedFilePath){
       super$setResultParam();
-      private$paramlist[["bedOutput"]] <- bedFilePath
+      private$paramlist[["BedOutput"]] <- bedFilePath
     }
 
   ),
