@@ -7,8 +7,42 @@ Mapping <- R6::R6Class(
       print("MappingInitCall")
       # necessary and unchanged parameters, this should be tested
       private$paramlist[["genome_ref"]] <- Reference
-      private$paramlist[["seq_type"]] <- In_type
-
+      private$paramlist[["seq_type"]] <- In_typ	
+      wsq	
+      ed
+       
+       23
+        r
+        4q23
+         rt
+         q3
+          t
+          q3 
+          tq
+          3 t
+          qw
+           t
+           wdf
+           sax
+           f
+            wq
+            r 
+            23	
+            r
+            
+            
+            
+            rq23
+            	qer23r3	rwqefr
+            	weqa
+            	f
+            	qwa
+            	 
+            	 r 
+            	 2
+            	 	q 
+            	 	
+            	 	
       # from obj or not
       if(!is.null(atacProc)){
         if(In_type == "single"){
