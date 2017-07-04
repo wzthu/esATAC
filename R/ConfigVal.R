@@ -3,16 +3,54 @@
     getAllConfigure = function(){
       print(private$configList)
     },
-    getConfigure=function(item){
+    getConfigure = function(item = c("threads","tmpdir","datadir","genome")){
+      private$isValidAttr(item);
       return(private$configList[[item]]);
     },
-    setConfigure=function(item,val){
+    setConfigure = function(item = c("threads","tmpdir","datadir","genome"),val){
+      private$isValidVal(item,val);
       private$configList[[item]]<-val;
     }
-    
+
   ),
   private = list(
-    configList=list(threads=1,tmpdir=NULL)
+    configList=list(threads=1,tmpdir=NULL),
+    validAttr=list(threads="numeric",tmpdir="character"),
+    isValidAttr=function(item){
+      if(is.null(private$validAttr[[item]])){
+        stop(paste(item,"is not a attribute"))
+      }
+    },
+    isValidVal=function(item,val){
+      private$isValidAttr(item)
+      if(!is.null(val)&&private$validAttr[[item]]!=mode(val)){
+        stop(paste(item,"is requied to be",private$validAttr[[item]],",\"",val,"\" is ",mode(val)))
+      }
+      if(item=="thread"||item=="datadir"){
+        private$checkPathExist(val)
+      }
+      if(item=="genome"){
+        validgenome <- c("hg19","hg38","mm9","mm10")
+        if(sum(validgenome==val)<1){
+          stop(paste(val,"is invalid genome type, only",validgenome,"are supported"));
+        }
+      }
+    },
+    checkFileExist = function(filePath){
+      if(!is.null(filePath)){
+        if(!file.exists(filePath)){
+          stop(paste("error, file does not exist:",filePath))
+        }
+      }
+    },
+    checkPathExist = function(filePath){
+      if(!is.null(filePath)){
+        if(!dir.exists(dirname(filePath))){
+          stop(paste("error, path does not exist:",filePath))
+        }
+      }
+    }
+
   )
 )
 
@@ -22,11 +60,11 @@ getAllConfigure<-function(){
   .configObj$getAllConfigure();
 }
 
-getConfigure <- function(item){
+getConfigure <- function(item = c("threads","tmpdir","datadir")){
   .configObj$getConfigure(item);
 }
 
-setConfigure<- function(item,val){
+setConfigure<- function(item = c("threads","tmpdir","datadir"),val){
   .configObj$setConfigure(item,val);
 }
 

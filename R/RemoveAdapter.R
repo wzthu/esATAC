@@ -9,7 +9,7 @@ RemoveAdapter <-R6Class(
         private$paramlist[["fastqInput1"]] <- atacProc$getParam("fastqOutput1");
         private$paramlist[["fastqInput2"]] <- atacProc$getParam("fastqOutput2");
       }
-      
+
       if(!is.null(fastqInput1)){
         private$paramlist[["fastqInput1"]] <- fastqInput1;
       }
@@ -17,7 +17,7 @@ RemoveAdapter <-R6Class(
 
         private$paramlist[["fastqInput2"]] <- fastqInput2;
       }
-      
+
       if(is.null(fastqOutput1)){
         private$paramlist[["fastqOutput1"]] <- paste(private$paramlist[["fastqInput1"]],".clipped",sep="");
       }else{
@@ -33,11 +33,11 @@ RemoveAdapter <-R6Class(
       }else{
         private$paramlist[["reportPrefix"]] <- reportPrefix;
       }
-      
+
       private$paramlist[["adapter1"]] <- adapter1
       private$paramlist[["adapter2"]] <- adapter2
-      
-      
+
+
       private$checkFileExist(private$paramlist[["fastqInput1"]]);
       private$checkFileExist(private$paramlist[["fastqInput2"]]);
       private$checkPathExist(private$paramlist[["fastqOutput1"]]);
@@ -57,6 +57,7 @@ RemoveAdapter <-R6Class(
                            outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
                            inputFile2=private$paramlist[["fastqInput2"]],adapter2=private$paramlist[["adapter2"]],
                            outputFile2 = private$paramlist[["fastqOutput2"]],threads=getConfigure("threads"))
+      private$finish <- TRUE
     },
     setResultParam = function(fastqOutput1, fastqOutput2=NULL){
       super$setResultParam();
@@ -75,10 +76,10 @@ RemoveAdapter <-R6Class(
       if(is.null(private$paramlist[["fastqInput2"]])&&is.null(adapter1)){
         stop("Parameter \"adapter1\" is requied for single end sequencing.")
       }
-      
+
     }
   )
-  
+
 
 )
 

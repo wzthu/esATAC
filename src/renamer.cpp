@@ -25,15 +25,15 @@ int Renamer::renameFastq(){
         int j=0;
         while(fin.getline(line,BUFFER_LENGTH)){
             if(i%2==0){
-		if(i%4==0){
-                	fout <<"@"<< (i/4+1) << std::endl;
-		}else{
-			fout <<"+"<< (i/4+1) << std::endl;
-		}
-            }else{
-                fout << line << std::endl;
+    		if(i%4==0){
+                    	fout <<"@"<< (i/4+1) << std::endl;
+    		}else{
+    			fout <<"+"<< (i/4+1) << std::endl;
+    		}
+                }else{
+                    fout << line << std::endl;
+                }
+                i++;
             }
-            i++;
         }
-    }
 

@@ -8,7 +8,7 @@ Mapping <- R6::R6Class(
       # necessary and unchanged parameters, this should be tested
       private$paramlist[["genome_ref"]] <- Reference
       private$paramlist[["seq_type"]] <- In_type
-      private$checkRequireParam()
+
       # from obj or not
       if(!is.null(atacProc)){
         if(In_type == "single"){
@@ -44,7 +44,7 @@ Mapping <- R6::R6Class(
         private$checkFileExist(private$paramlist[["fastqInput2"]]);
         private$checkPathExist(private$paramlist[["samOutput"]]);
       }
-
+      private$checkRequireParam()
       print("finishMappingInitCall")
     },
 
@@ -55,7 +55,7 @@ Mapping <- R6::R6Class(
       }else{
         seq_file <- list(private$paramlist[["fastqInput1"]], private$paramlist[["fastqInput2"]])
       }
-      Rbowtie::bowtie(sequences = seq_file, index = private$paramlist[["genome_ref"]], S = TRUE, X = 2000, m = 1,
+      Rbowtie::bowtie(sequences = seq_file, index = private$paramlist[["genome_ref"]], S = TRUE, X = 2000, m = 1,threads = getConfigure("threads"),
                       type = private$paramlist[["seq_type"]], outfile = private$paramlist[["samOutput"]], force = TRUE, strict = TRUE)
       private$finish <- TRUE
     },

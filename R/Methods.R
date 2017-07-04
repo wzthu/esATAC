@@ -41,7 +41,7 @@ atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=
 #' @param out_file path and output file name, 'E:\\RATAC_test\\output\\output.sam'
 #' @param seq_type sequence type, "single", "paired"
 #' @export
-ATACmapping <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fileOutput = NULL, In_type = NULL){
+atacMapping <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fileOutput = NULL, In_type = NULL){
   tmp <- Mapping$new(atacProc, fileInput, Reference, fileOutput, In_type)
   tmp$processing()
   return(tmp)
@@ -54,7 +54,7 @@ ATACmapping <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fil
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-sam2bed <- function(atacProc = NULL, samfile = NULL, bedfile = NULL, readlen = NULL){
+atacSam2Bed <- function(atacProc = NULL, samfile = NULL, bedfile = NULL, readlen = NULL){
   tmp <- SamToBed$new(atacProc, samfile, bedfile, readlen)
   tmp$processing()
   return(tmp)
@@ -63,7 +63,7 @@ sam2bed <- function(atacProc = NULL, samfile = NULL, bedfile = NULL, readlen = N
 #' Quality control using Quasr::qQCreport
 #' @param input_file a c()
 #' @export
-QCreport <- function(atacProc = NULL, input_file = NULL, output_file = NULL){
+atacQCReport <- function(atacProc = NULL, input_file = NULL, output_file = NULL){
   tmp <- QCreporter$new(atacProc, input_file, output_file)
   tmp$processing()
   return(tmp)
@@ -71,7 +71,7 @@ QCreport <- function(atacProc = NULL, input_file = NULL, output_file = NULL){
 
 #' sam2bam using Rbowtie::asBam
 #' @export
-sam2bam <- function(atacProc = NULL, samfile = NULL, bamfile = NULL){
+atacSam2Bam <- function(atacProc = NULL, samfile = NULL, bamfile = NULL){
   tmp <- SamToBam$new(atacProc, samfile, bamfile)
   tmp$processing()
   return(tmp)
@@ -81,7 +81,7 @@ sam2bam <- function(atacProc = NULL, samfile = NULL, bamfile = NULL){
 #' sortbam using Rbowtie::sortBam
 #' the output bam file do not have bam header, can not use QCreport function
 #' @export
-Bamsort <- function(atacProc = NULL, inputbam = NULL, outputbam = NULL){
+atacBamSort <- function(atacProc = NULL, inputbam = NULL, outputbam = NULL){
   tmp <- Rsortbam$new(atacProc, inputbam, outputbam)
   tmp$processing()
   return(tmp)
