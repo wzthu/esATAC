@@ -1,0 +1,45 @@
+.fseq_call <- function(bedFileList,background=NULL,genomicReadsCount=NULL,inputDir=NULL,
+                       fragmentSize=NULL,featureLength=NULL,outputDir=NULL,
+                       outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
+                       wiggleTrackStep=NULL,threshold=NULL,verbose=NULL,
+                       wgThresholdSet=NULL){
+  argvs<-as.characters(bedFileList)
+  if(!is.null(background)){
+    argvs<-c(argvs,"-b",background)
+  }
+  if(!is.null(genomicReadsCount)){
+    argvs<-c(argvs,"-c",genomicReadsCount)
+  }
+  if(!is.null(inputDir)){
+    argvs<-c(argvs,"-d",inputDir)
+  }
+  if(!is.null(fragmentSize)){
+    argvs<-c(argvs,"-f",fragmentSize)
+  }
+  if(!is.null(featureLength)){
+    argvs<-c(argvs,"-l",featureLength)
+  }
+  if(!is.null(outputDir)){
+    argvs<-c(argvs,"-o",outputDir)
+  }
+  if(!is.null(outputFormat)){
+    argvs<-c(argvs,"-of",outputFormat[1])
+  }
+  if(!is.null(ploidyDir)){
+    argvs<-c(argvs,"-p",ploidyDir)
+  }
+  if(!is.null(wiggleTrackStep)){
+    argvs<-c(argvs,"-s",wiggleTrackStep)
+  }
+  if(!is.null(threshold)){
+    argvs<-c(argvs,"-t",threshold)
+  }
+  if(!is.null(verbose)){
+    argvs<-c(argvs,"-v",verbose)
+  }
+  if(!is.null(wgThresholdSet)){
+    argvs<-c(argvs,"-wg",wgThresholdSet)
+  }
+  fseq(argvs)
+
+}
