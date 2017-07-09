@@ -1,0 +1,16 @@
+ADRM_DIR = adapterremoval
+ADRM_SRC = $(ADRM_DIR)
+ADRM_INCLUDE_DIR = $(ADRM_DIR)
+ADRM_LIB_DIR = $(ADRM_DIR)
+ADRM_LIB = -ladrm
+
+PKG_CPPFLAGS = -DNDEBUG -I$(ADRM_INCLUDE_DIR)
+PKG_LIBS = -L$(ADRM_LIB_DIR) $(ADRM_LIB)
+
+all: mkadapterremoval  $(SHLIB)
+
+mkadapterremoval:
+	(cd	$(ADRM_DIR) && ($(MAKE) -f Makevars))
+
+.PHONY: mkadapterremoval all
+

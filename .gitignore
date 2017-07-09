@@ -45,4 +45,9 @@ vignettes/*.pdf
 /src/*.o
 /src/*.dll
 /src/*.so
+/src/*.a
+/src/*/*.o
+/src/*/*.dll
+/src/*/*.so
+/src/*/*.a
 .Rproj.user

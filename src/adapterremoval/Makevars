@@ -1,0 +1,8 @@
+include $(R_HOME)/etc${R_ARCH}/Makeconf
+
+ADRM_LIBRARY = adrm
+
+all: lib$(ADRM_LIBRARY).a
+
+lib$(ADRM_LIBRARY).a: adapterset.o  demultiplex.o  adrm_interface.o       main_demultiplex.o  threads.o alignment.o   fastq.o        linereader.o                timer.o argparse.o    fastq_enc.o    main_adapter_id.o  scheduler.o         trimmed_reads.o debug.o       fastq_io.o     main_adapter_rm.o  strutils.o          userconfig.o
+	$(AR)	cq	$@	$^
