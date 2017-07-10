@@ -99,9 +99,9 @@ int R_sam2bed_wrapper(Rcpp::List argvs)
   std::cout << "11111" << std::endl;
   std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
   std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
-  int readlen = Rcpp::as<int>(argvs["readlen"]);
+
   std::cout << "22222" << std::endl;
-  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(), readlen);
+  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
 
   return(SB.sam2bed());
 

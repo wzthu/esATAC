@@ -9,14 +9,18 @@ GraphMng <- R6Class(
         "SeqFile","RemoveAdapter",
         "Renamer","RemoveAdapter",
         "Renamer","FastQC",
-        "RemoveAdapter","Mapping",
-        "Mapping", "SamToBed",
        "Renamer", "QCreporter",
        "SeqFile", "QCreporter",
-       "Mapping", "SamToBam",
        "SamToBam", "Rsortbam",
        "SamToBam", "QCreporter",
-       "SamToBam", "BamToBed"
+       "SamToBam", "BamToBed",
+       "RemoveAdapter","BowtieMapping",
+       "BowtieMapping", "SamToBed",
+       "BowtieMapping", "SamToBam",
+       "RemoveAdapter","Bowtie2Mapping",
+       "Bowtie2Mapping","SamToBed",
+       "Bowtie2Mapping", "SamToBam"
+
       )
       private$graphDep1<-graph(edges = edges1)
       private$vtx1<-vertex.attributes(private$graphDep1)

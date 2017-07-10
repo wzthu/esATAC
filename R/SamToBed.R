@@ -2,13 +2,10 @@ SamToBed <- R6::R6Class(
   classname = "SamToBed",
   inherit = BaseProc,
   public = list(
-    initialize = function(atacProc, samfile = NULL, bedfile = NULL,
-                          readlen = NULL, editable=FALSE){
+    initialize = function(atacProc, samfile = NULL, bedfile = NULL, editable=FALSE){
       super$initialize("SamToBed",editable,list(arg1=atacProc))
       print("SamToBedInitCall")
-      # necessary and unchanged parameters, this should be tested
-      private$paramlist[["readlen"]] <- readlen
-      private$checkRequireParam()
+
       if(!is.null(atacProc)){
         private$paramlist[["SamInput"]] <- atacProc$getParam("samOutput");
         if(is.null(bedfile)){
@@ -36,8 +33,7 @@ SamToBed <- R6::R6Class(
 
     processing = function(){
       super$processing()
-      .sam2bed_call(samfile = private$paramlist[["SamInput"]], bedfile = private$paramlist[["BedOutput"]],
-                    readlen = private$paramlist[["readlen"]])
+      .sam2bed_call(samfile = private$paramlist[["SamInput"]], bedfile = private$paramlist[["BedOutput"]])
       private$finish <- TRUE
     },
 
@@ -53,10 +49,6 @@ SamToBed <- R6::R6Class(
       if(private$editable){
         return();
       }
-      if(is.null(private$paramlist[["readlen"]])){
-        stop("read length is required!")
-      }
-
     }
   )
 

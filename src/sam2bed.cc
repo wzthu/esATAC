@@ -23,10 +23,9 @@ Authors: Drs Yang Liao and Wei Shi
 #include <string.h>
 #include "sam2bed.h"
 
-SamToBed::SamToBed(char * ifilePath, char * ofilePath, int readlen){
+SamToBed::SamToBed(char * ifilePath, char * ofilePath){
   this -> ifilePath = ifilePath;
   this -> ofilePath = ofilePath;
-  this -> readlen = readlen;
 }
 
 int SamToBed::sam2bed() {
@@ -40,11 +39,12 @@ int SamToBed::sam2bed() {
   char * tok;
   char strand;
   char * chr;
-  int readlen, chr_start, chr_end, flag, mqs;
+  char * reads;
+  int  chr_start, chr_end, flag, mqs;
 
   int MAX_LINE_LENGTH = 100000;
 
-  readlen = this -> readlen;
+
 
   line = (char*)calloc(MAX_LINE_LENGTH, 1);
 
@@ -60,7 +60,7 @@ int SamToBed::sam2bed() {
     if (chr[0] != '*')
     {
       chr_start = atoi(strtok(NULL, "\t")) - 1;
-      chr_end = chr_start + readlen;
+      //chr_end = chr_start + readlen;
       mqs = atoi(strtok(NULL, "\t"));
 
       if ((flag & 0x10) == 0)
@@ -71,6 +71,10 @@ int SamToBed::sam2bed() {
       {
         strand = '-';
       }
+	  for(int i=0;i<5;i++){
+		  reads = strtok(NULL, "\t");
+	  }
+	  chr_end = chr_start + strlen(reads);
       fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
     }
   }

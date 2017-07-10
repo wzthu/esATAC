@@ -27,7 +27,7 @@ mkadapterremoval:
 
 mkbowtie2:
 	(cd $(BT2_DIR) && ($(MAKE) -f Makevars))
-		
 
-.PHONY: mkadapterremoval all
+
+.PHONY: mkadapterremoval mkbowtie2 all
 
