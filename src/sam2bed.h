@@ -5,8 +5,9 @@ class SamToBed
 private:
   char * ifilePath;
   char * ofilePath;
-  int readlen;
+
 public:
-  SamToBed(char * ifilePath, char * ofilePath, int readlen);
+  SamToBed(char * ifilePath, char * ofilePath);
   int sam2bed();
+
 };

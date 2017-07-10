@@ -33,7 +33,13 @@ atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=
   return(removeAdapter)
 }
 
-
+atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
+                           fastqInput1=NULL, fastqInput2=NULL){
+    bt2Mapping<-Bowtie2Mapping$new(atacProc,bowtie2Index,samOutput,NULL,
+                       fastqInput1, fastqInput2)
+    bt2Mapping$processing()
+    return(bt2Mapping)
+}
 
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
 #' @param seq_file A full path of the fa file(containing fa file). For single end, using a list; for paired end, using a list(length = 2).
@@ -41,8 +47,8 @@ atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=
 #' @param out_file path and output file name, 'E:\\RATAC_test\\output\\output.sam'
 #' @param seq_type sequence type, "single", "paired"
 #' @export
-atacMapping <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fileOutput = NULL, In_type = NULL){
-  tmp <- Mapping$new(atacProc, fileInput, Reference, fileOutput, In_type)
+atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fileOutput = NULL, In_type = NULL){
+  tmp <- BowtieMapping$new(atacProc, fileInput, Reference, fileOutput, In_type)
   tmp$processing()
   return(tmp)
 }
@@ -54,8 +60,8 @@ atacMapping <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fil
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-atacSam2Bed <- function(atacProc = NULL, samfile = NULL, bedfile = NULL, readlen = NULL){
-  tmp <- SamToBed$new(atacProc, samfile, bedfile, readlen)
+atacSam2Bed <- function(atacProc = NULL, samfile = NULL, bedfile = NULL){
+  tmp <- SamToBed$new(atacProc, samfile, bedfile)
   tmp$processing()
   return(tmp)
 }

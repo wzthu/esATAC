@@ -4,9 +4,9 @@
 }
 
 
-.sam2bed_call <- function(samfile, bedfile, readlen)
+.sam2bed_call <- function(samfile, bedfile)
 {
-  argv <- list(samfile = samfile, bedfile = bedfile, readlen = readlen)
+  argv <- list(samfile = samfile, bedfile = bedfile)
   print(argv)
   return(R_sam2bed_wrapper(argv))
 }
@@ -35,4 +35,11 @@
     argv<-c(argv,"--file2",inputFile2, "--adapter2",adapter2,"--output2",outputFile2);
   }
   return(removeAdapter(argv));
+}
+
+.bowtie2_paired_call <-function(bowtie2Index,samOutput,
+                         fastqInput1, fastqInput2,threads=1){
+    argv<-c("bowtie2-align-s","-x",bowtie2Index,"--no-discordant","--no-unal","--no-mixed","-X","2000",
+            "-p",as.character(threads),"-1",fastqInput1,"-2",fastqInput2,"-S",samOutput)
+    return(bowtie2Mapping(argv))
 }

@@ -9,6 +9,14 @@ renamer <- function(argvs) {
     .Call('atacpipe_renamer', PACKAGE = 'atacpipe', argvs)
 }
 
+bowtie2Mapping <- function(argvs) {
+    .Call('atacpipe_bowtie2Mapping', PACKAGE = 'atacpipe', argvs)
+}
+
+bowtie2Build <- function(argvs) {
+    .Call('atacpipe_bowtie2Build', PACKAGE = 'atacpipe', argvs)
+}
+
 R_sam2bed_wrapper <- function(argvs) {
     .Call('atacpipe_R_sam2bed_wrapper', PACKAGE = 'atacpipe', argvs)
 }
