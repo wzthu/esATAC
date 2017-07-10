@@ -14,7 +14,8 @@ LazyData: true
 Imports: Rcpp (>= 0.12.11),
     R6,
     Rbowtie,
-    QuasR
+    QuasR,
+    rtracklayer
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1

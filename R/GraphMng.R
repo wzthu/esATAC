@@ -15,7 +15,8 @@ GraphMng <- R6Class(
        "SeqFile", "QCreporter",
        "Mapping", "SamToBam",
        "SamToBam", "Rsortbam",
-       "SamToBam", "QCreporter"
+       "SamToBam", "QCreporter",
+       "SamToBam", "BamToBed"
       )
       private$graphDep1<-graph(edges = edges1)
       private$vtx1<-vertex.attributes(private$graphDep1)

@@ -10,12 +10,3 @@ Rbowtie_ref_build <- function(ref_dir, out_dir, file_prefix) {
                         force = TRUE)
 }
 
-
-#' Using Rsubread code sam2bed
-# sam2bed_in <- function(samfile,bedfile,readlen)
-# {
-#   opt <- paste("-n",readlen,samfile,bedfile,sep=",")
-#   cmd <- paste("sam2bed",opt,sep=",")
-#   n <- length(unlist(strsplit(cmd,",")))
-#   C_args <- .C("R_sam2bed_wrapper",as.integer(n),as.character(cmd),PACKAGE="atacpipe")
-# }
