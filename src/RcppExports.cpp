@@ -60,6 +60,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ChrDivi_wrapper
+int ChrDivi_wrapper(Rcpp::List argvs);
+RcppExport SEXP atacpipe_ChrDivi_wrapper(SEXP argvsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
+    rcpp_result_gen = Rcpp::wrap(ChrDivi_wrapper(argvs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CutSiteCount_wrapper
+int CutSiteCount_wrapper(Rcpp::List argvs);
+RcppExport SEXP atacpipe_CutSiteCount_wrapper(SEXP argvsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
+    rcpp_result_gen = Rcpp::wrap(CutSiteCount_wrapper(argvs));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"atacpipe_removeAdapter", (DL_FUNC) &atacpipe_removeAdapter, 1},
@@ -67,6 +89,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"atacpipe_bowtie2Mapping", (DL_FUNC) &atacpipe_bowtie2Mapping, 1},
     {"atacpipe_bowtie2Build", (DL_FUNC) &atacpipe_bowtie2Build, 1},
     {"atacpipe_R_sam2bed_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_wrapper, 1},
+    {"atacpipe_ChrDivi_wrapper", (DL_FUNC) &atacpipe_ChrDivi_wrapper, 1},
+    {"atacpipe_CutSiteCount_wrapper", (DL_FUNC) &atacpipe_CutSiteCount_wrapper, 1},
     {NULL, NULL, 0}
 };
 

@@ -93,16 +93,25 @@ atacBamSort <- function(atacProc = NULL, inputbam = NULL, outputbam = NULL){
   return(tmp)
 }
 
+#' separate genome information by chromatin name
+#' @param atacProc Not using now, we will use it in the future
+#' @param ReadsIfile Input bed file path, the first column is chromatin name
+#' @param ReadsOpath The output path, an empty folder would be great, please using "/" even in windows OS
+#' @export
+atacChrDivi <- function(atacProc = NULL, ReadsIfile = NULL, ReadsOpath = NULL){
+  tmp <- ChrDivi$new(atacProc, ReadsIfile, ReadsOpath)
+  tmp$processing()
+  return(tmp)
+}
 
 
-
-
-
-
-
-
-
-
+#' bam2bed using rtracklayer package
+#' @export
+atacBam2Bed <- function(atacProc = NULL, bamfile = NULL, bedfile = NULL){
+  tmp <- BamToBed$new(atacProc, bamfile, bedfile)
+  tmp$processing()
+  return(tmp)
+}
 
 
 

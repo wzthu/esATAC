@@ -4,6 +4,7 @@
 }
 
 
+
 .sam2bed_call <- function(samfile, bedfile)
 {
   argv <- list(samfile = samfile, bedfile = bedfile)
@@ -11,8 +12,22 @@
   return(R_sam2bed_wrapper(argv))
 }
 
+# only chr1-chrY will be saved, chrM and others will be removed.
+.chr_separate_call <- function(ReadsIfile, ReadsOpath)
+{
+  argv <- list(readsIfile = ReadsIfile, readsOpath = ReadsOpath)
+  print(argv)
+  return(ChrDivi_wrapper(argv))
+}
 
 
+# count ATAC-seq cut site in one chromatin
+CountCutSite_call <- function(FRfile, RRfile, Mfile, FMfile, RMfile, Mlen, Slen){
+  argv <- list(ForwReadsFile = FRfile, RevReadsFile = RRfile, MotifFile = Mfile, ForwMatrixFile = FMfile,
+               RevMatrixFile = RMfile, motif_length = Mlen, strand_length = Slen)
+  print(argv)
+  return(CutSiteCount_wrapper(argv))
+}
 
 
 .identify_adapters_call <- function(inputFile1,inputFile2,threads=1){

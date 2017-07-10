@@ -21,3 +21,11 @@ R_sam2bed_wrapper <- function(argvs) {
     .Call('atacpipe_R_sam2bed_wrapper', PACKAGE = 'atacpipe', argvs)
 }
 
+ChrDivi_wrapper <- function(argvs) {
+    .Call('atacpipe_ChrDivi_wrapper', PACKAGE = 'atacpipe', argvs)
+}
+
+CutSiteCount_wrapper <- function(argvs) {
+    .Call('atacpipe_CutSiteCount_wrapper', PACKAGE = 'atacpipe', argvs)
+}
+
