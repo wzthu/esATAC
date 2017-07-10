@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "sam2bed.h"
-
+#include "bowtie2/bowtie2_interface.h"
 // [[Rcpp::export]]
 int removeAdapter(Rcpp::CharacterVector argvs) {
 	int argc=argvs.size();
@@ -62,22 +62,33 @@ int renamer(Rcpp::List argvs) {
         return 1;
 }
 
-/*
-extern "C" int interface_bwa_main_func(int argc, char *argv[]);
+// [[Rcpp::export]]
+int bowtie2Mapping(Rcpp::CharacterVector argvs) {
+  int argc=argvs.size();
+  char **argv = new char* [argc];
+  for(int i=0;i<argc;i++){
+    int len = argvs[i].size();
+    argv[i] = new char[len+1];
+    strcpy(argv[i],(char *)(Rcpp::as<std::string>(argvs[i])).c_str());
+
+  }
+  return interface_bowtie_main(argc, (const char **)argv);
+}
 
 // [[Rcpp::export]]
-int bwaMapping(Rcpp::CharacterVector argvs) {
-	int argc=argvs.size();
-	char **argv = new char* [argc];
-	for(int i=0;i<argc;i++){
-		int len = argvs[i].size();
-		argv[i] = new char[len+1];
-		strcpy(argv[i],(char *)(Rcpp::as<std::string>(argvs[i])).c_str());
+int bowtie2Build(Rcpp::CharacterVector argvs) {
+  int argc=argvs.size();
+  char **argv = new char* [argc];
+  for(int i=0;i<argc;i++){
+    int len = argvs[i].size();
+    argv[i] = new char[len+1];
+    strcpy(argv[i],(char *)(Rcpp::as<std::string>(argvs[i])).c_str());
 
-	}
-    return interface_bwa_main_func(argc,argv);
+  }
+  return interface_bowtie_build_main(argc, (const char **)argv);
 }
-*/
+
+
 
 // [[Rcpp::export]]
 int R_sam2bed_wrapper(Rcpp::List argvs)
