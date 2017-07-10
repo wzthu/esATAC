@@ -1,0 +1,14 @@
+BT2_DIR = bowtie2
+BT2_SRC = $(BT2_DIR)
+BT2_INCLUDE_DIR = $(BT2_DIR)
+BT2_LIB_DIR = $(BT2_DIR)
+BT2_LIB = -lbowtie2
+
+PKG_CPPFLAGS = -DNDEBUG -I$(BT2_INCLUDE_DIR)
+PKG_LIBS = -L$(BT2_LIB_DIR) $(BT2_LIB)
+
+all: mkbowtie2  $(SHLIB)
+
+mkbowtie2:
+	(cd $(BT2_DIR) && $(MAKE) -f Makevars)
+.PHONY: mkbowtie2 all

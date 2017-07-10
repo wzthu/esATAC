@@ -27,6 +27,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// bowtie2Mapping
+int bowtie2Mapping(Rcpp::CharacterVector argvs);
+RcppExport SEXP atacpipe_bowtie2Mapping(SEXP argvsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type argvs(argvsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bowtie2Mapping(argvs));
+    return rcpp_result_gen;
+END_RCPP
+}
+// bowtie2Build
+int bowtie2Build(Rcpp::CharacterVector argvs);
+RcppExport SEXP atacpipe_bowtie2Build(SEXP argvsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type argvs(argvsSEXP);
+    rcpp_result_gen = Rcpp::wrap(bowtie2Build(argvs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // R_sam2bed_wrapper
 int R_sam2bed_wrapper(Rcpp::List argvs);
 RcppExport SEXP atacpipe_R_sam2bed_wrapper(SEXP argvsSEXP) {
@@ -42,6 +64,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"atacpipe_removeAdapter", (DL_FUNC) &atacpipe_removeAdapter, 1},
     {"atacpipe_renamer", (DL_FUNC) &atacpipe_renamer, 1},
+    {"atacpipe_bowtie2Mapping", (DL_FUNC) &atacpipe_bowtie2Mapping, 1},
+    {"atacpipe_bowtie2Build", (DL_FUNC) &atacpipe_bowtie2Build, 1},
     {"atacpipe_R_sam2bed_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_wrapper, 1},
     {NULL, NULL, 0}
 };

@@ -2,14 +2,14 @@
 #include <Rcpp.h>
 #include <string>
 #include <iostream>
-#include "interface.h"
+#include "adapterremoval/adrm_interface.h"
 #include "renamer.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "sam2bed.h"
-
+#include "bowtie2/bowtie2_interface.h"
 // [[Rcpp::export]]
 int removeAdapter(Rcpp::CharacterVector argvs) {
 	int argc=argvs.size();
@@ -44,7 +44,7 @@ int removeAdapter(Rcpp::CharacterVector argvs) {
         argv[15]="--threads";
         argv[16]="28";
 */
-    return inputfunc(argc,argv);
+    return interface_adapterremoval_main(argc,argv);
 }
 
 // [[Rcpp::export]]
@@ -61,6 +61,34 @@ int renamer(Rcpp::List argvs) {
 
         return 1;
 }
+
+// [[Rcpp::export]]
+int bowtie2Mapping(Rcpp::CharacterVector argvs) {
+  int argc=argvs.size();
+  char **argv = new char* [argc];
+  for(int i=0;i<argc;i++){
+    int len = argvs[i].size();
+    argv[i] = new char[len+1];
+    strcpy(argv[i],(char *)(Rcpp::as<std::string>(argvs[i])).c_str());
+
+  }
+  return interface_bowtie_main(argc, (const char **)argv);
+}
+
+// [[Rcpp::export]]
+int bowtie2Build(Rcpp::CharacterVector argvs) {
+  int argc=argvs.size();
+  char **argv = new char* [argc];
+  for(int i=0;i<argc;i++){
+    int len = argvs[i].size();
+    argv[i] = new char[len+1];
+    strcpy(argv[i],(char *)(Rcpp::as<std::string>(argvs[i])).c_str());
+
+  }
+  return interface_bowtie_build_main(argc, (const char **)argv);
+}
+
+
 
 // [[Rcpp::export]]
 int R_sam2bed_wrapper(Rcpp::List argvs)
