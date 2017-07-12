@@ -6,41 +6,43 @@
 using namespace std;
 
 
-ChrInfoDivi::ChrInfoDivi(string readsIfile, string readsOpath)
+ChrInfoDivi::ChrInfoDivi(string readsIfile, string readsOpath, string Outputname)
 {
-  this -> readsIfile = readsIfile;
-  this -> readsOpath = readsOpath;
+	this -> readsIfile = readsIfile;
+	this -> readsOpath = readsOpath;
+	this -> Outputname = Outputname;
 }
 
-int ChrInfoDivi::DoDivi() {
+int ChrInfoDivi::DoDivi()
+{
 	// Input reads bed file
 	ifstream readsifile(this -> readsIfile.c_str(), ios::in);
 
 	// Output reads bed file
-	ofstream ch1O((this -> readsOpath + "chr1.bed").c_str(), ios::out);
-	ofstream ch2O((this -> readsOpath + "chr2.bed").c_str(), ios::out);
-	ofstream ch3O((this -> readsOpath + "chr3.bed").c_str(), ios::out);
-	ofstream ch4O((this -> readsOpath + "chr4.bed").c_str(), ios::out);
-	ofstream ch5O((this -> readsOpath + "chr5.bed").c_str(), ios::out);
-	ofstream ch6O((this -> readsOpath + "chr6.bed").c_str(), ios::out);
-	ofstream ch7O((this -> readsOpath + "chr7.bed").c_str(), ios::out);
-	ofstream ch8O((this -> readsOpath + "chr8.bed").c_str(), ios::out);
-	ofstream ch9O((this -> readsOpath + "chr9.bed").c_str(), ios::out);
-	ofstream ch10O((this -> readsOpath + "chr10.bed").c_str(), ios::out);
-	ofstream ch11O((this -> readsOpath + "chr11.bed").c_str(), ios::out);
-	ofstream ch12O((this -> readsOpath + "chr12.bed").c_str(), ios::out);
-	ofstream ch13O((this -> readsOpath + "chr13.bed").c_str(), ios::out);
-	ofstream ch14O((this -> readsOpath + "chr14.bed").c_str(), ios::out);
-	ofstream ch15O((this -> readsOpath + "chr15.bed").c_str(), ios::out);
-	ofstream ch16O((this -> readsOpath + "chr16.bed").c_str(), ios::out);
-	ofstream ch17O((this -> readsOpath + "chr17.bed").c_str(), ios::out);
-	ofstream ch18O((this -> readsOpath + "chr18.bed").c_str(), ios::out);
-	ofstream ch19O((this -> readsOpath + "chr19.bed").c_str(), ios::out);
-	ofstream ch20O((this -> readsOpath + "chr20.bed").c_str(), ios::out);
-	ofstream ch21O((this -> readsOpath + "chr21.bed").c_str(), ios::out);
-	ofstream ch22O((this -> readsOpath + "chr22.bed").c_str(), ios::out);
-	ofstream chXO((this -> readsOpath + "chrX.bed").c_str(), ios::out);
-	ofstream chYO((this -> readsOpath + "chrY.bed").c_str(), ios::out);
+	ofstream ch1O((this -> readsOpath + this -> Outputname + "_chr1.bed").c_str(), ios::out);
+	ofstream ch2O((this -> readsOpath + this -> Outputname + "_chr2.bed").c_str(), ios::out);
+	ofstream ch3O((this -> readsOpath + this -> Outputname + "_chr3.bed").c_str(), ios::out);
+	ofstream ch4O((this -> readsOpath + this -> Outputname + "_chr4.bed").c_str(), ios::out);
+	ofstream ch5O((this -> readsOpath + this -> Outputname + "_chr5.bed").c_str(), ios::out);
+	ofstream ch6O((this -> readsOpath + this -> Outputname + "_chr6.bed").c_str(), ios::out);
+	ofstream ch7O((this -> readsOpath + this -> Outputname + "_chr7.bed").c_str(), ios::out);
+	ofstream ch8O((this -> readsOpath + this -> Outputname + "_chr8.bed").c_str(), ios::out);
+	ofstream ch9O((this -> readsOpath + this -> Outputname + "_chr9.bed").c_str(), ios::out);
+	ofstream ch10O((this -> readsOpath + this -> Outputname + "_chr10.bed").c_str(), ios::out);
+	ofstream ch11O((this -> readsOpath + this -> Outputname + "_chr11.bed").c_str(), ios::out);
+	ofstream ch12O((this -> readsOpath + this -> Outputname + "_chr12.bed").c_str(), ios::out);
+	ofstream ch13O((this -> readsOpath + this -> Outputname + "_chr13.bed").c_str(), ios::out);
+	ofstream ch14O((this -> readsOpath + this -> Outputname + "_chr14.bed").c_str(), ios::out);
+	ofstream ch15O((this -> readsOpath + this -> Outputname + "_chr15.bed").c_str(), ios::out);
+	ofstream ch16O((this -> readsOpath + this -> Outputname + "_chr16.bed").c_str(), ios::out);
+	ofstream ch17O((this -> readsOpath + this -> Outputname + "_chr17.bed").c_str(), ios::out);
+	ofstream ch18O((this -> readsOpath + this -> Outputname + "_chr18.bed").c_str(), ios::out);
+	ofstream ch19O((this -> readsOpath + this -> Outputname + "_chr19.bed").c_str(), ios::out);
+	ofstream ch20O((this -> readsOpath + this -> Outputname + "_chr20.bed").c_str(), ios::out);
+	ofstream ch21O((this -> readsOpath + this -> Outputname + "_chr21.bed").c_str(), ios::out);
+	ofstream ch22O((this -> readsOpath + this -> Outputname + "_chr22.bed").c_str(), ios::out);
+	ofstream chXO((this -> readsOpath + this -> Outputname + "_chrX.bed").c_str(), ios::out);
+	ofstream chYO((this -> readsOpath + this -> Outputname + "_chrY.bed").c_str(), ios::out);
 
 	int MAX_LINE_LENGTH = 100000;
 	char line[MAX_LINE_LENGTH] = {0};

@@ -2,7 +2,8 @@ ChrDivi <- R6::R6Class(
   classname = "ChrDivi",
   inherit = BaseProc,
   public = list(
-    initialize = function(atacProc, ReadsIfile = NULL, ReadsOpath = NULL, editable = FALSE){
+    initialize = function(atacProc, ReadsIfile = NULL, ReadsOpath = NULL, name = NULL,
+                          sort = NULL, sort_col = NULL, editable = FALSE){
       super$initialize("ChrDivi",editable,list(arg1=atacProc))
       print("ChrDiviInitCall")
       # add "/" in the output path
@@ -10,8 +11,15 @@ ChrDivi <- R6::R6Class(
         ReadsOpath <- paste0(ReadsOpath, "/", collapse = "")
       }
       # necessary and unchanged parameters, this should be tested
+      private$paramlist[["sort"]] <- sort
+      private$paramlist[["sort_col"]] <- sort_col
       private$paramlist[["ReadsIfile"]] <- ReadsIfile
       private$paramlist[["ReadsOpath"]] <- ReadsOpath
+      if(is.null(name)){
+        private$paramlist[["name"]] <- "Output"
+      }else{
+        private$paramlist[["name"]] <- name
+      }
       # parameter check
       private$checkRequireParam()
       private$checkFileExist(private$paramlist[["ReadsIfile"]])
@@ -23,7 +31,20 @@ ChrDivi <- R6::R6Class(
 
     processing = function(){
       super$processing()
-      .chr_separate_call(ReadsIfile = private$paramlist[["ReadsIfile"]], ReadsOpath = private$paramlist[["ReadsOpath"]])
+      .chr_separate_call(ReadsIfile = private$paramlist[["ReadsIfile"]], ReadsOpath = private$paramlist[["ReadsOpath"]],
+                         Name = private$paramlist[["name"]])
+      if(!is.null(private$paramlist[["sort"]]) && (private$paramlist[["sort"]])){
+        chr <- as.list(1:22)
+        chr[[23]] <- "X"
+        chr[[24]] <- "Y"
+        for(i in seq(1:24)){
+          sfile <- paste(private$paramlist[["ReadsOpath"]], private$paramlist[["name"]],
+                        "_chr", chr[[i]], ".bed", sep = "", collapse = "")
+          data <- read.table(sfile)
+          data <- data[order(data[, private$paramlist[["sort_col"]]]), ]
+          write.table(data, file = sfile, row.names = FALSE, col.names = FALSE, quote = FALSE)
+        }
+      }
       private$finish <- TRUE
     },
 
@@ -43,6 +64,11 @@ ChrDivi <- R6::R6Class(
       }
       if(is.null(private$paramlist[["ReadsOpath"]])){
         stop("Parameter ReadsOpath is required!")
+      }
+      if(!is.null(private$paramlist[["sort"]]) && (private$paramlist[["sort"]])){
+        if(is.null(private$paramlist[["sort_col"]])){
+          stop("Please specify which column you want sort!")
+        }
       }
     }
   ) # private end
