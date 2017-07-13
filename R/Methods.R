@@ -106,18 +106,6 @@ atacBamSort <- function(atacProc = NULL, inputbam = NULL, outputbam = NULL){
   return(tmp)
 }
 
-#' separate genome information by chromatin name
-#' @param atacProc Not using now, we will use it in the future
-#' @param ReadsIfile Input bed file path, the first column is chromatin name
-#' @param ReadsOpath The output path, an empty folder would be great, please using "/" even in windows OS
-#' @export
-atacChrDivi <- function(atacProc = NULL, ReadsIfile = NULL, ReadsOpath = NULL){
-  tmp <- ChrDivi$new(atacProc, ReadsIfile, ReadsOpath)
-  tmp$processing()
-  return(tmp)
-}
-
-
 #' bam2bed using rtracklayer package
 #' @export
 atacBam2Bed <- function(atacProc = NULL, bamfile = NULL, bedfile = NULL){
@@ -126,12 +114,32 @@ atacBam2Bed <- function(atacProc = NULL, bamfile = NULL, bedfile = NULL){
   return(tmp)
 }
 
+#' separate genome information by chromatin name.
+#' @param atacProc Not using now, we will use it in the future.
+#' @param ReadsIfile Input bed file path, the first column is chromatin name.
+#' @param ReadsOpath The output path, an empty folder would be great, please using "/" even in windows OS.
+#' @param prefix the prefix of the output name, format:prefix_chr*.bed, default:output.
+#' @param sort TRUE or FALSE, sort every output file by a column.
+#' @param sort_col Which column you want to sort, if sort = TRUE, this parameter must be specified.
+#' @export
+atacChrDivi <- function(atacProc = NULL, ReadsIfile = NULL, ReadsOpath = NULL,
+                        prefix = NULL, sort = NULL, sort_col = null){
+  tmp <- ChrDivi$new(atacProc, ReadsIfile, ReadsOpath, prefix, sort, sort_col)
+  tmp$processing()
+  return(tmp)
+}
 
-
-
-
-
-
+#' extract cut site information
+#' @param atacProc Do not use this parameter, we will add nore functions in the future!
+#' @param InputFile Input file path, the No.1-3 column is chromatin name, start cut site, end cut site.
+#' @param OutputFile The output path, an empty folder would be great.
+#' @param prefix Output file name prefix, e.g. prefix_chr*.bed, default "output".
+#' @export
+atacCutSitePre <- function(atacProc = NULL, InputFile = NULL, OutputFile = NULL, prefix = NULL){
+  tmp <- CutSitePre$new(atacProc, InputFile, OutputFile, prefix)
+  tmp$processing()
+  return(tmp)
+}
 
 
 atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){

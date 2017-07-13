@@ -94,14 +94,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// CutSiteCount_wrapper
-int CutSiteCount_wrapper(Rcpp::List argvs);
-RcppExport SEXP atacpipe_CutSiteCount_wrapper(SEXP argvsSEXP) {
+// CutCountPre_wrapper
+int CutCountPre_wrapper(Rcpp::List argvs);
+RcppExport SEXP atacpipe_CutCountPre_wrapper(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
-    rcpp_result_gen = Rcpp::wrap(CutSiteCount_wrapper(argvs));
+    rcpp_result_gen = Rcpp::wrap(CutCountPre_wrapper(argvs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -115,7 +115,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"atacpipe_R_sam2bed_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_wrapper, 1},
     {"atacpipe_R_sam2bed_merge_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_merge_wrapper, 2},
     {"atacpipe_ChrDivi_wrapper", (DL_FUNC) &atacpipe_ChrDivi_wrapper, 1},
-    {"atacpipe_CutSiteCount_wrapper", (DL_FUNC) &atacpipe_CutSiteCount_wrapper, 1},
+    {"atacpipe_CutCountPre_wrapper", (DL_FUNC) &atacpipe_CutCountPre_wrapper, 1},
     {NULL, NULL, 0}
 };
 

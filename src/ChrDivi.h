@@ -7,7 +7,8 @@ class ChrInfoDivi
 private:
 	string readsIfile;  // your_reads_path/sample_reads.bed
 	string readsOpath;  // your_divided_reads_path/
+	string Outputname;  // output file name prefix
 public:
-	ChrInfoDivi(string readsIfile, string readsOpath);
+	ChrInfoDivi(string readsIfile, string readsOpath, string Outputname);
 	int DoDivi();
 };

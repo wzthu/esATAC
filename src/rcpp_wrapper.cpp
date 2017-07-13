@@ -11,7 +11,7 @@
 #include "sam2bed.h"
 #include "bowtie2/bowtie2_interface.h"
 #include "ChrDivi.h"
-#include "CutSiteCount.h"
+#include "CutCountPre.h"
 
 // [[Rcpp::export]]
 int removeAdapter(Rcpp::CharacterVector argvs) {
@@ -85,15 +85,10 @@ void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){
 // [[Rcpp::export]]
 int R_sam2bed_wrapper(Rcpp::List argvs)
 {
-  std::cout << "11111" << std::endl;
   std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
   std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
-
-  std::cout << "22222" << std::endl;
   SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
-
   return(SB.sam2bed());
-
 }
 
 // [[Rcpp::export]]
@@ -154,35 +149,27 @@ int ChrDivi_wrapper(Rcpp::List argvs)
   std::cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
+  std::string Oname = Rcpp::as<std::string>(argvs["name"]);
 
   // CHR_DIVIDE is the class name
-  ChrInfoDivi CHR_DIVIDE(RIfile, ROfile);
+  ChrInfoDivi CHR_DIVIDE(RIfile, ROfile, Oname);
   std::cout << "segmentation finished! Your output file path is:" << std::endl;
   std::cout << ROfile << std::endl;
   return(CHR_DIVIDE.DoDivi());
-
 }
 
 // [[Rcpp::export]]
-int CutSiteCount_wrapper(Rcpp::List argvs)
+int CutCountPre_wrapper(Rcpp::List argvs)
 {
-  //parameters
-  //string ForwReadsFile, string RevReadsFile, string MotifFile,
-  //string ForwMatrixFile, string RevMatrixFile, int motif_length, int strand_length
+  std::cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
+  std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
+  std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
 
-  std::string ForwReadsFile = Rcpp::as<std::string>(argvs["ForwReadsFile"]);
-  std::string RevReadsFile = Rcpp::as<std::string>(argvs["RevReadsFile"]);
-  std::string MotifFile = Rcpp::as<std::string>(argvs["MotifFile"]);
-  std::string ForwMatrixFile = Rcpp::as<std::string>(argvs["ForwMatrixFile"]);
-  std::string RevMatrixFile = Rcpp::as<std::string>(argvs["RevMatrixFile"]);
-  int motif_length = Rcpp::as<int>(argvs["motif_length"]);
-  int strand_length = Rcpp::as<int>(argvs["strand_length"]);
-
-  CutSiteCount ATAC_CSC(ForwReadsFile, RevReadsFile, MotifFile, ForwMatrixFile, RevMatrixFile, motif_length, strand_length);
-  ATAC_CSC.ForwCutSiteCount();
-  ATAC_CSC.RevCutSiteCount();
-  return(0);
-
+  // CHR_DIVIDE is the class name
+  CutCountPre CutCount(RIfile, ROfile);
+  std::cout << "segmentation finished! Your output file path is:" << std::endl;
+  std::cout << ROfile << std::endl;
+  return(CutCount.EXCutCount());
 }
 
 
