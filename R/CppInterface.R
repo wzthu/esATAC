@@ -3,7 +3,15 @@
   return(renamer(argv));
 }
 
-
+.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,filterList)
+{
+    argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset)
+    print(argv)
+    if(is.null(filterList)){
+        filterList = c("NULL");
+    }
+    return(R_sam2bed_merge_wrapper(argv,filterList))
+}
 
 .sam2bed_call <- function(samfile, bedfile)
 {

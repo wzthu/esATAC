@@ -3,7 +3,7 @@
                        outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
                        wiggleTrackStep=NULL,threshold=NULL,verbose=NULL,
                        wgThresholdSet=NULL){
-  argvs<-as.characters(bedFileList)
+  argvs<-as.character(bedFileList)
   if(!is.null(background)){
     argvs<-c(argvs,"-b",background)
   }
@@ -35,7 +35,7 @@
     argvs<-c(argvs,"-t",threshold)
   }
   if(!is.null(verbose)){
-    argvs<-c(argvs,"-v",verbose)
+    argvs<-c(argvs,"-v")
   }
   if(!is.null(wgThresholdSet)){
     argvs<-c(argvs,"-wg",wgThresholdSet)

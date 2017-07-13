@@ -82,6 +82,15 @@ BaseProc <- R6Class(
           stop(paste("error, path does not exist:",filePath))
         }
       }
+    },
+    checkFileCreatable = function(filePath){
+        if(!is.null(filePath)){
+            if(file.exists(filePath)){
+                warning(paste("file exist:",filePath,", we will overwrite the file"));
+            }else if(!file.create(filePath)){
+                stop(paste("cannot create file '",filePath,"', No such file or directory"));
+            }
+        }
     }
 
   )

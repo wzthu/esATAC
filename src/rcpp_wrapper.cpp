@@ -21,32 +21,8 @@ int removeAdapter(Rcpp::CharacterVector argvs) {
 		int len = argvs[i].size();
 		argv[i] = new char[len+1];
 		strcpy(argv[i],(char *)(Rcpp::as<std::string>(argvs[i])).c_str());
-//(char *)(Rcpp::as<std::string>(argvs[i])).c_str();
-		//std::cout<<argv[i]<<std::endl;
-	}
-	//std::cout<<argc<<std::endl;
+    }
 
-/*
-        int argc=17;
-        char **argv = new char* [argc];
-        argv[0]="AdapterRemoval";
-        argv[1]="--file1";//"--help";
-        argv[2]="./data/SRR891274_1.fastq";
-        argv[3]="--file2";
-        argv[4]="./data/SRR891274_2.fastq";
-        argv[5]="--output1";
-        argv[6]="./data/SRR891274_1.fastq.clipped";
-        argv[7]="--output2";
-        argv[8]="./data/SRR891274_2.fastq.clipped";
-        argv[9]="--basename";
-        argv[10]="./data/SRR891274.clipped";
-        argv[11]="--adapter1";
-        argv[12]="CTGTCTCTTATACACATCTCCGAGCCCACGAGACGGACT";
-        argv[13]="--adapter2";
-        argv[14]="CTGTCTCTTATACACATCTGACGCTGCCGACGAGTGTAG";
-        argv[15]="--threads";
-        argv[16]="28";
-*/
     return interface_adapterremoval_main(argc,argv);
 }
 
@@ -91,6 +67,19 @@ int bowtie2Build(Rcpp::CharacterVector argvs) {
   return interface_bowtie_build_main(argc, (const char **)argv);
 }
 
+// [[Rcpp::export]]
+void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){
+    int fileSize=fileList.size();
+    std::string dest = Rcpp::as<std::string>(destFile[0]);
+    std::ofstream of_dest(dest.c_str(), std::ios_base::binary);
+    for(int i=0;i<fileSize;i++){
+        std::string filePath = Rcpp::as<std::string>(fileList[i]);
+        std::ifstream if_file(filePath.c_str(), std::ios_base::binary);
+        of_dest << if_file.rdbuf();
+        if_file.close();
+    }
+    of_dest.close();
+}
 
 
 // [[Rcpp::export]]
@@ -104,6 +93,58 @@ int R_sam2bed_wrapper(Rcpp::List argvs)
   SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
 
   return(SB.sam2bed());
+
+}
+
+// [[Rcpp::export]]
+int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
+{
+  std::cout << "11111" << std::endl;
+  std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
+  std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
+  int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
+  int neg_offset = Rcpp::as<int>(argvs["negOffset"]);
+
+  std::cout << "22222" << std::endl;
+  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
+
+  std::cout << "222221" << std::endl;
+  int filterSize=filterList.size();
+
+
+  char **filters = new char* [filterSize];
+  if(filterSize == 1){
+      int len = filterList[0].size();
+      filters[0] = new char[len+1];
+      strcpy(filters[0],(char *)(Rcpp::as<std::string>(filterList[0])).c_str());
+
+      if(!strcmp(filters[0],"NULL")){
+          delete[] filters[0];
+          delete[] filters;
+
+          std::cout.flush();
+          filters = NULL;
+          filterSize = 0;
+
+
+      }
+  }else{
+      for(int i=0;i<filterSize;i++){
+          int len = filterList[i].size();
+          filters[i] = new char[len+1];
+          strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
+      }
+  }
+
+  int t = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize);
+
+  if(filters){
+      for(int i=0;i<filterSize;i++){
+        delete[] filters[i];
+      }
+      delete[] filters;
+  }
+  return(t);
 
 }
 
@@ -143,3 +184,6 @@ int CutSiteCount_wrapper(Rcpp::List argvs)
   return(0);
 
 }
+
+
+

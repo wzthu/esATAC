@@ -2,44 +2,48 @@ SamToBed <- R6::R6Class(
   classname = "SamToBed",
   inherit = BaseProc,
   public = list(
-    initialize = function(atacProc, samfile = NULL, bedfile = NULL, editable=FALSE){
+    initialize = function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= NULL,
+                          samInput = NULL, bedOutput = NULL, editable=FALSE){
       super$initialize("SamToBed",editable,list(arg1=atacProc))
       print("SamToBedInitCall")
-
       if(!is.null(atacProc)){
-        private$paramlist[["SamInput"]] <- atacProc$getParam("samOutput");
-        if(is.null(bedfile)){
-          private$paramlist[["BedOutput"]] <- paste0(private$paramlist[["SamInput"]], ".bed",collapse = "")
-        }else{
-          private$paramlist[["BedOutput"]] <- bedfile
-        }
-        # file check
-        private$checkFileExist(private$paramlist[["SamInput"]]);
-        private$checkPathExist(private$paramlist[["BedOutput"]]);
-      }else{
-        private$paramlist[["SamInput"]] <- samfile;
-        if(is.null(bedfile)){
-          private$paramlist[["BedOutput"]] <- paste0(private$paramlist[["SamInput"]], ".bed",collapse = "")
-        }else{
-          private$paramlist[["BedOutput"]] <- bedfile
-        }
-        # file check
-        private$checkFileExist(private$paramlist[["SamInput"]]);
-        private$checkPathExist(private$paramlist[["BedOutput"]]);
+          private$paramlist[["samInput"]] <- atacProc$getParam("samOutput");
       }
-      private$checkRequireParam()
+      if(!is.null(samInput)){
+          private$paramlist[["samInput"]] <- samInput;
+      }
+      if(is.null(bedOutput)){
+          private$paramlist[["bedOutput"]] <- paste0(private$paramlist[["samInput"]],".bed")
+      }else{
+          private$paramlist[["bedOutput"]] <- bedOutput;
+      }
+
+      private$paramlist[["merge"]] <- merge;
+      private$paramlist[["posOffset"]] <- posOffset;
+      private$paramlist[["negOffset"]] <- negOffset;
+      private$paramlist[["filterList"]] <- chrFilterList;
+
+      private$checkFileExist(private$paramlist[["samInput"]]);
+      private$checkFileCreatable(private$paramlist[["bedOutput"]]);
+      private$checkRequireParam();
       print("finishMappingInitCall")
     },
 
     processing = function(){
       super$processing()
-      .sam2bed_call(samfile = private$paramlist[["SamInput"]], bedfile = private$paramlist[["BedOutput"]])
+      if(private$paramlist[["merge"]]){
+          .sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
+                              posOffset = private$paramlist[["posOffset"]], negOffset = private$paramlist[["negOffset"]],
+                              filterList = private$paramlist[["filterList"]] )
+      }else{
+          .sam2bed_call(samfile = private$paramlist[["SamInput"]], bedfile = private$paramlist[["BedOutput"]])
+      }
       private$finish <- TRUE
     },
 
-    setResultParam = function(bedFilePath){
+    setResultParam = function(bedOutput){
       super$setResultParam();
-      private$paramlist[["BedOutput"]] <- bedFilePath
+      private$paramlist[["bedOutput"]] <- bedOutput
     }
 
   ),
@@ -49,11 +53,11 @@ SamToBed <- R6::R6Class(
       if(private$editable){
         return();
       }
+        if(is.null(private$paramlist[["samInput"]])){
+            stop(paste("samInput is requied"));
+        }
     }
   )
-
-
-
 
 
 )

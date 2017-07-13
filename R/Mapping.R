@@ -122,9 +122,15 @@ Bowtie2Mapping <-R6Class(
 
             private$checkFileExist(private$paramlist[["fastqInput1"]]);
             private$checkFileExist(private$paramlist[["fastqInput2"]]);
-            private$checkPathExist(private$paramlist[["samOutput"]]);
-            private$checkPathExist(private$paramlist[["bowtie2Index"]]);
+            private$checkFileCreatable(private$paramlist[["samOutput"]]);
+            private$checkFileExist(paste0(private$paramlist[["bowtie2Index"]],".1.bt2"));
+            private$checkFileExist(paste0(private$paramlist[["bowtie2Index"]],".2.bt2"));
+            private$checkFileExist(paste0(private$paramlist[["bowtie2Index"]],".3.bt2"));
+            private$checkFileExist(paste0(private$paramlist[["bowtie2Index"]],".4.bt2"));
+            private$checkFileExist(paste0(private$paramlist[["bowtie2Index"]],".rev.1.bt2"));
+            private$checkFileExist(paste0(private$paramlist[["bowtie2Index"]],".rev.2.bt2"));
             private$checkRequireParam();
+            print(private$paramlist[["samOutput"]])
         },
         processing = function(){
             super$processing()
