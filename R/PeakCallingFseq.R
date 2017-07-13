@@ -3,9 +3,9 @@ PeakCallingFseq <-R6Class(
     inherit = BaseProc,
     public = list(
         initialize = function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
-                              fragmentSize=NULL,featureLength=NULL,bedOutput=NULL,
+                              fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                               outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
-                              wiggleTrackStep=NULL,threshold=NULL,verbose=NULL,
+                              wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                               wgThresholdSet=NULL,editable=FALSE){
             super$initialize("PeakCallingFseq",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){

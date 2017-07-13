@@ -34,7 +34,7 @@
   if(!is.null(threshold)){
     argvs<-c(argvs,"-t",threshold)
   }
-  if(!is.null(verbose)){
+  if(!is.null(verbose)&&verbose){
     argvs<-c(argvs,"-v")
   }
   if(!is.null(wgThresholdSet)){
