@@ -12,6 +12,7 @@
 #include "bowtie2/bowtie2_interface.h"
 #include "ChrDivi.h"
 #include "CutCountPre.h"
+#include "CutSiteCount.h"
 
 // [[Rcpp::export]]
 int removeAdapter(Rcpp::CharacterVector argvs) {
@@ -165,7 +166,7 @@ int CutCountPre_wrapper(Rcpp::List argvs)
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
 
-  // CHR_DIVIDE is the class name
+  // CutCount is the class name
   CutCountPre CutCount(RIfile, ROfile);
   std::cout << "segmentation finished! Your output file path is:" << std::endl;
   std::cout << ROfile << std::endl;
@@ -173,4 +174,17 @@ int CutCountPre_wrapper(Rcpp::List argvs)
 }
 
 
+// [[Rcpp::export]]
+int CutSiteCount_wrapper(Rcpp::List argvs)
+{
+  std::string readsfile = Rcpp::as<std::string>(argvs["readsfile"]);
+  std::string motiffile = Rcpp::as<std::string>(argvs["motiffile"]);
+  std::string matrixfile = Rcpp::as<std::string>(argvs["matrixfile"]);
+  int motif_len = Rcpp::as<int>(argvs["motif_len"]);
+  int strand_len = Rcpp::as<int>(argvs["strand_len"]);
+
+  // CutSite is the class name
+  CutSiteCount CutSite(readsfile, motiffile, matrixfile, motif_len, strand_len);
+  return(CutSite.DoCutSiteCount());
+}
 

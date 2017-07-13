@@ -141,6 +141,25 @@ atacCutSitePre <- function(atacProc = NULL, InputFile = NULL, OutputFile = NULL,
   return(tmp)
 }
 
+#' Counting cut site around motif.
+#' @param atacProc Do not use this parameter, we will add nore functions in the future!
+#' @param CutSiteFile Your cut site infoemation file(from atacCutSitePre function) path with prefix.
+#' e.g. "/your_cut_site_information_path/prefix"
+#' @param MotifFile Your cut site infoemation file(from atacChrDivi function) path with prefix.
+#' e.g. "/your_motif_information_path/prefix"
+#' @param MatrixPath The output path with a prefix, an empty folder would be great.
+#' e.g. "/where_you_want_to_save_output/prefix"
+#' @param motif_length Motif length.
+#' @param strand_length How many bp(base pair) do you want to count up/downstream of the motif.
+#' @export
+atacCutSiteCount <- function(atacProc = NULL, CutSiteFile = NULL, MotifFile = NULL, MatrixPath = NULL,
+                             motif_length = NULL, strand_length = NULL, FootPrint = FALSE){
+  tmp <- CutSiteCountR$new(atacProc, CutSiteFile, MotifFile, MatrixPath,
+                        motif_length, strand_length, FootPrint)
+  tmp$processing()
+  return(tmp)
+}
+
 
 atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
   renamer <- Renamer$new(NULL, fastqOutput1, fasqOutput2,NULL, NULL,editable=TRUE)
