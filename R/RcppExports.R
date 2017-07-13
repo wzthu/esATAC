@@ -29,3 +29,7 @@ CutCountPre_wrapper <- function(argvs) {
     .Call('atacpipe_CutCountPre_wrapper', PACKAGE = 'atacpipe', argvs)
 }
 
+CutSiteCount_wrapper <- function(argvs) {
+    .Call('atacpipe_CutSiteCount_wrapper', PACKAGE = 'atacpipe', argvs)
+}
+

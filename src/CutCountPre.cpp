@@ -29,8 +29,7 @@ int CutCountPre::EXCutCount()
   vector<int> cutsite;
 
   // parameters used in this program
-  int MAX_LINE_LENGTH = 100000;
-  char line[MAX_LINE_LENGTH] = {0};
+  char line[100000] = {0};
   const char *sep = "\t ";
 
   // initialization
@@ -40,7 +39,7 @@ int CutCountPre::EXCutCount()
     return 0;
   }
   string chr(strtok(line, sep));
-  int start = atoi(strtok(NULL, sep));
+  int start = atoi(strtok(NULL, sep)) + 1;
   int end = atoi(strtok(NULL, sep));
   string chr_flag;
   chr_flag = chr;
@@ -51,7 +50,7 @@ int CutCountPre::EXCutCount()
   while(readsifile.getline(line, sizeof(line)))
   {
     chr = strtok(line, sep);
-    start = atoi(strtok(NULL, sep));
+    start = atoi(strtok(NULL, sep)) + 1;
     end = atoi(strtok(NULL, sep));
     if(chr == chr_flag)
     {

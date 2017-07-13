@@ -25,6 +25,16 @@
 }
 
 
+.CutSiteCount <- function(readsfile, motiffile, matrixfile, motif_len, strand_len){
+  argv <- list(readsfile = readsfile, motiffile = motiffile, matrixfile = matrixfile,
+               motif_len = motif_len, strand_len = strand_len)
+  print(argv)
+  return(CutSiteCount_wrapper(argv))
+}
+
+
+
+
 .identify_adapters_call <- function(inputFile1,inputFile2,threads=1){
   argv<-c("AdapterRemoval","--identify-adapters","--file1",
           inputFile1,"--file2",inputFile2,"--threads",threads);
