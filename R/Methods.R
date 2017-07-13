@@ -41,6 +41,18 @@ atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
     return(bt2Mapping)
 }
 
+atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
+                            fragmentSize=NULL,featureLength=NULL,bedOutput=NULL,
+                            outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
+                            wiggleTrackStep=NULL,threshold=NULL,verbose=NULL,
+                            wgThresholdSet=NULL){
+    peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
+                        fragmentSize,featureLength,bedOutput,outputFormat, ploidyDir,
+                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
+    peakcalling$processing();
+    return(peakcalling)
+}
+
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
 #' @param seq_file A full path of the fa file(containing fa file). For single end, using a list; for paired end, using a list(length = 2).
 #' @param ref_file Character scalar. The path to the bowtie index and prefix to align against, in the form </path/to/index>/<prefix>.
@@ -60,8 +72,9 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-atacSam2Bed <- function(atacProc = NULL, samfile = NULL, bedfile = NULL){
-  tmp <- SamToBed$new(atacProc, samfile, bedfile)
+atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= NULL,
+                        samInput = NULL, bedOutput = NULL){
+  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput , bedOutput)
   tmp$processing()
   return(tmp)
 }

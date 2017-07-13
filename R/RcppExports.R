@@ -17,8 +17,16 @@ bowtie2Build <- function(argvs) {
     .Call('atacpipe_bowtie2Build', PACKAGE = 'atacpipe', argvs)
 }
 
+mergeFile <- function(destFile, fileList) {
+    invisible(.Call('atacpipe_mergeFile', PACKAGE = 'atacpipe', destFile, fileList))
+}
+
 R_sam2bed_wrapper <- function(argvs) {
     .Call('atacpipe_R_sam2bed_wrapper', PACKAGE = 'atacpipe', argvs)
+}
+
+R_sam2bed_merge_wrapper <- function(argvs, filterList) {
+    .Call('atacpipe_R_sam2bed_merge_wrapper', PACKAGE = 'atacpipe', argvs, filterList)
 }
 
 ChrDivi_wrapper <- function(argvs) {

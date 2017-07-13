@@ -6,10 +6,12 @@ SamToBam <-R6::R6Class(
       super$initialize("SamToBam",editable,list(arg1=atacProc))
       print("SamToBamInitCall")
       private$checkRequireParam()
-      if((!is.null(atacProc)) && (class(atacProc)[1] == "Mapping")){ # atacproc from mapping
+#      if((!is.null(atacProc)) && (class(atacProc)[1] == "Mapping")){ # atacproc from mapping
+      print(atacProc$getParam("samOutput"))
+      if((!is.null(atacProc)) ){
         private$paramlist[["samInput"]] <- atacProc$getParam("samOutput")
-      }else if((!is.null(atacProc)) && (class(atacProc)[1] != "Mapping")){ # atacproc not from mapping, error!
-        stop("Input class must be got from 'Mapping'!")
+#      }else if((!is.null(atacProc)) && (class(atacProc)[1] != "Mapping")){ # atacproc not from mapping, error!
+#        stop("Input class must be got from 'Mapping'!")
       }else if(is.null(atacProc)){ # input
         private$paramlist[["samInput"]] <- samfile
       }

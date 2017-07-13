@@ -19,7 +19,9 @@ GraphMng <- R6Class(
        "BowtieMapping", "SamToBam",
        "RemoveAdapter","Bowtie2Mapping",
        "Bowtie2Mapping","SamToBed",
-       "Bowtie2Mapping", "SamToBam"
+       "Bowtie2Mapping", "SamToBam",
+       "BamToBed","PeakCallingFseq",
+       "SamToBed","PeakCallingFseq"
 
       )
       private$graphDep1<-graph(edges = edges1)
