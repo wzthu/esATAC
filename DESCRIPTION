@@ -7,7 +7,7 @@ Author: Your Name
 Maintainer: Your Name <your@email.com>
 Description: One paragraph description of what the package does as one
         or more full sentences.
-Depends: R (>= 3.2.3), QuasR, Rsamtools
+Depends: R (>= 3.2.3), QuasR, Rsamtools, GenomicRanges
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
@@ -15,7 +15,8 @@ Imports: Rcpp (>= 0.12.11),
     R6,
     Rbowtie,
     QuasR,
-    rtracklayer
+    rtracklayer,
+    GenomicRanges
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
