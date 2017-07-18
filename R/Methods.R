@@ -161,6 +161,22 @@ atacCutSiteCount <- function(atacProc = NULL, CutSiteFile = NULL, MotifFile = NU
 }
 
 
+#' Find overlaps of the two bed files
+#' @param atacProc Do not use this parameter, we will add nore functions in the future!
+#' @param InputFile Input file path, the No.1-3 column is chromatin name, start cut site, end cut site.
+#' @param OutputFile The output path, an empty folder would be great.
+#' @param prefix Output file name prefix, e.g. prefix_chr*.bed, default "output".
+#' @export
+atacBedOverlaps <- function(atacProc = NULL, BedInput1 = NULL, BedInput2 = NULL, Output = NULL,
+                            n.col = NULL){
+  tmp <- BedOverlaps$new(atacProc, BedInput1, BedInput2, Output, n.col)
+  tmp$processing()
+  return(tmp)
+}
+
+
+
+
 atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
   renamer <- Renamer$new(NULL, fastqOutput1, fasqOutput2,NULL, NULL,editable=TRUE)
   return(renamer)

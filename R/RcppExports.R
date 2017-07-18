@@ -2,42 +2,42 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 removeAdapter <- function(argvs) {
-    .Call('atacpipe_removeAdapter', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_removeAdapter', PACKAGE = 'atacpipe', argvs)
 }
 
 renamer <- function(argvs) {
-    .Call('atacpipe_renamer', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_renamer', PACKAGE = 'atacpipe', argvs)
 }
 
 bowtie2Mapping <- function(argvs) {
-    .Call('atacpipe_bowtie2Mapping', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_bowtie2Mapping', PACKAGE = 'atacpipe', argvs)
 }
 
 bowtie2Build <- function(argvs) {
-    .Call('atacpipe_bowtie2Build', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_bowtie2Build', PACKAGE = 'atacpipe', argvs)
 }
 
 mergeFile <- function(destFile, fileList) {
-    invisible(.Call('atacpipe_mergeFile', PACKAGE = 'atacpipe', destFile, fileList))
+    invisible(.Call('_atacpipe_mergeFile', PACKAGE = 'atacpipe', destFile, fileList))
 }
 
 R_sam2bed_wrapper <- function(argvs) {
-    .Call('atacpipe_R_sam2bed_wrapper', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_R_sam2bed_wrapper', PACKAGE = 'atacpipe', argvs)
 }
 
 R_sam2bed_merge_wrapper <- function(argvs, filterList) {
-    .Call('atacpipe_R_sam2bed_merge_wrapper', PACKAGE = 'atacpipe', argvs, filterList)
+    .Call('_atacpipe_R_sam2bed_merge_wrapper', PACKAGE = 'atacpipe', argvs, filterList)
 }
 
 ChrDivi_wrapper <- function(argvs) {
-    .Call('atacpipe_ChrDivi_wrapper', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_ChrDivi_wrapper', PACKAGE = 'atacpipe', argvs)
 }
 
 CutCountPre_wrapper <- function(argvs) {
-    .Call('atacpipe_CutCountPre_wrapper', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_CutCountPre_wrapper', PACKAGE = 'atacpipe', argvs)
 }
 
 CutSiteCount_wrapper <- function(argvs) {
-    .Call('atacpipe_CutSiteCount_wrapper', PACKAGE = 'atacpipe', argvs)
+    .Call('_atacpipe_CutSiteCount_wrapper', PACKAGE = 'atacpipe', argvs)
 }
 
