@@ -109,13 +109,16 @@ Bowtie2Mapping <-R6Class(
             }
 
             if(is.null(bowtie2Index)){
-                private$paramlist[["bowtie2Index"]] <- getConfigure("bt2idx");
+                datadir<-.obtainConfigure("datadir");
+                genome<-.obtainConfigure("genome");
+                idxprefix<-paste0(datadir,"/",genome)
+                private$paramlist[["bowtie2Index"]] <- idxprefix;
             }else{
                 private$paramlist[["bowtie2Index"]] <- bowtie2Index;
             }
 
             if(is.null(threads)){
-                private$paramlist[["threads"]] <- getConfigure("threads");
+                private$paramlist[["threads"]] <- .obtainConfigure("threads");
             }else{
                 private$paramlist[["threads"]] <- as.numeric(threads)
             }
