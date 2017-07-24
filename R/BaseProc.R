@@ -17,6 +17,13 @@ BaseProc <- R6Class(
         if(!private$graphMng$checkRelation1(atacProcs[[1]]$getProcName(),procName)){
           stop(paste(atacProcs[[1]]$getProcName(),"is not valid input"))
         }
+      }else if(argSize>=2&&!is.null(atacProcs[[2]])){
+          if(!atacProcs[[2]]$isReady()){
+              stop(paste(atacProcs[[2]]$getProcName(),"is not ready"))
+          }
+          if(!private$graphMng$checkRelation2(atacProcs[[2]]$getProcName(),procName)){
+              stop(paste(atacProcs[[2]]$getProcName(),"is not valid input"))
+          }
       }
     },
     processing = function(){

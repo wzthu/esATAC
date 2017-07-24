@@ -21,15 +21,26 @@ GraphMng <- R6Class(
        "Bowtie2Mapping","SamToBed",
        "Bowtie2Mapping", "SamToBam",
        "BamToBed","PeakCallingFseq",
-       "SamToBed","PeakCallingFseq"
+       "SamToBed","PeakCallingFseq",
+       "PeakCallingFseq","BedOverlaps"
 
       )
       private$graphDep1<-graph(edges = edges1)
       private$vtx1<-vertex.attributes(private$graphDep1)
+      edges2<-c(
+          "PeakCallingFseq","BedOverlaps"
+      )
+      private$graphDep2<-graph(edges = edges1)
+      private$vtx2<-vertex.attributes(private$graphDep2)
+
     },
     checkRelation1 = function(resultProcName,procName){
       return(are.connected(private$graphDep1,resultProcName,procName))
     },
+    checkRelation2 = function(resultProcName,procName){
+        return(are.connected(private$graphDep2,resultProcName,procName))
+    },
+
     printGraph = function(){
       #plot(private$graphDep1, layout=layout.reingold.tilford)
       plot(private$graphDep1)
@@ -85,8 +96,9 @@ GraphMng <- R6Class(
   ),
   private = list(
     graphDep1=NULL,
-    vtx1=NULL
-    #graphDep2,
+    vtx1=NULL,
+    graphDep2=NULL,
+    vtx2=NULL
     #graphDep3,
   )
 
