@@ -33,7 +33,7 @@ PeakCallingFseq <-R6Class(
             private$paramlist[["genomicReadsCount"]] <- genomicReadsCount;
             private$paramlist[["fragmentSize"]] <- fragmentSize;
             private$paramlist[["featureLength"]] <- featureLength;
-            private$paramlist[["outputFormat"]] <- outputFormat;
+            private$paramlist[["outputFormat"]] <- outputFormat[1];
             private$paramlist[["ploidyDir"]] <- ploidyDir;
             private$paramlist[["wiggleTrackStep"]] <- wiggleTrackStep;
             private$paramlist[["threshold"]] <- threshold;
@@ -66,7 +66,7 @@ PeakCallingFseq <-R6Class(
 
 
         peakfiles <- sort(list.files(private$paramlist[["outputDir"]]))
-        peakfiles <- paste(private$paramlist[["outputDir"]],"/",peakfiles,sep = "")
+        peakfiles <- paste0(private$paramlist[["outputDir"]],"/",peakfiles)
         mergeFile(private$paramlist[["bedOutput"]],peakfiles)
         unlink(private$paramlist[["outputDir"]],recursive = TRUE,force = TRUE)
         private$finish <- TRUE

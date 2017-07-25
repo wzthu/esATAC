@@ -42,7 +42,7 @@ atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
 }
 
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
-                            fragmentSize=NULL,featureLength=NULL,bedOutput=NULL,
+                            fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                             outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
                             wiggleTrackStep=NULL,threshold=NULL,verbose=NULL,
                             wgThresholdSet=NULL){
