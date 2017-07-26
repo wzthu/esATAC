@@ -108,7 +108,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
     SortBed* sortBed;
   fp = fopen(this -> ifilePath, "r");
   if(unique||sort){
-      sortBed = new SortBed(this -> ofilePath,true,MAX_BUFFER_LINE);
+      sortBed = new SortBed(this -> ofilePath,unique,MAX_BUFFER_LINE);
   }else{
     fp_out = fopen(this -> ofilePath, "w");
   }
