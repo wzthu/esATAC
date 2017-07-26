@@ -64,10 +64,18 @@ PeakCallingFseq <-R6Class(
                                    verbose=private$paramlist[["verbose"]],
                                    wgThresholdSet=private$paramlist[["wgThresholdSet"]]);
 
-
-        peakfiles <- sort(list.files(private$paramlist[["outputDir"]]))
+        filename<-list.files(private$paramlist[["outputDir"]])
+        for(i in 1:length(filename)){
+            filename[i]<-strsplit(filename[i],split="\\.")[[1]][1]
+        }
+        peakfiles <- sort(filename)
+        peakfiles<-paste0(peakfiles,".bed")
         peakfiles <- paste0(private$paramlist[["outputDir"]],"/",peakfiles)
-        mergeFile(private$paramlist[["bedOutput"]],peakfiles)
+        file.create(private$paramlist[["bedOutput"]])
+        for(i in 1:length(peakfiles)){
+            file.append(private$paramlist[["bedOutput"]],peakfiles[i])
+        }
+        #mergeFile(private$paramlist[["bedOutput"]],peakfiles)
         unlink(private$paramlist[["outputDir"]],recursive = TRUE,force = TRUE)
         private$finish <- TRUE
         },
