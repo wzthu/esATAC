@@ -22,9 +22,11 @@ Authors: Drs Yang Liao and Wei Shi
 #include <stdlib.h>
 #include <string.h>
 #include "sam2bed.h"
+#include "BedLine.h"
+#include "SortBed.h"
 
 #define SAM_MAX_LINE_LENGTH 10000
-
+#define MAX_BUFFER_LINE  100000000
 SamToBed::SamToBed(char * ifilePath, char * ofilePath){
   this -> ifilePath = ifilePath;
   this -> ofilePath = ofilePath;
@@ -100,13 +102,17 @@ int SamToBed::sam2bed() {
   return 0;
 }
 
-int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int char_filter_size) {
+int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int char_filter_size,bool sort,bool unique) {
 
-  FILE *fp, *fp_out;
-
+  FILE *fp, *fp_out=NULL;
+    SortBed* sortBed;
   fp = fopen(this -> ifilePath, "r");
-  fp_out = fopen(this -> ofilePath, "w");
-
+  if(unique||sort){
+      sortBed = new SortBed(this -> ofilePath,MAX_BUFFER_LINE);
+  }else{
+    fp_out = fopen(this -> ofilePath, "w");
+  }
+  char bedlineBuffer[SAM_MAX_LINE_LENGTH];
   char * line = (char*)calloc(SAM_MAX_LINE_LENGTH, 1);
   char * line1 = (char*)calloc(SAM_MAX_LINE_LENGTH, 1);
   char * tok = (char *)"start";
@@ -198,13 +204,20 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 				chr_start1 += neg_offset;
 				chr_end = chr_start1 + getReadsLen(CIGAR);
 			  }
-			  fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
+			  if(fp_out){
+			      fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
+			  }else{
+			      sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
+			      sortBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
+			  }
+
 			  first = true;
 			}
 
 		}
 
   }
+
 
   if (line){
       free(line);
@@ -215,7 +228,13 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 
 
   fclose(fp);
-  fclose(fp_out);
+ if(fp_out){
+     fclose(fp_out);
+ }else{
+     sortBed->mergeBed();
+     delete sortBed;
+ }
+
 
   return 0;
 }
