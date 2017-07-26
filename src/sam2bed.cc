@@ -21,7 +21,11 @@ Authors: Drs Yang Liao and Wei Shi
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef PLF_SYS_WIN
 #include <regex>
+#elif PLF_SYS_LINUX
+#include <regex.h>
+#endif
 #include "sam2bed.h"
 #include "BedLine.h"
 #include "SortBed.h"
@@ -147,7 +151,16 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
   }else{
       pattern="";
   }
+
+#ifdef PLF_SYS_WIN
   std::regex re(pattern);
+#elif PLF_SYS_LINUX
+  const char * patt = pattern.c_str();
+  regex_t reg;
+  const size_t nmatch = 1;
+  regmatch_t pm[1];
+  regcomp(&reg,patt,REG_EXTENDED|REG_NOSUB);
+#endif
   //std::string pattern1("(chrM|chrUn.*|.*random.*)");
   //std::regex re(pattern);
   //std::string teststr="chr9_gl000199_random";
@@ -170,9 +183,16 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
     			flag = atoi(strtok(NULL, "\t"));
 
     			chr = strtok(NULL, "\t");
+#ifdef PLF_SYS_WIN
     			if(std::regex_match(std::string(chr), re)){
     			    continue;
     			}
+#elif PLF_SYS_LINUX
+    			if(char_filter_size>=1&&regexec(&reg,chr,nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
+    			    continue;
+    			}
+#endif
+
     			//filted = false;
 
     			//for(int i = 0; i < char_filter_size; i++ ){
