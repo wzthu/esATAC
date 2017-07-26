@@ -15,5 +15,7 @@ public:
     BedLine();
     ~BedLine(void);
     bool operator () (const BedLine *a,const BedLine *b) const;
+    bool operator == (const BedLine & bedLine) const;
+    bool operator != (const BedLine & bedLine) const;
 };
 #endif

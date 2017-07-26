@@ -7,40 +7,43 @@
 #include <iostream>
 
 
-SortBed::SortBed(const char * outputpath,int  maxline)
+SortBed::SortBed(const char * output_path, bool unique,int  max_line)
 {
+    this->unique = unique;
     tmp_count = 0;
-    this->output_path = outputpath;
-    this->max_line = maxline;
+    this->output_path = output_path;
+    this->max_line = max_line;
 
 
-    this->tmp_prefix = outputpath;
+    this->tmp_prefix = output_path;
 
 }
 
-SortBed::SortBed(const char * outputpath,int  maxline,const char * tmpprefix)
+SortBed::SortBed(const char * output_path, bool unique,int  max_line,const char * tmp_prefix)
 {
+    this->unique = unique;
     tmp_count = 0;
-    this->output_path = outputpath;
-    this->max_line = maxline;
+    this->output_path = output_path;
+    this->max_line = max_line;
 
 
-    this->tmp_prefix = tmpprefix ;
+    this->tmp_prefix = tmp_prefix ;
 
 }
 
-SortBed::SortBed(const char * outputpath, const char * inputpath,int maxline)
+SortBed::SortBed(const char * output_path, bool unique, const char * input_path,int max_line)
 {
+    this->unique = unique;
     tmp_count = 0;
-    this->output_path = outputpath;
-    this->max_line = maxline;
+    this->output_path = output_path;
+    this->max_line = max_line;
 
 
-    this->tmp_prefix = outputpath;
+    this->tmp_prefix = output_path;
 
 
-    this->input_path = inputpath;
-    std::ifstream ifs(inputpath);
+    this->input_path = input_path;
+    std::ifstream ifs(input_path);
     std::string line;
 
 
@@ -52,19 +55,20 @@ SortBed::SortBed(const char * outputpath, const char * inputpath,int maxline)
     mergeBed();
 }
 
-SortBed::SortBed(const char * outputpath, const char * inputpath,int maxline,const char * tmpprefix)
+SortBed::SortBed(const char * output_path, bool unique, const char * input_path,int max_line,const char * tmp_prefix)
 {
+    this->unique = unique;
     tmp_count = 0;
-    this->output_path = outputpath;
-    this->max_line = maxline;
+    this->output_path = output_path;
+    this->max_line = max_line;
 
 
-    this->tmp_prefix = tmpprefix ;
+    this->tmp_prefix = tmp_prefix ;
 
 
 
-    this->input_path = inputpath;
-    std::ifstream ifs(inputpath);
+    this->input_path = input_path;
+    std::ifstream ifs(input_path);
     std::string line;
 
    // int count=0;
@@ -129,23 +133,50 @@ void SortBed::mergeBed(){
         bed_buf.push(new BedLine(line,i));
     }
     BedLine * bedLine = NULL;
-    while(!bed_buf.empty()){
-        bedLine = bed_buf.top();
-        ofs << bedLine->chr << '\t';
-        ofs << bedLine->start << '\t';
-        ofs << bedLine->end;
-        ofs << bedLine->extend << std::endl;
-       // std::cout<<bedLine->extend<<std::endl;
-        bed_buf.pop();
-        if(std::getline(*ifss[bedLine->tag],line)){
-            bed_buf.push(new BedLine(line,bedLine->tag));
-        }else{
-            ifss[bedLine->tag]->close();
-            delete ifss[bedLine->tag];
-            ifss.erase(bedLine->tag);
+
+    if(unique){
+        BedLine preLine = BedLine("chrStart",-1,-1,"");
+        BedLine * oldLine = & preLine;
+        while(!bed_buf.empty()){
+            bedLine = bed_buf.top();
+            if((*bedLine)!=(*oldLine)){
+                ofs << bedLine->chr << '\t';
+                ofs << bedLine->start << '\t';
+                ofs << bedLine->end;
+                ofs << bedLine->extend << std::endl;
+            }
+            oldLine = bedLine;
+            // std::cout<<bedLine->extend<<std::endl;
+            bed_buf.pop();
+            if(std::getline(*ifss[bedLine->tag],line)){
+                bed_buf.push(new BedLine(line,bedLine->tag));
+            }else{
+                ifss[bedLine->tag]->close();
+                delete ifss[bedLine->tag];
+                ifss.erase(bedLine->tag);
+            }
+            delete bedLine;
         }
-        delete bedLine;
+    }else{
+        while(!bed_buf.empty()){
+            bedLine = bed_buf.top();
+            ofs << bedLine->chr << '\t';
+            ofs << bedLine->start << '\t';
+            ofs << bedLine->end;
+            ofs << bedLine->extend << std::endl;
+            // std::cout<<bedLine->extend<<std::endl;
+            bed_buf.pop();
+            if(std::getline(*ifss[bedLine->tag],line)){
+                bed_buf.push(new BedLine(line,bedLine->tag));
+            }else{
+                ifss[bedLine->tag]->close();
+                delete ifss[bedLine->tag];
+                ifss.erase(bedLine->tag);
+            }
+            delete bedLine;
+        }
     }
+
     ofs.flush();
     ofs.close();
     for(int i = 0; i < tmp_count; i++){

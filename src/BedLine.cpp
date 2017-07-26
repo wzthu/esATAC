@@ -50,3 +50,16 @@ bool BedLine::operator () (const BedLine *a,const BedLine *b) const{
         return true;
     }
 }
+
+
+bool BedLine::operator == (const BedLine & bedLine) const{
+    return bedLine.chr == this->chr &&
+       bedLine.start == this->start &&
+       bedLine.end == this->end;
+}
+
+bool BedLine::operator != (const BedLine & bedLine) const{
+    return !(bedLine.chr == this->chr &&
+       bedLine.start == this->start &&
+       bedLine.end == this->end);
+}
