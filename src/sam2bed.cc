@@ -21,6 +21,7 @@ Authors: Drs Yang Liao and Wei Shi
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <regex>
 #include "sam2bed.h"
 #include "BedLine.h"
 #include "SortBed.h"
@@ -130,91 +131,121 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
   bool first = true;
   bool filted = false;
 
-  while (true)
-  {
-		if(first){
-			if(!fgets(line, SAM_MAX_LINE_LENGTH, fp)){
-				break;
-			}
-			if (line[0] == '@'){
-				continue;
-			}
-			tok = strtok(line, "\t");
-			flag = atoi(strtok(NULL, "\t"));
+  std::string pattern;
+  if(char_filter_size>=1){
 
-			chr = strtok(NULL, "\t");
-			filted = false;
+      pattern=chrList[0];
+      if(char_filter_size>1){
+          std::stringstream ss;
+          ss << pattern ;
+          for(int i = 1; i < char_filter_size; i++ ){
+              ss << "|" << chrList[i] ;
+          }
+          ss >> pattern;
+      }
 
-			for(int i = 0; i < char_filter_size; i++ ){
-			    if(!strcmp(chr,chrList[i])){
-			        filted = true;
-			        break;
-			    }
-			}
-			if(filted){
-			    continue;
-			}
-			if (chr[0] != '*')
-			{
-			  chr_start = atoi(strtok(NULL, "\t")) - 1;
-			  //chr_end = chr_start + readlen;
-			  mqs = atoi(strtok(NULL, "\t"));
+  }else{
+      pattern="";
+  }
+  std::regex re(pattern);
+  //std::string pattern1("(chrM|chrUn.*|.*random.*)");
+  //std::regex re(pattern);
+  //std::string teststr="chr9_gl000199_random";
+  //if(std::regex_match(teststr, re)){
+//      std::cout <<"match"<<std::endl;
+ // } else{
+  //    std::cout << "not match"<<std::endl;
+  //}
+  //std::cout.flush();
+      while (true)
+      {
+    		if(first){
+    			if(!fgets(line, SAM_MAX_LINE_LENGTH, fp)){
+    				break;
+    			}
+    			if (line[0] == '@'){
+    				continue;
+    			}
+    			tok = strtok(line, "\t");
+    			flag = atoi(strtok(NULL, "\t"));
 
-			  if ((flag & 0x10) == 0)
-			  {
-				strand = '+';
-				chr_start += pos_offset;
-			  }
-			  else
-			  {
-				strand = '-';
-				chr_start += neg_offset;
-			  }
-			  CIGAR = strtok(NULL, "\t");
-			  chr_end = chr_start + getReadsLen(CIGAR);
+    			chr = strtok(NULL, "\t");
+    			if(std::regex_match(std::string(chr), re)){
+    			    continue;
+    			}
+    			//filted = false;
 
-			}
-			first = false;
-		}else{
-			if(!fgets(line1, SAM_MAX_LINE_LENGTH, fp)){
-				break;
-			}
-			tok1 = strtok(line1, "\t");
+    			//for(int i = 0; i < char_filter_size; i++ ){
+    			//    if(!strcmp(chr,chrList[i])){
+    			//        filted = true;
+    			//        break;
+    			//    }
+    			//}
+    			//if(filted){
+    			//    continue;
+    			//}
+    			if (chr[0] != '*')
+    			{
+    			  chr_start = atoi(strtok(NULL, "\t")) - 1;
+    			  //chr_end = chr_start + readlen;
+    			  mqs = atoi(strtok(NULL, "\t"));
 
-			if(strcmp(tok1,tok)){
-				first = true;
-				continue;
-			}
-			flag = atoi(strtok(NULL, "\t"));
+    			  if ((flag & 0x10) == 0)
+    			  {
+    				strand = '+';
+    				chr_start += pos_offset;
+    			  }
+    			  else
+    			  {
+    				strand = '-';
+    				chr_start += neg_offset;
+    			  }
+    			  CIGAR = strtok(NULL, "\t");
+    			  chr_end = chr_start + getReadsLen(CIGAR);
 
-			chr = strtok(NULL, "\t");
-			if (chr[0] != '*')
-			{
-			  chr_start1 = atoi(strtok(NULL, "\t")) - 1;
+    			}
+    			first = false;
+    		}else{
+    			if(!fgets(line1, SAM_MAX_LINE_LENGTH, fp)){
+    				break;
+    			}
+    			tok1 = strtok(line1, "\t");
 
-			  mqs = atoi(strtok(NULL, "\t"));
-			  CIGAR = strtok(NULL, "\t");
-			  if ((flag & 0x10) == 0)
-			  {
-				chr_start1 += pos_offset;
-				chr_start = chr_start1;
-			  }
-			  else
-			  {
-				chr_start1 += neg_offset;
-				chr_end = chr_start1 + getReadsLen(CIGAR);
-			  }
-			  if(fp_out){
-			      fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
-			  }else{
-			      sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
-			      sortBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
-			  }
+    			if(strcmp(tok1,tok)){
+    				first = true;
+    				continue;
+    			}
+    			flag = atoi(strtok(NULL, "\t"));
 
-			  first = true;
-			}
+    			chr = strtok(NULL, "\t");
+    			if (chr[0] != '*')
+    			{
+    			  chr_start1 = atoi(strtok(NULL, "\t")) - 1;
 
-		}
+    			  mqs = atoi(strtok(NULL, "\t"));
+    			  CIGAR = strtok(NULL, "\t");
+    			  if ((flag & 0x10) == 0)
+    			  {
+    				chr_start1 += pos_offset;
+    				chr_start = chr_start1;
+    			  }
+    			  else
+    			  {
+    				chr_start1 += neg_offset;
+    				chr_end = chr_start1 + getReadsLen(CIGAR);
+    			  }
+    			  if(fp_out){
+    			      fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
+    			  }else{
+    			      sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
+    			      sortBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
+    			  }
+
+    			  first = true;
+    			}
+
+    		}
+
 
   }
 
