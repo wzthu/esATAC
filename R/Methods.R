@@ -73,8 +73,9 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 #' @param readlen reads length
 #' @export
 atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= NULL,
-                        samInput = NULL, bedOutput = NULL, sortBed = TRUE, uniqueBed = TRUE){
-  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput , bedOutput , sortBed , uniqueBed)
+                        samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
+                        saveExtLen = FALSE,uniqueBed = TRUE){
+  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput, bedOutput, sortBed, uniqueBed, minFregLen, maxFregLen, saveExtLen)
   tmp$processing()
   return(tmp)
 }

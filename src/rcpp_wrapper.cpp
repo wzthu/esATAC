@@ -102,6 +102,9 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
   int neg_offset = Rcpp::as<int>(argvs["negOffset"]);
   bool sort = Rcpp::as<bool>(argvs["sort"]);
   bool unique = Rcpp::as<bool>(argvs["unique"]);
+  int min_freg_len = Rcpp::as<int>(argvs["minFregLen"]);
+  int max_freg_len = Rcpp::as<int>(argvs["maxFregLen"]);
+  bool save_ext_len = Rcpp::as<bool>(argvs["saveExtLen"]);
 
   std::cout << "22222" << std::endl;
   SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
@@ -134,7 +137,7 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
       }
   }
 
-  int t = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique);
+  int t = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
 
   if(filters){
       for(int i=0;i<filterSize;i++){

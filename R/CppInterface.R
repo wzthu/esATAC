@@ -3,10 +3,10 @@
   return(renamer(argv));
 }
 
-.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList)
+.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen)
 {
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
-                 sort = sortBed,unique = uniqueBed)
+                 sort = sortBed,unique = uniqueBed, minFregLen = minFregLen, maxFregLen = maxFregLen, saveExtLen = saveExtLen)
     print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");
