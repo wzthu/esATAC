@@ -22,7 +22,8 @@ GraphMng <- R6Class(
        "Bowtie2Mapping", "SamToBam",
        "BamToBed","PeakCallingFseq",
        "SamToBed","PeakCallingFseq",
-       "PeakCallingFseq","BedOverlaps"
+       "PeakCallingFseq","BedOverlaps",
+       "SamToBed","ReadsLenDistribute"
 
       )
       private$graphDep1<-graph(edges = edges1)
