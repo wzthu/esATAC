@@ -10,6 +10,7 @@
 #include "BedLine.h"
 #include "SortBed.h"
 #include <iostream>
+#include <sstream>
 #define SAM_MAX_LINE_LENGTH 10000
 #define MAX_BUFFER_LINE  100000000
 SamToBed::SamToBed(char * ifilePath, char * ofilePath){
