@@ -1,30 +1,17 @@
-/***************************************************************
-
- The Subread and Rsubread software packages are free
-software packages:
-
-you can redistribute it and/or modify it under the terms
-of the GNU General Public License as published by the
-Free Software Foundation, either version 3 of the License,
-or (at your option) any later version.
-
-Subread is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty
-of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-
-See the GNU General Public License for more details.
-
-Authors: Drs Yang Liao and Wei Shi
-
-***************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef PLF_SYS_WIN
+#include <regex>
+#elif PLF_SYS_LINUX
+#include <regex.h>
+#endif
 #include "sam2bed.h"
-
+#include "BedLine.h"
+#include "SortBed.h"
+#include <iostream>
 #define SAM_MAX_LINE_LENGTH 10000
-
+#define MAX_BUFFER_LINE  100000000
 SamToBed::SamToBed(char * ifilePath, char * ofilePath){
   this -> ifilePath = ifilePath;
   this -> ofilePath = ofilePath;
@@ -100,13 +87,26 @@ int SamToBed::sam2bed() {
   return 0;
 }
 
-int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int char_filter_size) {
+int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int char_filter_size,
+                            bool sort,bool unique, int min_freg_len, int max_freg_len, bool save_ext_len) {
 
-  FILE *fp, *fp_out;
-
+  FILE *fp, *fp_out=NULL;
+    SortBed* sortBed;
+    SortBed* sortExtBed;
   fp = fopen(this -> ifilePath, "r");
-  fp_out = fopen(this -> ofilePath, "w");
-
+  int max_buffer_line = MAX_BUFFER_LINE;
+  if(save_ext_len){
+      max_buffer_line = MAX_BUFFER_LINE / 2;
+  }
+  if(unique||sort){
+      sortBed = new SortBed(this -> ofilePath,unique,max_buffer_line);
+  }else{
+    fp_out = fopen(this -> ofilePath, "w");
+  }
+  if(save_ext_len){
+      sortExtBed = new SortBed((std::string(this -> ofilePath)+std::string(".ext")).c_str(),unique,max_buffer_line);
+  }
+  char bedlineBuffer[SAM_MAX_LINE_LENGTH];
   char * line = (char*)calloc(SAM_MAX_LINE_LENGTH, 1);
   char * line1 = (char*)calloc(SAM_MAX_LINE_LENGTH, 1);
   char * tok = (char *)"start";
@@ -122,89 +122,148 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
   char *CIGAR = NULL;
 
   bool first = true;
-  bool filted = false;
+  int freg_len;
 
-  while (true)
-  {
-		if(first){
-			if(!fgets(line, SAM_MAX_LINE_LENGTH, fp)){
-				break;
-			}
-			if (line[0] == '@'){
-				continue;
-			}
-			tok = strtok(line, "\t");
-			flag = atoi(strtok(NULL, "\t"));
+  std::string pattern;
+  if(char_filter_size>=1){
 
-			chr = strtok(NULL, "\t");
-			filted = false;
+      pattern=chrList[0];
+      if(char_filter_size>1){
+          std::stringstream ss;
+          ss << pattern ;
+          for(int i = 1; i < char_filter_size; i++ ){
+              ss << "|" << chrList[i] ;
+          }
+          ss >> pattern;
+      }
 
-			for(int i = 0; i < char_filter_size; i++ ){
-			    if(!strcmp(chr,chrList[i])){
-			        filted = true;
-			        break;
-			    }
-			}
-			if(filted){
-			    continue;
-			}
-			if (chr[0] != '*')
-			{
-			  chr_start = atoi(strtok(NULL, "\t")) - 1;
-			  //chr_end = chr_start + readlen;
-			  mqs = atoi(strtok(NULL, "\t"));
+  }else{
+      pattern="";
+  }
 
-			  if ((flag & 0x10) == 0)
-			  {
-				strand = '+';
-				chr_start += pos_offset;
-			  }
-			  else
-			  {
-				strand = '-';
-				chr_start += neg_offset;
-			  }
-			  CIGAR = strtok(NULL, "\t");
-			  chr_end = chr_start + getReadsLen(CIGAR);
+#ifdef PLF_SYS_WIN
+  std::regex re(pattern);
+#elif PLF_SYS_LINUX
+  const char * patt = pattern.c_str();
+  regex_t reg;
+  const size_t nmatch = 1;
+  regmatch_t pm[1];
+  regcomp(&reg,patt,REG_EXTENDED|REG_NOSUB);
+#endif
+  //std::string pattern1("(chrM|chrUn.*|.*random.*)");
+  //std::regex re(pattern);
+  //std::string teststr="chr9_gl000199_random";
+  //if(std::regex_match(teststr, re)){
+//      std::cout <<"match"<<std::endl;
+ // } else{
+  //    std::cout << "not match"<<std::endl;
+  //}
+  //std::cout.flush();
+      while (true)
+      {
+    		if(first){
+    			if(!fgets(line, SAM_MAX_LINE_LENGTH, fp)){
+    				break;
+    			}
+    			if (line[0] == '@'){
+    				continue;
+    			}
+    			tok = strtok(line, "\t");
+    			flag = atoi(strtok(NULL, "\t"));
 
-			}
-			first = false;
-		}else{
-			if(!fgets(line1, SAM_MAX_LINE_LENGTH, fp)){
-				break;
-			}
-			tok1 = strtok(line1, "\t");
+    			chr = strtok(NULL, "\t");
+#ifdef PLF_SYS_WIN
+    			if(std::regex_match(std::string(chr), re)){
+    			    continue;
+    			}
+#elif PLF_SYS_LINUX
+    			if(char_filter_size>=1&&regexec(&reg,chr,nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
+    			    continue;
+    			}
+#endif
 
-			if(strcmp(tok1,tok)){
-				first = true;
-				continue;
-			}
-			flag = atoi(strtok(NULL, "\t"));
+    			//filted = false;
 
-			chr = strtok(NULL, "\t");
-			if (chr[0] != '*')
-			{
-			  chr_start1 = atoi(strtok(NULL, "\t")) - 1;
+    			//for(int i = 0; i < char_filter_size; i++ ){
+    			//    if(!strcmp(chr,chrList[i])){
+    			//        filted = true;
+    			//        break;
+    			//    }
+    			//}
+    			//if(filted){
+    			//    continue;
+    			//}
+    			if (chr[0] != '*')
+    			{
+    			  chr_start = atoi(strtok(NULL, "\t")) - 1;
+    			  //chr_end = chr_start + readlen;
+    			  mqs = atoi(strtok(NULL, "\t"));
 
-			  mqs = atoi(strtok(NULL, "\t"));
-			  CIGAR = strtok(NULL, "\t");
-			  if ((flag & 0x10) == 0)
-			  {
-				chr_start1 += pos_offset;
-				chr_start = chr_start1;
-			  }
-			  else
-			  {
-				chr_start1 += neg_offset;
-				chr_end = chr_start1 + getReadsLen(CIGAR);
-			  }
-			  fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
-			  first = true;
-			}
+    			  if ((flag & 0x10) == 0)
+    			  {
+    				strand = '+';
+    				chr_start += pos_offset;
+    			  }
+    			  else
+    			  {
+    				strand = '-';
+    				chr_start += neg_offset;
+    			  }
+    			  CIGAR = strtok(NULL, "\t");
+    			  chr_end = chr_start + getReadsLen(CIGAR);
 
-		}
+    			}
+    			first = false;
+    		}else{
+    			if(!fgets(line1, SAM_MAX_LINE_LENGTH, fp)){
+    				break;
+    			}
+    			tok1 = strtok(line1, "\t");
+
+    			if(strcmp(tok1,tok)){
+    				first = true;
+    				continue;
+    			}
+    			flag = atoi(strtok(NULL, "\t"));
+
+    			chr = strtok(NULL, "\t");
+    			if (chr[0] != '*')
+    			{
+    			  chr_start1 = atoi(strtok(NULL, "\t")) - 1;
+
+    			  mqs = atoi(strtok(NULL, "\t"));
+    			  CIGAR = strtok(NULL, "\t");
+    			  if ((flag & 0x10) == 0)
+    			  {
+    				chr_start1 += pos_offset;
+    				chr_start = chr_start1;
+    			  }
+    			  else
+    			  {
+    				chr_start1 += neg_offset;
+    				chr_end = chr_start1 + getReadsLen(CIGAR);
+    			  }
+    			  freg_len=chr_end-chr_start;
+
+    			  if(freg_len>=min_freg_len&&freg_len<=max_freg_len){
+        			  if(fp_out){
+        			      fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
+        			  }else{
+        			      sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
+        			      sortBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
+        			  }
+    			  }else if(save_ext_len){
+    			      sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
+    			      sortExtBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
+    			  }
+    			  first = true;
+    			}
+
+    		}
+
 
   }
+
 
   if (line){
       free(line);
@@ -215,7 +274,21 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 
 
   fclose(fp);
-  fclose(fp_out);
+ if(fp_out){
+     fclose(fp_out);
+ }else{
+     sortBed->mergeBed();
+     delete sortBed;
+ }
+ if(sortExtBed){
+     sortExtBed->mergeBed();
+     delete sortExtBed;
+ }
+ std::cout<<"finish"<<std::endl;
+
+#ifdef PLF_SYS_LINUX
+ regfree(&reg);
+#endif
 
   return 0;
 }

@@ -15,7 +15,7 @@
   ),
   private = list(
     configList=list(threads=1,tmpdir=NULL),
-    validAttr=list(threads="numeric",tmpdir="character"),
+    validAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character"),
     isValidAttr=function(item){
       if(is.null(private$validAttr[[item]])){
         stop(paste(item,"is not a attribute"))
@@ -26,7 +26,10 @@
       if(!is.null(val)&&private$validAttr[[item]]!=mode(val)){
         stop(paste(item,"is requied to be",private$validAttr[[item]],",\"",val,"\" is ",mode(val)))
       }
-      if(item=="thread"||item=="datadir"){
+      if(item=="thread"&&is.null(val)){
+          stop("thread can not be NULL");
+      }
+      if(item=="datadir"){
         private$checkPathExist(val)
       }
       if(item=="genome"){
@@ -60,12 +63,21 @@ getAllConfigure<-function(){
   .configObj$getAllConfigure();
 }
 
-getConfigure <- function(item = c("threads","tmpdir","datadir")){
-  .configObj$getConfigure(item);
+getConfigure <- function(item = c("threads","tmpdir","datadir","genome")){
+  return(.configObj$getConfigure(item));
 }
 
-setConfigure<- function(item = c("threads","tmpdir","datadir"),val){
+setConfigure<- function(item = c("threads","tmpdir","datadir","genome"),val){
   .configObj$setConfigure(item,val);
+}
+
+.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome")){
+    val<-.configObj$getConfigure(item);
+    if(is.null(val)){
+        stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))
+    }else{
+        return(val)
+    }
 }
 
 

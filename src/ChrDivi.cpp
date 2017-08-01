@@ -45,7 +45,7 @@ int ChrInfoDivi::DoDivi()
 	ofstream chYO((this -> readsOpath + this -> Outputname + "_chrY.bed").c_str(), ios::out);
 
 	int MAX_LINE_LENGTH = 100000;
-	char line[MAX_LINE_LENGTH] = {0};
+	char line[MAX_LINE_LENGTH] ;
 	while(readsifile.getline(line, sizeof(line)))
 	{
 		string tmp_line = line;

@@ -33,7 +33,7 @@ PeakCallingFseq <-R6Class(
             private$paramlist[["genomicReadsCount"]] <- genomicReadsCount;
             private$paramlist[["fragmentSize"]] <- fragmentSize;
             private$paramlist[["featureLength"]] <- featureLength;
-            private$paramlist[["outputFormat"]] <- outputFormat;
+            private$paramlist[["outputFormat"]] <- outputFormat[1];
             private$paramlist[["ploidyDir"]] <- ploidyDir;
             private$paramlist[["wiggleTrackStep"]] <- wiggleTrackStep;
             private$paramlist[["threshold"]] <- threshold;
@@ -64,10 +64,18 @@ PeakCallingFseq <-R6Class(
                                    verbose=private$paramlist[["verbose"]],
                                    wgThresholdSet=private$paramlist[["wgThresholdSet"]]);
 
-
-        peakfiles <- sort(list.files(private$paramlist[["outputDir"]]))
-        peakfiles <- paste(private$paramlist[["outputDir"]],"/",peakfiles,sep = "")
-        mergeFile(private$paramlist[["bedOutput"]],peakfiles)
+        filename<-list.files(private$paramlist[["outputDir"]])
+        for(i in 1:length(filename)){
+            filename[i]<-strsplit(filename[i],split="\\.")[[1]][1]
+        }
+        peakfiles <- sort(filename)
+        peakfiles<-paste0(peakfiles,".bed")
+        peakfiles <- paste0(private$paramlist[["outputDir"]],"/",peakfiles)
+        file.create(private$paramlist[["bedOutput"]])
+        for(i in 1:length(peakfiles)){
+            file.append(private$paramlist[["bedOutput"]],peakfiles[i])
+        }
+        #mergeFile(private$paramlist[["bedOutput"]],peakfiles)
         unlink(private$paramlist[["outputDir"]],recursive = TRUE,force = TRUE)
         private$finish <- TRUE
         },

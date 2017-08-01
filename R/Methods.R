@@ -42,9 +42,9 @@ atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
 }
 
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
-                            fragmentSize=NULL,featureLength=NULL,bedOutput=NULL,
+                            fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                             outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
-                            wiggleTrackStep=NULL,threshold=NULL,verbose=NULL,
+                            wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                             wgThresholdSet=NULL){
     peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
                         fragmentSize,featureLength,bedOutput,outputFormat, ploidyDir,
@@ -73,8 +73,9 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 #' @param readlen reads length
 #' @export
 atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= NULL,
-                        samInput = NULL, bedOutput = NULL){
-  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput , bedOutput)
+                        samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
+                        saveExtLen = FALSE,uniqueBed = TRUE){
+  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput, bedOutput, sortBed, uniqueBed, minFregLen, maxFregLen, saveExtLen)
   tmp$processing()
   return(tmp)
 }
