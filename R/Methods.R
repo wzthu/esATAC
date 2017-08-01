@@ -53,6 +53,12 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
     return(peakcalling)
 }
 
+atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
+    distr<-ReadsLenDistribute$new(atacProc,reportPrefix,bedInput)
+    distr$processing();
+    return(distr)
+}
+
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
 #' @param seq_file A full path of the fa file(containing fa file). For single end, using a list; for paired end, using a list(length = 2).
 #' @param ref_file Character scalar. The path to the bowtie index and prefix to align against, in the form </path/to/index>/<prefix>.
