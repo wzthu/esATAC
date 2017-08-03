@@ -8,7 +8,7 @@ private:
     std::string input_path;
     std::string output_path;
     std::string tmp_prefix;
-    std::priority_queue<BedLine*,std::vector<BedLine*>,BedLine> bed_buf;
+    std::priority_queue<BedLine,std::vector<BedLine>,std::less<BedLine>> bed_buf;
     int max_line;
     int tmp_count;
     bool unique;

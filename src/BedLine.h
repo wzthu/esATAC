@@ -14,7 +14,8 @@ public:
     BedLine(const char* chr, int start, int end, const char* extend, int tag = 0);
     BedLine();
     ~BedLine(void);
-    bool operator () (const BedLine *a,const BedLine *b) const;
+    //bool operator () (const BedLine *a,const BedLine *b) const;
+    bool operator < (const BedLine &b) const;
     bool operator == (const BedLine & bedLine) const;
     bool operator != (const BedLine & bedLine) const;
 };
