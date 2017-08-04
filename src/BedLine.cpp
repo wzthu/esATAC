@@ -38,7 +38,7 @@ BedLine::BedLine(void)
 {
 }
 
-
+/*
 bool BedLine::operator () (const BedLine *a,const BedLine *b) const{
     if(a->chr != b->chr){
         return a->chr > b->chr;
@@ -47,8 +47,20 @@ bool BedLine::operator () (const BedLine *a,const BedLine *b) const{
     }else if(a->end != b->end){
         return a->end > b->end;
     }else{
-        return true;
+        return false;// should be false when they are equal
     }
+}
+*/
+bool BedLine::operator < (const BedLine &b) const{
+  if(chr != b.chr){
+    return chr > b.chr;
+  }else if(start != b.start){
+    return start > b.start;
+  }else if(end != b.end){
+    return end > b.end;
+  }else{
+    return false;// should be false when they are equal
+  }
 }
 
 
