@@ -3,10 +3,10 @@
   return(renamer(argv));
 }
 
-.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen)
+.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen,downSample = 2e9)
 {
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
-                 sort = sortBed,unique = uniqueBed, minFregLen = minFregLen, maxFregLen = maxFregLen, saveExtLen = saveExtLen, memSize = 8 )
+                 sort = sortBed,unique = uniqueBed, minFregLen = minFregLen, maxFregLen = maxFregLen, saveExtLen = saveExtLen, memSize = 8 ,downSample = downSample)
     print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");
@@ -14,9 +14,9 @@
     return(R_sam2bed_merge_wrapper(argv,filterList))
 }
 
-.sam2bed_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList){
+.sam2bed_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,downSample = 2e9){
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
-                 sort = sortBed,unique = uniqueBed, memSize = 8 )
+                 sort = sortBed,unique = uniqueBed, memSize = 8 ,downSample = downSample)
     print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");

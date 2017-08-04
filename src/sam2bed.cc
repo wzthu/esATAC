@@ -17,13 +17,15 @@ using std::endl;
 #define SAM_MAX_LINE_LENGTH 10000
 //#define MAX_BUFFER_LINE  100000000
 #define BED_LINE_BIT 60
-SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize):
+SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize,int down_sample):
     MAX_BUFFER_LINE(memSize<128?memSize*12000000:150000000)// int or long should be considered
 {
     cout<<MAX_BUFFER_LINE<<endl;
     cout.flush();
     this -> ifilePath = ifilePath;
     this -> ofilePath = ofilePath;
+    this -> reads_count = 0;
+    this->down_sample = down_sample;
 }
 
 int SamToBed::getReadsLen(char * CIGAR){
@@ -130,13 +132,18 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
             }
 
             CIGAR = strtok(NULL, "\t");
+            reads_count ++;
             chr_end = chr_start + getReadsLen(CIGAR);
             if(fp_out){
+                if(reads_count>down_sample){
+                    break;
+                }
                 fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
             }else{
                 sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
                 sortBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
             }
+
         }
     }
 
@@ -153,7 +160,7 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
         delete sortBed;
     }
 
-    return 0;
+    return reads_count;
 }
 
 int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int char_filter_size,
@@ -288,7 +295,11 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 			    freg_len=chr_end-chr_start;
 
                 if(freg_len>=min_freg_len&&freg_len<=max_freg_len){
+                    reads_count ++;
                     if(fp_out){
+                        if(reads_count>down_sample){
+                            break;
+                        }
                         fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
         			}else{
                         sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
@@ -332,5 +343,5 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
     regfree(&reg);
 #endif
 
-    return 0;
+    return reads_count;
 }

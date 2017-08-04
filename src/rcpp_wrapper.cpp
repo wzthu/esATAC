@@ -96,10 +96,11 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
     bool unique = Rcpp::as<bool>(argvs["unique"]);
 
     int mem_size = Rcpp::as<int>(argvs["memSize"]);
+    int down_sample = Rcpp::as<int>(argvs["downSample"]);
 
 
 
-    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size);
+    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
     std::cout << "222221" << std::endl;
     int filterSize=filterList.size();
@@ -128,14 +129,14 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
             strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
         }
     }
-    int t = SB.sam2bed(pos_offset,neg_offset,filters,filterSize,sort,unique);
+    int reads_count = SB.sam2bed(pos_offset,neg_offset,filters,filterSize,sort,unique);
     if(filters){
         for(int i=0;i<filterSize;i++){
             delete[] filters[i];
         }
         delete[] filters;
     }
-    return(t);
+    return(reads_count);
 
 
 }
@@ -154,9 +155,10 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
   int max_freg_len = Rcpp::as<int>(argvs["maxFregLen"]);
   bool save_ext_len = Rcpp::as<bool>(argvs["saveExtLen"]);
   int mem_size = Rcpp::as<int>(argvs["memSize"]);
+  int down_sample = Rcpp::as<int>(argvs["downSample"]);
 
   std::cout << "22222" << std::endl;
-  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size);
+  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
   std::cout << "222221" << std::endl;
   int filterSize=filterList.size();
@@ -186,7 +188,7 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
       }
   }
 
-  int t = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
+  int reads_count = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
 
   if(filters){
       for(int i=0;i<filterSize;i++){
@@ -194,7 +196,7 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
       }
       delete[] filters;
   }
-  return(t);
+  return(reads_count);
 
 }
 

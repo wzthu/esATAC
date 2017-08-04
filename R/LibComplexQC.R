@@ -2,7 +2,7 @@ LibComplexQC <-R6Class(
     classname = "LibComplexQC",
     inherit = BaseProc,
     public = list(
-        initialize = function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6,editable=FALSE){
+        initialize = function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4e6,editable=FALSE){
             super$initialize("LibComplexQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["samInput"]] <- atacProc$getParam("samOutput");
@@ -29,10 +29,10 @@ LibComplexQC <-R6Class(
             if(private$paramlist[["paired"]]){
                 .sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportPrefix"]],".tmp"),
                                     posOffset = 0, negOffset = 0,sortBed = !private$paramlist[["subsample"]],
-                                    uniqueBed = FALSE, filterList = NULL,minFregLen = 0,maxFregLen = 1000000,saveExtLen = FALSE )
+                                    uniqueBed = FALSE, filterList = NULL,minFregLen = 0,maxFregLen = 1000000,saveExtLen = FALSE ,downSample=private$paramlist[["subsampleSize"]])
             }else{
                 .sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportPrefix"]],".tmp"),
-                              posOffset = 0, negOffset = 0, sortBed = !private$paramlist[["subsample"]],uniqueBed = FALSE,  filterList = NULL)
+                              posOffset = 0, negOffset = 0, sortBed = !private$paramlist[["subsample"]],uniqueBed = FALSE,  filterList = NULL,downSample=private$paramlist[["subsampleSize"]])
             }
 
             qcval<-.lib_complex_qc_call(bedfile=paste0(private$paramlist[["reportPrefix"]],".tmp"), sortedBed=!private$paramlist[["subsample"]], max_reads=private$paramlist[["subsampleSize"]])
