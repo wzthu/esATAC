@@ -18,9 +18,7 @@ Imports: Rcpp (>= 0.12.11),
     rtracklayer,
     GenomicRanges,
     Biostrings,
-<<<<<<< HEAD
-    TFBSTools
-=======
+    TFBSTools,
     igraph,
     rJava
 >>>>>>> de586faa03bea5403d2c0b957bdb5c98fcc5a562
