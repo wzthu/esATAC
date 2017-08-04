@@ -45,8 +45,37 @@ BedIntersect <- function(Input1, Input2, bed_output, n.col){
 }
 
 
-
-
+#' Cutting sequence according a bed file and save these sequence as fastq or fasta.
+#'
+#' In this program, the strand infomation will not be used.
+#' @param ref_path The reference fasta file.
+#' @param save_path Where you want save these sequences, only in fastq or fasta format.
+#' @param bed_path bed file.
+#' @param save_format Fastq or fasta.
+Sequence_Cut <- function(ref_path, save_path, bed_path, save_format){
+  ref <- Biostrings::readDNAStringSet(ref_path)
+  gr_a <-read.table(bed_path, header = FALSE)
+  gr_a <- gr_a[, 1:3]
+  colnames(gr_a) <- c('chr', 'start', 'end')
+  gr_a$start <- gr_a$start + 1
+  gr_a$end <- gr_a$end
+  chr_index <- names(ref)
+  line_num <- nrow(gr_a)
+  DNA_string <- Biostrings::DNAStringSet()
+  for(i in seq(line_num)){
+    index_num <- which(gr_a$chr[i] == chr_index)
+    if(any(index_num)){
+      DNA_string <- append(DNA_string, Biostrings::subseq(ref[index_num], gr_a$start[i], gr_a$end[i]),
+                           after=length(DNA_string))
+    }else{
+      stop("An unexpected chromatin detected!")
+    }
+  }
+  names(DNA_string) <- paste(gr_a$chr, ":", gr_a$start, "-", gr_a$end, sep = "")
+  Biostrings::writeXStringSet(DNA_string, filepath = save_path,
+                              append = FALSE, compress = FALSE,
+                              compression_level = NA, format = save_format)
+}
 
 
 

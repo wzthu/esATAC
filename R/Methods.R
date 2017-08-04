@@ -190,7 +190,19 @@ atacBedOverlaps <- function(atacProc = NULL, BedInput1 = NULL, BedInput2 = NULL,
   return(tmp)
 }
 
-
+#' Cutting sequence according a bed file and save these sequence as fastq or fasta.
+#'
+#' In this program, the strand infomation will not be used.
+#' @param ref_path The reference fasta file.
+#' @param save_path Where you want save these sequences, only in fastq or fasta format.
+#' @param bed_path bed file.
+#' @param save_format Fastq or fasta.
+DnaSeqCut <- function(atacProc = NULL, ref_path = NULL, save_path = NULL,
+                      bed_path = NULL, save_format = NULL){
+  tmp <- DNASeqCut$new(atacProc, ref_path, save_path, bed_path, save_format)
+  tmp$processing()
+  return(tmp)
+}
 
 
 atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
