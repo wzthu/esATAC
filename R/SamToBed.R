@@ -44,7 +44,10 @@ SamToBed <- R6::R6Class(
                               filterList = private$paramlist[["filterList"]],minFregLen = private$paramlist[["minFregLen"]],
                               maxFregLen = private$paramlist[["maxFregLen"]],saveExtLen = private$paramlist[["saveExtLen"]] )
       }else{
-          .sam2bed_call(samfile = private$paramlist[["SamInput"]], bedfile = private$paramlist[["BedOutput"]])
+          .sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
+                        posOffset = private$paramlist[["posOffset"]], negOffset = private$paramlist[["negOffset"]],
+                        sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
+                        filterList = private$paramlist[["filterList"]])
       }
       private$finish <- TRUE
     },

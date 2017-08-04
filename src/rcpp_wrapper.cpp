@@ -13,6 +13,7 @@
 #include "ChrDivi.h"
 #include "CutCountPre.h"
 #include "CutSiteCount.h"
+#include "LibComplexQC.h"
 
 // [[Rcpp::export]]
 int removeAdapter(Rcpp::CharacterVector argvs) {
@@ -84,12 +85,59 @@ void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){
 
 
 // [[Rcpp::export]]
-int R_sam2bed_wrapper(Rcpp::List argvs)
+int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-  std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
-  std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
-  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
-  return(SB.sam2bed());
+    std::cout << "11111" << std::endl;
+    std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
+    std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
+    int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
+    int neg_offset = Rcpp::as<int>(argvs["negOffset"]);
+    bool sort = Rcpp::as<bool>(argvs["sort"]);
+    bool unique = Rcpp::as<bool>(argvs["unique"]);
+
+    int mem_size = Rcpp::as<int>(argvs["memSize"]);
+
+
+
+    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size);
+
+    std::cout << "222221" << std::endl;
+    int filterSize=filterList.size();
+
+
+    char **filters = new char* [filterSize];
+    if(filterSize == 1){
+        int len = filterList[0].size();
+        filters[0] = new char[len+1];
+        strcpy(filters[0],(char *)(Rcpp::as<std::string>(filterList[0])).c_str());
+
+        if(!strcmp(filters[0],"NULL")){
+            delete[] filters[0];
+            delete[] filters;
+
+            std::cout.flush();
+            filters = NULL;
+            filterSize = 0;
+
+
+        }
+    }else{
+        for(int i=0;i<filterSize;i++){
+            int len = filterList[i].size();
+            filters[i] = new char[len+1];
+            strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
+        }
+    }
+    int t = SB.sam2bed(pos_offset,neg_offset,filters,filterSize,sort,unique);
+    if(filters){
+        for(int i=0;i<filterSize;i++){
+            delete[] filters[i];
+        }
+        delete[] filters;
+    }
+    return(t);
+
+
 }
 
 // [[Rcpp::export]]
@@ -105,9 +153,10 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
   int min_freg_len = Rcpp::as<int>(argvs["minFregLen"]);
   int max_freg_len = Rcpp::as<int>(argvs["maxFregLen"]);
   bool save_ext_len = Rcpp::as<bool>(argvs["saveExtLen"]);
+  int mem_size = Rcpp::as<int>(argvs["memSize"]);
 
   std::cout << "22222" << std::endl;
-  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str());
+  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size);
 
   std::cout << "222221" << std::endl;
   int filterSize=filterList.size();
@@ -148,6 +197,46 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
   return(t);
 
 }
+
+
+// [[Rcpp::export]]
+Rcpp::List lib_complex_qc(Rcpp::List argvs)
+{
+
+    std::string bedfile = Rcpp::as<std::string>(argvs["bedfile"]);
+    bool sortedBed = Rcpp::as<bool>(argvs["sortedBed"]);
+    int max_reads = Rcpp::as<int>(argvs["max_reads"]);
+
+    LibComplexQC * qc = NULL;
+    std::cout<<bedfile<<sortedBed<<max_reads<<std::endl;
+    std::cout.flush();
+    if(sortedBed){
+        std::cout<<2<<bedfile<<sortedBed<<max_reads<<std::endl;
+        std::cout.flush();
+        qc = new LibComplexQC(bedfile);
+        qc->calValSorted();
+    }else{
+        std::cout<<1<<bedfile<<sortedBed<<max_reads<<std::endl;
+        std::cout.flush();
+        qc = new LibComplexQC(bedfile,max_reads);
+        qc->calValUnSorted();
+    }
+
+
+    Rcpp::List rs = Rcpp::List::create(Rcpp::Named("NRF")=qc->getNRF(),
+        Rcpp::Named("PBC1")=qc->getPBC1(),
+        Rcpp::Named("PBC2")=qc->getPBC2(),
+        Rcpp::Named("one")=qc->getOne(),
+        Rcpp::Named("two")=qc->getTwo(),
+        Rcpp::Named("total")=qc->getTotal(),
+        Rcpp::Named("reads")=qc->getReads());
+
+    delete qc;
+
+    return rs;
+
+}
+
 
 // [[Rcpp::export]]
 int ChrDivi_wrapper(Rcpp::List argvs)

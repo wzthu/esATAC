@@ -55,9 +55,18 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
 
 atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
     distr<-ReadsLenDistribute$new(atacProc,reportPrefix,bedInput)
-    distr$processing();
+    distr$processing()
     return(distr)
 }
+
+atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
+    libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
+                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
+    libqc$processing()
+    return(libqc)
+}
+
+
 
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
 #' @param seq_file A full path of the fa file(containing fa file). For single end, using a list; for paired end, using a list(length = 2).
@@ -78,7 +87,7 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= NULL,
+atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= "chrUn.*|chrM|.*random.*",
                         samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){
   tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput, bedOutput, sortBed, uniqueBed, minFregLen, maxFregLen, saveExtLen)
