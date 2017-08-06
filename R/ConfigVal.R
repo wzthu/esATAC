@@ -71,7 +71,7 @@ setConfigure<- function(item = c("threads","tmpdir","datadir","genome"),val){
   .configObj$setConfigure(item,val);
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome")){
+.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","txdb")){
     val<-.configObj$getConfigure(item);
     if(is.null(val)){
         stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))
