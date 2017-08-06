@@ -78,6 +78,23 @@ atacFripQC<-function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=
     return(fripQC)
 }
 
+atacDHSQC<-function(atacProc, reportPrefix=NULL,bedDHS = NULL,bedInput = NULL){
+    dhsQC<-DHSQC$new(atacProc, reportPrefix=reportPrefix,bedDHS = bedDHS,bedInput = bedInput)
+    dhsQC$processing()
+    return(dhsQC)
+}
+
+atacBlacklistQC<-function(atacProc, reportPrefix=NULL,bedBlacklist = NULL,bedInput = NULL){
+    blacklistQC<-BlacklistQC(atacProc, reportPrefix=reportPrefix,bedBlacklist = bedBlacklist,bedInput = bedInput,editable=FALSE)
+    blacklistQC$processing()
+    return(blacklistQC)
+}
+
+atacGenicQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,promoterRange=c(-2000,2000)){
+    genicQC<-GenicQC(atacProc, txdb.knownGene = txdb.knownGene,reportPrefix=reportPrefix,bedInput = bedInput,promoterRange=promoterRange)
+    genicQC$processing()
+    return(genicQC)
+}
 
 
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam

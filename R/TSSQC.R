@@ -7,10 +7,14 @@ TSSQC <-R6Class(
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
             }
-            if(!is.null(tssbed)){
+            if(!is.null(txdb.knownGene)){
                 private$paramlist[["knownGene"]] <- txdb.knownGene;
             }else{
                 private$paramlist[["knownGene"]]<-.obtainConfigure("knownGene");
+            }
+
+            if(!is.null(bedInput)){
+                private$paramlist[["bedInput"]] <- bedInput;
             }
 
             if(is.null(reportPrefix)){
@@ -23,7 +27,6 @@ TSSQC <-R6Class(
             private$paramlist[["fregLenRange"]] <- fregLenRange
 
             private$checkFileExist(private$paramlist[["bedInput"]]);
-            private$checkFileExist(private$paramlist[["tssbed"]]);
             private$checkPathExist(private$paramlist[["reportPrefix"]]);
             private$checkRequireParam();
         },
@@ -101,13 +104,13 @@ TSSQC <-R6Class(
             qcval[["TSSReads"]]<-length(unique(reads))
             qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
 
-            pmtr<-promoters(txdb)
+            exonlst<-exons(txdb)
 
-            pairs<-findOverlapPairs(readsbed, pmtr,ignore.strand = TRUE)
-            pairs
+            pairs<-findOverlapPairs(readsbed, exonlst,ignore.strand = TRUE)
 
-            qcval[["promoterReads"]]<-length(unique(first(pairs)))
-            qcval[["promoterRate"]]<-qcval[["promoterReads"]]/qcval[["totalUniqReads"]]
+
+            qcval[["exonReads"]]<-length(unique(first(pairs)))
+            qcval[["exonRate"]]<-qcval[["exonReads"]]/qcval[["totalUniqReads"]]
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
             private$finish <- TRUE
@@ -123,18 +126,13 @@ TSSQC <-R6Class(
             if(private$editable){
                 return();
             }
-            if(is.null(private$paramlist[["readsBedInput"]])){
-                stop("readsBedInput is required.")
+            if(is.null(private$paramlist[["txdb.knownGene"]])){
+                stop("txdb.knownGene is required.")
             }
-            if(is.null(private$paramlist[["peakBedInput"]])){
-                stop("peakBedInput is required.")
+            if(is.null(private$paramlist[["bedInput"]])){
+                stop("bedInput is required.")
             }
-            if(is.null(private$paramlist[["readsCount"]])){
-                stop("readsCount is required.")
-            }
-            if(is.null(private$paramlist[["fregLenRange"]])){
-                stop("fregLenRange is required.")
-            }
+
 
 
         }
