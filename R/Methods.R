@@ -85,7 +85,7 @@ atacDHSQC<-function(atacProc, reportPrefix=NULL,bedDHS = NULL,bedInput = NULL){
 }
 
 atacBlacklistQC<-function(atacProc, reportPrefix=NULL,bedBlacklist = NULL,bedInput = NULL){
-    blacklistQC<-BlacklistQC(atacProc, reportPrefix=reportPrefix,bedBlacklist = bedBlacklist,bedInput = bedInput,editable=FALSE)
+    blacklistQC<-BlacklistQC$new(atacProc, reportPrefix=reportPrefix,bedBlacklist = bedBlacklist,bedInput = bedInput,editable=FALSE)
     blacklistQC$processing()
     return(blacklistQC)
 }

@@ -18,7 +18,7 @@ DHSQC <-R6Class(
             }
 
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste(private$paramlist[["bedInput"]],".DHSQCreport");
+                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".DHSQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
@@ -32,23 +32,19 @@ DHSQC <-R6Class(
         },
         processing = function(){
             super$processing()
-            genome <- Seqinfo(genome = NA_character_)
+            genome <- Seqinfo(genome = .obtainConfigure("genome"))
 
-            inputbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
+            inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
 
 
             dhsbed<-import(private$paramlist[["bedDHS"]], genome = genome)
 
-            pairs<-findOverlapPairs(inputbed, dhsbed,ignore.strand = TRUE)
-            ibed<-unique(ranges(first(pairs)))
-
-
 
             qcval=list();
 
-            qcval[["totalUniqInput"]]<-length(inputbed)
-            qcval[["dhsInput"]]<-length(ibed)
-            qcval[["dhsRate"]]<-qcval[["dhsInput"]]/qcval[["totalUniqInput"]]
+            qcval[["totalInput"]]<-length(inputbed)
+            qcval[["dhsInput"]]<-length(subsetByOverlaps(inputbed, dhsbed,ignore.strand = TRUE))
+            qcval[["dhsRate"]]<-qcval[["dhsInput"]]/qcval[["totalInput"]]
 
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)

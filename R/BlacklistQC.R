@@ -18,7 +18,7 @@ BlacklistQC <-R6Class(
             }
 
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste(private$paramlist[["bedInput"]],".BlacklistQCreport");
+                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".BlacklistQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
@@ -32,23 +32,20 @@ BlacklistQC <-R6Class(
         },
         processing = function(){
             super$processing()
-            genome <- Seqinfo(genome = NA_character_)
+            genome <- Seqinfo(genome = .obtainConfigure("genome"))
 
-            inputbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
+            inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
 
 
             blacklistbed<-import(private$paramlist[["bedBlacklist"]], genome = genome)
-
-            pairs<-findOverlapPairs(inputbed, blacklistbed,ignore.strand = TRUE)
-            ibed<-unique(ranges(first(pairs)))
 
 
 
             qcval=list();
 
-            qcval[["totalUniqInput"]]<-length(inputbed)
-            qcval[["blacklistInput"]]<-length(ibed)
-            qcval[["blacklistRate"]]<-qcval[["blacklistInput"]]/qcval[["totalUniqInput"]]
+            qcval[["totalInput"]]<-length(inputbed)
+            qcval[["blacklistInput"]]<-length(subsetByOverlaps(inputbed, blacklistbed,ignore.strand = TRUE))
+            qcval[["blacklistRate"]]<-qcval[["blacklistInput"]]/qcval[["totalInput"]]
 
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
