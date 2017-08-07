@@ -1,5 +1,7 @@
 #include<string>
 #include<fstream>
+#include<climits>
+
 class SamToBed
 {
 private:
