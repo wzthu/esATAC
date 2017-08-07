@@ -9,4 +9,5 @@ importFrom(Rcpp,sourceCpp)
 importFrom(rJava,.jpackage)
 importFrom(rJava,.jnew)
 importFrom(rJava,.jcall)
+importFrom(rtracklayer,import)
 

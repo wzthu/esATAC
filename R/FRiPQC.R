@@ -2,20 +2,25 @@ FRiPQC <-R6Class(
     classname = "FRiPQC",
     inherit = BaseProc,
     public = list(
-        initialize = function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=NULL,peakBedInput,editable=FALSE){
+        initialize = function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=NULL,peakBedInput=NULL,editable=FALSE){
             super$initialize("FRiPQC",editable,list(arg1=atacProcReads,arg2=atacProcPeak))
             if(!is.null(atacProcReads)){
                 private$paramlist[["readsBedInput"]] <- atacProcReads$getParam("bedOutput");
                 private$paramlist[["readsCount"]] <- atacProcReads$getParam("readsCount")
             }
             if(!is.null(atacProcPeak)){
-                private$paramlist[["peakBedInput"]] <- atacProcReads$getParam("bedOutput");
+                private$paramlist[["peakBedInput"]] <- atacProcPeak$getParam("bedOutput");
             }
-            if(!is.null(samInput)){
-                private$paramlist[["samInput"]] <- samInput;
+
+            if(!is.null(readsBedInput)){
+                private$paramlist[["readsBedInput"]] <- readsBedInput
             }
+            if(!is.null(peakBedInput)){
+                private$paramlist[["peakBedInput"]] <- peakBedInput
+            }
+
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["samInput"]],".FripQCreport");
+                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["peakBedInput"]],".FripQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
@@ -27,9 +32,14 @@ FRiPQC <-R6Class(
         processing = function(){
             super$processing()
             qcval=list();
-            qcval[["peakReads"]]<-length(HelloRanges::R_bedtools_intersect(wa=TRUE,u=TRUE,a=private$paramlist[["readsBedInput"]],b=private$paramlist[["peakBedInput"]],bed = TRUE))
+            genome <- Seqinfo(genome = NA_character_)
+            gr_a <- import(private$paramlist[["readsBedInput"]], genome = genome)
+            gr_b <- import(private$paramlist[["peakBedInput"]], genome = genome)
+            qcval[["peakReads"]]<-length(subsetByOverlaps(gr_a, gr_b, ignore.strand = TRUE))
             if(is.null(private$paramlist[["readsCount"]])){
-                qcval[["totalReads"]]<-R.utils::countLines(rivate$paramlist[["readsBedInput"]])
+                qcval[["totalReads"]]<-R.utils::countLines(private$paramlist[["readsBedInput"]])
+            }else{
+                qcval[["totalReads"]]<-private$paramlist[["readsCount"]]
             }
             qcval[["FRiP"]]<-qcval[["peakReads"]]/qcval[["totalReads"]]
             #unlink(paste0(private$paramlist[["reportPrefix"]],".tmp"))
@@ -55,10 +65,6 @@ FRiPQC <-R6Class(
             if(is.null(private$paramlist[["peakBedInput"]])){
                 stop("peakBedInput is required.")
             }
-            if(is.null(private$paramlist[["readsCount"]])){
-                stop("readsCount is required.")
-            }
-
 
         }
     )
