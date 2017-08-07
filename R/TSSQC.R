@@ -3,7 +3,7 @@ TSSQC <-R6Class(
     inherit = BaseProc,
     public = list(
         initialize = function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
-            super$initialize("TSSQC",editable,list(arg1=atacProcReads,arg2=atacProcPeak))
+            super$initialize("TSSQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
             }
@@ -18,7 +18,7 @@ TSSQC <-R6Class(
             }
 
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste(private$paramlist[["bedInput"]],".TSSQCreport");
+                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".TSSQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
@@ -32,7 +32,7 @@ TSSQC <-R6Class(
         },
         processing = function(){
             super$processing()
-            genome <- Seqinfo(genome = NA_character_)
+            genome <- Seqinfo(genome = .obtainConfigure("genome"))
             readsbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
 
             readsbed<-readsbed[(width(readsbed)>=private$paramlist[["fregLenRange"]][1])&
@@ -77,9 +77,9 @@ TSSQC <-R6Class(
 
             df<-data.frame(val=totaldistr,x=-private$paramlist[["updownstream"]]:private$paramlist[["updownstream"]])
             ggplot(df,aes(x,val))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
-            ggsave(paste(private$paramlist[["reportPrefix"]],".pdf"))
+            ggsave(paste0(private$paramlist[["reportPrefix"]],".pdf"))
 
-            pm<-GenomicFeatures::promoters(txdb)
+
 
             ############# drawing heatmap
             # gp<-mcols(transspan)$gene_id#tx_name
@@ -101,17 +101,13 @@ TSSQC <-R6Class(
             qcval=list();
 
             qcval[["totalUniqReads"]]<-length(readsbed)
-            qcval[["TSSReads"]]<-length(unique(reads))
+            print(qcval[["totalUniqReads"]])
+            qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, trans,ignore.strand = TRUE))
+            print(qcval[["TSSReads"]])
             qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
-
-            exonlst<-exons(txdb)
-
-            pairs<-findOverlapPairs(readsbed, exonlst,ignore.strand = TRUE)
-
-
-            qcval[["exonReads"]]<-length(unique(first(pairs)))
-            qcval[["exonRate"]]<-qcval[["exonReads"]]/qcval[["totalUniqReads"]]
+            print(qcval[["TSSRate"]])
             qcval<-as.matrix(qcval)
+            print(paste0(private$paramlist[["reportPrefix"]],".txt"))
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
             private$finish <- TRUE
         },
@@ -126,7 +122,7 @@ TSSQC <-R6Class(
             if(private$editable){
                 return();
             }
-            if(is.null(private$paramlist[["txdb.knownGene"]])){
+            if(is.null(private$paramlist[["knownGene"]])){
                 stop("txdb.knownGene is required.")
             }
             if(is.null(private$paramlist[["bedInput"]])){
