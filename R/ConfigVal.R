@@ -3,11 +3,11 @@
     getAllConfigure = function(){
       print(private$configList)
     },
-    getConfigure = function(item = c("threads","tmpdir","datadir","genome")){
+    getConfigure = function(item = c("threads","tmpdir","datadir","genome","knownGene")){
       private$isValidAttr(item);
       return(private$configList[[item]]);
     },
-    setConfigure = function(item = c("threads","tmpdir","datadir","genome"),val){
+    setConfigure = function(item = c("threads","tmpdir","datadir","genome","knownGene"),val){
       private$isValidVal(item,val);
       private$configList[[item]]<-val;
     }
@@ -15,7 +15,7 @@
   ),
   private = list(
     configList=list(threads=1,tmpdir=NULL),
-    validAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character"),
+    validAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character",knownGene="TxDb"),
     isValidAttr=function(item){
       if(is.null(private$validAttr[[item]])){
         stop(paste(item,"is not a attribute"))
@@ -23,7 +23,7 @@
     },
     isValidVal=function(item,val){
       private$isValidAttr(item)
-      if(!is.null(val)&&private$validAttr[[item]]!=mode(val)){
+      if(!is.null(val)&&private$validAttr[[item]]!=class(val)){
         stop(paste(item,"is requied to be",private$validAttr[[item]],",\"",val,"\" is ",mode(val)))
       }
       if(item=="thread"&&is.null(val)){
@@ -63,15 +63,15 @@ getAllConfigure<-function(){
   .configObj$getAllConfigure();
 }
 
-getConfigure <- function(item = c("threads","tmpdir","datadir","genome")){
+getConfigure <- function(item = c("threads","tmpdir","datadir","genome","knownGene")){
   return(.configObj$getConfigure(item));
 }
 
-setConfigure<- function(item = c("threads","tmpdir","datadir","genome"),val){
+setConfigure<- function(item = c("threads","tmpdir","datadir","genome","knownGene"),val){
   .configObj$setConfigure(item,val);
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","txdb")){
+.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","knownGene")){
     val<-.configObj$getConfigure(item);
     if(is.null(val)){
         stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))
