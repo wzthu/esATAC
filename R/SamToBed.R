@@ -37,14 +37,18 @@ SamToBed <- R6::R6Class(
 
     processing = function(){
       super$processing()
+      readsCount
       if(private$paramlist[["merge"]]){
-          .sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
+          private$paramlist[["readsCount"]]<-.sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
                               posOffset = private$paramlist[["posOffset"]], negOffset = private$paramlist[["negOffset"]],
                               sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
                               filterList = private$paramlist[["filterList"]],minFregLen = private$paramlist[["minFregLen"]],
                               maxFregLen = private$paramlist[["maxFregLen"]],saveExtLen = private$paramlist[["saveExtLen"]] )
       }else{
-          .sam2bed_call(samfile = private$paramlist[["SamInput"]], bedfile = private$paramlist[["BedOutput"]])
+          private$paramlist[["readsCount"]]<-.sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
+                        posOffset = private$paramlist[["posOffset"]], negOffset = private$paramlist[["negOffset"]],
+                        sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
+                        filterList = private$paramlist[["filterList"]])
       }
       private$finish <- TRUE
     },

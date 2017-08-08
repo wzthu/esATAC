@@ -11,11 +11,21 @@
 #include "SortBed.h"
 #include <iostream>
 #include <sstream>
+using std::cout;
+using std::endl;
+
 #define SAM_MAX_LINE_LENGTH 10000
-#define MAX_BUFFER_LINE  100000000
-SamToBed::SamToBed(char * ifilePath, char * ofilePath){
-  this -> ifilePath = ifilePath;
-  this -> ofilePath = ofilePath;
+//#define MAX_BUFFER_LINE  100000000
+#define BED_LINE_BIT 60
+SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize,int down_sample):
+    MAX_BUFFER_LINE(memSize<128?memSize*12000000:150000000)// int or long should be considered
+{
+    cout<<MAX_BUFFER_LINE<<endl;
+    cout.flush();
+    this -> ifilePath = ifilePath;
+    this -> ofilePath = ofilePath;
+    this -> reads_count = 0;
+    this->down_sample = down_sample;
 }
 
 int SamToBed::getReadsLen(char * CIGAR){
@@ -31,13 +41,18 @@ int SamToBed::getReadsLen(char * CIGAR){
     }
     return seqlen;
 }
-int SamToBed::sam2bed() {
+int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_filter_size, bool sort,bool unique) {
 
-    FILE *fp, *fp_out;
-
+    FILE *fp, *fp_out=NULL;
+    SortBed* sortBed=NULL;
     fp = fopen(this -> ifilePath, "r");
-    fp_out = fopen(this -> ofilePath, "w");
 
+    int max_buffer_line = MAX_BUFFER_LINE;
+    if(unique||sort){
+        sortBed = new SortBed(this -> ofilePath,unique,max_buffer_line);
+    }else{
+        fp_out = fopen(this -> ofilePath, "w");
+    }
     char * line = NULL;
     char * tok;
     char strand;
@@ -45,23 +60,66 @@ int SamToBed::sam2bed() {
 
     int  chr_start, chr_end, flag, mqs;
 
-
+    char bedlineBuffer[SAM_MAX_LINE_LENGTH];
     line = (char*)calloc(SAM_MAX_LINE_LENGTH, 1);
     char *CIGAR = NULL;
+
+    std::string pattern;
+    if(char_filter_size>=1){
+
+        pattern=chrList[0];
+        if(char_filter_size>1){
+            std::stringstream ss;
+            ss << pattern ;
+            for(int i = 1; i < char_filter_size; i++ ){
+                ss << "|" << chrList[i] ;
+            }
+            ss >> pattern;
+        }
+
+    }else{
+        pattern="";
+    }
+
+    cout<<"pattern:"<<pattern<<endl;
+    cout.flush();
+
+#ifdef PLF_SYS_WIN
+    std::regex re(pattern);
+#elif PLF_SYS_LINUX
+    const char * patt = pattern.c_str();
+    regex_t reg;
+    const size_t nmatch = 1;
+    regmatch_t pm[1];
+    regcomp(&reg,patt,REG_EXTENDED|REG_NOSUB);
+#endif
 
     while (fgets(line, SAM_MAX_LINE_LENGTH, fp))
     {
         if (line[0] == '@')
-        continue;
+            continue;
 
         tok = strtok(line, "\t");
         flag = atoi(strtok(NULL, "\t"));
 
         chr = strtok(NULL, "\t");
+#ifdef PLF_SYS_WIN
+        if(std::regex_match(std::string(chr), re)){
+//            cout<<"matchchr:"<<chr<<endl;
+//            cout.flush();
+            continue;
+        }
+#elif PLF_SYS_LINUX
+        if(char_filter_size>=1&&regexec(&reg,chr,nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
+            continue;
+        }
+#endif
+//        cout<<"unmatchchr:"<<chr<<endl;
+//        cout.flush();
         if (chr[0] != '*')
         {
             chr_start = atoi(strtok(NULL, "\t")) - 1;
-              //chr_end = chr_start + readlen;
+            //chr_end = chr_start + readlen;
             mqs = atoi(strtok(NULL, "\t"));
 
             if ((flag & 0x10) == 0)
@@ -74,18 +132,35 @@ int SamToBed::sam2bed() {
             }
 
             CIGAR = strtok(NULL, "\t");
+            reads_count ++;
             chr_end = chr_start + getReadsLen(CIGAR);
-            fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
+            if(fp_out){
+                if(reads_count>down_sample){
+                    break;
+                }
+                fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
+            }else{
+                sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
+                sortBed->insertBedLine(new BedLine(chr,chr_start,chr_end,bedlineBuffer));
+            }
+
         }
     }
 
-    if (line)
-    free(line);
+    if (line){
+        free(line);
+    }
+
 
     fclose(fp);
-    fclose(fp_out);
+    if(fp_out){
+        fclose(fp_out);
+    }else{
+        sortBed->mergeBed();
+        delete sortBed;
+    }
 
-    return 0;
+    return reads_count;
 }
 
 int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int char_filter_size,
@@ -220,7 +295,11 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 			    freg_len=chr_end-chr_start;
 
                 if(freg_len>=min_freg_len&&freg_len<=max_freg_len){
+                    reads_count ++;
                     if(fp_out){
+                        if(reads_count>down_sample){
+                            break;
+                        }
                         fprintf(fp_out, "%s\t%d\t%d\t%s\t%d\t%c\n", chr, chr_start, chr_end, tok, mqs, strand);
         			}else{
                         sprintf(bedlineBuffer,"%s\t%d\t%c",tok, mqs, strand);
@@ -264,5 +343,5 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
     regfree(&reg);
 #endif
 
-    return 0;
+    return reads_count;
 }
