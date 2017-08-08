@@ -20,7 +20,10 @@ Imports: Rcpp (>= 0.12.11),
     Biostrings,
     TFBSTools,
     ChIPseeker,
-    clusterProfiler
+    clusterProfiler,
+    igraph,
+    rJava
+
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
