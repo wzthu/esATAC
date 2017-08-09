@@ -34,6 +34,7 @@ GraphMng <- R6Class(
         )
         edges1<-sapply(edges1,function(x) x$classname)
 
+
         nodes1<-unique(edges1)
         edges2<-c(
             PeakCallingFseq,FRiPQC,

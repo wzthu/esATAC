@@ -53,6 +53,7 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
     return(peakcalling)
 }
 
+
 atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
     distr<-ReadsLenDistribute$new(atacProc,reportPrefix,bedInput)
     distr$processing()
@@ -95,6 +96,7 @@ atacGenicQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput
     genicQC$processing()
     return(genicQC)
 }
+
 
 
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
@@ -246,6 +248,44 @@ MotifScan <- function(atacProc = NULL, Seq_file = NULL,
 }
 
 
+#' Using ChIPseeker to annotate peak file.
+#'
+#' Just for test, other parameters will be add.
+#' @param Input peak file.
+#' @param Output Output file, default Input_path/output.
+#'
+PeakAnno <- function(atacProc = NULL, Input = NULL,
+                     Output = NULL){
+  tmp <- RPeakAnno$new(atacProc, Input, Output)
+  tmp$processing()
+  return(tmp)
+}
+
+#' Using clusterProfiler to do GO analysis(David method).
+#'
+#'
+#'
+GODavid <- function(atacProc = NULL, gene = NULL, idType = "ENTREZ_GENE_ID", listType = "Gene",
+                    annotation = "GOTERM_BP_FAT",pvalueCutoff = 0.05, pAdjustMethod = "BH",
+                    qvalueCutoff = 0.2,species = NA, david.user = NULL, output = NULL){
+  tmp <- RGoDavid$new(atacProc, gene, idType, listType,annotation, pvalueCutoff,
+                      pAdjustMethod,qvalueCutoff, species, david.user, output)
+  tmp$processing()
+  return(tmp)
+}
+
+#' Using clusterProfiler to do GO analysis(David method).
+#'
+#'
+#'
+GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
+                       pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
+                       readable = FALSE, pool = FALSE, output = NULL){
+  tmp <- RGo$new(atacProc, gene, OrgDb, keytype, ont, pvalueCutoff,
+                      pAdjustMethod , universe, qvalueCutoff, readable, pool, output)
+  tmp$processing()
+  return(tmp)
+}
 
 atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
   renamer <- Renamer$new(NULL, fastqOutput1, fasqOutput2,NULL, NULL,editable=TRUE)
