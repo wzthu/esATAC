@@ -61,13 +61,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // R_sam2bed_wrapper
-int R_sam2bed_wrapper(Rcpp::List argvs);
-RcppExport SEXP atacpipe_R_sam2bed_wrapper(SEXP argvsSEXP) {
+int R_sam2bed_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
+RcppExport SEXP atacpipe_R_sam2bed_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
-    rcpp_result_gen = Rcpp::wrap(R_sam2bed_wrapper(argvs));
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type filterList(filterListSEXP);
+    rcpp_result_gen = Rcpp::wrap(R_sam2bed_wrapper(argvs, filterList));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -80,6 +81,17 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type filterList(filterListSEXP);
     rcpp_result_gen = Rcpp::wrap(R_sam2bed_merge_wrapper(argvs, filterList));
+    return rcpp_result_gen;
+END_RCPP
+}
+// lib_complex_qc
+Rcpp::List lib_complex_qc(Rcpp::List argvs);
+RcppExport SEXP atacpipe_lib_complex_qc(SEXP argvsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
+    rcpp_result_gen = Rcpp::wrap(lib_complex_qc(argvs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -123,8 +135,9 @@ static const R_CallMethodDef CallEntries[] = {
     {"atacpipe_bowtie2Mapping", (DL_FUNC) &atacpipe_bowtie2Mapping, 1},
     {"atacpipe_bowtie2Build", (DL_FUNC) &atacpipe_bowtie2Build, 1},
     {"atacpipe_mergeFile", (DL_FUNC) &atacpipe_mergeFile, 2},
-    {"atacpipe_R_sam2bed_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_wrapper, 1},
+    {"atacpipe_R_sam2bed_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_wrapper, 2},
     {"atacpipe_R_sam2bed_merge_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_merge_wrapper, 2},
+    {"atacpipe_lib_complex_qc", (DL_FUNC) &atacpipe_lib_complex_qc, 1},
     {"atacpipe_ChrDivi_wrapper", (DL_FUNC) &atacpipe_ChrDivi_wrapper, 1},
     {"atacpipe_CutCountPre_wrapper", (DL_FUNC) &atacpipe_CutCountPre_wrapper, 1},
     {"atacpipe_CutSiteCount_wrapper", (DL_FUNC) &atacpipe_CutSiteCount_wrapper, 1},

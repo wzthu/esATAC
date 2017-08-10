@@ -3,10 +3,10 @@
   return(renamer(argv));
 }
 
-.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen)
+.sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen,downSample = 2e9)
 {
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
-                 sort = sortBed,unique = uniqueBed, minFregLen = minFregLen, maxFregLen = maxFregLen, saveExtLen = saveExtLen)
+                 sort = sortBed,unique = uniqueBed, minFregLen = minFregLen, maxFregLen = maxFregLen, saveExtLen = saveExtLen, memSize = 8 ,downSample = downSample)
     print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");
@@ -14,10 +14,26 @@
     return(R_sam2bed_merge_wrapper(argv,filterList))
 }
 
-.sam2bed_call <- function(samfile, bedfile){
-  argv <- list(samfile = samfile, bedfile = bedfile)
-  print(argv)
-  return(R_sam2bed_wrapper(argv))
+.sam2bed_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,downSample = 2e9){
+    argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
+                 sort = sortBed,unique = uniqueBed, memSize = 8 ,downSample = downSample)
+    print(argv)
+    if(is.null(filterList)){
+        filterList = c("NULL");
+    }
+    return(R_sam2bed_wrapper(argv,filterList))
+}
+
+.lib_complex_qc_call <- function(bedfile, sortedBed, max_reads){
+
+    argv <- list(bedfile = bedfile ,sortedBed = sortedBed,max_reads = max_reads)
+    print(argv)
+    rs<-lib_complex_qc(argv)
+    if(rs["PBC2"]<0){
+        rs["PBC2"]=NA
+    }
+    print(rs)
+    return(rs)
 }
 
 # only chr1-chrY will be saved, chrM and others will be removed.

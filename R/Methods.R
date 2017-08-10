@@ -53,6 +53,52 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
     return(peakcalling)
 }
 
+
+atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
+    distr<-ReadsLenDistribute$new(atacProc,reportPrefix,bedInput)
+    distr$processing()
+    return(distr)
+}
+
+atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
+    libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
+                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
+    libqc$processing()
+    return(libqc)
+}
+
+atacTSSQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+    tssQC<-TSSQC$new(atacProc=atacProc, txdb.knownGene=txdb.knownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
+    tssQC$processing()
+    return(tssQC)
+}
+
+atacFripQC<-function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=NULL,peakBedInput){
+    fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportPrefix=reportPrefix,readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
+    fripQC$processing()
+    return(fripQC)
+}
+
+atacDHSQC<-function(atacProc, reportPrefix=NULL,bedDHS = NULL,bedInput = NULL){
+    dhsQC<-DHSQC$new(atacProc, reportPrefix=reportPrefix,bedDHS = bedDHS,bedInput = bedInput)
+    dhsQC$processing()
+    return(dhsQC)
+}
+
+atacBlacklistQC<-function(atacProc, reportPrefix=NULL,bedBlacklist = NULL,bedInput = NULL){
+    blacklistQC<-BlacklistQC$new(atacProc, reportPrefix=reportPrefix,bedBlacklist = bedBlacklist,bedInput = bedInput,editable=FALSE)
+    blacklistQC$processing()
+    return(blacklistQC)
+}
+
+atacGenicQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,promoterRange=c(-2000,2000)){
+    genicQC<-GenicQC(atacProc, txdb.knownGene = txdb.knownGene,reportPrefix=reportPrefix,bedInput = bedInput,promoterRange=promoterRange)
+    genicQC$processing()
+    return(genicQC)
+}
+
+
+
 #' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
 #' @param seq_file A full path of the fa file(containing fa file). For single end, using a list; for paired end, using a list(length = 2).
 #' @param ref_file Character scalar. The path to the bowtie index and prefix to align against, in the form </path/to/index>/<prefix>.
@@ -72,7 +118,7 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= NULL,
+atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= "chrUn.*|chrM|.*random.*",
                         samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){
   tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput, bedOutput, sortBed, uniqueBed, minFregLen, maxFregLen, saveExtLen)
