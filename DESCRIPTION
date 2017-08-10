@@ -21,9 +21,7 @@ Imports: Rcpp (>= 0.12.11),
     TFBSTools,
     ChIPseeker,
     clusterProfiler,
-    igraph,
-    rJava
-
+    FunciSNP
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
