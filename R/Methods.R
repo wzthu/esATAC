@@ -14,27 +14,27 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL,tmpdir=NULL,saveTmpFiles=FALSE
 
 atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE){
     if(is.null(atacProc)){
-        .global_graph$printMap()
+        GraphMng$new()$printMap()
     }else if(class(atacProc)=="character"){
-        .global_graph$printMap(atacProc,preProc,nextProc,curProc)
+        GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc)
     }else{
         atacProc$printMap(preProc,nextProc,curProc)
     }
 }
 
-atacPrintNextList(atacProc){
+atacPrintNextList<-function(atacProc){
     if(class(atacProc)=="character"){
-        .global_graph$getNextProcs(atacProc)
+        GraphMng$new()$getNextProcs(atacProc)
     }else{
-        .global_graph$getNextProcs(atacProc$getProcName())
+        GraphMng$new()$getNextProcs(atacProc$getProcName())
     }
 }
 
-atacPrintPrevList(atacProc){
+atacPrintPrevList<-function(atacProc){
     if(class(atacProc)=="character"){
-        .global_graph$getPrevProcs(atacProc)
+        GraphMng$new()$getPrevProcs(atacProc)
     }else{
-        .global_graph$getPrevProcs(atacProc$getProcName())
+        GraphMng$new()$getPrevProcs(atacProc$getProcName())
     }
 }
 

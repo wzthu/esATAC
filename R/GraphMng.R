@@ -121,7 +121,7 @@ GraphMng <- R6Class(
     getNextProcs = function(procName){
         private$getNextProcs1(procName)
         private$getNextProcs2(procName)
-    }
+    },
     getNextProcs1 = function(procName){
       v <- neighbors(graph = private$graphDep1,v = procName, mode = "out");
       nextProc<-private$vtx1[v];
@@ -139,7 +139,7 @@ GraphMng <- R6Class(
     getPrevProcs = function(procName){
         private$getPrevProcs1(procName)
         private$getPrevProcs2(procName)
-    }
+    },
     getPrevProcs1 = function(procName){
       v <- neighbors(graph = private$graphDep1,v = procName, mode = "in");
       preProc<-private$vtx1[v];
@@ -241,6 +241,6 @@ GraphMng <- R6Class(
 
 )
 
-.global_graph<-GraphMng$new()
+#.global_graph<-GraphMng$new()
 
 
