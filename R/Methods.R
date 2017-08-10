@@ -300,7 +300,7 @@ GODavid <- function(atacProc = NULL, gene = NULL, idType = "ENTREZ_GENE_ID", lis
   return(tmp)
 }
 
-#' Using clusterProfiler to do GO analysis(David method).
+#' Using clusterProfiler to do GO analysis.
 #'
 #'
 #'
@@ -312,6 +312,28 @@ GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "EN
   tmp$processing()
   return(tmp)
 }
+
+
+#' Using FunciSNP to do SNP analysis.
+#'
+#' @param snp.regions.file path: Location of the regions file.
+#' @param bio.features.loc path: Location of the biological features folder.
+#'
+SNPana <- function(atacProc = NULL, snp.regions.file = NULL, bio.features.loc = NULL,
+                   built.in.biofeatures = TRUE,
+                   par.threads = parallel::detectCores()/2,
+                   verbose = par.threads < 2, method.p = "BH",
+                   search.window = 200000, output = NULL){
+  tmp <- RSNPs$new(atacProc, snp.regions.file, bio.features.loc,
+                   built.in.biofeatures, par.threads,
+                   verbose, method.p, search.window, output)
+  tmp$processing()
+  return(tmp)
+}
+
+
+
+
 
 atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
   renamer <- Renamer$new(NULL, fastqOutput1, fasqOutput2,NULL, NULL,editable=TRUE)
