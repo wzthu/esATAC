@@ -1,9 +1,9 @@
-QCreporter <- R6::R6Class(
-  classname = "QCreporter",
+FastQC <- R6::R6Class(
+  classname = "FastQC",
   inherit = BaseProc,
   public = list(
     initialize = function(atacProc, input_file = NULL, output_file = NULL, editable = FALSE){
-      super$initialize("QCreporter", editable, list(arg1 = atacProc))
+      super$initialize("FastQC", editable, list(arg1 = atacProc))
       print("QCreporterInitCall")
       # necessary and unchanged parameters, this should be tested
       # in this class, there is no necessary and unchanged parameters
@@ -65,7 +65,7 @@ QCreporter <- R6::R6Class(
       #output processing
       if(is.null(output_file)){
         file_path <- dirname(private$paramlist[["Input1"]])[1]
-        private$paramlist[["Output"]] <- paste0(file_path, "/QCreport.pdf", collapse = "")
+        private$paramlist[["Output"]] <- paste0(file_path, "/FastQC.pdf", collapse = "")
       }else{
         private$paramlist[["Output"]] <- output_file
       }

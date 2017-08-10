@@ -38,8 +38,8 @@ BaseProc <- R6Class(
     getProcName = function(){
       return(private$procName)
     },
-    printGraph = function(){
-      private$graphMng$printGraph()
+    printMap = function(preProc=FALSE,nextProc=TRUE,curProc=TRUE){
+      private$graphMng$printMap(procName=private$procName,preProc=preProc,nextProc=nextProc,curProc=curProc)
     },
     finalize = function(){
       #rm(private$graphMng)
@@ -98,7 +98,26 @@ BaseProc <- R6Class(
                 stop(paste("cannot create file '",filePath,"', No such file or directory"));
             }
         }
+    },
+    getSuffix = function(filePath){
+        filename<-basename(filePath)
+        lst=strsplit(filename,"\\.")[[1]]
+        if(length(lst)==1){
+            return(NULL)
+        }else{
+            return(lst[length(lst)])
+        }
+    },
+    getSuflessFileName = function(filePath){
+        sfx=getSuffix(filePath)
+        if(is.null(sfx)){
+            return(filePath)
+        }else {
+            return(strsplit(filePath,paste0(".",sfx)))
+        }
     }
+
+
 
   )
 
