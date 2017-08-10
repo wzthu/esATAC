@@ -12,6 +12,32 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL,tmpdir=NULL,saveTmpFiles=FALSE
   return(gph$getSubGraphTopo(as.numeric(vlist),atacInputFile,list(Renamer=Renamer,RemoveAdapter=RemoveAdapter)))
 }
 
+atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE){
+    if(is.null(atacProc)){
+        .global_graph$printMap()
+    }else if(class(atacProc)=="character"){
+        .global_graph$printMap(atacProc,preProc,nextProc,curProc)
+    }else{
+        atacProc$printMap(preProc,nextProc,curProc)
+    }
+}
+
+atacPrintNextList(atacProc){
+    if(class(atacProc)=="character"){
+        .global_graph$getNextProcs(atacProc)
+    }else{
+        .global_graph$getNextProcs(atacProc$getProcName())
+    }
+}
+
+atacPrintPrevList(atacProc){
+    if(class(atacProc)=="character"){
+        .global_graph$getPrevProcs(atacProc)
+    }else{
+        .global_graph$getPrevProcs(atacProc$getProcName())
+    }
+}
+
 
 atacInputFile <- function(fastqInput1,fastqInput2=NULL){
   seqFile <- SeqFile$new(fastqInput1,fastqInput2);
