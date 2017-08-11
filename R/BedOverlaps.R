@@ -28,10 +28,12 @@ BedOverlaps <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       BedIntersect(Input1 = private$paramlist[["BedInput1"]], Input2 = private$paramlist[["BedInput2"]],
                    bed_output = private$paramlist[["Output"]], n.col = private$paramlist[["col_num"]])
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
     setResultParam = function(Output){

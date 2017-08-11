@@ -29,11 +29,13 @@ SamToBam <-R6::R6Class(
 
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       Rsamtools::asBam(file = private$paramlist[["samInput"]], destination = private$paramlist[["bamOutput"]])
       private$paramlist[["bamOutput"]] <- paste0(private$paramlist[["samInput"]], ".bam", collapse = "")
       private$paramlist[["baiOutput"]] <- paste0(private$paramlist[["samInput"]], ".bam.bai", collapse = "")
-      private$finish <- TRUE
+      private$setFinish()
     },
 
     setResultParam = function(bamFilePath){

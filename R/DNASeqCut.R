@@ -26,10 +26,12 @@ DNASeqCut <- R6::R6Class(
     }, # # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       Sequence_Cut(private$paramlist[["ref_path"]], private$paramlist[["save_path"]],
                    private$paramlist[["bed_path"]], private$paramlist[["save_format"]])
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
     setResultParam = function(){

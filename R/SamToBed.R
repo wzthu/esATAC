@@ -36,7 +36,9 @@ SamToBed <- R6::R6Class(
     },
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       readsCount
       if(private$paramlist[["merge"]]){
           private$paramlist[["readsCount"]]<-.sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
@@ -50,7 +52,7 @@ SamToBed <- R6::R6Class(
                         sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
                         filterList = private$paramlist[["filterList"]])
       }
-      private$finish <- TRUE
+      private$setFinish()
     },
 
     setResultParam = function(bedOutput){
