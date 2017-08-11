@@ -9,6 +9,9 @@
         },
         getConfigure = function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx")){
             private$isValidAttr(item);
+            if(item=="tmpdir"||item=="datadir"){
+                return(normalizePath(private$configList[[item]]))
+            }
             return(private$configList[[item]]);
         },
         setConfigure = function(item = c("threads","tmpdir","datadir","genome"),val){
@@ -40,6 +43,7 @@
             }
             if(item=="datadir"||item=="tmpdir"){
                 private$checkPathExist(val)
+                val<-normalizePath(val)
             }
             if(item=="genome"){
                 private$configList[["bsgenome"]]<-getBSgenome(val)

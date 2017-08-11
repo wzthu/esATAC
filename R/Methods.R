@@ -39,17 +39,8 @@ atacPrintPrevList<-function(atacProc){
 }
 
 
-atacInputFile <- function(fastqInput1,fastqInput2=NULL){
-  seqFile <- SeqFile$new(fastqInput1,fastqInput2);
-  seqFile$processing();
-  return(seqFile);
-}
 
-atacRenamer <- function(atacProc, fastqOutput1=NULL, fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL){
-  renamer <- Renamer$new(atacProc, fastqOutput1, fastqOutput2,fastqInput1,fastqInput2,FALSE)
-  renamer$processing()
-  return(renamer)
-}
+
 
 atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL){

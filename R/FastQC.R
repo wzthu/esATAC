@@ -9,8 +9,8 @@ FastQC <- R6::R6Class(
       # in this class, there is no necessary and unchanged parameters
       # input processing
       private$checkRequireParam()
-      if((!is.null(atacProc)) && (class(atacProc)[1] == "SeqFile")){ # atacproc from seqfile
-        print("SeqFile")
+      if((!is.null(atacProc)) && (class(atacProc)[1] == "UnzipAndMerge")){ # atacproc from UnzipAndMerge
+        print("UnzipAndMerge")
         if(is.null(atacProc$getParam("fastqOutput2"))){ # single end
           private$paramlist[["Input1"]] <- as.vector(unlist(atacProc$getParam("fastqOutput1")))
           # input file check
@@ -45,10 +45,10 @@ FastQC <- R6::R6Class(
         # input file check
         private$checkFileExist(private$paramlist[["Input1"]]);
         private$paramlist[["Input"]] <- c(private$paramlist[["Input1"]])
-      }else if(((!is.null(atacProc)) && (class(atacProc)[1] != "SeqFile")) ||
+      }else if(((!is.null(atacProc)) && (class(atacProc)[1] != "UnzipAndMerge")) ||
                ((!is.null(atacProc)) && (class(atacProc)[1] != "Renamer")) ||
                ((!is.null(atacProc)) && (class(atacProc)[1] != "SamToBam"))){
-        stop("Input class must be got from 'SeqFile' or 'Renamer' or 'SamToBam'!")
+        stop("Input class must be got from 'UnzipAndMerge' or 'Renamer' or 'SamToBam'!")
       }else if(is.null(atacProc) && (length(input_file) == 1)){ # input one file
         private$paramlist[["Input1"]] <- as.vector(unlist(input_file))
         # input file check

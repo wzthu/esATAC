@@ -32,8 +32,9 @@ BaseProc <- R6Class(
             stop("The \"processing\" method can not be call in editable result object");
         }
         if(private$checkMD5Cache()){
-            warning(paste0("This process:`",private$procName,"` was finished. Nothing to be done."))
-            warning("If you need to redo, please call 'YourObject$clearCache()'")
+            message(paste0("This process:`",private$procName,"` was finished. Nothing to be done."))
+            message("If you need to redo, please call 'YourObject$clearCache()'")
+            private$finish<-TRUE
             return(FALSE)
         }else{
             return(TRUE)
@@ -74,9 +75,13 @@ BaseProc <- R6Class(
     },
     clearCache = function(){
         if(!unlink(private$getParamMD5Path())){
-            warning("Chache has been cleared")
+            message("Chache has been cleared")
         }else{
-            warning("Chache does not exist. Nothing has been done.")
+            message("Chache does not exist. Nothing has been done.")
+        }
+        rslist<-grep("(o|O)utput",names(private$paramlist))
+        for(i in 1:length(rslist)){
+            unlink(private$paramlist[rslist[i]])
         }
     },
     isSingleEnd = function(){
@@ -155,6 +160,12 @@ BaseProc <- R6Class(
         }else{
             return(FALSE)
         }
+    },
+    getBasenamePrefix = function(filepath,words){
+        return(basename(gsub(paste0("[.]",words,".*"),"",filepath)))
+    },
+    getPathPrefix = function(filepath,words){
+        return(gsub(paste0("[.]",words,".*"),"",filepath))
     }
 
 

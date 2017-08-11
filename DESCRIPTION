@@ -30,7 +30,8 @@ Imports: Rcpp (>= 0.12.11),
     digest,
     BSgenome,
     AnnotationDbi,
-    GenomicFeatures
+    GenomicFeatures,
+    R.utils
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1

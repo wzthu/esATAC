@@ -1,9 +1,9 @@
-SeqFile <-R6Class(
-    classname = "SeqFile",
+UnzipAndMerge <-R6Class(
+    classname = "UnzipAndMerge",
     inherit = BaseProc,
     public = list(
         initialize = function(fastqInput1, fastqInput2=NULL,fastqOutput1=NULL,fastqOutput2=NULL,editable=FALSE){
-            super$initialize("SeqFile",editable,list())
+            super$initialize("UnzipAndMerge",editable,list())
             if(is.null(fastqInput2)){
                 private$singleEnd<-TRUE
                 private$paramlist[["fastqInput1"]]<-fastqInput1
@@ -14,7 +14,7 @@ SeqFile <-R6Class(
                     private$paramlist[["fastqOutput1"]]<-fastqOutput1
                     private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
                 }else{
-                    private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),private$paramlist[["fastqInput1"]][1])
+                    private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput1"]][1]))
                     private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
                 }
 
@@ -34,14 +34,14 @@ SeqFile <-R6Class(
                     private$paramlist[["fastqOutput1"]]<-fastqOutput1
                     private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
                 }else{
-                    private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),private$paramlist[["fastqInput1"]][1])
+                    private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput1"]][1]))
                     private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
                 }
                 if(!is.null(fastqOutput2)){
                     private$paramlist[["fastqOutput2"]]<-fastqOutput2
                     private$checkFileCreatable(private$paramlist[["fastqOutput2"]])
                 }else{
-                    private$paramlist[["fastqOutput2"]]<-file.path(.obtainConfigure("tmpdir"),private$paramlist[["fastqInput2"]][1])
+                    private$paramlist[["fastqOutput2"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput2"]][1]))
                     private$paramlist[["fastqOutput2"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput2"]])
                 }
             }
@@ -125,7 +125,8 @@ SeqFile <-R6Class(
                 return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
             }else if(isGzipped(filename)){
                 return(gunzip(filename,destname=destname,overwrite=TRUE,remove=FALSE))
-            }else if(filename!=destname){
+            }else if(normalizePath(dirname(filename))!=normalizePath(dirname(destname))||
+                     basename(filename)!=basename(destname)){
                 file.copy(filename,destname)
             }
 
@@ -136,9 +137,19 @@ SeqFile <-R6Class(
             filename<-gsub(sprintf("[.]%s$", "gz"), "", filename, ignore.case=TRUE)
             filename<-gsub(sprintf("[.]%s$", "fastq"), "", filename, ignore.case=TRUE)
             filename<-gsub(sprintf("[.]%s$", "fq"), "", filename, ignore.case=TRUE)
-            filename<-paste0(filename,".atac.fq")
+            filename<-paste0(filename,".",self$getProcName(),".fq")
             return(filename)
         }
     )
 
 )
+
+
+
+
+
+atacUnzipAndMerge<- function(fastqInput1,fastqInput2=NULL){
+    atacproc <- UnzipAndMerge$new(fastqInput1,fastqInput2);
+    atacproc$processing();
+    return(atacproc);
+}

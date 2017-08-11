@@ -4,9 +4,9 @@ GraphMng <- R6Class(
   public = list(
     initialize = function(){
         edges1<-c(
-            SeqFile,Renamer,
-            SeqFile,FastQC,
-            SeqFile,RemoveAdapter,
+            UnzipAndMerge,Renamer,
+            UnzipAndMerge,FastQC,
+            UnzipAndMerge,RemoveAdapter,
             Renamer,RemoveAdapter,
             Renamer,FastQC,
             SamToBam, Rsortbam,
