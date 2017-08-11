@@ -31,7 +31,9 @@ RGoDavid <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       tmp <- clusterProfiler::enrichDAVID(gene = private$paramlist[["gene"]],
                                                                         idType = private$paramlist[["idType"]],
                                                                         listType = private$paramlist[["listType"]],
@@ -42,7 +44,7 @@ RGoDavid <- R6::R6Class(
                                                                         species = private$paramlist[["species"]],
                                                                         david.user = private$paramlist[["david.user"]])
       write.table(x = tmp, file = private$paramlist[["output"]], append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
 

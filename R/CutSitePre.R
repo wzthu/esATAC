@@ -21,9 +21,11 @@ CutSitePre <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       .CutSite_call(InputFile = private$paramlist[["Input"]], OutputFile = private$paramlist[["Output"]])
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
     setResultParam = function(){

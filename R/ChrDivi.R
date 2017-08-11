@@ -30,7 +30,9 @@ ChrDivi <- R6::R6Class(
     },
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       .chr_separate_call(ReadsIfile = private$paramlist[["ReadsIfile"]], ReadsOpath = private$paramlist[["ReadsOpath"]],
                          Name = private$paramlist[["name"]])
       if(!is.null(private$paramlist[["sort"]]) && (private$paramlist[["sort"]])){
@@ -45,7 +47,7 @@ ChrDivi <- R6::R6Class(
           write.table(data, file = sfile, row.names = FALSE, col.names = FALSE, quote = FALSE)
         }
       }
-      private$finish <- TRUE
+      private$setFinish()
     },
 
     setResultParam = function(){

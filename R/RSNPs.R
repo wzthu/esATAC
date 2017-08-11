@@ -27,7 +27,9 @@ RSNPs <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       tmp <- FunciSNP::getFSNPs(snp.regions.file = private$paramlist[["snp.regions.file"]],
                                                           bio.features.loc = private$paramlist[["bio.features.loc"]],
                                                           built.in.biofeatures = private$paramlist[["built.in.biofeatures"]],
@@ -36,7 +38,7 @@ RSNPs <- R6::R6Class(
                                                           method.p = private$paramlist[["method.p"]],
                                                           search.window = private$paramlist[["search.window"]])
       saveRDS(tmp, private$paramlist[["output"]])
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
     setResultParam = function(){

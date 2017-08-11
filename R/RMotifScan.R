@@ -29,13 +29,15 @@ RMotifScan <- R6::R6Class(
 
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       ref <- Biostrings::readDNAStringSet(private$paramlist[["Seq_file"]])
       pwm <- TFBSTools::toPWM(private$paramlist[["Motif"]])
       sitesetList <- TFBSTools::searchSeq(pwm, ref)
       tmp <- as(sitesetList, "data.frame")
       write.table(tmp, private$paramlist[["output_file"]], row.names = FALSE,  quote = FALSE)
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
 
