@@ -17,6 +17,7 @@ BaseProc <- R6Class(
         if(!private$graphMng$checkRelation1(atacProcs[[1]]$getProcName(),procName)){
           stop(paste(atacProcs[[1]]$getProcName(),"is not valid input"))
         }
+        private$singleEnd<-atacProcs[[1]]$isSingleEnd()
       }else if(argSize>=2&&!is.null(atacProcs[[2]])){
           if(!atacProcs[[2]]$isReady()){
               stop(paste(atacProcs[[2]]$getProcName(),"is not ready"))
@@ -77,6 +78,9 @@ BaseProc <- R6Class(
         }else{
             warning("Chache does not exist. Nothing has been done.")
         }
+    },
+    isSingleEnd = function(){
+        return(private$singleEnd)
     }
   ),
   private = list(
@@ -86,6 +90,7 @@ BaseProc <- R6Class(
     editable = FALSE,
     finish = FALSE,
     graphMng = NULL,
+    singleEnd = FALSE,
     checkRequireParam = function(){
       stop("processing function has not been implemented")
     },
@@ -130,10 +135,10 @@ BaseProc <- R6Class(
         }
     },
     getParamMD5Path = function(){
-        paramstr=private$procName
+        paramstr=c(private$procName)
         for(n in sort(names(private$paramlist))){
-            paramstr<-paste(paramstr,n,sep = "_")
-            paramstr<-paste(paramstr,private$paramlist[[n]],sep = ":")
+            paramstr<-c(paramstr,n)
+            paramstr<-c(paramstr,private$paramlist[[n]])
         }
         md5code<-digest(object = paramstr,algo = "md5")
         curtmpdir<-.obtainConfigure("tmpdir")

@@ -17,7 +17,7 @@
         }
     ),
     private = list(
-        configList=list(threads=1,tmpdir=getwd(),datadir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL),
+        configList=list(threads=1,tmpdir=".",datadir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL),
         validAttr=NULL,
         validWriteAttr=NULL,
         isValidAttr=function(item){
