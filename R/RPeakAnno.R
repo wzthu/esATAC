@@ -28,11 +28,13 @@ RPeakAnno <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       peak <- ChIPseeker::readPeakFile(private$paramlist[["Input"]])
       peakAn <- ChIPseeker::annotatePeak(peak)
       write.table(x = peakAn, file = private$paramlist[["Output"]], append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
     setResultParam = function(){

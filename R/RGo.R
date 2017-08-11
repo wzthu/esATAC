@@ -32,7 +32,9 @@ RGo <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       tmp <- clusterProfiler::enrichGO(gene = private$paramlist[["gene"]],
                                        OrgDb = private$paramlist[["OrgDb"]],
                                        keytype = private$paramlist[["keytype"]],
@@ -44,7 +46,7 @@ RGo <- R6::R6Class(
                                        readable = private$paramlist[["readable"]],
                                        pool = private$paramlist[["pool"]])
       write.table(x = tmp, file = private$paramlist[["output"]], append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
-      private$finish <- TRUE
+      private$setFinish()
     }, # processing end
 
 

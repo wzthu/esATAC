@@ -26,9 +26,11 @@ Rsortbam <- R6::R6Class(
     },
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       Rsamtools::sortBam(file = private$paramlist[["bamInput"]], destination = private$paramlist[["bamOutput"]])
-      private$finish <- TRUE
+      private$setFinish()
     },
 
     setResultParam = function(bamFilePath){

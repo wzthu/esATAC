@@ -49,7 +49,9 @@ BowtieMapping <- R6::R6Class(
     },
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       if(private$paramlist[["seq_type"]] == "single"){
         seq_file <- as.vector(unlist(private$paramlist[["fastqInput1"]]))
       }else{
@@ -57,7 +59,7 @@ BowtieMapping <- R6::R6Class(
       }
       Rbowtie::bowtie(sequences = seq_file, index = private$paramlist[["genome_ref"]], S = TRUE, X = 2000, m = 1,threads = getConfigure("threads"),
                       type = private$paramlist[["seq_type"]], outfile = private$paramlist[["samOutput"]], force = TRUE, strict = TRUE)
-      private$finish <- TRUE
+      private$setFinish()
     },
 
     setResultParam = function(samOutput){

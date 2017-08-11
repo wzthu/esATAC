@@ -27,7 +27,9 @@ CutSiteCountR <- R6::R6Class(
     }, # initialization end
 
     processing = function(){
-      super$processing()
+      if(!super$processing()){
+        return()
+      }
       chr <- as.list(1:22)
       chr[[23]] <- "X"
       chr[[24]] <- "Y"
@@ -59,7 +61,7 @@ CutSiteCountR <- R6::R6Class(
         abline(v = c(private$paramlist[["strand_length"]], private$paramlist[["strand_length"]] + private$paramlist[["motif_length"]] + 1),
                lty = 2)
       }
-
+      private$setFinish()
     }, # processing end
 
     setResultParam = function(){
