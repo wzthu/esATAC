@@ -31,7 +31,9 @@ BlacklistQC <-R6Class(
             private$checkRequireParam();
         },
         processing = function(){
-            super$processing()
+            if(!super$processing()){
+                return()
+            }
             genome <- Seqinfo(genome = .obtainConfigure("genome"))
 
             inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
@@ -49,7 +51,7 @@ BlacklistQC <-R6Class(
 
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
-            private$finish <- TRUE
+            private$setFinish()
         },
         setResultParam = function(fastqOutput1, fastqOutput2=NULL){
             super$setResultParam();
