@@ -26,7 +26,11 @@ Imports: Rcpp (>= 0.12.11),
     igraph,
     rJava,
     DiagrammeR,
-    magrittr
+    magrittr,
+    digest,
+    BSgenome,
+    AnnotationDbi,
+    GenomicFeatures
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1

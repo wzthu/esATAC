@@ -17,6 +17,7 @@ BaseProc <- R6Class(
         if(!private$graphMng$checkRelation1(atacProcs[[1]]$getProcName(),procName)){
           stop(paste(atacProcs[[1]]$getProcName(),"is not valid input"))
         }
+        private$singleEnd<-atacProcs[[1]]$isSingleEnd()
       }else if(argSize>=2&&!is.null(atacProcs[[2]])){
           if(!atacProcs[[2]]$isReady()){
               stop(paste(atacProcs[[2]]$getProcName(),"is not ready"))
@@ -27,11 +28,18 @@ BaseProc <- R6Class(
       }
     },
     processing = function(){
-      if(private$editable){
-        stop("The \"processing\" method can not be call in editable result object");
-      }
-      #stop("processing function has not been implemented")
+        if(private$editable){
+            stop("The \"processing\" method can not be call in editable result object");
+        }
+        if(private$checkMD5Cache()){
+            warning(paste0("This process:`",private$procName,"` was finished. Nothing to be done."))
+            warning("If you need to redo, please call 'YourObject$clearCache()'")
+            return(FALSE)
+        }else{
+            return(TRUE)
+        }
     },
+
     getNextProcList = function(){
       return(private$graphMng$getNextList())
     },
@@ -63,8 +71,17 @@ BaseProc <- R6Class(
         return(FALSE);
       }
 
+    },
+    clearCache = function(){
+        if(!unlink(private$getParamMD5Path())){
+            warning("Chache has been cleared")
+        }else{
+            warning("Chache does not exist. Nothing has been done.")
+        }
+    },
+    isSingleEnd = function(){
+        return(private$singleEnd)
     }
-
   ),
   private = list(
     paramlist = list(),
@@ -73,6 +90,7 @@ BaseProc <- R6Class(
     editable = FALSE,
     finish = FALSE,
     graphMng = NULL,
+    singleEnd = FALSE,
     checkRequireParam = function(){
       stop("processing function has not been implemented")
     },
@@ -109,11 +127,33 @@ BaseProc <- R6Class(
         }
     },
     getSuflessFileName = function(filePath){
-        sfx=getSuffix(filePath)
+        sfx=private$getSuffix(filePath)
         if(is.null(sfx)){
             return(filePath)
         }else {
             return(strsplit(filePath,paste0(".",sfx)))
+        }
+    },
+    getParamMD5Path = function(){
+        paramstr=c(private$procName)
+        for(n in sort(names(private$paramlist))){
+            paramstr<-c(paramstr,n)
+            paramstr<-c(paramstr,private$paramlist[[n]])
+        }
+        md5code<-digest(object = paramstr,algo = "md5")
+        curtmpdir<-.obtainConfigure("tmpdir")
+        md5filepath<-file.path(curtmpdir,paste(private$procName,md5code,"log",sep = "."))
+        return(md5filepath)
+    },
+    setFinish = function(){
+        private$finish<-TRUE
+        file.create(private$getParamMD5Path())
+    },
+    checkMD5Cache = function(){
+        if(file.exists(private$getParamMD5Path())){
+            return(TRUE)
+        }else{
+            return(FALSE)
         }
     }
 
