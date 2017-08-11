@@ -118,19 +118,41 @@ GraphMng <- R6Class(
 
 
     },
+    getNextProcs = function(procName){
+        private$getNextProcs1(procName)
+        private$getNextProcs2(procName)
+    },
     getNextProcs1 = function(procName){
       v <- neighbors(graph = private$graphDep1,v = procName, mode = "out");
       nextProc<-private$vtx1[v];
-      print("This object is a valid input for:")
+      print("This object is a valid first parameter for:")
       print(nextProc);
       return(nextProc);
+    },
+    getNextProcs2 = function(procName){
+        v <- neighbors(graph = private$graphDep2,v = procName, mode = "out");
+        nextProc<-private$vtx2[v];
+        print("This object is a valid second parameter for:")
+        print(nextProc);
+        return(nextProc);
+    },
+    getPrevProcs = function(procName){
+        private$getPrevProcs1(procName)
+        private$getPrevProcs2(procName)
     },
     getPrevProcs1 = function(procName){
       v <- neighbors(graph = private$graphDep1,v = procName, mode = "in");
       preProc<-private$vtx1[v];
-      print("This object accepts the objects below for initialization:")
+      print("This object accepts the objects below as first parameter for initialization:")
       print(preProc);
       return(preProc);
+    },
+    getPrevProcs2 = function(procName){
+        v <- neighbors(graph = private$graphDep2,v = procName, mode = "in");
+        preProc<-private$vtx2[v];
+        print("This object accepts the objects below as second parameter for initialization:")
+        print(preProc);
+        return(preProc);
     },
     getProcList = function(){
       vtx<-as.character(vertex.attributes(private$graphDep1)$name)
@@ -218,5 +240,7 @@ GraphMng <- R6Class(
   )
 
 )
+
+#.global_graph<-GraphMng$new()
 
 
