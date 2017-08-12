@@ -120,7 +120,7 @@ UnzipAndMerge <-R6Class(
                 return(gunzip(filename,destname=destname,overwrite=TRUE,remove=FALSE))
             }else if(normalizePath(dirname(filename))!=normalizePath(dirname(destname))||
                      basename(filename)!=basename(destname)){
-                file.copy(filename,destname)
+                file.copy(filename,destname,overwrite = TRUE)
             }
 
             return(destname)

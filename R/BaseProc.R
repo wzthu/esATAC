@@ -142,7 +142,9 @@ BaseProc <- R6Class(
             if(file.exists(filePath)){
                 private$writeLog(paste("file exist:",filePath,". It may be overwrited in processing"));
             }else if(!file.create(filePath)){
-                stop(paste("cannot create file '",filePath,"', No such file or directory"));
+                stop(paste("cannot create file '",filePath,"', No such file or directory or permission denied"));
+            }else{
+                unlink(filePath)
             }
         }
     },
