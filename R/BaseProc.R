@@ -27,18 +27,29 @@ BaseProc <- R6Class(
           }
       }
     },
-    processing = function(){
+    process = function(){
         if(private$editable){
             stop("The \"processing\" method can not be call in editable result object");
         }
         if(private$checkMD5Cache()){
-            message(paste0("This process:`",private$procName,"` was finished. Nothing to be done."))
+            message(paste0("The process:`",private$procName,"` was finished. Nothing to do."))
             message("If you need to redo, please call 'YourObject$clearCache()'")
             private$finish<-TRUE
             return(FALSE)
         }else{
+            private$writeLog(as.character(Sys.time()))
+            if(private$singleEnd){
+                private$writeLog(paste0("start processing(single end data): ", private$procName))
+            }else{
+                private$writeLog(paste0("start processing(paired end data): ", private$procName))
+            }
+            private$processing()
+            private$setFinish()
             return(TRUE)
         }
+    },
+    processing = function(){
+        stop("processing function has not been implemented")
     },
 
     getNextProcList = function(){
@@ -58,10 +69,11 @@ BaseProc <- R6Class(
     getParam = function(item){
       return(private$paramlist[[item]])
     },
-    setResultParam = function(){
+    setResultParam = function(item,val){
       if(!private$editable){
         stop("This object can not be edited");
       }
+      private$paramlist[[item]]<-val
     },
     isReady = function(){
       if(private$editable){
@@ -96,8 +108,20 @@ BaseProc <- R6Class(
     finish = FALSE,
     graphMng = NULL,
     singleEnd = FALSE,
+    logRecord= NULL,
+    paramValidation = function(){
+        if(!private$checkMD5Cache()){
+            private$checkAllPath()
+        }
+        if(!private$editable){
+            private$checkRequireParam();
+        }
+    },
     checkRequireParam = function(){
-      stop("processing function has not been implemented")
+      stop("checkRequireParam function has not been implemented")
+    },
+    checkAllPath = function(){
+      stop("checkAllPath function has not been implemented")
     },
     checkFileExist = function(filePath){
       if(!is.null(filePath)){
@@ -116,7 +140,7 @@ BaseProc <- R6Class(
     checkFileCreatable = function(filePath){
         if(!is.null(filePath)){
             if(file.exists(filePath)){
-                warning(paste("file exist:",filePath,", we will overwrite the file"));
+                private$writeLog(paste("file exist:",filePath,". It may be overwrited in processing"));
             }else if(!file.create(filePath)){
                 stop(paste("cannot create file '",filePath,"', No such file or directory"));
             }
@@ -152,7 +176,10 @@ BaseProc <- R6Class(
     },
     setFinish = function(){
         private$finish<-TRUE
-        file.create(private$getParamMD5Path())
+        private$writeLog(as.character(Sys.time()))
+        private$writeLog("processing finished")
+        logFilePath<-private$getParamMD5Path()
+        write.table(private$logRecord,logFilePath,quote = FALSE,row.names = FALSE,col.names = FALSE)
     },
     checkMD5Cache = function(){
         if(file.exists(private$getParamMD5Path())){
@@ -166,6 +193,20 @@ BaseProc <- R6Class(
     },
     getPathPrefix = function(filepath,words){
         return(gsub(paste0("[.]",words,".*"),"",filepath))
+    },
+    writeLog = function(msg,isWarnning=FALSE,appendLog=TRUE){
+        if(isWarnning){
+            warning(msg)
+            msg<-paste0("Warning:",msg)
+        }else{
+            message(msg)
+        }
+        if(appendLog){
+            private$logRecord<-c(private$logRecord,msg)
+        }else{
+            private$logRecord<-msg
+        }
+
     }
 
 

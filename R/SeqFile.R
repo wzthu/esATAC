@@ -45,14 +45,13 @@ UnzipAndMerge <-R6Class(
                     private$paramlist[["fastqOutput2"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput2"]])
                 }
             }
+            private$paramValidation()
 
-            private$checkRequireParam();
 
-        },
+        }
+    ),
+    private = list(
         processing = function(){
-            if(!super$processing()){
-                return()
-            }
             if(private$singleEnd){
                 fileNumber<-length(private$paramlist[["fastqInput1"]])
                 private$decompress(private$paramlist[["fastqInput1"]][1],private$paramlist[["fastqOutput1"]])
@@ -84,30 +83,21 @@ UnzipAndMerge <-R6Class(
                     }
                 }
             }
-            private$setFinish()
         },
-        setResultParam = function(fastqInput1, fastqInput2=NULL){
-            super$setResultParam();
-            private$paramlist[["fastqInput1"]] <- fastqInput1
-            private$paramlist[["fastqInput2"]] <- fastqInput2
-            private$checkFileExist(private$paramlist[["fastqInput1"]])
-            private$checkFileExist(private$paramlist[["fastqInput2"]])
-            private$paramlist[["fastqOutput1"]] <- fastqInput1
-            private$paramlist[["fastqOutput2"]] <- fastqInput2
-        }
-    ),
-    private = list(
         checkRequireParam = function(){
-            if(private$editable){
-                return();
-            }
             if(is.null(private$paramlist[["fastqInput1"]])){
                 stop("fastqInput1 is required.")
             }
         },
+        checkAllPath = function(){
+            private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
+            private$checkFileCreatable(private$paramlist[["fastqOutput2"]])
+        },
         decompressFastq = function(filename,destpath){
             destname<-file.path(destpath,basename(filename))
-
+            private$writeLog(paste0("processing file:"))
+            private$writeLog(sprintf("source:%s",filename))
+            private$writeLog(sprintf("destination:%s",destname))
             if(isBzipped(filename)){
                 destname<-gsub(sprintf("[.]%s$", "bz2"), "", destname, ignore.case=TRUE)
                 return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
@@ -121,6 +111,9 @@ UnzipAndMerge <-R6Class(
 
         },
         decompress = function(filename,destname){
+            private$writeLog(paste0("processing file:"))
+            private$writeLog(sprintf("source:%s",filename))
+            private$writeLog(sprintf("destination:%s",destname))
             if(isBzipped(filename)){
                 return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
             }else if(isGzipped(filename)){
@@ -150,6 +143,6 @@ UnzipAndMerge <-R6Class(
 
 atacUnzipAndMerge<- function(fastqInput1,fastqInput2=NULL){
     atacproc <- UnzipAndMerge$new(fastqInput1,fastqInput2);
-    atacproc$processing();
+    atacproc$process();
     return(atacproc);
 }

@@ -42,13 +42,6 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
-                              fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL){
-  removeAdapter <- RemoveAdapter$new(atacProc,adapter1,adapter2,fastqOutput1,reportPrefix,
-                                     fastqOutput2,fastqInput1, fastqInput2,editable=FALSE)
-  removeAdapter$processing()
-  return(removeAdapter)
-}
 
 atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
                            fastqInput1=NULL, fastqInput2=NULL){

@@ -63,7 +63,7 @@
 .identify_adapters_call <- function(inputFile1,inputFile2,threads=1){
   argv<-c("AdapterRemoval","--identify-adapters","--file1",
           inputFile1,"--file2",inputFile2,"--threads",threads);
-  print(argv)
+  #print(argv)
   removeAdapter(argv);
   adapter1tb<-read.table(paste(inputFile1,".adapter",sep = ""));
   adapter2tb<-read.table(paste(inputFile2,".adapter",sep = ""));
