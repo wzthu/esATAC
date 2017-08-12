@@ -171,7 +171,7 @@ BaseProc <- R6Class(
             paramstr<-c(paramstr,n)
             paramstr<-c(paramstr,private$paramlist[[n]])
         }
-        md5code<-digest(object = paramstr,algo = "md5")
+        md5code<-substr(digest(object = paramstr,algo = "md5"),1,8)
         curtmpdir<-.obtainConfigure("tmpdir")
         md5filepath<-file.path(curtmpdir,paste(private$procName,md5code,"log",sep = "."))
         return(md5filepath)

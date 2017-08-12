@@ -48,16 +48,32 @@ Renamer <-R6Class(
   ),
   private = list(
     processing = function(){
-      private$writeLog(paste0("processing file:"))
-      private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput1"]]))
-      private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput1"]]))
-      .renamer_call(private$paramlist[["fastqInput1"]],private$paramlist[["fastqOutput1"]])
-      if(!is.null(private$paramlist[["fastqInput2"]])){
         private$writeLog(paste0("processing file:"))
-        private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput2"]]))
-        private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput2"]]))
-        .renamer_call(private$paramlist[["fastqInput2"]],private$paramlist[["fastqOutput2"]])
-       }
+        private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput1"]]))
+        private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput1"]]))
+        if(private$singleEnd){
+            private$singleCall(1)
+        }else if(.obtainConfigure("threads")>=2){
+            private$writeLog(paste0("processing file:"))
+            private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput2"]]))
+            private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput2"]]))
+            cl<-makeCluster(2)
+            parLapply(cl = cl,X = 1:2,fun = private$singleCall)
+            stopCluster(cl)
+        }else{
+            private$singleCall(1)
+            private$writeLog(paste0("processing file:"))
+            private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput2"]]))
+            private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput2"]]))
+            private$singleCall(2)
+        }
+    },
+    singleCall = function(number){
+        if(number==1){
+            .renamer_call(private$paramlist[["fastqInput1"]],private$paramlist[["fastqOutput1"]])
+        }else if(number==2){
+            .renamer_call(private$paramlist[["fastqInput2"]],private$paramlist[["fastqOutput2"]])
+        }
     },
     checkRequireParam = function(){
       if(is.null(private$paramlist[["fastqInput1"]])){
