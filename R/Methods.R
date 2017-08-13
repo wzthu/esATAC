@@ -43,32 +43,12 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
-                           fastqInput1=NULL, fastqInput2=NULL){
-    bt2Mapping<-Bowtie2Mapping$new(atacProc,bowtie2Index,samOutput,NULL,
-                       fastqInput1, fastqInput2)
-    bt2Mapping$processing()
-    return(bt2Mapping)
-}
-
-atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
-                            fragmentSize=0,featureLength=NULL,bedOutput=NULL,
-                            outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
-                            wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                            wgThresholdSet=NULL){
-    peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
-                        fragmentSize,featureLength,bedOutput,outputFormat, ploidyDir,
-                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
-    peakcalling$processing();
-    return(peakcalling)
-}
 
 
-atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
-    distr<-ReadsLenDistribute$new(atacProc,reportPrefix,bedInput)
-    distr$processing()
-    return(distr)
-}
+
+
+
+
 
 atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
     libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
@@ -122,19 +102,7 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 }
 
 
-#' convert sam to bed
-#' @param ATAC_obj obj returned from ATAC_mapping
-#' @param samfile sam file dir
-#' @param bedfile bed file dir
-#' @param readlen reads length
-#' @export
-atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= "chrUn.*|chrM|.*random.*",
-                        samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
-                        saveExtLen = FALSE,uniqueBed = TRUE){
-  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput, bedOutput, sortBed, uniqueBed, minFregLen, maxFregLen, saveExtLen)
-  tmp$processing()
-  return(tmp)
-}
+
 
 #' Quality control using Quasr::qQCreport
 #' @param input_file a c()

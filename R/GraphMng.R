@@ -21,7 +21,7 @@ GraphMng <- R6Class(
             BamToBed,PeakCallingFseq,
             SamToBed,PeakCallingFseq,
             PeakCallingFseq,BedOverlaps,
-            SamToBed,ReadsLenDistribute,
+            SamToBed,FregLenDistr,
             SamToBed,TSSQC,
             SamToBed,GenicQC,
             SamToBed,BlacklistQC,
