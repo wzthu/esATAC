@@ -63,11 +63,7 @@ atacTSSQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput =
     return(tssQC)
 }
 
-atacFripQC<-function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=NULL,peakBedInput){
-    fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportPrefix=reportPrefix,readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
-    fripQC$processing()
-    return(fripQC)
-}
+
 
 atacDHSQC<-function(atacProc, reportPrefix=NULL,bedDHS = NULL,bedInput = NULL){
     dhsQC<-DHSQC$new(atacProc, reportPrefix=reportPrefix,bedDHS = bedDHS,bedInput = bedInput)
@@ -287,22 +283,4 @@ SNPana <- function(atacProc = NULL, snp.regions.file = NULL, bio.features.loc = 
 
 
 
-atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
-  renamer <- Renamer$new(NULL, fastqOutput1, fasqOutput2,NULL, NULL,editable=TRUE)
-  return(renamer)
-}
 
-atacRemoveResult <- function(fastqOutput1=NULL,fastqOutput2=NULL){
-  removeAdapter <- RemoveAdapter$new(NULL,NULL,NULL,fastqOutput1,NULL,fastqOutput2,NULL, NULL,editable=FALSE)
-  return(removeAdapter)
-}
-
-
-
-
-
-#atacRenamerObj<-atacRenamer("A/fastq1","B/fastq2","C/output")
-
-#atacRemoveAdapterObj<-atacRemoveAdapter(atacRenamerObj)
-
-#atacMappingObj<-Mapping(atacRemoveAdapterObj)

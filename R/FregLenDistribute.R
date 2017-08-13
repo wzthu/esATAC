@@ -97,8 +97,6 @@ FregLenDistr <-R6Class(
           ggplot(rs2)+geom_ribbon(data=subset(rs2,perior<=min(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,perior>=max(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,check==checkhistone),aes(x=perior,ymin=0,ymax=strength),fill="red")
           ggsave(paste0(private$paramlist[["reportPrefix"]],".histone.pdf"))
 
-
-          private$setFinish()
       },
     checkRequireParam = function(){
       if(is.null(private$paramlist[["bedInput"]])){
