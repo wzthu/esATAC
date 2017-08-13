@@ -6,15 +6,12 @@ RGo <- R6::R6Class(
     initialize = function(atacProc, gene = NULL, OrgDb = NULL, keytype = NULL, ont = NULL,
                           pvalueCutoff = NULL, pAdjustMethod = NULL, universe = NULL, qvalueCutoff = NULL,
                           readable = NULL, pool = NULL, output = NULL, editable = FALSE){
-
       super$initialize("RGo", editable, list(arg1=atacProc))
-      print("RGoInitCall")
 
-      # necessary and unchanged parameters, this should be tested
+      # necessary parameters
       if(!is.null(atacProc)){
         print("Parameter atacProc is not using now! We will add more functions in the future!")
       }
-
       private$paramlist[["gene"]] <- gene
       private$paramlist[["OrgDb"]] <- OrgDb
       private$paramlist[["keytype"]] <- keytype
@@ -26,18 +23,22 @@ RGo <- R6::R6Class(
       private$paramlist[["readable"]] <- readable
       private$paramlist[["pool"]] <- pool
       private$paramlist[["output"]] <- output
-      private$checkRequireParam()
+      # parameter check
+      private$paramValidation()
+    } # initialization end
 
-      print("finishRGoInitCall")
-    }, # initialization end
+  ), # public end
 
+
+  private = list(
     processing = function(){
-      if(!super$processing()){
-        return()
-      }
+      private$writeLog(paste0("processing file:"))
+      private$writeLog(sprintf("Database:%s", private$paramlist[["OrgDb"]]))
+      private$writeLog(sprintf("destination:%s", private$paramlist[["output"]]))
+      private$writeLog(sprintf("keytype of input gene:%s", private$paramlist[["keytype"]]))
       tmp <- clusterProfiler::enrichGO(gene = private$paramlist[["gene"]],
                                        OrgDb = private$paramlist[["OrgDb"]],
-                                       keytype = private$paramlist[["keytype"]],
+                                       keyType = private$paramlist[["keytype"]],
                                        ont = private$paramlist[["ont"]],
                                        pvalueCutoff = private$paramlist[["pvalueCutoff"]],
                                        pAdjustMethod = private$paramlist[["pAdjustMethod"]],
@@ -45,23 +46,12 @@ RGo <- R6::R6Class(
                                        qvalueCutoff = private$paramlist[["qvalueCutoff"]],
                                        readable = private$paramlist[["readable"]],
                                        pool = private$paramlist[["pool"]])
-      write.table(x = tmp, file = private$paramlist[["output"]], append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
-      private$setFinish()
+      write.table(x = tmp, file = private$paramlist[["output"]],
+                  append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
     }, # processing end
 
 
-    setResultParam = function(output_path){
-      private$paramlist[["output"]] <- output_path
-    }  # setResultParam end
-
-  ), # public end
-
-
-  private = list(
     checkRequireParam = function(){
-      if(private$editable){
-        return();
-      }
       if(is.null(private$paramlist[["gene"]])){
         stop("Parameter gene is required!")
       }
@@ -71,7 +61,25 @@ RGo <- R6::R6Class(
       if(is.null(private$paramlist[["output"]])){
         stop("Parameter output is required!")
       }
-    }
+    }, # checkRequireParam end
+
+    checkAllPath = function(){
+      private$checkPathExist(private$paramlist[["output"]])
+    } # checkAllPath end
+
   ) # private end
 
 ) # R6 class end
+
+#' Using clusterProfiler to do GO analysis.
+#'
+#'
+#'
+GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
+                       pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
+                       readable = FALSE, pool = FALSE, output = NULL){
+  tmp <- RGo$new(atacProc, gene, OrgDb, keytype, ont, pvalueCutoff,
+                 pAdjustMethod , universe, qvalueCutoff, readable, pool, output)
+  tmp$process()
+  return(tmp)
+}

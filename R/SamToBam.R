@@ -4,53 +4,58 @@ SamToBam <-R6::R6Class(
   public = list(
     initialize = function(atacProc, samfile = NULL, bamfile = NULL, editable=FALSE){
       super$initialize("SamToBam",editable,list(arg1=atacProc))
-      print("SamToBamInitCall")
-      private$checkRequireParam()
-#      if((!is.null(atacProc)) && (class(atacProc)[1] == "Mapping")){ # atacproc from mapping
-      print(atacProc$getParam("samOutput"))
+
+      # necessary parameters
       if((!is.null(atacProc)) ){
         private$paramlist[["samInput"]] <- atacProc$getParam("samOutput")
-#      }else if((!is.null(atacProc)) && (class(atacProc)[1] != "Mapping")){ # atacproc not from mapping, error!
-#        stop("Input class must be got from 'Mapping'!")
       }else if(is.null(atacProc)){ # input
         private$paramlist[["samInput"]] <- samfile
       }
+      # unnecessary parameters
       if(is.null(bamfile)){
-        private$paramlist[["bamOutput"]] <- private$paramlist[["samInput"]]
+        private$paramlist[["bamOutput_tmp"]] <- private$paramlist[["samInput"]]
+        private$paramlist[["bamOutput"]] <- paste0(private$paramlist[["samInput"]], ".bam", collapse = "")
+        private$paramlist[["baiOutput"]] <- paste0(private$paramlist[["samInput"]], ".bam.bai", collapse = "")
       }else{
-        private$paramlist[["bamOutput"]] <- bamfile
+        private$paramlist[["bamOutput_tmp"]] <- bamfile
+        private$paramlist[["bamOutput"]] <- paste0(private$paramlist[["bamOutput_tmp"]], ".bam", collapse = "")
+        private$paramlist[["baiOutput"]] <- paste0(private$paramlist[["bamOutput_tmp"]], ".bam.bai", collapse = "")
       }
-      # file check
-      private$checkFileExist(private$paramlist[["samInput"]])
-      private$checkPathExist(private$paramlist[["bamOutput"]])
-
-      print("finishSamToBamInitCall")
-    },
 
 
-    processing = function(){
-      if(!super$processing()){
-        return()
-      }
-      Rsamtools::asBam(file = private$paramlist[["samInput"]], destination = private$paramlist[["bamOutput"]])
-      private$paramlist[["bamOutput"]] <- paste0(private$paramlist[["samInput"]], ".bam", collapse = "")
-      private$paramlist[["baiOutput"]] <- paste0(private$paramlist[["samInput"]], ".bam.bai", collapse = "")
-      private$setFinish()
-    },
+      # parameter check
+      private$paramValidation()
+    } # initialization end
 
-    setResultParam = function(bamFilePath){
-      super$setResultParam();
-      private$paramlist[["bamOutput"]] <- bamFilePath
-    }
-
-  ),
+  ), # public end
 
   private = list(
-    checkRequireParam = function(){
-      if(private$editable){
-        return();
-      }
-    }
-  )
+    processing = function(){
+      private$writeLog(paste0("processing file:"))
+      private$writeLog(sprintf("source:%s", private$paramlist[["samInput"]]))
+      private$writeLog(sprintf("destination:%s", private$paramlist[["bamOutput"]]))
+      Rsamtools::asBam(file = private$paramlist[["samInput"]], destination = private$paramlist[["bamOutput_tmp"]])
 
-)
+    }, # processing end
+
+    checkRequireParam = function(){
+      if(is.null(private$paramlist[["samInput"]])){
+        stop("Parameter samInput is required!")
+      }
+    }, # checkRequireParam end
+
+    checkAllPath = function(){
+      private$checkFileExist(private$paramlist[["samInput"]])
+      private$checkPathExist(private$paramlist[["bamOutput"]])
+    } # checkAllPath end
+  ) # private end
+
+) # class end
+
+#' sam2bam using Rbowtie::asBam
+#' @export
+atacSam2Bam <- function(atacProc = NULL, samfile = NULL, bamfile = NULL){
+  tmp <- SamToBam$new(atacProc, samfile, bamfile)
+  tmp$process()
+  return(tmp)
+}

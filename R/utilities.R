@@ -64,7 +64,6 @@ Sequence_Cut <- function(ref_path, save_path, bed_path, save_format){
       DNA_string <- append(DNA_string, Biostrings::subseq(ref[index_num], GenomicRanges::start(gr_a[i]),
                                                           GenomicRanges::end(gr_a[i])), after=length(DNA_string))
     }else{
-      write.table(i,"C:\\Users\\Zwei\\Desktop\\motif_scan\\log")
       stop("An unexpected chromatin detected!")
     }
   }

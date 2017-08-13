@@ -1,14 +1,12 @@
 CutSiteCountR <- R6::R6Class(
   classname = "CutSiteCountR",
   inherit = BaseProc,
-
   public = list(
     initialize = function(atacProc, CutSiteFile = NULL, MotifFile = NULL, MatrixPath = NULL,
                           motif_length = NULL, strand_length = NULL, FootPrint = FALSE, editable = FALSE){
       super$initialize("CutSiteCountR",editable,list(arg1=atacProc))
-      print("CutSiteCountRInitCall")
 
-      # necessary and unchanged parameters, this should be tested
+      # necessary parameters
       if(!is.null(atacProc)){
         print("Parameter atacProc is not using now! We will add more functions in the future!")
       }
@@ -18,21 +16,19 @@ CutSiteCountR <- R6::R6Class(
       private$paramlist[["motif_length"]] <- motif_length
       private$paramlist[["strand_length"]] <- strand_length
       private$paramlist[["FootPrint"]] <- FootPrint
-      # check parameter
-      private$checkRequireParam()
-      private$checkPathExist(private$paramlist[["CutSiteFile"]])
-      private$checkPathExist(private$paramlist[["MotifFile"]])
-      private$checkPathExist(private$paramlist[["MatrixPath"]])
-      print("finishCutSiteCountRInitCall")
-    }, # initialization end
+      # parameter check
+      private$paramValidation()
+    } # initialization end
 
+  ), # public end
+
+  private = list(
     processing = function(){
-      if(!super$processing()){
-        return()
-      }
-      chr <- as.list(1:22)
-      chr[[23]] <- "X"
-      chr[[24]] <- "Y"
+      private$writeLog(paste0("processing file:"))
+      private$writeLog(sprintf("Cut site:%s", private$paramlist[["CutSiteFile"]]))
+      private$writeLog(sprintf("Motif:%s", private$paramlist[["MotifFile"]]))
+      private$writeLog(sprintf("Matrix destination:%s", private$paramlist[["MatrixPath"]]))
+      chr <- as.list(c(1:22, "X", "Y"))
       for(i in seq(1:24)){
         CutSiteInput <- paste0(private$paramlist[["CutSiteFile"]], "_chr", chr[[i]], ".bed", collapse = "")
         MotifInput <- paste0(private$paramlist[["MotifFile"]], "_chr", chr[[i]], ".bed", collapse = "")
@@ -52,8 +48,8 @@ CutSiteCountR <- R6::R6Class(
         fp <- apply(data, 2, sum)
         plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
         axis(1, at = seq(1, private$paramlist[["strand_length"]], len = 3),
-              labels = -(private$paramlist[["strand_length"]] + 1 - seq(1, private$paramlist[["strand_length"]] + 1, len = 3)),
-              padj = -1.0, tck = -0.01)
+             labels = -(private$paramlist[["strand_length"]] + 1 - seq(1, private$paramlist[["strand_length"]] + 1, len = 3)),
+             padj = -1.0, tck = -0.01)
         axis(1, at = private$paramlist[["strand_length"]] + private$paramlist[["motif_length"]] + seq(1, private$paramlist[["strand_length"]], len = 3),
              labels = seq(0, private$paramlist[["strand_length"]], len = 3),
              padj = -1.0, tck = -0.01)
@@ -61,21 +57,9 @@ CutSiteCountR <- R6::R6Class(
         abline(v = c(private$paramlist[["strand_length"]], private$paramlist[["strand_length"]] + private$paramlist[["motif_length"]] + 1),
                lty = 2)
       }
-      private$setFinish()
     }, # processing end
 
-    setResultParam = function(){
-
-    }  # setResultParam end
-
-  ), # public end
-
-
-  private = list(
     checkRequireParam = function(){
-      if(private$editable){
-        return();
-      }
       if(is.null(private$paramlist[["CutSiteFile"]])){
         stop("Parameter CutSiteFile is required!")
       }
@@ -91,7 +75,35 @@ CutSiteCountR <- R6::R6Class(
       if(is.null(private$paramlist[["strand_length"]])){
         stop("Parameter strand_length is required!")
       }
-    }
+    }, # checkRequireParam end
+
+    checkAllPath = function(){
+      private$checkPathExist(private$paramlist[["CutSiteFile"]])
+      private$checkPathExist(private$paramlist[["MotifFile"]])
+      private$checkPathExist(private$paramlist[["MatrixPath"]])
+    } # checkAllPath end
+
   ) # private end
 
 ) # class end
+
+
+#' Counting cut site around motif.
+#' @param atacProc Do not use this parameter, we will add nore functions in the future!
+#' @param CutSiteFile Your cut site infoemation file(from atacCutSitePre function) path with prefix.
+#' e.g. "/your_cut_site_information_path/prefix"
+#' @param MotifFile Your cut site infoemation file(from atacChrDivi function) path with prefix.
+#' e.g. "/your_motif_information_path/prefix"
+#' Motif file must be 4 column, chr, start_site, end_site, strand.
+#' @param MatrixPath The output path with a prefix, an empty folder would be great.
+#' e.g. "/where_you_want_to_save_output/prefix"
+#' @param motif_length Motif length.
+#' @param strand_length How many bp(base pair) do you want to count up/downstream of the motif.
+#' @export
+atacCutSiteCount <- function(atacProc = NULL, CutSiteFile = NULL, MotifFile = NULL, MatrixPath = NULL,
+                             motif_length = NULL, strand_length = NULL, FootPrint = FALSE){
+  tmp <- CutSiteCountR$new(atacProc, CutSiteFile, MotifFile, MatrixPath,
+                           motif_length, strand_length, FootPrint)
+  tmp$process()
+  return(tmp)
+}
