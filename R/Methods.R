@@ -43,13 +43,7 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacMappingBt2 <- function(atacProc,bowtie2Index=NULL,samOutput=NULL,
-                           fastqInput1=NULL, fastqInput2=NULL){
-    bt2Mapping<-Bowtie2Mapping$new(atacProc,bowtie2Index,samOutput,NULL,
-                       fastqInput1, fastqInput2)
-    bt2Mapping$processing()
-    return(bt2Mapping)
-}
+
 
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,

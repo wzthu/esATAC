@@ -78,11 +78,12 @@
                 if(!(file.exists(paste0(fileprefix,".1.bt2"))&&file.exists(paste0(fileprefix,".2.bt2"))||
                      file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))||
                      file.exists(paste0(fileprefix,".rev.1.bt2"))&&file.exists(paste0(fileprefix,".rev.1.bt2")))){
-                   file.create( fileprefixlock)
+                   file.create(fileprefixlock)
+                    .bowtie2_build_call(fastaFilePath,fileprefix,c("--threads",as.character(.obtainConfigure("threads"))))
                     #buildBowtie2Index(fastaFilePath)################################赶紧实现
                     unlink(fileprefixlock)
                 }
-                private$configList[["bt2idx"]]<-fileprefix
+                private$configList[["bt2Idx"]]<-fileprefix
                 #kownGene
                 knownGeneFilePath<-paste0(fileprefix,".knownGene.sqlite")
                 knownGeneFilePathlock<-paste0(fileprefix,".knownGene.sqlite.lock")

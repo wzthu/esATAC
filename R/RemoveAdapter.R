@@ -3,7 +3,7 @@ RemoveAdapter <-R6Class(
   inherit = BaseProc,
   public = list(
     initialize = function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
-                          fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL,editable=FALSE){
+                          fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL,paramList="default",findParamList="default",editable=FALSE){
       super$initialize("RemoveAdapter",editable,list(arg1=atacProc))
       if(!is.null(atacProc)){
         private$paramlist[["fastqInput1"]] <- atacProc$getParam("fastqOutput1");
@@ -54,6 +54,26 @@ RemoveAdapter <-R6Class(
       private$paramlist[["adapter1"]] <- adapter1
       private$paramlist[["adapter2"]] <- adapter2
 
+      if(.obtainConfigure("threads")>1){
+          private$paramlist[["paramList"]]<-c("--threads",as.character(.obtainConfigure("threads")))
+      }
+      if(!is.null(paramList)&&sum(paramList!="default")>0){
+
+          rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
+          private$checkParam(paramList,rejectp)
+          private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
+      }
+
+
+      if(.obtainConfigure("threads")>1){
+          private$paramlist[["findParamList"]]<-c("--threads",as.character(.obtainConfigure("threads")))
+      }
+      if(!is.null(findParamList)&&sum(findParamList!="default")>0){
+          rejectp<-"--file1|--file2|--threads|--identify-adapters"
+          private$checkParam(findParamList,rejectp)
+          private$paramlist[["findParamList"]]<-c(findParamList,private$paramlist[["findParamList"]])
+      }
+
       private$paramValidation()
 
 
@@ -69,33 +89,35 @@ RemoveAdapter <-R6Class(
               private$writeLog("Destination:")
               private$writeLog(private$paramlist[["fastqOutput1"]])
               private$writeLog(private$paramlist[["reportPrefix"]])
-              private$writeLog(paste0("Threads:",.obtainConfigure("threads")))
+              private$writeLog(paste0("other parameters:",.obtainConfigure("threads")))
               .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
                                     outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
-                                    threads=.obtainConfigure("threads"))
+                                    paramlist=private$paramlist[["paramList"]])
           }else{
+              adapter1<-private$paramlist[["adapter1"]]
+              adapter2<-private$paramlist[["adapter2"]]
               if(is.null(private$paramlist[["adapter1"]])){
                   private$writeLog("begin to find adapter")
                   adapters<-.identify_adapters_call(private$paramlist[["fastqInput1"]],
-                                                    private$paramlist[["fastqInput2"]],threads=getConfigure("threads"))
-                  private$paramlist[["adapter1"]] <- adapters$adapter1
-                  private$paramlist[["adapter2"]] <- adapters$adapter2
+                                                    private$paramlist[["fastqInput2"]],private$paramlist[["findParamList"]])
+                  adapter1 <- adapters$adapter1
+                  adapter2 <- adapters$adapter2
               }
               private$writeLog("begin to remove adapter")
               private$writeLog("source:")
               private$writeLog(private$paramlist[["fastqInput1"]])
               private$writeLog(private$paramlist[["fastqInput2"]])
-              private$writeLog(paste0("Adapter1:",private$paramlist[["adapter1"]]))
-              private$writeLog(paste0("Adapter2:",private$paramlist[["adapter2"]]))
+              private$writeLog(paste0("Adapter1:",adapter1))
+              private$writeLog(paste0("Adapter2:",adapter2))
               private$writeLog("Destination:")
               private$writeLog(private$paramlist[["fastqOutput1"]])
               private$writeLog(private$paramlist[["fastqOutput2"]])
               private$writeLog(private$paramlist[["reportPrefix"]])
               private$writeLog(paste0("Threads:",.obtainConfigure("threads")))
-              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
+              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=adapter1,
                                     outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
-                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=private$paramlist[["adapter2"]],
-                                    outputFile2 = private$paramlist[["fastqOutput2"]],threads=.obtainConfigure("threads"))
+                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=adapter2,
+                                    outputFile2 = private$paramlist[["fastqOutput2"]],paramlist=private$paramlist[["paramList"]])
           }
       },
     checkRequireParam = function(){
@@ -122,9 +144,9 @@ RemoveAdapter <-R6Class(
 
 
 atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
-                              fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL){
+                              fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL,paramList="default",findParamList="default"){
     removeAdapter <- RemoveAdapter$new(atacProc,adapter1,adapter2,fastqOutput1,reportPrefix,
-                                       fastqOutput2,fastqInput1, fastqInput2)
+                                       fastqOutput2,fastqInput1, fastqInput2,paramList,findParamList)
     removeAdapter$process()
     return(removeAdapter)
 }

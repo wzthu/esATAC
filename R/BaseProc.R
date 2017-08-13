@@ -43,6 +43,7 @@ BaseProc <- R6Class(
             }else{
                 private$writeLog(paste0("start processing(paired end data): ", private$procName))
             }
+            #private$paramlistbk<-private$paramlist
             private$processing()
             private$setFinish()
             return(TRUE)
@@ -102,6 +103,7 @@ BaseProc <- R6Class(
   ),
   private = list(
     paramlist = list(),
+    paramlistbk = list(),
     procName = "",
     completObj = TRUE,
     editable = FALSE,
@@ -147,6 +149,14 @@ BaseProc <- R6Class(
                 unlink(filePath)
             }
         }
+    },
+    checkParam = function(paramlist,paramPattern){
+        rs<-grepl(paramPattern, paramlist)
+        if(sum(rs)>0){
+            banp=paste(paramlist[rs], collapse = "'/'")
+            stop(sprintf("Parameter(s) '%s' are not acceptable in paramList. it should be set as fix parameter.",banp))
+        }
+
     },
     getSuffix = function(filePath){
         filename<-basename(filePath)
