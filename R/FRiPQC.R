@@ -32,7 +32,7 @@ FRiPQC <-R6Class(
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
 
-            private$checkRequireParam();
+            private$paramValidation()
         }
     ),
     private = list(
