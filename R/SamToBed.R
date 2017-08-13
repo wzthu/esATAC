@@ -62,14 +62,18 @@ SamToBed <- R6::R6Class(
           private$paramlist[["samInput"]] <- samInput;
       }
       if(is.null(bedOutput)){
-          prefix<-private$getBasenamePrefix(private$paramlist[["samInput"]],regexProcName)
-          private$paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".bed"))
+          if(!is.null(private$paramlist[["samInput"]])){
+              prefix<-private$getBasenamePrefix(private$paramlist[["samInput"]],regexProcName)
+              private$paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".bed"))
+          }
       }else{
           private$paramlist[["bedOutput"]] <- bedOutput;
       }
       if(is.null(reportPrefix)){
-          prefix<-private$getBasenamePrefix(private$paramlist[["samInput"]],regexProcName)
-          private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+          if(!is.null(private$paramlist[["samInput"]])){
+              prefix<-private$getBasenamePrefix(private$paramlist[["samInput"]],regexProcName)
+              private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+          }
       }else{
           private$paramlist[["reportPrefix"]] <- reportPrefix;
       }

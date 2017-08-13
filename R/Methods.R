@@ -40,18 +40,6 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
-    libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
-                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
-    libqc$processing()
-    return(libqc)
-}
-
-atacTSSQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
-    tssQC<-TSSQC$new(atacProc=atacProc, txdb.knownGene=txdb.knownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
-    tssQC$processing()
-    return(tssQC)
-}
 
 
 

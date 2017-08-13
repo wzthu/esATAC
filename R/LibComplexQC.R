@@ -6,12 +6,19 @@ LibComplexQC <-R6Class(
             super$initialize("LibComplexQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["samInput"]] <- atacProc$getParam("samOutput");
+                regexProcName<-sprintf("(SAM|Sam|sam|%s)",atacProc$getProcName())
+            }else{
+                regexProcName<-"(SAM|Sam|sam)"
             }
             if(!is.null(samInput)){
                 private$paramlist[["samInput"]] <- samInput;
             }
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste(private$paramlist[["samInput"]],".libcomplexreport",sep="");
+                if(!is.null(private$paramlist[["bedInput"]])){
+                    prefix<-private$getBasenamePrefix(private$paramlist[["bedInput"]],regexProcName)
+                    private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+                }
+                #private$paramlist[["reportPrefix"]] <- paste(private$paramlist[["samInput"]],".libcomplexreport",sep="");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
@@ -20,12 +27,12 @@ LibComplexQC <-R6Class(
             private$paramlist[["subsampleSize"]] <- subsampleSize;
             private$paramlist[["paired"]]<-paired
 
-            private$checkFileExist(private$paramlist[["samInput"]]);
-            private$checkPathExist(private$paramlist[["reportPrefix"]]);
-            private$checkRequireParam();
-        },
+
+            private$paramValidation()
+        }
+    ),
+    private = list(
         processing = function(){
-            super$processing()
             if(private$paramlist[["paired"]]){
                 .sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportPrefix"]],".tmp"),
                                     posOffset = 0, negOffset = 0,sortBed = !private$paramlist[["subsample"]],
@@ -41,26 +48,26 @@ LibComplexQC <-R6Class(
             private$paramlist[["qcval"]]<-qcval
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
-            private$finish <- TRUE
         },
-        setResultParam = function(fastqOutput1, fastqOutput2=NULL){
-            super$setResultParam();
-            private$paramlist[["fastqOutput1"]] <- fastqOutput1
-            private$paramlist[["fastqOutput2"]] <- fastqOutput2
-        }
-    ),
-    private = list(
         checkRequireParam = function(){
-            if(private$editable){
-                return();
-            }
             if(is.null(private$paramlist[["samInput"]])){
                 stop("samInput is required.")
             }
 
 
+        },
+        checkAllPath = function(){
+            private$checkFileExist(private$paramlist[["samInput"]]);
+            private$checkPathExist(private$paramlist[["reportPrefix"]]);
         }
     )
 
 
 )
+
+atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
+    libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
+                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
+    libqc$process()
+    return(libqc)
+}
