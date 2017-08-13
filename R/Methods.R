@@ -45,17 +45,7 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
-                            fragmentSize=0,featureLength=NULL,bedOutput=NULL,
-                            outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
-                            wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                            wgThresholdSet=NULL){
-    peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
-                        fragmentSize,featureLength,bedOutput,outputFormat, ploidyDir,
-                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
-    peakcalling$processing();
-    return(peakcalling)
-}
+
 
 
 atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
