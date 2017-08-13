@@ -4,49 +4,54 @@ Rsortbam <- R6::R6Class(
   public = list(
     initialize = function(atacProc, inputbam = NULL, outputbam = NULL, editable=FALSE){
       super$initialize("Rsortbam",editable,list(arg1=atacProc))
-      print("RsortbamInitCall")
-      private$checkRequireParam()
-      if((!is.null(atacProc)) && (class(atacProc)[1] == "SamToBam")){ # atacproc from SamToBam
+
+      # necessary parameters
+      if(!is.null(atacProc)){ # atacproc from SamToBam
         private$paramlist[["bamInput"]] <- atacProc$getParam("bamOutput")
-      }else if((!is.null(atacProc)) && (class(atacProc)[1] != "SamToBam")){ # atacproc not from SamToBam, error!
-        stop("Input class must be got from 'SamToBam'!")
       }else if(is.null(atacProc)){ # input
         private$paramlist[["bamInput"]] <- inputbam
       }
+      # unnecessary parameters
       if(is.null(outputbam)){
         private$paramlist[["bamOutput"]] <- paste0(private$paramlist[["bamInput"]], ".sorted", collapse = "")
       }else{
         private$paramlist[["bamOutput"]] <- outputbam
       }
-      # file check
-      private$checkFileExist(private$paramlist[["bamInput"]])
-      private$checkPathExist(private$paramlist[["bamOutput"]])
-      print("finishRsortbamInitCall")
 
-    },
+      # parameter check
+      private$paramValidation()
+    } # initialization end
 
-    processing = function(){
-      if(!super$processing()){
-        return()
-      }
-      Rsamtools::sortBam(file = private$paramlist[["bamInput"]], destination = private$paramlist[["bamOutput"]])
-      private$setFinish()
-    },
-
-    setResultParam = function(bamFilePath){
-      super$setResultParam();
-      private$paramlist[["bamOutput"]] <- bamFilePath
-    }
-
-  ),
+  ), # public end
 
   private = list(
+    processing = function(){
+      private$writeLog(paste0("processing file:"))
+      private$writeLog(sprintf("source:%s", private$paramlist[["bamInput"]]))
+      private$writeLog(sprintf("destination:%s", private$paramlist[["bamOutput"]]))
+      Rsamtools::sortBam(file = private$paramlist[["bamInput"]], destination = private$paramlist[["bamOutput"]])
+    }, # processing end
+
     checkRequireParam = function(){
-      if(private$editable){
-        return();
+      if(is.null(private$paramlist[["bamInput"]])){
+        stop("Parameter inputbam is required!")
       }
-    }
-  )
+    }, # checkRequireParam end
 
+    checkAllPath = function(){
+      private$checkFileExist(private$paramlist[["bamInput"]])
+      private$checkPathExist(private$paramlist[["bamOutput"]])
+    } # checkAllPath end
 
-)
+  ) # private end
+
+) # class end
+
+#' sortbam using Rbowtie::sortBam
+#' the output bam file do not have bam header, can not use QCreport function
+#' @export
+atacBamSort <- function(atacProc = NULL, inputbam = NULL, outputbam = NULL){
+  tmp <- Rsortbam$new(atacProc, inputbam, outputbam)
+  tmp$process()
+  return(tmp)
+}
