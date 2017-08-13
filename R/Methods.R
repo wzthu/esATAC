@@ -48,11 +48,7 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacReadsLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
-    distr<-ReadsLenDistribute$new(atacProc,reportPrefix,bedInput)
-    distr$processing()
-    return(distr)
-}
+
 
 atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
     libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
