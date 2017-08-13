@@ -116,19 +116,7 @@ atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, f
 }
 
 
-#' convert sam to bed
-#' @param ATAC_obj obj returned from ATAC_mapping
-#' @param samfile sam file dir
-#' @param bedfile bed file dir
-#' @param readlen reads length
-#' @export
-atacSam2Bed <- function(atacProc, merge = TRUE, posOffset = +4, negOffset= -5, chrFilterList= "chrUn.*|chrM|.*random.*",
-                        samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
-                        saveExtLen = FALSE,uniqueBed = TRUE){
-  tmp <- SamToBed$new(atacProc, merge, posOffset, negOffset, chrFilterList, samInput, bedOutput, sortBed, uniqueBed, minFregLen, maxFregLen, saveExtLen)
-  tmp$processing()
-  return(tmp)
-}
+
 
 #' Quality control using Quasr::qQCreport
 #' @param input_file a c()

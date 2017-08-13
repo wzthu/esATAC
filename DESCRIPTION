@@ -31,7 +31,8 @@ Imports: Rcpp (>= 0.12.11),
     BSgenome,
     AnnotationDbi,
     GenomicFeatures,
-    R.utils
+    R.utils,
+    GenomeInfoDb
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
