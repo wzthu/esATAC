@@ -11,7 +11,8 @@ Depends: R (>= 3.2.3), QuasR, Rsamtools, GenomicRanges
 License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.11),
+Imports: 
+    Rcpp (>= 0.12.11),
     R6,
     Rbowtie,
     QuasR,
@@ -32,7 +33,8 @@ Imports: Rcpp (>= 0.12.11),
     AnnotationDbi,
     GenomicFeatures,
     R.utils,
-    GenomeInfoDb
+    GenomeInfoDb,
+    stringr
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
