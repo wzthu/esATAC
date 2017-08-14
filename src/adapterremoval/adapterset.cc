@@ -31,6 +31,8 @@
 #include "linereader.h"
 #include "strutils.h"
 
+#include "RcoutRcerr.h"
+
 namespace ar
 {
 
@@ -41,7 +43,7 @@ typedef fastq_table::const_iterator fastq_table_citer;
 
 bool print_parse_error(const std::stringstream& message)
 {
-    std::cerr << "ERROR READING TABLE:\n"
+    cerr << "ERROR READING TABLE:\n"
               << cli_formatter::fmt(message.str()) << std::endl;
 
     return false;

@@ -36,6 +36,7 @@
 #include "debug.h"
 #include "strutils.h"
 
+#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -122,7 +123,7 @@ parse_result parser::parse_args(int argc, char* argv[])
         consumer_map::iterator parser = m_parsers.end();
         if (find_argument(parser, *it)) {
             if (parser->second->is_set()) {
-                std::cerr << "WARNING: Command-line option " << parser->first
+                cerr << "WARNING: Command-line option " << parser->first
                           << " has been specified more than once."
                           << std::endl;
             }
@@ -131,10 +132,10 @@ parse_result parser::parse_args(int argc, char* argv[])
 
             if (consumed == static_cast<size_t>(-1)) {
                 if (it != argvec.end()) {
-                    std::cerr << "ERROR: Invalid value for " << *(it - 1) << ": '"
+                    cerr << "ERROR: Invalid value for " << *(it - 1) << ": '"
                               << *it << "'; aborting ..." << std::endl;
                 } else {
-                    std::cerr << "ERROR: No value supplied for " << *(it - 1)
+                    cerr << "ERROR: No value supplied for " << *(it - 1)
                               << "; aborting ..." << std::endl;
                 }
 
@@ -191,14 +192,14 @@ void parser::create_alias(const std::string& key, const std::string& alias)
 
 void parser::print_version() const
 {
-    std::cerr << m_name << " " << m_version << std::endl;
+    cerr << m_name << " " << m_version << std::endl;
 }
 
 
 void parser::print_help() const
 {
     print_version();
-    std::cerr <<"\n" << m_help << "\n\n";
+    cerr <<"\n" << m_help << "\n\n";
 
     print_arguments(m_keys);
 }
@@ -227,7 +228,7 @@ void parser::print_arguments(const key_pair_vec& keys) const
     // indentation + 4 space before description
     indentation = 2 + indentation + 4;
 
-    std::cerr << std::left << std::setw(indentation)
+    cerr << std::left << std::setw(indentation)
                   << "Arguments:" << "Description:\n";
 
     cli_formatter fmt;
@@ -238,7 +239,7 @@ void parser::print_arguments(const key_pair_vec& keys) const
 
     for (key_pair_citer it = keys.begin(); it != keys.end(); ++it) {
         if (!it->first) {
-            std::cerr << it->second << "\n";
+            cerr << it->second << "\n";
             continue;
         }
 
@@ -248,7 +249,7 @@ void parser::print_arguments(const key_pair_vec& keys) const
         }
 
         const std::string metavar = get_metavar_str(ptr, it->second);
-        std::cerr << std::left << std::setw(indentation)
+        cerr << std::left << std::setw(indentation)
                   << ("  " + it->second + " " + metavar);
 
         std::string value = ptr->help();
@@ -261,11 +262,11 @@ void parser::print_arguments(const key_pair_vec& keys) const
             }
 
             // Format into columns and indent lines (except the first line)
-            std::cerr << fmt.format(value) << "\n";
+            cerr << fmt.format(value) << "\n";
         }
     }
 
-    std::cerr << std::endl;
+    cerr << std::endl;
 }
 
 
@@ -290,7 +291,7 @@ bool parser::find_argument(consumer_map::iterator& it, const std::string& str)
             it = m_parsers.find(matches.front().second);
             return true;
         } else if (matches.size() > 1) {
-            std::cerr << "ERROR: Ambiguous argument '" << str << "'; "
+            cerr << "ERROR: Ambiguous argument '" << str << "'; "
                       << "Candidate arguments are\n\n";
 
             print_arguments(matches);
@@ -299,7 +300,7 @@ bool parser::find_argument(consumer_map::iterator& it, const std::string& str)
         }
     }
 
-    std::cerr << "ERROR: Unknown argument: '" << str << "'" << std::endl;
+    cerr << "ERROR: Unknown argument: '" << str << "'" << std::endl;
 
     return false;
 }
