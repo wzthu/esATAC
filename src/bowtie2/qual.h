@@ -105,7 +105,7 @@ static inline uint8_t insPenalty(bool maq, uint8_t qual_left, uint8_t qual_right
 inline static char charToPhred33(char c, bool solQuals, bool phred64Quals) {
 	using namespace std;
 	if(c == ' ') {
-		std::cerr << "Saw a space but expected an ASCII-encoded quality value." << endl
+		cerr << "Saw a space but expected an ASCII-encoded quality value." << endl
 		          << "Are quality values formatted as integers?  If so, try --integer-quals." << endl;
 		throw 1;
 	}
@@ -114,7 +114,7 @@ inline static char charToPhred33(char c, bool solQuals, bool phred64Quals) {
 		// http://maq.sourceforge.net/fastq.shtml
 		char cc = solexaToPhred((int)c - 64) + 33;
 		if (cc < 33) {
-			std::cerr << "Saw ASCII character "
+			cerr << "Saw ASCII character "
 			          << ((int)c)
 			          << " but expected 64-based Solexa qual (converts to " << (int)cc << ")." << endl
 			          << "Try not specifying --solexa-quals." << endl;

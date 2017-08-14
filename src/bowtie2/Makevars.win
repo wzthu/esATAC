@@ -21,7 +21,7 @@
 # Makefile for bowtie, bowtie2-build, bowtie2-inspect
 #
 
-include $(R_HOME)/etc${R_ARCH}/Makeconf 
+include $(R_HOME)/etc${R_ARCH}/Makeconf
 
 prefix = /usr/local
 bindir = $(prefix)/bin
@@ -300,16 +300,16 @@ DEFS=-fno-strict-aliasing \
 CPPFLAGS = $(RELEASE_FLAGS) $(RELEASE_DEFS) $(EXTRA_FLAGS) \
            $(DEFS) -DBOWTIE2 $(NOASSERT_FLAGS) -Wall \
            $(INC) \
-           $(LIBS) $(SEARCH_LIBS)
+           $(LIBS) $(SEARCH_LIBS) -DR_ENV_FLAG
 
 
 BT2_LIBRARY = bowtie2
 
 all: lib$(BT2_LIBRARY).a
 
-SRCS = 
+SRCS =
 
-OBJS = 
+OBJS =
 
 
 

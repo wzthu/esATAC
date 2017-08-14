@@ -19,7 +19,7 @@
 
 #include <iostream>
 #include "scoring.h"
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 /**

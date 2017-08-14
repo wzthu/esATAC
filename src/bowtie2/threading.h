@@ -59,7 +59,7 @@
 # endif
 #endif /* NO_SPINLOCK */
 
-
+#include "RcoutRcerr.h"
 /**
  * Wrap a lock; obtain lock upon construction, release upon destruction.
  */
@@ -183,7 +183,7 @@ public:
         else {
             std::stringstream ss;
             ss << "Set thread affinity: Thread " << thr_idx << ": CPU " << mapped_idx << std::endl;
-            std::cerr << ss.str();
+            cerr << ss.str();
         }
 #endif
         CPU_FREE( target_mask );

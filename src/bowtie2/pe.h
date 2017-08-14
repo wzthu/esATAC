@@ -115,7 +115,7 @@ static inline bool pePolicyCompat(
 		case PE_POLICY_RF:
 			return oneWat != twoWat && oneWat != oneLeft;
 		default: {
-			std::cerr << "Bad PE_POLICY: " << policy << std::endl;
+			cerr << "Bad PE_POLICY: " << policy << std::endl;
 			throw 1;
 		}
 	}
@@ -156,7 +156,7 @@ static inline void pePolicyMateDir(
 			break;
 		}
 		default: {
-			std::cerr << "Error: No such PE_POLICY: " << policy << std::endl;
+			cerr << "Error: No such PE_POLICY: " << policy << std::endl;
 			throw 1;
 		}
 	}

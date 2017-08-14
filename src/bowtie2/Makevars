@@ -296,7 +296,7 @@ DEFS=-fno-strict-aliasing \
 CPPFLAGS = $(RELEASE_FLAGS) $(RELEASE_DEFS) $(EXTRA_FLAGS) \
            $(DEFS) -DBOWTIE2 $(NOASSERT_FLAGS) -Wall \
            $(INC) \
-           $(LIBS) $(SEARCH_LIBS)
+           $(LIBS) $(SEARCH_LIBS) -DR_ENV_FLAG
 
 
 BT2_LIBRARY = bowtie2

@@ -54,7 +54,7 @@
 #include "outq.h"
 #include "aligner_seed2.h"
 #include "bt2_search.h"
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 static EList<string> mates1;  // mated reads (first mate)
@@ -967,7 +967,7 @@ static void parseOption(int next_option, const char *arg) {
 			break;
 		}
 		case 'q': format = FASTQ; break;
-		case 'r': format = RAW; break;
+		case 'r': format = RAW_V; break;
 		case 'c': format = CMDLINE; break;
 		case ARG_QSEQ: format = QSEQ; break;
 		case 'I':

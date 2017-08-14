@@ -34,7 +34,7 @@
 #include "mem_ids.h"
 #include "ls.h"
 #include "btypes.h"
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 #ifndef VMSG_NL
