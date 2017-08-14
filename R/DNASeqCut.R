@@ -59,6 +59,40 @@ DNASeqCut <- R6::R6Class(
 
 ) # class end
 
+
+#' Cutting sequence according a bed file and save these sequence as fastq or fasta.
+#'
+#' In this program, the strand infomation will not be used.
+#' @param ref_path The reference fasta file.
+#' @param save_path Where you want save these sequences, only in fastq or fasta format.
+#' @param bed_path bed file.
+#' @param save_format Fastq or fasta.
+Sequence_Cut <- function(ref_path, save_path, bed_path, save_format){
+  ref <- Biostrings::readDNAStringSet(ref_path)
+  gr_a <- ChIPseeker::readPeakFile(peakfile = bed_path, header = FALSE)
+  chr_index <- names(ref)
+  line_num <- length(gr_a)
+  DNA_string <- Biostrings::DNAStringSet()
+  for(i in seq(line_num)){
+    index_num <- which(as.vector(GenomicRanges::seqnames(gr_a[i])) == chr_index)
+    if(any(index_num)){
+      DNA_string <- append(DNA_string, Biostrings::subseq(ref[index_num], GenomicRanges::start(gr_a[i]),
+                                                          GenomicRanges::end(gr_a[i])), after=length(DNA_string))
+    }else{
+      stop("An unexpected chromatin detected!")
+    }
+  }
+  names(DNA_string) <- paste(GenomicRanges::seqnames(gr_a), ":", GenomicRanges::start(gr_a),
+                             "-", end(gr_a), sep = "")
+  Biostrings::writeXStringSet(DNA_string, filepath = save_path,
+                              append = FALSE, compress = FALSE,
+                              compression_level = NA, format = save_format)
+}
+
+
+
+
+
 #' Cutting sequence according a bed file and save these sequence as fastq or fasta.
 #'
 #' In this program, the strand infomation will not be used.

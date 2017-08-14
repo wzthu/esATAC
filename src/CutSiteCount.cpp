@@ -11,7 +11,6 @@
 using namespace std;
 
 string IntToString(int);
-vector<int> ReverseArray(vector<int> orig, unsigned short int b);
 
 CutSiteCount::CutSiteCount(string readsfile, string motiffile, string matrixfile, int motif_len, int strand_len)
 {
@@ -90,7 +89,7 @@ int CutSiteCount::DoCutSiteCount()
         }
         else  // motif in 3'-->5'
         {
-          matrix = ReverseArray(matrix, matrix_len);
+          reverse(matrix.begin(), matrix.end());
           for(int i = 0; i < matrix_len; i++) // write matrix to output file
           {
             matrixOutput << IntToString(matrix[i]) + "\t";
@@ -113,7 +112,7 @@ int CutSiteCount::DoCutSiteCount()
           }
           else  // motif in 3'-->5'
           {
-            matrix = ReverseArray(matrix, matrix_len);
+            reverse(matrix.begin(), matrix.end());
             for(int i = 0; i < matrix_len; i++) // write matrix to output file
             {
               matrixOutput << IntToString(matrix[i]) + "\t";
@@ -148,7 +147,7 @@ int CutSiteCount::DoCutSiteCount()
         }
         else  // motif in 3'-->5'
         {
-          matrix = ReverseArray(matrix, matrix_len);
+          reverse(matrix.begin(), matrix.end());
           for(int i = 0; i < matrix_len; i++) // write matrix to output file
           {
             matrixOutput << IntToString(matrix[i]) + "\t";
@@ -171,7 +170,7 @@ int CutSiteCount::DoCutSiteCount()
           }
           else  // motif in 3'-->5'
           {
-            matrix = ReverseArray(matrix, matrix_len);
+            reverse(matrix.begin(), matrix.end());
             for(int i = 0; i < matrix_len; i++) // write matrix to output file
             {
               matrixOutput << IntToString(matrix[i]) + "\t";
@@ -198,7 +197,7 @@ int CutSiteCount::DoCutSiteCount()
       }
       else  // motif in 3'-->5'
       {
-        matrix = ReverseArray(matrix, matrix_len);
+        reverse(matrix.begin(), matrix.end());
         for(int i = 0; i < matrix_len; i++) // write matrix to output file
         {
           matrixOutput << IntToString(matrix[i]) + "\t";
@@ -244,18 +243,6 @@ string IntToString(int i)
   return output;
 }
 
-vector<int> ReverseArray(vector<int> orig, unsigned short int b)
-{
-  unsigned short int a = 0;
-  int swap;
-  for (a; a<--b; a++)
-  {
-    swap = orig[a];
-    orig[a] = orig[b];
-    orig[b] = swap;
-  }
-  return orig;
-}
 
 
 
