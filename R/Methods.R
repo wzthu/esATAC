@@ -19,6 +19,7 @@ atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE){
         GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc)
     }else{
         atacProc$printMap(preProc,nextProc,curProc)
+        return(atacProc)
     }
 }
 
@@ -27,6 +28,7 @@ atacPrintNextList<-function(atacProc){
         GraphMng$new()$getNextProcs(atacProc)
     }else{
         GraphMng$new()$getNextProcs(atacProc$getProcName())
+        return(atacProc)
     }
 }
 
@@ -35,35 +37,9 @@ atacPrintPrevList<-function(atacProc){
         GraphMng$new()$getPrevProcs(atacProc)
     }else{
         GraphMng$new()$getPrevProcs(atacProc$getProcName())
+        return(atacProc)
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#' Mapping reads to the reference using Rbowtie, if output file do not be specified, the output will be named mapping_result.sam
-#' @param seq_file A full path of the fa file(containing fa file). For single end, using a list; for paired end, using a list(length = 2).
-#' @param ref_file Character scalar. The path to the bowtie index and prefix to align against, in the form </path/to/index>/<prefix>.
-#' @param out_file path and output file name, 'E:\\RATAC_test\\output\\output.sam'
-#' @param seq_type sequence type, "single", "paired"
-#' @export
-atacMappingBt <- function(atacProc = NULL, fileInput = NULL, Reference = NULL, fileOutput = NULL, In_type = NULL){
-  tmp <- BowtieMapping$new(atacProc, fileInput, Reference, fileOutput, In_type)
-  tmp$processing()
-  return(tmp)
-}
-
-
 
 
 #' Quality control using Quasr::qQCreport
