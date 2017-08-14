@@ -63,7 +63,7 @@ int CutCountPre::EXCutCount()
       //********************write data to the output file********************
       ofstream readsofile(outputfile.c_str(), ios::out);
       sort(cutsite.begin(), cutsite.end());
-      for(int i = 0; i < cutsite.size(); i++)
+      for(unsigned int i = 0; i < cutsite.size(); i++)
       {
         readsofile << cutsite[i] << "\n";
       }
@@ -81,7 +81,7 @@ int CutCountPre::EXCutCount()
   //********************write the last chromatin data to the output file********************
   ofstream readsofile(outputfile.c_str(), ios::out);
   sort(cutsite.begin(), cutsite.end());
-  for(int i = 0; i < cutsite.size(); i++)
+  for(unsigned int i = 0; i < cutsite.size(); i++)
   {
     readsofile << cutsite[i] << "\n";
   }
