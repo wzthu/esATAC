@@ -33,6 +33,8 @@
 #include "scheduler.h"
 #include "strutils.h"
 
+#include "RcoutRcerr.h"
+
 namespace ar
 {
 
@@ -255,7 +257,7 @@ bool scheduler::run(int nthreads)
         }
     } catch (const std::system_error& error) {
         print_locker lock;
-        std::cerr << "ERROR: Failed to create threads:\n"
+        cerr << "ERROR: Failed to create threads:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
 
         set_errors_occured();
@@ -268,7 +270,7 @@ bool scheduler::run(int nthreads)
         try {
             thread.join();
         } catch (const std::system_error& error) {
-            std::cerr << "ERROR: Failed to joini thread: " << error.what() << std::endl;
+            cerr << "ERROR: Failed to joini thread: " << error.what() << std::endl;
             set_errors_occured();
         }
     }
@@ -276,7 +278,7 @@ bool scheduler::run(int nthreads)
     for (auto& step: m_steps) {
         if (step && !step->queue.empty()) {
             print_locker lock;
-            std::cerr << "ERROR: Not all parts run for step " << step->name
+            cerr << "ERROR: Not all parts run for step " << step->name
                           << "; " << step->queue.size() << " left ..." << std::endl;
 
             set_errors_occured();
@@ -292,7 +294,7 @@ bool scheduler::run(int nthreads)
             try {
                 step->ptr->finalize();
             } catch (const std::exception&) {
-                std::cerr << "ERROR: Failed to finalizing task " << step->name << ":\n";
+                cerr << "ERROR: Failed to finalizing task " << step->name << ":\n";
                 throw;
             }
         }
@@ -308,14 +310,14 @@ void scheduler::run_wrapper(scheduler* sch)
         return sch->do_run();
     } catch (const thread_abort&) {
         print_locker lock;
-        std::cerr << "Aborting thread due to error." << std::endl;
+        cerr << "Aborting thread due to error." << std::endl;
     } catch (const std::exception& error) {
         print_locker lock;
-        std::cerr << "ERROR: Unhandled exception in thread:\n"
+        cerr << "ERROR: Unhandled exception in thread:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
     } catch (...) {
         print_locker lock;
-        std::cerr << "ERROR: Unhandled, non-standard exception in thread" << std::endl;
+        cerr << "ERROR: Unhandled, non-standard exception in thread" << std::endl;
     }
 
     sch->set_errors_occured();

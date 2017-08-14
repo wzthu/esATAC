@@ -25,7 +25,7 @@
 #include "alphabet.h"
 #include "timer.h"
 #include "sstring.h"
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 /**

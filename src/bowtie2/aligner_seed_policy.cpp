@@ -24,7 +24,7 @@
 #include "ds.h"
 #include "aligner_seed_policy.h"
 #include "mem_ids.h"
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 static int parseFuncType(const std::string& otype) {
@@ -38,7 +38,7 @@ static int parseFuncType(const std::string& otype) {
 	} else if(type == "G" || type == "Log") {
 		return SIMPLE_FUNC_LOG;
 	}
-	std::cerr << "Error: Bad function type '" << otype.c_str()
+	cerr << "Error: Bad function type '" << otype.c_str()
 	          << "'.  Should be C (constant), L (linear), "
 	          << "S (square root) or G (natural log)." << std::endl;
 	throw 1;

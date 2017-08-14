@@ -1895,7 +1895,7 @@ public:
 				norc,     // in: true -> don't put roots on rc read
 				confs_,   // out: search configs for each root
 				roots_);  // out: roots
-			//printRoots(std::cerr);
+			//printRoots(cerr);
 		}
 		re_.init(q.length()); // initialize redundancy checker
 	}

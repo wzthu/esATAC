@@ -18,7 +18,7 @@
  */
 
 #include "ref_read.h"
-
+#include "RcoutRcerr.h"
 /**
  * Reads past the next ambiguous or unambiguous stretch of sequence
  * from the given FASTA file and returns its length.  Does not do

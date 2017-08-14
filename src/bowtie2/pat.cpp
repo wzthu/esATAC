@@ -87,7 +87,7 @@ PatternSource* PatternSource::patsrcFromStrings(
 	switch(p.format) {
 		case FASTA:       return new FastaPatternSource(qs, p);
 		case FASTA_CONT:  return new FastaContinuousPatternSource(qs, p);
-		case RAW:         return new RawPatternSource(qs, p);
+		case RAW_V:         return new RawPatternSource(qs, p);
 		case FASTQ:       return new FastqPatternSource(qs, p);
 		case INTERLEAVED: return new FastqPatternSource(qs, p, true /* interleaved */);
 		case TAB_MATE5:   return new TabbedPatternSource(qs, p, false);

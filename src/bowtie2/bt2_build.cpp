@@ -33,7 +33,7 @@
 #include "filebuf.h"
 #include "reference.h"
 #include "ds.h"
-
+#include "RcoutRcerr.h"
 /**
  * \file Driver for the bowtie-build indexing tool.
  */

@@ -7,6 +7,7 @@
 #include <vector>
 #include <stdlib.h>
 #include "CutCountPre.h"
+#include "RcoutRcerr.h"
 using namespace std;
 
 CutCountPre::CutCountPre(string readsIfile, string readsOpath)

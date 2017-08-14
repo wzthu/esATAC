@@ -5,7 +5,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
-
+#include "RcoutRcerr.h"
 
 using std::ifstream;
 using std::getline;
@@ -13,7 +13,7 @@ using std::stringstream;
 using std::string;
 using std::map;
 using std::atoi;
-using std::cout;
+
 using std::endl;
 
 

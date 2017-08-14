@@ -33,7 +33,7 @@ enum file_format {
 	INTERLEAVED,
 	TAB_MATE5,
 	TAB_MATE6,
-	RAW,
+	RAW_V,
 	CMDLINE,
 	QSEQ
 };

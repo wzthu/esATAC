@@ -27,7 +27,7 @@
 #include "search_globals.h"
 #include "scoring.h"
 #include "mask.h"
-
+#include "RcoutRcerr.h"
 /**
  * Initialize with a new read.
  */

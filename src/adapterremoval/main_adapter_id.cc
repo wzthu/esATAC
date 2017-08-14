@@ -39,6 +39,7 @@
 #include "timer.h"
 #include "userconfig.h"
 
+#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -153,17 +154,17 @@ void print_most_common_kmers(const kmer_map& kmers, size_t print_n = TOP_N_KMERS
         queue.pop();
     }
 
-    std::cout.precision(2);
-    std::cout << std::fixed;
-    std::cout << "    Top 5 most common " << KMER_LENGTH << "-bp 5'-kmers:\n";
+    cout.precision(2);
+    cout << std::fixed;
+    cout << "    Top 5 most common " << KMER_LENGTH << "-bp 5'-kmers:\n";
 
     std::reverse(top_n_kmers.begin(), top_n_kmers.end());
     for (size_t i = 0; i < top_n_kmers.size(); ++i) {
         const nt_count& count = top_n_kmers.at(i);
         std::string kmer_s = size_t_to_kmer(count.first);
 
-        std::cout << std::string(12, ' ');
-        std::cout << i + 1<< ": " << kmer_s
+        cout << std::string(12, ' ');
+        cout << i + 1<< ": " << kmer_s
                   << " = " << std::right << std::setw(5) << (100.0 * count.second) / total
                   << "% (" << count.second << ")"
                   << "\n";
@@ -258,7 +259,7 @@ void print_consensus_adapter(const nt_count_vec& counts,
     const std::string consensus = sequence.str();
     const std::string identity = compare_consensus_with_ref(ref, consensus);
 
-    std::cout << "  " << name << ":  " << ref << "\n"
+    cout << "  " << name << ":  " << ref << "\n"
               << "               " << identity << "\n"
               << "   Consensus:  " << consensus << "\n"
               << "     Quality:  " << qualities.str() << "\n\n";
@@ -280,7 +281,7 @@ void save_consensus_adapter(const nt_count_vec& counts,
     std::stringstream qualities;
     std::ofstream fout((inputFile+".adapter").c_str());
 
-	std::cout<<inputFile+".adapter"<<std::endl;
+	cout<<inputFile+".adapter"<<std::endl;
 
     for(nt_count_vec::const_iterator it = counts.begin(); it != counts.end(); ++it) {
         const std::pair<char, char> consensus = get_consensus_nt(*it);
@@ -294,7 +295,7 @@ void save_consensus_adapter(const nt_count_vec& counts,
 
     fout << consensus << std::endl;
     fout.close();
-//    std::cout << "  " << name << ":  " << ref << "\n"
+//    cout << "  " << name << ":  " << ref << "\n"
 //    //              << "               " << identity << "\n"
 //    //              << "   Consensus:  " << consensus << "\n"
 //    //              << "     Quality:  " << qualities.str() << "\n\n";
@@ -432,14 +433,14 @@ public:
 
         std::unique_ptr<adapter_stats> sink(m_sinks.finalize());
 
-        std::cout << "   Found " << sink->stats->well_aligned_reads << " overlapping pairs ...\n"
+        cout << "   Found " << sink->stats->well_aligned_reads << " overlapping pairs ...\n"
                   << "   Of which " << sink->stats->number_of_reads_with_adapter.at(0) << " contained adapter sequence(s) ...\n\n"
                   << "Printing adapter sequences, including poly-A tails:"
                   << std::endl;
 
         print_consensus_adapter(sink->pcr1_counts, sink->pcr1_kmers, "--adapter1",
                                 m_config.adapters.get_raw_adapters().front().first.sequence());
-        std::cout << "\n\n";
+        cout << "\n\n";
 
 //added by weizheng------
         save_consensus_adapter(sink->pcr1_counts, sink->pcr1_kmers, "--adapter1",
@@ -455,7 +456,7 @@ public:
 	save_consensus_adapter(sink->pcr2_counts, sink->pcr2_kmers, "--adapter2", adapter2.sequence(),
 				m_config.input_file_2);
 //------------------------
-	std::cout.flush();
+	cout.flush();
 
     }
 
@@ -519,7 +520,7 @@ private:
 
 int identify_adapter_sequences(const userconfig& config)
 {
-    std::cout << "Attemping to identify adapter sequences ..." << std::endl;
+    cout << "Attemping to identify adapter sequences ..." << std::endl;
 
     scheduler sch;
     try {
@@ -536,7 +537,7 @@ int identify_adapter_sequences(const userconfig& config)
                                                ai_identify_adapters));
         }
     } catch (const std::ios_base::failure& error) {
-        std::cerr << "IO error opening file; aborting:\n"
+        cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }

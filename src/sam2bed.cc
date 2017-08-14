@@ -11,7 +11,7 @@
 #include "SortBed.h"
 #include <iostream>
 #include <sstream>
-using std::cout;
+#include "RcoutRcerr.h"
 using std::endl;
 
 #define SAM_MAX_LINE_LENGTH 10000
@@ -336,7 +336,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
         sortExtBed->mergeBed();
         delete sortExtBed;
     }
-    std::cout<<"finish"<<std::endl;
+    cout<<"finish"<<std::endl;
 
 
 #ifdef PLF_SYS_LINUX

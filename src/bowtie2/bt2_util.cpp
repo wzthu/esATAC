@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "bt2_idx.h"
-
+#include "RcoutRcerr.h"
 ///////////////////////////////////////////////////////////////////////
 //
 // Functions for printing and sanity-checking Ebwts

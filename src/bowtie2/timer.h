@@ -27,7 +27,7 @@
 #ifdef USE_FINE_TIMER
 #include <sys/time.h>
 #endif
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 #ifdef USE_FINE_TIMER

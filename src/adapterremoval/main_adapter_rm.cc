@@ -43,6 +43,7 @@
 #include "trimmed_reads.h"
 #include "userconfig.h"
 
+#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -252,7 +253,7 @@ bool write_demux_settings(const userconfig& config,
         output << "\n";
         write_demultiplex_statistics(output, config, step);
     } catch (const std::ios_base::failure& error) {
-        std::cerr << "IO error writing demultiplexing statistics; aborting:\n"
+        cerr << "IO error writing demultiplexing statistics; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return false;
     }
@@ -564,7 +565,7 @@ bool write_settings(const userconfig& config, const std::vector<reads_processor*
             output.exceptions(std::ofstream::failbit | std::ofstream::badbit);
             write_trimming_settings(config, *stats, nth, output);
         } catch (const std::ios_base::failure& error) {
-            std::cerr << "IO error writing settings file; aborting:\n"
+            cerr << "IO error writing settings file; aborting:\n"
                       << cli_formatter::fmt(error.what()) << std::endl;
             return false;
         }
@@ -600,7 +601,7 @@ void add_write_step(const userconfig& config, scheduler& sch, size_t offset,
 
 int remove_adapter_sequences_se(const userconfig& config)
 {
-    std::cerr << "Trimming single ended reads ..." << std::endl;
+    cerr << "Trimming single ended reads ..." << std::endl;
 
     scheduler sch;
     std::vector<reads_processor*> processors;
@@ -653,7 +654,7 @@ int remove_adapter_sequences_se(const userconfig& config)
             }
         }
     } catch (const std::ios_base::failure& error) {
-        std::cerr << "IO error opening file; aborting:\n"
+        cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }
@@ -672,7 +673,7 @@ int remove_adapter_sequences_se(const userconfig& config)
 
 int remove_adapter_sequences_pe(const userconfig& config)
 {
-    std::cerr << "Trimming paired end reads ..." << std::endl;
+    cerr << "Trimming paired end reads ..." << std::endl;
 
     scheduler sch;
     std::vector<reads_processor*> processors;
@@ -741,7 +742,7 @@ int remove_adapter_sequences_pe(const userconfig& config)
             }
         }
     } catch (const std::ios_base::failure& error) {
-        std::cerr << "IO error opening file; aborting:\n"
+        cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }

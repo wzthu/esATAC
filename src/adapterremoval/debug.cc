@@ -27,6 +27,8 @@
 #include <iostream>
 #include <sstream>
 
+#include "RcoutRcerr.h"
+
 namespace ar
 {
 
@@ -66,7 +68,7 @@ void debug_raise_assert(const char* filename, size_t lineno, const char* what)
 #ifdef AR_TEST_BUILD
     throw assert_failed(message.str());
 #else
-    std::cerr << message.str() << std::endl;
+    cerr << message.str() << std::endl;
 
     std::abort();
 #endif
