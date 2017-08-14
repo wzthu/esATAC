@@ -7,7 +7,7 @@
 #include <vector>
 #include <stdlib.h>
 #include "CutSiteCount.h"
-
+#include "RcoutRcerr.h"
 using namespace std;
 
 string IntToString(int);

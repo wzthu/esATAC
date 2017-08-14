@@ -5,6 +5,9 @@
 #include <vector>
 #include <map>
 #include <iostream>
+#include "RcoutRcerr.h"
+
+
 
 
 SortBed::SortBed(const char * output_path, bool unique,int  max_line)
@@ -104,7 +107,7 @@ void SortBed::mergeBed(){
     if(bed_buf.size()>0){
         flush_bed_buf();
     }
-    std::cout <<"merge start"<<std::endl;
+    cout <<"merge start"<<std::endl;
     //std::cout<<"rserserser"<<std::endl;
     if(tmp_count==1){
         std::string str_count;
@@ -187,7 +190,7 @@ void SortBed::mergeBed(){
         std::string tmp_file = tmp_prefix + "." + str_count;
         std::remove(tmp_file.c_str());
     }
-    std::cout <<"merge finish"<<std::endl;
+    cout <<"merge finish"<<std::endl;
 }
 
 
@@ -216,7 +219,7 @@ void SortBed::flush_bed_buf(){
     }
     ofs.flush();
     ofs.close();
-    std::cout <<"finish temporary output:"<<tmp_file.c_str()<<std::endl;
+    cout <<"finish temporary output:"<<tmp_file.c_str()<<std::endl;
 }
 
 

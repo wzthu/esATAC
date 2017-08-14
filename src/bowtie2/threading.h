@@ -67,7 +67,7 @@ class ThreadSafe {
 public:
 
 	ThreadSafe() : ptr_mutex(NULL) { }
-	
+
 	ThreadSafe(MUTEX_T* ptr_mutex, bool locked = true) : ptr_mutex(NULL) {
 		if(locked) {
 #if WITH_TBB && NO_SPINLOCK && WITH_QUEUELOCK
@@ -133,7 +133,7 @@ public:
             if ( errno != EINVAL )  break;
         }
         if ( !mask )
-            std::cout << "Warning: Failed to obtain process affinity mask. Thread affinitization is disabled." << std::endl;
+            cout << "Warning: Failed to obtain process affinity mask. Thread affinitization is disabled." << std::endl;
     }
 
 /*override*/ void on_scheduler_entry( bool ) {
@@ -174,9 +174,9 @@ public:
         CPU_SET_S( mapped_idx, size, target_mask );
         const int err = sched_setaffinity( 0, size, target_mask );
 
-        //std::cout << "Just set affinity for thread " << thr_idx << "\n";
+        //cout << "Just set affinity for thread " << thr_idx << "\n";
         if ( err ) {
-            std::cout << "Failed to set thread affinity!n";
+            cout << "Failed to set thread affinity!n";
             exit( EXIT_FAILURE );
         }
 #if LOG_PINNING

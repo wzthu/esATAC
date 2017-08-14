@@ -1,5 +1,5 @@
 
-#include <Rcpp.h>
+
 #include <string>
 #include <iostream>
 #include "adapterremoval/adrm_interface.h"
@@ -14,6 +14,7 @@
 #include "CutCountPre.h"
 #include "CutSiteCount.h"
 #include "LibComplexQC.h"
+#include "RcoutRcerr.h"
 
 // [[Rcpp::export]]
 int removeAdapter(Rcpp::CharacterVector argvs) {
@@ -87,7 +88,7 @@ void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){
 // [[Rcpp::export]]
 int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-    std::cout << "11111" << std::endl;
+    cout << "11111" << std::endl;
     std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
     std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
     int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
@@ -102,7 +103,7 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 
     SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
-    std::cout << "222221" << std::endl;
+    cout << "222221" << std::endl;
     int filterSize=filterList.size();
 
 
@@ -116,7 +117,7 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
             delete[] filters[0];
             delete[] filters;
 
-            std::cout.flush();
+            cout.flush();
             filters = NULL;
             filterSize = 0;
 
@@ -144,7 +145,7 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 // [[Rcpp::export]]
 int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-  std::cout << "11111" << std::endl;
+  cout << "11111" << std::endl;
   std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
   std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
   int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
@@ -157,10 +158,10 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
   int mem_size = Rcpp::as<int>(argvs["memSize"]);
   int down_sample = Rcpp::as<int>(argvs["downSample"]);
 
-  std::cout << "22222" << std::endl;
+  cout << "22222" << std::endl;
   SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
-  std::cout << "222221" << std::endl;
+  cout << "222221" << std::endl;
   int filterSize=filterList.size();
 
 
@@ -174,7 +175,7 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
           delete[] filters[0];
           delete[] filters;
 
-          std::cout.flush();
+          cout.flush();
           filters = NULL;
           filterSize = 0;
 
@@ -210,16 +211,16 @@ Rcpp::List lib_complex_qc(Rcpp::List argvs)
     int max_reads = Rcpp::as<int>(argvs["max_reads"]);
 
     LibComplexQC * qc = NULL;
-    std::cout<<bedfile<<sortedBed<<max_reads<<std::endl;
-    std::cout.flush();
+    cout<<bedfile<<sortedBed<<max_reads<<std::endl;
+    cout.flush();
     if(sortedBed){
-        std::cout<<2<<bedfile<<sortedBed<<max_reads<<std::endl;
-        std::cout.flush();
+        cout<<2<<bedfile<<sortedBed<<max_reads<<std::endl;
+        cout.flush();
         qc = new LibComplexQC(bedfile);
         qc->calValSorted();
     }else{
-        std::cout<<1<<bedfile<<sortedBed<<max_reads<<std::endl;
-        std::cout.flush();
+        cout<<1<<bedfile<<sortedBed<<max_reads<<std::endl;
+        cout.flush();
         qc = new LibComplexQC(bedfile,max_reads);
         qc->calValUnSorted();
     }
@@ -243,29 +244,29 @@ Rcpp::List lib_complex_qc(Rcpp::List argvs)
 // [[Rcpp::export]]
 int ChrDivi_wrapper(Rcpp::List argvs)
 {
-  std::cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
+  cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
   std::string Oname = Rcpp::as<std::string>(argvs["name"]);
 
   // CHR_DIVIDE is the class name
   ChrInfoDivi CHR_DIVIDE(RIfile, ROfile, Oname);
-  std::cout << "segmentation finished! Your output file path is:" << std::endl;
-  std::cout << ROfile << std::endl;
+  cout << "segmentation finished! Your output file path is:" << std::endl;
+  cout << ROfile << std::endl;
   return(CHR_DIVIDE.DoDivi());
 }
 
 // [[Rcpp::export]]
 int CutCountPre_wrapper(Rcpp::List argvs)
 {
-  std::cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
+  cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
 
   // CutCount is the class name
   CutCountPre CutCount(RIfile, ROfile);
-  std::cout << "segmentation finished! Your output file path is:" << std::endl;
-  std::cout << ROfile << std::endl;
+  cout << "segmentation finished! Your output file path is:" << std::endl;
+  cout << ROfile << std::endl;
   return(CutCount.EXCutCount());
 }
 
