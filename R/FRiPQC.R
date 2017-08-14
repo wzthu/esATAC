@@ -6,7 +6,10 @@ FRiPQC <-R6Class(
             super$initialize("FRiPQC",editable,list(arg1=atacProcReads,arg2=atacProcPeak))
             if(!is.null(atacProcReads)){
                 private$paramlist[["readsBedInput"]] <- atacProcReads$getParam("bedOutput");
-                private$paramlist[["readsCount"]] <- atacProcReads$getParam("readsCount")
+                #private$paramlist[["readsCount"]] <- atacProcReads$getParam("readsCount")
+                regexProcName<-sprintf("(BED|bed|Bed|%s)",atacProc$getProcName())
+            }else{
+                regexProcName<-"(BED|bed|Bed)"
             }
             if(!is.null(atacProcPeak)){
                 private$paramlist[["peakBedInput"]] <- atacProcPeak$getParam("bedOutput");
@@ -20,17 +23,20 @@ FRiPQC <-R6Class(
             }
 
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["peakBedInput"]],".FripQCreport");
+                if(!is.null(private$paramlist[["peakBedInput"]])){
+                    prefix<-private$getBasenamePrefix(private$paramlist[["peakBedInput"]],regexProcName)
+                    private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+                }
+                #private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["peakBedInput"]],".FripQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
-            private$checkFileExist(private$paramlist[["readsBedInput"]]);
-            private$checkFileExist(private$paramlist[["peakBedInput"]]);
-            private$checkPathExist(private$paramlist[["reportPrefix"]]);
-            private$checkRequireParam();
-        },
+
+            private$paramValidation()
+        }
+    ),
+    private = list(
         processing = function(){
-            super$processing()
             qcval=list();
             genome <- Seqinfo(genome = NA_character_)
             gr_a <- import(private$paramlist[["readsBedInput"]], genome = genome)
@@ -43,22 +49,12 @@ FRiPQC <-R6Class(
             }
             qcval[["FRiP"]]<-qcval[["peakReads"]]/qcval[["totalReads"]]
             #unlink(paste0(private$paramlist[["reportPrefix"]],".tmp"))
-            private$paramlist[["qcval"]]<-qcval
+            ####private$paramlist[["qcval"]]<-qcval
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
-            private$finish <- TRUE
+
         },
-        setResultParam = function(fastqOutput1, fastqOutput2=NULL){
-            super$setResultParam();
-            private$paramlist[["fastqOutput1"]] <- fastqOutput1
-            private$paramlist[["fastqOutput2"]] <- fastqOutput2
-        }
-    ),
-    private = list(
         checkRequireParam = function(){
-            if(private$editable){
-                return();
-            }
             if(is.null(private$paramlist[["readsBedInput"]])){
                 stop("readsBedInput is required.")
             }
@@ -66,8 +62,21 @@ FRiPQC <-R6Class(
                 stop("peakBedInput is required.")
             }
 
+        },
+        checkAllPath = function(){
+            private$checkFileExist(private$paramlist[["readsBedInput"]]);
+            private$checkFileExist(private$paramlist[["peakBedInput"]]);
+            private$checkPathExist(private$paramlist[["reportPrefix"]]);
         }
     )
 
 
 )
+
+
+atacFripQC<-function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=NULL,peakBedInput){
+    fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportPrefix=reportPrefix,
+                       readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
+    fripQC$process()
+    return(fripQC)
+}

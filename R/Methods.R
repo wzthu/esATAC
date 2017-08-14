@@ -40,42 +40,14 @@ atacPrintPrevList<-function(atacProc){
 
 
 
-atacLibComplexQC<-function(atacProc,reportPrefix=NULL,samInput=NULL,paired = FALSE,subsample=TRUE,subsampleSize=4*10e6){
-    libqc<-LibComplexQC$new(atacProc,reportPrefix=reportPrefix,samInput=samInput,paired = paired,
-                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
-    libqc$processing()
-    return(libqc)
-}
 
-atacTSSQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
-    tssQC<-TSSQC$new(atacProc=atacProc, txdb.knownGene=txdb.knownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
-    tssQC$processing()
-    return(tssQC)
-}
 
-atacFripQC<-function(atacProcReads,atacProcPeak,reportPrefix=NULL,readsBedInput=NULL,peakBedInput){
-    fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportPrefix=reportPrefix,readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
-    fripQC$processing()
-    return(fripQC)
-}
 
-atacDHSQC<-function(atacProc, reportPrefix=NULL,bedDHS = NULL,bedInput = NULL){
-    dhsQC<-DHSQC$new(atacProc, reportPrefix=reportPrefix,bedDHS = bedDHS,bedInput = bedInput)
-    dhsQC$processing()
-    return(dhsQC)
-}
 
-atacBlacklistQC<-function(atacProc, reportPrefix=NULL,bedBlacklist = NULL,bedInput = NULL){
-    blacklistQC<-BlacklistQC$new(atacProc, reportPrefix=reportPrefix,bedBlacklist = bedBlacklist,bedInput = bedInput,editable=FALSE)
-    blacklistQC$processing()
-    return(blacklistQC)
-}
 
-atacGenicQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,promoterRange=c(-2000,2000)){
-    genicQC<-GenicQC(atacProc, txdb.knownGene = txdb.knownGene,reportPrefix=reportPrefix,bedInput = bedInput,promoterRange=promoterRange)
-    genicQC$processing()
-    return(genicQC)
-}
+
+
+
 
 
 
@@ -104,22 +76,4 @@ atacQCReport <- function(atacProc = NULL, input_file = NULL, output_file = NULL)
 }
 
 
-atacRenamerResult <- function(fastqOutput1=NULL, fasqOutput2=NULL){
-  renamer <- Renamer$new(NULL, fastqOutput1, fasqOutput2,NULL, NULL,editable=TRUE)
-  return(renamer)
-}
 
-atacRemoveResult <- function(fastqOutput1=NULL,fastqOutput2=NULL){
-  removeAdapter <- RemoveAdapter$new(NULL,NULL,NULL,fastqOutput1,NULL,fastqOutput2,NULL, NULL,editable=FALSE)
-  return(removeAdapter)
-}
-
-
-
-
-
-#atacRenamerObj<-atacRenamer("A/fastq1","B/fastq2","C/output")
-
-#atacRemoveAdapterObj<-atacRemoveAdapter(atacRenamerObj)
-
-#atacMappingObj<-Mapping(atacRemoveAdapterObj)

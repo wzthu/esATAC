@@ -6,6 +6,9 @@ TSSQC <-R6Class(
             super$initialize("TSSQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
+                regexProcName<-sprintf("(BED|bed|Bed|%s)",atacProc$getProcName())
+            }else{
+                regexProcName<-"(BED|bed|Bed)"
             }
             if(!is.null(txdb.knownGene)){
                 private$paramlist[["knownGene"]] <- txdb.knownGene;
@@ -18,7 +21,11 @@ TSSQC <-R6Class(
             }
 
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".TSSQCreport");
+                if(!is.null(private$paramlist[["bedInput"]])){
+                    prefix<-private$getBasenamePrefix(private$paramlist[["bedInput"]],regexProcName)
+                    private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+                }
+                #private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".TSSQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
@@ -26,17 +33,18 @@ TSSQC <-R6Class(
             private$paramlist[["updownstream"]] <- tssUpdownstream
             private$paramlist[["fregLenRange"]] <- fregLenRange
 
-            private$checkFileExist(private$paramlist[["bedInput"]]);
-            private$checkPathExist(private$paramlist[["reportPrefix"]]);
-            private$checkRequireParam();
-        },
+
+            private$paramValidation()
+        }
+    ),
+    private = list(
         processing = function(){
-            super$processing()
+
             genome <- Seqinfo(genome = .obtainConfigure("genome"))
             readsbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
 
             readsbed<-readsbed[(width(readsbed)>=private$paramlist[["fregLenRange"]][1])&
-                                               (width(readsbed)<=private$paramlist[["fregLenRange"]][2])]
+                                   (width(readsbed)<=private$paramlist[["fregLenRange"]][2])]
 
             txdb<-private$paramlist[["knownGene"]]
             #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
@@ -109,30 +117,31 @@ TSSQC <-R6Class(
             qcval<-as.matrix(qcval)
             print(paste0(private$paramlist[["reportPrefix"]],".txt"))
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
-            private$finish <- TRUE
+
         },
-        setResultParam = function(fastqOutput1, fastqOutput2=NULL){
-            super$setResultParam();
-            private$paramlist[["fastqOutput1"]] <- fastqOutput1
-            private$paramlist[["fastqOutput2"]] <- fastqOutput2
-        }
-    ),
-    private = list(
         checkRequireParam = function(){
-            if(private$editable){
-                return();
-            }
             if(is.null(private$paramlist[["knownGene"]])){
                 stop("txdb.knownGene is required.")
             }
             if(is.null(private$paramlist[["bedInput"]])){
                 stop("bedInput is required.")
             }
-
-
-
+        },
+        checkAllPath = function(){
+            private$checkFileExist(private$paramlist[["bedInput"]]);
+            private$checkPathExist(private$paramlist[["reportPrefix"]]);
         }
     )
 
 
 )
+
+
+atacTSSQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+    tssQC<-TSSQC$new(atacProc=atacProc, txdb.knownGene=txdb.knownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
+    tssQC$process()
+    return(tssQC)
+}
+
+
+

@@ -6,6 +6,9 @@ DHSQC <-R6Class(
             super$initialize("DHSQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
+                regexProcName<-sprintf("(BED|bed|Bed|%s)",atacProc$getProcName())
+            }else{
+                regexProcName<-"(BED|bed|Bed)"
             }
             if(!is.null(bedDHS)){
                 private$paramlist[["bedDHS"]] <- bedDHS;
@@ -18,20 +21,20 @@ DHSQC <-R6Class(
             }
 
             if(is.null(reportPrefix)){
-                private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".DHSQCreport");
+                if(!is.null(private$paramlist[["bedInput"]])){
+                    prefix<-private$getBasenamePrefix(private$paramlist[["bedInput"]],regexProcName)
+                    private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+                }
+                #private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".DHSQCreport");
             }else{
                 private$paramlist[["reportPrefix"]] <- reportPrefix;
             }
+            private$paramValidation()
+        }
 
-
-
-            private$checkFileExist(private$paramlist[["bedInput"]]);
-            private$checkFileExist(private$paramlist[["bedDHS"]]);
-            private$checkPathExist(private$paramlist[["reportPrefix"]]);
-            private$checkRequireParam();
-        },
+    ),
+    private = list(
         processing = function(){
-            super$processing()
             genome <- Seqinfo(genome = .obtainConfigure("genome"))
 
             inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
@@ -48,19 +51,9 @@ DHSQC <-R6Class(
 
             qcval<-as.matrix(qcval)
             write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
-            private$finish <- TRUE
+
         },
-        setResultParam = function(fastqOutput1, fastqOutput2=NULL){
-            super$setResultParam();
-            private$paramlist[["fastqOutput1"]] <- fastqOutput1
-            private$paramlist[["fastqOutput2"]] <- fastqOutput2
-        }
-    ),
-    private = list(
         checkRequireParam = function(){
-            if(private$editable){
-                return();
-            }
             if(is.null(private$paramlist[["bedInput"]])){
                 stop("bedInput is required.")
             }
@@ -68,8 +61,19 @@ DHSQC <-R6Class(
                 stop("bedDHS is required.")
             }
 
+        },
+        checkAllPath = function(){
+            private$checkFileExist(private$paramlist[["bedInput"]]);
+            private$checkFileExist(private$paramlist[["bedDHS"]]);
+            private$checkPathExist(private$paramlist[["reportPrefix"]]);
         }
     )
 
 
 )
+
+atacDHSQC<-function(atacProc, reportPrefix=NULL,bedDHS = NULL,bedInput = NULL){
+    atacproc<-DHSQC$new(atacProc, reportPrefix=reportPrefix,bedDHS = bedDHS,bedInput = bedInput)
+    atacproc$process()
+    return(atacproc)
+}

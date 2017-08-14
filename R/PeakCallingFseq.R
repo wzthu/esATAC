@@ -99,11 +99,11 @@ PeakCallingFseq <-R6Class(
 
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,
-                            outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
+                             ploidyDir=NULL,#outputFormat=c("bed","wig","npf"),
                             wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                             wgThresholdSet=NULL){
     peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
-                                       fragmentSize,featureLength,bedOutput,outputFormat, ploidyDir,
+                                       fragmentSize,featureLength,bedOutput,outputFormat="bed", ploidyDir,
                                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
     peakcalling$process();
     return(peakcalling)
