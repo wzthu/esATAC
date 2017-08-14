@@ -111,6 +111,14 @@ BaseProc <- R6Class(
     graphMng = NULL,
     singleEnd = FALSE,
     logRecord= NULL,
+    getAutoPath = function(originPath,regexProcName,suffix){
+        if(!is.null(originPath)){
+            prefix<-private$getBasenamePrefix(originPath,regexProcName)
+            return(file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),suffix)))
+        }else{
+            return(NULL)
+        }
+    },
     paramValidation = function(){
         if(!private$checkMD5Cache()){
             private$checkAllPath()
