@@ -91,11 +91,16 @@ GraphMng <- R6Class(
         return(are.connected(private$graphDep2,resultProcName,procName))
     },
 
-    printMap = function(procName=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE){
+    printMap = function(procName=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
       #plot(private$graphDep1, layout=layout.reingold.tilford)
 
         if(is.null(procName)){
-            private$graph%>%render_graph()
+            if(display){
+                private$graph%>%render_graph()
+            }else{
+                private$graph%>%export_graph(file_name = file.path(.obtainConfigure("tmpdir"),"currentMap.pdf"),file_type="pdf")
+            }
+
         }else{
             tempMap<-private$graph
             if(preProc){
@@ -110,7 +115,13 @@ GraphMng <- R6Class(
                 tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
                     set_node_attrs_ws("fillcolor", "Red") %>%clear_selection()
             }
-            render_graph(tempMap)
+            if(display){
+                render_graph(tempMap)
+            }else{
+                tempMap%>%export_graph(file_name = file.path(.obtainConfigure("tmpdir"),"currentMap.pdf"),file_type="pdf")
+
+            }
+
         }
 
 

@@ -12,13 +12,13 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL,tmpdir=NULL,saveTmpFiles=FALSE
   return(gph$getSubGraphTopo(as.numeric(vlist),atacInputFile,list(Renamer=Renamer,RemoveAdapter=RemoveAdapter)))
 }
 
-atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE){
+atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
     if(is.null(atacProc)){
-        GraphMng$new()$printMap()
+        GraphMng$new()$printMap(display=display)
     }else if(class(atacProc)=="character"){
-        GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc)
+        GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
     }else{
-        atacProc$printMap(preProc,nextProc,curProc)
+        atacProc$printMap(preProc,nextProc,curProc,display=display)
         return(atacProc)
     }
 }
