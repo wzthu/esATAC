@@ -94,7 +94,7 @@ CutSiteCountR <- R6::R6Class(
 #' e.g. "/your_cut_site_information_path/prefix"
 #' @param MotifFile Your cut site infoemation file(from atacChrDivi function) path with prefix.
 #' e.g. "/your_motif_information_path/prefix"
-#' Motif file must be 4 column, chr, start_site, end_site, strand.
+#' The first 4 columns of the motif file must be "chr start_site end_site strand".
 #' @param MatrixPath The output path with a prefix, an empty folder would be great.
 #' e.g. "/where_you_want_to_save_output/prefix"
 #' @param motif_length Motif length.
