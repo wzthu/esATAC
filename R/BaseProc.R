@@ -59,8 +59,8 @@ BaseProc <- R6Class(
     getProcName = function(){
       return(private$procName)
     },
-    printMap = function(preProc=FALSE,nextProc=TRUE,curProc=TRUE){
-      private$graphMng$printMap(procName=private$procName,preProc=preProc,nextProc=nextProc,curProc=curProc)
+    printMap = function(preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
+      private$graphMng$printMap(procName=private$procName,preProc=preProc,nextProc=nextProc,curProc=curProc,display=display)
     },
     finalize = function(){
       #rm(private$graphMng)
