@@ -114,3 +114,21 @@
 
     return(bowtie2Build(argv))
 }
+
+
+.bedOprUtils_call<-function(ibedfile, obedfile,reportPrefix,
+                            mergePair,downSample ,posOffset,negOffset,
+                            sortBed,uniqueBed,minFregLen,maxFregLen,filterList,select){
+    argv <- list(ibedfile=ibedfile, obedfile=obedfile,reportPrefix=reportPrefix,
+                 memSize=8,mergePair=mergePair,downSample = downSample,
+                 posOffset=posOffset,negOffset=negOffset,
+                 sortBed=sortBed,uniqueBed=uniqueBed,
+                 minFregLen=minFregLen,maxFregLen=maxFregLen,
+                 filterList=filterList,select=select)
+    print(argv)
+    if(is.null(filterList)){
+        filterList = c("NULL");
+    }
+    return(bedOprUtils(argv,filterList))
+
+}

@@ -14,6 +14,7 @@
 #include "CutCountPre.h"
 #include "CutSiteCount.h"
 #include "LibComplexQC.h"
+#include "BedUtils.h"
 #include "RcoutRcerr.h"
 
 // [[Rcpp::export]]
@@ -142,64 +143,134 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 
 }
 
+
+
 // [[Rcpp::export]]
 int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-  cout << "11111" << std::endl;
-  std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
-  std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
-  int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
-  int neg_offset = Rcpp::as<int>(argvs["negOffset"]);
-  bool sort = Rcpp::as<bool>(argvs["sort"]);
-  bool unique = Rcpp::as<bool>(argvs["unique"]);
-  int min_freg_len = Rcpp::as<int>(argvs["minFregLen"]);
-  int max_freg_len = Rcpp::as<int>(argvs["maxFregLen"]);
-  bool save_ext_len = Rcpp::as<bool>(argvs["saveExtLen"]);
-  int mem_size = Rcpp::as<int>(argvs["memSize"]);
-  int down_sample = Rcpp::as<int>(argvs["downSample"]);
+    cout << "11111" << std::endl;
+    std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
+    std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
+    int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
+    int neg_offset = Rcpp::as<int>(argvs["negOffset"]);
+    bool sort = Rcpp::as<bool>(argvs["sort"]);
+    bool unique = Rcpp::as<bool>(argvs["unique"]);
+    int min_freg_len = Rcpp::as<int>(argvs["minFregLen"]);
+    int max_freg_len = Rcpp::as<int>(argvs["maxFregLen"]);
+    bool save_ext_len = Rcpp::as<bool>(argvs["saveExtLen"]);
+    int mem_size = Rcpp::as<int>(argvs["memSize"]);
+    int down_sample = Rcpp::as<int>(argvs["downSample"]);
 
-  cout << "22222" << std::endl;
-  SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
+    cout << "22222" << std::endl;
+    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
-  cout << "222221" << std::endl;
-  int filterSize=filterList.size();
-
-
-  char **filters = new char* [filterSize];
-  if(filterSize == 1){
-      int len = filterList[0].size();
-      filters[0] = new char[len+1];
-      strcpy(filters[0],(char *)(Rcpp::as<std::string>(filterList[0])).c_str());
-
-      if(!strcmp(filters[0],"NULL")){
-          delete[] filters[0];
-          delete[] filters;
-
-          cout.flush();
-          filters = NULL;
-          filterSize = 0;
+    cout << "222221" << std::endl;
+    int filterSize=filterList.size();
 
 
-      }
-  }else{
-      for(int i=0;i<filterSize;i++){
-          int len = filterList[i].size();
-          filters[i] = new char[len+1];
-          strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
-      }
-  }
+    char **filters = new char* [filterSize];
+    if(filterSize == 1){
+        int len = filterList[0].size();
+        filters[0] = new char[len+1];
+        strcpy(filters[0],(char *)(Rcpp::as<std::string>(filterList[0])).c_str());
 
-  int reads_count = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
+        if(!strcmp(filters[0],"NULL")){
+            delete[] filters[0];
+            delete[] filters;
 
-  if(filters){
-      for(int i=0;i<filterSize;i++){
-        delete[] filters[i];
-      }
-      delete[] filters;
-  }
-  return(reads_count);
+            cout.flush();
+            filters = NULL;
+            filterSize = 0;
+
+
+        }
+    }else{
+        for(int i=0;i<filterSize;i++){
+            int len = filterList[i].size();
+            filters[i] = new char[len+1];
+            strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
+        }
+    }
+
+    int reads_count = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
+
+    if(filters){
+        for(int i=0;i<filterSize;i++){
+            delete[] filters[i];
+        }
+        delete[] filters;
+    }
+    return(reads_count);
 
 }
+
+// [[Rcpp::export]]
+void bedOprUtils(Rcpp::List argvs,Rcpp::CharacterVector filterList)
+{
+    cout << "11111" << std::endl;
+    std::string ipath = Rcpp::as<std::string>(argvs["ibedfile"]);//
+    std::string opath = Rcpp::as<std::string>(argvs["obedfile"]);//
+    std::string rpath = Rcpp::as<std::string>(argvs["reportPrefix"]);//
+    int mem_size = Rcpp::as<int>(argvs["memSize"]);//
+    bool mergePair = Rcpp::as<bool>(argvs["mergePair"]);
+    int down_sample = Rcpp::as<int>(argvs["downSample"]);//
+    int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
+    int neg_offset = Rcpp::as<int>(argvs["negOffset"]);
+    bool isSortBed = Rcpp::as<bool>(argvs["sortBed"]);
+    bool unique = Rcpp::as<bool>(argvs["uniqueBed"]);
+    int min_freg_len = Rcpp::as<int>(argvs["minFregLen"]);
+    int max_freg_len = Rcpp::as<int>(argvs["maxFregLen"]);
+    //bool report = Rcpp::as<bool>(argvs["report"]);
+    bool report = (rpath.size()!=0);
+    bool select = Rcpp::as<bool>(argvs["select"]);
+
+
+    int filterSize=filterList.size();
+
+
+    char **filters = new char* [filterSize];
+    if(filterSize == 1){
+        int len = filterList[0].size();
+        filters[0] = new char[len+1];
+        strcpy(filters[0],(char *)(Rcpp::as<std::string>(filterList[0])).c_str());
+
+        if(!strcmp(filters[0],"NULL")){
+            delete[] filters[0];
+            delete[] filters;
+
+            cout.flush();
+            filters = NULL;
+            filterSize = 0;
+
+
+        }
+    }else{
+        for(int i=0;i<filterSize;i++){
+            int len = filterList[i].size();
+            filters[i] = new char[len+1];
+            strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
+        }
+    }
+    BedUtils bedUtils(ipath.c_str(),opath.c_str(),rpath.c_str(), mem_size,
+                      mergePair,
+                      down_sample,
+                      pos_offset,neg_offset,
+                      filters ,filterSize ,select,
+                      isSortBed ,
+                      unique ,
+                      min_freg_len, max_freg_len,
+                      report);
+
+    bedUtils.bedToBed();
+
+    if(filters){
+        for(int i=0;i<filterSize;i++){
+            delete[] filters[i];
+        }
+        delete[] filters;
+    }
+}
+
 
 
 // [[Rcpp::export]]
