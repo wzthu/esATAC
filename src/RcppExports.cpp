@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // removeAdapter
 int removeAdapter(Rcpp::CharacterVector argvs);
-RcppExport SEXP atacpipe_removeAdapter(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_removeAdapter(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -18,7 +18,7 @@ END_RCPP
 }
 // renamer
 int renamer(Rcpp::List argvs);
-RcppExport SEXP atacpipe_renamer(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_renamer(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -29,7 +29,7 @@ END_RCPP
 }
 // bowtie2Mapping
 int bowtie2Mapping(Rcpp::CharacterVector argvs);
-RcppExport SEXP atacpipe_bowtie2Mapping(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_bowtie2Mapping(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -40,7 +40,7 @@ END_RCPP
 }
 // bowtie2Build
 int bowtie2Build(Rcpp::CharacterVector argvs);
-RcppExport SEXP atacpipe_bowtie2Build(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_bowtie2Build(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -51,7 +51,7 @@ END_RCPP
 }
 // mergeFile
 void mergeFile(Rcpp::CharacterVector destFile, Rcpp::CharacterVector fileList);
-RcppExport SEXP atacpipe_mergeFile(SEXP destFileSEXP, SEXP fileListSEXP) {
+RcppExport SEXP _atacpipe_mergeFile(SEXP destFileSEXP, SEXP fileListSEXP) {
 BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type destFile(destFileSEXP);
@@ -62,7 +62,7 @@ END_RCPP
 }
 // R_sam2bed_wrapper
 int R_sam2bed_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
-RcppExport SEXP atacpipe_R_sam2bed_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
+RcppExport SEXP _atacpipe_R_sam2bed_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -74,7 +74,7 @@ END_RCPP
 }
 // R_sam2bed_merge_wrapper
 int R_sam2bed_merge_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
-RcppExport SEXP atacpipe_R_sam2bed_merge_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
+RcppExport SEXP _atacpipe_R_sam2bed_merge_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -86,7 +86,7 @@ END_RCPP
 }
 // lib_complex_qc
 Rcpp::List lib_complex_qc(Rcpp::List argvs);
-RcppExport SEXP atacpipe_lib_complex_qc(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_lib_complex_qc(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -97,7 +97,7 @@ END_RCPP
 }
 // ChrDivi_wrapper
 int ChrDivi_wrapper(Rcpp::List argvs);
-RcppExport SEXP atacpipe_ChrDivi_wrapper(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_ChrDivi_wrapper(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -108,7 +108,7 @@ END_RCPP
 }
 // CutCountPre_wrapper
 int CutCountPre_wrapper(Rcpp::List argvs);
-RcppExport SEXP atacpipe_CutCountPre_wrapper(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_CutCountPre_wrapper(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -119,7 +119,7 @@ END_RCPP
 }
 // CutSiteCount_wrapper
 int CutSiteCount_wrapper(Rcpp::List argvs);
-RcppExport SEXP atacpipe_CutSiteCount_wrapper(SEXP argvsSEXP) {
+RcppExport SEXP _atacpipe_CutSiteCount_wrapper(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -130,17 +130,17 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"atacpipe_removeAdapter", (DL_FUNC) &atacpipe_removeAdapter, 1},
-    {"atacpipe_renamer", (DL_FUNC) &atacpipe_renamer, 1},
-    {"atacpipe_bowtie2Mapping", (DL_FUNC) &atacpipe_bowtie2Mapping, 1},
-    {"atacpipe_bowtie2Build", (DL_FUNC) &atacpipe_bowtie2Build, 1},
-    {"atacpipe_mergeFile", (DL_FUNC) &atacpipe_mergeFile, 2},
-    {"atacpipe_R_sam2bed_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_wrapper, 2},
-    {"atacpipe_R_sam2bed_merge_wrapper", (DL_FUNC) &atacpipe_R_sam2bed_merge_wrapper, 2},
-    {"atacpipe_lib_complex_qc", (DL_FUNC) &atacpipe_lib_complex_qc, 1},
-    {"atacpipe_ChrDivi_wrapper", (DL_FUNC) &atacpipe_ChrDivi_wrapper, 1},
-    {"atacpipe_CutCountPre_wrapper", (DL_FUNC) &atacpipe_CutCountPre_wrapper, 1},
-    {"atacpipe_CutSiteCount_wrapper", (DL_FUNC) &atacpipe_CutSiteCount_wrapper, 1},
+    {"_atacpipe_removeAdapter", (DL_FUNC) &_atacpipe_removeAdapter, 1},
+    {"_atacpipe_renamer", (DL_FUNC) &_atacpipe_renamer, 1},
+    {"_atacpipe_bowtie2Mapping", (DL_FUNC) &_atacpipe_bowtie2Mapping, 1},
+    {"_atacpipe_bowtie2Build", (DL_FUNC) &_atacpipe_bowtie2Build, 1},
+    {"_atacpipe_mergeFile", (DL_FUNC) &_atacpipe_mergeFile, 2},
+    {"_atacpipe_R_sam2bed_wrapper", (DL_FUNC) &_atacpipe_R_sam2bed_wrapper, 2},
+    {"_atacpipe_R_sam2bed_merge_wrapper", (DL_FUNC) &_atacpipe_R_sam2bed_merge_wrapper, 2},
+    {"_atacpipe_lib_complex_qc", (DL_FUNC) &_atacpipe_lib_complex_qc, 1},
+    {"_atacpipe_ChrDivi_wrapper", (DL_FUNC) &_atacpipe_ChrDivi_wrapper, 1},
+    {"_atacpipe_CutCountPre_wrapper", (DL_FUNC) &_atacpipe_CutCountPre_wrapper, 1},
+    {"_atacpipe_CutSiteCount_wrapper", (DL_FUNC) &_atacpipe_CutSiteCount_wrapper, 1},
     {NULL, NULL, 0}
 };
 

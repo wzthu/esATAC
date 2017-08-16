@@ -78,7 +78,7 @@ int CutSiteCount::DoCutSiteCount()
       else
       {
         // reads file end, write matrix
-        if(M_strand == "p") // motif in 5'-->3'
+        if(M_strand == "+") // motif in 5'-->3'
         {
           for(int i = 0; i < matrix_len; i++) // write matrix to output file
           {
@@ -101,7 +101,7 @@ int CutSiteCount::DoCutSiteCount()
         // for the rest motif, because of reads file end, write 0 matrix
         while(motiffile.getline(lineM, sizeof(lineM)))
         {
-          if(M_strand == "p") // motif in 5'-->3'
+          if(M_strand == "+") // motif in 5'-->3'
           {
             for(int i = 0; i < matrix_len; i++) // write matrix to output file
             {
@@ -136,7 +136,7 @@ int CutSiteCount::DoCutSiteCount()
       else
       {
         // reads file end, write matrix
-        if(M_strand == "p") // motif in 5'-->3'
+        if(M_strand == "+") // motif in 5'-->3'
         {
           for(int i = 0; i < matrix_len; i++) // write matrix to output file
           {
@@ -159,7 +159,7 @@ int CutSiteCount::DoCutSiteCount()
         // for the rest motif, because of reads file end, write 0 matrix
         while(motiffile.getline(lineM, sizeof(lineM)))
         {
-          if(M_strand == "p") // motif in 5'-->3'
+          if(M_strand == "+") // motif in 5'-->3'
           {
             for(int i = 0; i < matrix_len; i++) // write matrix to output file
             {
@@ -186,7 +186,7 @@ int CutSiteCount::DoCutSiteCount()
     else if (R_start > M_e) // a motif site end, write and read next motif
     {
       //cout << "step3" << endl;
-      if(M_strand == "p") // motif in 5'-->3'
+      if(M_strand == "+") // motif in 5'-->3'
       {
         for(int i = 0; i < matrix_len; i++) // write matrix to output file
         {
