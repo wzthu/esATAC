@@ -25,12 +25,12 @@ R_sam2bed_wrapper <- function(argvs, filterList) {
     .Call('atacpipe_R_sam2bed_wrapper', PACKAGE = 'atacpipe', argvs, filterList)
 }
 
-bedOprUtils <- function(argvs, filterList) {
-    invisible(.Call('atacpipe_bedOprUtils', PACKAGE = 'atacpipe', argvs, filterList))
-}
-
 R_sam2bed_merge_wrapper <- function(argvs, filterList) {
     .Call('atacpipe_R_sam2bed_merge_wrapper', PACKAGE = 'atacpipe', argvs, filterList)
+}
+
+bedOprUtils <- function(argvs, filterList) {
+    invisible(.Call('atacpipe_bedOprUtils', PACKAGE = 'atacpipe', argvs, filterList))
 }
 
 lib_complex_qc <- function(argvs) {

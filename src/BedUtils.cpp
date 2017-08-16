@@ -164,7 +164,7 @@ void BedUtils::bedToBed(){
 #ifdef PLF_SYS_WIN
             if(std::regex_match(bedLine->chr, re)){
 #elif PLF_SYS_LINUX
-                if(regexec(&reg,bedLine->chr,nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
+                if(regexec(&reg,bedLine->chr.c_str(),nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
 #endif
                     if(!select){
                         discard = true;
