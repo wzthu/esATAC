@@ -29,6 +29,29 @@ BedLine::BedLine(const char* chr, int start, int end, const char* extend, int ta
     this->extend = "\t"+this->extend;
 }
 
+BedLine::BedLine(std::string & linestr,bool strandAsTag){
+    std::stringstream ss(linestr);
+    ss >> chr;
+    ss >> start;
+    ss >> end;
+    std::getline(ss,extend);
+    if(extend.size()>0){
+        ss.clear();
+        ss.str(extend);
+        std::string tmp;
+        ss >> tmp;
+        ss >> tmp;
+        ss >> tmp;
+        if(strandAsTag){
+            this->tag = tmp[0];
+        }else{
+            this->strand = tmp[0];
+        }
+
+    }
+
+}
+
 
 BedLine::~BedLine(void)
 {
@@ -40,38 +63,38 @@ BedLine::BedLine(void)
 
 /*
 bool BedLine::operator () (const BedLine *a,const BedLine *b) const{
-    if(a->chr != b->chr){
-        return a->chr > b->chr;
-    }else if(a->start != b->start){
-        return a->start > b->start;
-    }else if(a->end != b->end){
-        return a->end > b->end;
-    }else{
-        return false;// should be false when they are equal
-    }
+if(a->chr != b->chr){
+return a->chr > b->chr;
+}else if(a->start != b->start){
+return a->start > b->start;
+}else if(a->end != b->end){
+return a->end > b->end;
+}else{
+return false;// should be false when they are equal
+}
 }
 */
 bool BedLine::operator < (const BedLine &b) const{
-  if(chr != b.chr){
-    return chr > b.chr;
-  }else if(start != b.start){
-    return start > b.start;
-  }else if(end != b.end){
-    return end > b.end;
-  }else{
-    return false;// should be false when they are equal
-  }
+    if(chr != b.chr){
+        return chr > b.chr;
+    }else if(start != b.start){
+        return start > b.start;
+    }else if(end != b.end){
+        return end > b.end;
+    }else{
+        return false;// should be false when they are equal
+    }
 }
 
 
 bool BedLine::operator == (const BedLine & bedLine) const{
     return bedLine.chr == this->chr &&
-       bedLine.start == this->start &&
-       bedLine.end == this->end;
+        bedLine.start == this->start &&
+        bedLine.end == this->end;
 }
 
 bool BedLine::operator != (const BedLine & bedLine) const{
     return !(bedLine.chr == this->chr &&
-       bedLine.start == this->start &&
-       bedLine.end == this->end);
+             bedLine.start == this->start &&
+             bedLine.end == this->end);
 }

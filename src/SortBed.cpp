@@ -7,10 +7,10 @@
 #include <iostream>
 #include "RcoutRcerr.h"
 
+using std::ofstream;
 
 
-
-SortBed::SortBed(const char * output_path, bool unique,int  max_line)
+SortBed::SortBed(const char * output_path, bool unique,int  max_line, const char* uniqued_path):uniqued_path(uniqued_path)
 {
     this->unique = unique;
     tmp_count = 0;
@@ -19,72 +19,74 @@ SortBed::SortBed(const char * output_path, bool unique,int  max_line)
 
 
     this->tmp_prefix = output_path;
+    saveCounter=0;
+    uniquedCounter=0;
 
 }
-
-SortBed::SortBed(const char * output_path, bool unique,int  max_line,const char * tmp_prefix)
+/*
+SortBed::SortBed(const char * output_path, bool unique,int  max_line,const char * tmp_prefix, const char* uniqued_path):uniqued_path(uniqued_path)
 {
-    this->unique = unique;
-    tmp_count = 0;
-    this->output_path = output_path;
-    this->max_line = max_line;
+this->unique = unique;
+tmp_count = 0;
+this->output_path = output_path;
+this->max_line = max_line;
 
 
-    this->tmp_prefix = tmp_prefix ;
+this->tmp_prefix = tmp_prefix ;
 
 }
 
-SortBed::SortBed(const char * output_path, bool unique, const char * input_path,int max_line)
+SortBed::SortBed(const char * output_path, bool unique, const char * input_path,int max_line, const char* uniqued_path):uniqued_path(uniqued_path)
 {
-    this->unique = unique;
-    tmp_count = 0;
-    this->output_path = output_path;
-    this->max_line = max_line;
+this->unique = unique;
+tmp_count = 0;
+this->output_path = output_path;
+this->max_line = max_line;
 
 
-    this->tmp_prefix = output_path;
+this->tmp_prefix = output_path;
 
 
-    this->input_path = input_path;
-    std::ifstream ifs(input_path);
-    std::string line;
+this->input_path = input_path;
+std::ifstream ifs(input_path);
+std::string line;
 
 
-    while(std::getline(ifs,line)){
+while(std::getline(ifs,line)){
 
-        insertBedLine(new BedLine(line));
+insertBedLine(new BedLine(line));
 
-    }
-    mergeBed();
+}
+mergeBed();
 }
 
-SortBed::SortBed(const char * output_path, bool unique, const char * input_path,int max_line,const char * tmp_prefix)
+SortBed::SortBed(const char * output_path, bool unique, const char * input_path,int max_line,const char * tmp_prefix, const char* uniqued_path):uniqued_path(uniqued_path)
 {
-    this->unique = unique;
-    tmp_count = 0;
-    this->output_path = output_path;
-    this->max_line = max_line;
+this->unique = unique;
+tmp_count = 0;
+this->output_path = output_path;
+this->max_line = max_line;
 
 
-    this->tmp_prefix = tmp_prefix ;
+this->tmp_prefix = tmp_prefix ;
 
 
 
-    this->input_path = input_path;
-    std::ifstream ifs(input_path);
-    std::string line;
+this->input_path = input_path;
+std::ifstream ifs(input_path);
+std::string line;
 
-   // int count=0;
-    while(std::getline(ifs,line)){
+// int count=0;
+while(std::getline(ifs,line)){
 
-        insertBedLine(new BedLine(line));
-     //   std::cout<<count++<<std::endl;
-     //   std::cout.flush();
+insertBedLine(new BedLine(line));
+//   std::cout<<count++<<std::endl;
+//   std::cout.flush();
 
-    }
-    mergeBed();
 }
-
+mergeBed();
+}
+*/
 SortBed::~SortBed(void)
 {
 }
@@ -98,6 +100,7 @@ void SortBed::insertBedLine(BedLine * bedLine){
     if(bed_buf.size()>=max_line){
         flush_bed_buf();
     }
+    saveCounter++;
 }
 
 
@@ -109,7 +112,7 @@ void SortBed::mergeBed(){
     }
     cout <<"merge start"<<std::endl;
     //std::cout<<"rserserser"<<std::endl;
-    if(tmp_count==1){
+    if(tmp_count==1&&!unique){
         std::string str_count;
         std::stringstream ss;
         ss << 0;
@@ -121,8 +124,8 @@ void SortBed::mergeBed(){
     }
     //std::cout<<"rserserser"<<std::endl;
     std::map<int,std::ifstream *>ifss;
-
-
+    saveCounter=0;
+    uniquedCounter =0;
     std::ofstream ofs(output_path.c_str());
     std::string line;
     for(int i = 0; i < tmp_count; i++){
@@ -135,46 +138,59 @@ void SortBed::mergeBed(){
         std::getline(*ifss[i],line);
         bed_buf.push(BedLine(line,i));
     }
-    const BedLine * bedLine = NULL;
+    BedLine  bedLine;
 
     if(unique){
-        BedLine preLine = BedLine("chrStart",-1,-1,"");
-        const BedLine * oldLine = & preLine;
+        ofstream * ofsunique = NULL;
+        if(uniqued_path.size()>0){
+            ofsunique = new ofstream(uniqued_path.c_str());
+        }
+        BedLine oldLine = BedLine("chrStart",-1,-1,"");
+
         while(!bed_buf.empty()){
-            bedLine = &bed_buf.top();
-            if((*bedLine)!=(*oldLine)){
-                ofs << bedLine->chr << '\t';
-                ofs << bedLine->start << '\t';
-                ofs << bedLine->end;
-                ofs << bedLine->extend << std::endl;
+            bedLine = bed_buf.top();
+            if(bedLine!=oldLine){
+                ofs << bedLine.chr << '\t';
+                ofs << bedLine.start << '\t';
+                ofs << bedLine.end;
+                ofs << bedLine.extend << std::endl;
+                saveCounter++;
+            }else if(ofsunique){
+                (*ofsunique) << bedLine.chr << '\t';
+                (*ofsunique) << bedLine.start << '\t';
+                (*ofsunique) << bedLine.end;
+                (*ofsunique) << bedLine.extend << std::endl;
+                uniquedCounter++;
             }
             oldLine = bedLine;
             // std::cout<<bedLine->extend<<std::endl;
             bed_buf.pop();
-            if(std::getline(*ifss[bedLine->tag],line)){
-                bed_buf.push(BedLine(line,bedLine->tag));
+            if(std::getline(*ifss[bedLine.tag],line)){
+                bed_buf.push(BedLine(line,bedLine.tag));
             }else{
-                ifss[bedLine->tag]->close();
-                delete ifss[bedLine->tag];
-                ifss.erase(bedLine->tag);
+                ifss[bedLine.tag]->close();
+                delete ifss[bedLine.tag];
+                ifss.erase(bedLine.tag);
             }
 
         }
+        ofsunique->flush();
+        ofsunique->close();
     }else{
         while(!bed_buf.empty()){
-            bedLine =& bed_buf.top();
-            ofs << bedLine->chr << '\t';
-            ofs << bedLine->start << '\t';
-            ofs << bedLine->end;
-            ofs << bedLine->extend << std::endl;
+            bedLine = bed_buf.top();
+            ofs << bedLine.chr << '\t';
+            ofs << bedLine.start << '\t';
+            ofs << bedLine.end;
+            ofs << bedLine.extend << std::endl;
             // std::cout<<bedLine->extend<<std::endl;
             bed_buf.pop();
-            if(std::getline(*ifss[bedLine->tag],line)){
-                bed_buf.push(BedLine(line,bedLine->tag));
+            if(std::getline(*ifss[bedLine.tag],line)){
+                bed_buf.push(BedLine(line,bedLine.tag));
             }else{
-                ifss[bedLine->tag]->close();
-                delete ifss[bedLine->tag];
-                ifss.erase(bedLine->tag);
+                ifss[bedLine.tag]->close();
+                delete ifss[bedLine.tag];
+                ifss.erase(bedLine.tag);
             }
 
         }
@@ -208,8 +224,8 @@ void SortBed::flush_bed_buf(){
     const BedLine * bedLine = NULL;
     for(int i = 0; i < size; i++){
         bedLine = &bed_buf.top();
-      //  std::cout<<bedLine->chr<<bedLine->start<<bedLine->end<<bedLine->extend<<std::endl;
-    //    std::cout.flush();
+        //  std::cout<<bedLine->chr<<bedLine->start<<bedLine->end<<bedLine->extend<<std::endl;
+        //    std::cout.flush();
         ofs << bedLine->chr << '\t';
         ofs << bedLine->start << '\t';
         ofs << bedLine->end;
@@ -223,3 +239,11 @@ void SortBed::flush_bed_buf(){
 }
 
 
+int SortBed::getUniquedCounter(){
+    return uniquedCounter;
+}
+
+
+int SortBed::getSaveCounter(){
+    return saveCounter;
+}

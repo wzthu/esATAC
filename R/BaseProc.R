@@ -3,6 +3,7 @@ BaseProc <- R6Class(
   public = list(
     fileType = list(fq="fq",fastq="fq",fa="fa",fasta="fa"),
     initialize = function(procName,editable,atacProcs){
+      private$timeStamp <- format(Sys.time(),"[%H%M%S]")
       private$graphMng<-GraphMng$new()
       private$procName<-procName
       private$editable<-editable
@@ -111,6 +112,8 @@ BaseProc <- R6Class(
     graphMng = NULL,
     singleEnd = FALSE,
     logRecord= NULL,
+    timeStamp="",
+    timeStampPattern="(\\[\\d\\d\\d\\d\\d\\d\\])*",
     getAutoPath = function(originPath,regexProcName,suffix){
         if(!is.null(originPath)){
             prefix<-private$getBasenamePrefix(originPath,regexProcName)

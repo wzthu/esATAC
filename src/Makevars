@@ -1,4 +1,4 @@
-include $(R_HOME)/etc${R_ARCH}/Makeconf
+#include $(R_HOME)/etc${R_ARCH}/Makeconf
 
 ADRM_DIR = adapterremoval
 ADRM_SRC = $(ADRM_DIR)
