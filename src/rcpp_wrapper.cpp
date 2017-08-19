@@ -89,7 +89,6 @@ void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){
 // [[Rcpp::export]]
 int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-    cout << "11111" << std::endl;
     std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
     std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
     int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
@@ -104,7 +103,6 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 
     SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
-    cout << "222221" << std::endl;
     int filterSize=filterList.size();
 
 
@@ -148,7 +146,6 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 // [[Rcpp::export]]
 int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-    cout << "11111" << std::endl;
     std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
     std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
     int pos_offset = Rcpp::as<int>(argvs["posOffset"]);
@@ -161,10 +158,8 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
     int mem_size = Rcpp::as<int>(argvs["memSize"]);
     int down_sample = Rcpp::as<int>(argvs["downSample"]);
 
-    cout << "22222" << std::endl;
     SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
 
-    cout << "222221" << std::endl;
     int filterSize=filterList.size();
 
 
@@ -207,7 +202,6 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 // [[Rcpp::export]]
 void bedOprUtils(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
-    cout << "11111" << std::endl;
     std::string ipath = Rcpp::as<std::string>(argvs["ibedfile"]);//
     std::string opath = Rcpp::as<std::string>(argvs["obedfile"]);//
     std::string rpath = Rcpp::as<std::string>(argvs["reportPrefix"]);//
@@ -315,29 +309,23 @@ Rcpp::List lib_complex_qc(Rcpp::List argvs)
 // [[Rcpp::export]]
 int ChrDivi_wrapper(Rcpp::List argvs)
 {
-  cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
   std::string Oname = Rcpp::as<std::string>(argvs["name"]);
 
   // CHR_DIVIDE is the class name
   ChrInfoDivi CHR_DIVIDE(RIfile, ROfile, Oname);
-  cout << "segmentation finished! Your output file path is:" << std::endl;
-  cout << ROfile << std::endl;
   return(CHR_DIVIDE.DoDivi());
 }
 
 // [[Rcpp::export]]
 int CutCountPre_wrapper(Rcpp::List argvs)
 {
-  cout << "Your input file will be segmented according to the chrmatin name!" << std::endl;
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
 
   // CutCount is the class name
   CutCountPre CutCount(RIfile, ROfile);
-  cout << "segmentation finished! Your output file path is:" << std::endl;
-  cout << ROfile << std::endl;
   return(CutCount.EXCutCount());
 }
 
