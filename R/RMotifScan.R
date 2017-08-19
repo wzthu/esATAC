@@ -53,6 +53,7 @@ RMotifScan <- R6::R6Class(
         seq_info$end <- as.numeric(as.vector(seq_info$start)) + as.numeric(nchar(tmp$siteSeqs)) - 1
         seq_info$strand <- tmp$strand
         seq_info$motif <- tmp$TF
+        seq_info <- seq_info[with(seq_info, order(motif, chr, start)), ]
         seq_info <- split(seq_info, f = seq_info$motif)
         motif_num <- length(seq_info)
         for(i in seq(motif_num)){
