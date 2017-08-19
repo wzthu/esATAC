@@ -24,7 +24,7 @@ RMotifScan <- R6::R6Class(
       }
       if(Position && is.null(MP_file)){
         private$paramlist[["MP_file"]] <- paste0(dirname(private$paramlist[["output_file"]]),
-                                                 "/motif.mp", collapse = "")
+                                                 "/motif", collapse = "")
       }else{
         private$paramlist[["MP_file"]] <- MP_file
       }
@@ -53,7 +53,14 @@ RMotifScan <- R6::R6Class(
         seq_info$end <- as.numeric(as.vector(seq_info$start)) + as.numeric(nchar(tmp$siteSeqs)) - 1
         seq_info$strand <- tmp$strand
         seq_info$motif <- tmp$TF
-        write.table(x = seq_info, file = private$paramlist[["MP_file"]], row.names = FALSE,  quote = FALSE)
+        seq_info <- split(seq_info, f = seq_info$motif)
+        motif_num <- length(seq_info)
+        for(i in seq(motif_num)){
+          motif_name <- unique(seq_info[[i]]$motif)
+          output_path <- paste(private$paramlist[["MP_file"]], "_", motif_name, sep = "")
+          write.table(x = seq_info[[i]], file = output_path, quote = FALSE, sep = "\t",
+                      row.names = FALSE, col.names = FALSE)
+        }
       }
 
 
@@ -91,8 +98,9 @@ RMotifScan <- R6::R6Class(
 #' @param Position TRUE or FALSE. Whether generate accuracy motif position file.Default: FALSE.
 #' ATTENTION: If your DNA sequences are not from function "DnaSeqCut", be sure Position = FALSE,
 #' otherwise the program will report an error.
-#' @param MP_file If Position = TRUE, the accuracy motif position will be writen in this file.
-#' Default: output_file_path/motif.mp
+#' @param MP_file If Position = TRUE, the accuracy motif position will be writen in MP_file_MOTIFNAME.mp.
+#' Actually, this is a path amd the prefix.
+#' Default: output_file_path/motif_MOTIFNAME.mp
 MotifScan <- function(atacProc = NULL, Seq_file = NULL, Motif = NULL, min.score = "80%",
                       output_file = NULL, Position = FALSE, MP_file = NULL){
   tmp <- RMotifScan$new(atacProc, Seq_file, Motif, min.score, output_file, Position)
