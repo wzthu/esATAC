@@ -44,7 +44,7 @@ int CutCountPre::EXCutCount()
   int end = atoi(strtok(NULL, sep));
   string chr_flag;
   chr_flag = chr;
-  string outputfile = opath + chr + ".bed";
+  string outputfile = opath + "_" + chr + ".cs";
   cutsite.push_back(start);
   cutsite.push_back(end);
 
@@ -72,7 +72,7 @@ int CutCountPre::EXCutCount()
       cutsite.clear();
       //*********************************************************************
       chr_flag = chr;
-      outputfile = opath + chr_flag + ".bed";
+      outputfile = opath + "_" + chr_flag + ".cs";
       cutsite.push_back(start);
       cutsite.push_back(end);
     }
