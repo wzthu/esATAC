@@ -24,11 +24,18 @@ RMotifScan <- R6::R6Class(
       }else{
         private$paramlist[["scanOutput"]] <- scanOutput
       }
-      if(exPosition && is.null(posOutput)){
-        private$paramlist[["posOutput"]] <- paste0(dirname(private$paramlist[["scanOutput"]]),
-                                                 "/motif", collapse = "")
+      if(exPosition && is.null(posOutput)){ # set output prefix
+        tmp_Oprefix <- paste0(dirname(private$paramlist[["scanOutput"]]),
+                              "/motif", collapse = "")
       }else{
-        private$paramlist[["posOutput"]] <- posOutput
+        tmp_Oprefix <- posOutput
+      }
+
+      private$paramlist[["posOutput"]] <- list()
+      name_vec <- as.vector(TFBSTools::name(private$paramlist[["motifPWM"]]))
+      name_num <- length(name_vec)
+      for(i in seq(name_num)){
+        private$paramlist[["posOutput"]][[name_vec[i]]] <- paste0(tmp_Oprefix, "_", name_vec[i], collapse = "")
       }
 
       # parameter check
@@ -42,7 +49,6 @@ RMotifScan <- R6::R6Class(
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("Sequence file:%s", private$paramlist[["seqInput"]]))
       private$writeLog(sprintf("search file destination:%s", private$paramlist[["scanOutput"]]))
-      private$writeLog(sprintf("position file destination:%s", private$paramlist[["posOutput"]]))
       ref <- Biostrings::readDNAStringSet(private$paramlist[["seqInput"]])
       pwm <- private$paramlist[["motifPWM"]]
       sitesetList <- TFBSTools::searchSeq(x = pwm, subject = ref, min.score = private$paramlist[["min.score"]])
@@ -59,8 +65,8 @@ RMotifScan <- R6::R6Class(
         seq_info <- split(seq_info, f = seq_info$motif)
         motif_num <- length(seq_info)
         for(i in seq(motif_num)){
-          motif_name <- unique(seq_info[[i]]$motif)
-          output_path <- paste(private$paramlist[["posOutput"]], "_", motif_name, sep = "")
+          motif_name <- as.vector(unique(seq_info[[i]]$motif))
+          output_path <- private$paramlist[["posOutput"]][[motif_name]]
           write.table(x = seq_info[[i]], file = output_path, quote = FALSE, sep = "\t",
                       row.names = FALSE, col.names = FALSE)
         }
