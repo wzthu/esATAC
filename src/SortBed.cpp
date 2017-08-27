@@ -174,8 +174,11 @@ void SortBed::mergeBed(){
             }
 
         }
-        ofsunique->flush();
-        ofsunique->close();
+        if(ofsunique){
+            ofsunique->flush();
+            ofsunique->close();
+            delete ofsunique;
+        }
     }else{
         while(!bed_buf.empty()){
             bedLine = bed_buf.top();
