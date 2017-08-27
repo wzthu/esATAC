@@ -68,6 +68,7 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]],
                                          verbose = private$paramlist[["verbose"]])
+      ChIPseeker::plotAnnoPie(x = peakAn)
       write.table(x = peakAn, file = private$paramlist[["annoOutput"]],
                   append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
     }, # processing end
