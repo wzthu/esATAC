@@ -20,48 +20,49 @@
 #
 # Makefile for bowtie, bowtie2-build, bowtie2-inspect
 #
+include $(R_HOME)/etc${R_ARCH}/Makeconf
 
-prefix = /usr/local
-bindir = $(prefix)/bin
 
-INC =
-LIBS = -lz
-GCC_PREFIX = $(shell dirname `which gcc`)
-GCC_SUFFIX =
-CC ?= $(GCC_PREFIX)/gcc$(GCC_SUFFIX)
-CPP ?= $(GCC_PREFIX)/g++$(GCC_SUFFIX)
-CXX ?= $(CPP)
-HEADERS = $(wildcard *.h)
+
+LIBS = -lreadline -ltermcap -lz
+#GCC_PREFIX = $(shell dirname `which gcc`)
+#GCC_SUFFIX =
+#CC ?= $(GCC_PREFIX)/gcc$(GCC_SUFFIX)
+#CPP ?= $(GCC_PREFIX)/g++$(GCC_SUFFIX)
+#CXX ?= $(CPP)
+#HEADERS = $(wildcard *.h)
 BOWTIE_MM = 1
 BOWTIE_SHARED_MEM = 0
 
 # Detect Cygwin or MinGW
-WINDOWS = 0
-MINGW = 0
-ifneq (,$(findstring MINGW,$(shell uname)))
-	WINDOWS = 1
-	MINGW = 1
-	# POSIX memory-mapped files not currently supported on Windows
-	BOWTIE_MM = 0
-	BOWTIE_SHARED_MEM = 0
-	override EXTRA_FLAGS += -ansi
-endif
+#WINDOWS = 0
+#MINGW = 0
+#ifneq (,$(findstring MINGW,$(shell uname)))
+#	WINDOWS = 1
+#	MINGW = 1
+#	# POSIX memory-mapped files not currently supported on Windows
+#	BOWTIE_MM = 0
+#	BOWTIE_SHARED_MEM = 0
+#	override EXTRA_FLAGS += -ansi
+#endif
 
-MACOS = 0
-ifneq (,$(findstring Darwin,$(shell uname)))
-	MACOS = 1
-	ifneq (,$(findstring 13,$(shell uname -r)))
-		CPP = clang++
-		CC = clang
-		override EXTRA_FLAGS += -stdlib=libstdc++
-	endif
-endif
+#MACOS = 0
+#ifneq (,$(findstring Darwin,$(shell uname)))
+#	MACOS = 1
+#	ifneq (,$(findstring 13,$(shell uname -r)))
+#		CPP = clang++
+#		CC = clang
+#		override EXTRA_FLAGS += -stdlib=libstdc++
+#	endif
+#endif
 
-POPCNT_CAPABILITY ?= 1
-ifeq (1, $(POPCNT_CAPABILITY))
-    override EXTRA_FLAGS += -DPOPCNT_CAPABILITY
-    INC += -I third_party
-endif
+#POPCNT_CAPABILITY ?= 1
+#ifeq (1, $(POPCNT_CAPABILITY))
+#    override EXTRA_FLAGS += -DPOPCNT_CAPABILITY
+#    INC += -I third_party
+#endif
+
+INC = -I third_party
 
 MM_DEF =
 
