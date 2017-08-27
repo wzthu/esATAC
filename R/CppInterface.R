@@ -39,8 +39,8 @@
 # only chr1-chrY will be saved, chrM and others will be removed.
 .chr_separate_call <- function(ReadsIfile, ReadsOpath, Name){
   argv <- list(readsIfile = ReadsIfile, readsOpath = ReadsOpath, name = Name)
-  print(argv)
-  return(ChrDivi_wrapper(argv))
+  ChrDivi_wrapper(argv)
+  return(TRUE)
 }
 
 .CutSite_call <- function(InputFile, OutputFile){
@@ -53,7 +53,6 @@
 .CutSiteCount <- function(readsfile, motiffile, matrixfile, motif_len, strand_len){
   argv <- list(readsfile = readsfile, motiffile = motiffile, matrixfile = matrixfile,
                motif_len = motif_len, strand_len = strand_len)
-  print(argv)
   return(CutSiteCount_wrapper(argv))
 }
 

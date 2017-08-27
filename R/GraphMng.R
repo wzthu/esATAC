@@ -27,7 +27,15 @@ GraphMng <- R6Class(
             SamToBed,LibComplexQC,
             PeakCallingFseq,GenicQC,
             PeakCallingFseq,BlacklistQC,
-            PeakCallingFseq,DHSQC
+            PeakCallingFseq,DHSQC,
+            PeakCallingFseq, DNASeqCut,
+            PeakCallingFseq, RPeakAnno,
+            DNASeqCut, RMotifScan,
+            BamToBed, CutSitePre,
+            SamToBed, CutSitePre,
+            CutSitePre, CutSiteCountR,
+            RMotifScan, CutSiteCountR
+
         )
         edges1<-sapply(edges1,function(x) x$classname)
 

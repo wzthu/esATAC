@@ -2,7 +2,7 @@ BedOverlaps <- R6::R6Class(
   classname = "BedOverlaps",
   inherit = BaseProc,
   public = list(
-    initialize = function(atacProc, BedInput1 = NULL, BedInput2 = NULL, Output = NULL,
+    initialize = function(atacProc, bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
                           n.col = NULL, editable=FALSE){
       super$initialize("BedOverlaps",editable,list(arg1=atacProc))
 
@@ -10,15 +10,15 @@ BedOverlaps <- R6::R6Class(
         # Not using now
       }else{ # atacProc is NULL
         # necessary parameters
-        private$paramlist[["BedInput1"]] <- BedInput1
-        private$paramlist[["BedInput2"]] <- BedInput2
+        private$paramlist[["bedInput1"]] <- bedInput1
+        private$paramlist[["bedInput2"]] <- bedInput2
         private$paramlist[["col_num"]] <- n.col
         # unnecessary parameters
-        if(is.null(Output)){
-          tmp_path <- dirname(private$paramlist[["BedInput1"]])
-          private$paramlist[["Output"]] <- paste0(tmp_path, "/Output.bed", collapse = "")
+        if(is.null(bedOutput)){
+          tmp_path <- dirname(private$paramlist[["bedInput1"]])
+          private$paramlist[["bedOutput"]] <- paste0(tmp_path, "/Output.bed", collapse = "")
         }else{
-          private$paramlist[["Output"]] <- Output
+          private$paramlist[["bedOutput"]] <- bedOutput
         }
       }
 
@@ -33,20 +33,20 @@ BedOverlaps <- R6::R6Class(
   private = list(
     processing = function(){
       private$writeLog(paste0("processing file:"))
-      private$writeLog(sprintf("source:%s", private$paramlist[["BedInput1"]]))
-      private$writeLog(sprintf("source:%s", private$paramlist[["BedInput2"]]))
-      private$writeLog(sprintf("destination:%s", private$paramlist[["Output"]]))
+      private$writeLog(sprintf("source:%s", private$paramlist[["bedInput1"]]))
+      private$writeLog(sprintf("source:%s", private$paramlist[["bedInput2"]]))
+      private$writeLog(sprintf("destination:%s", private$paramlist[["bedOutput"]]))
 
-      BedIntersect(Input1 = private$paramlist[["BedInput1"]], Input2 = private$paramlist[["BedInput2"]],
-                   bed_output = private$paramlist[["Output"]], n.col = private$paramlist[["col_num"]])
+      BedIntersect(Input1 = private$paramlist[["bedInput1"]], Input2 = private$paramlist[["bedInput2"]],
+                   bed_output = private$paramlist[["bedOutput"]], n.col = private$paramlist[["col_num"]])
     }, # processing end
 
     checkRequireParam = function(){
-      if(is.null(private$paramlist[["BedInput1"]])){
-        stop("Parameter BedInput1 is requied!");
+      if(is.null(private$paramlist[["bedInput1"]])){
+        stop("Parameter bedInput1 is requied!");
       }
-      if(is.null(private$paramlist[["BedInput2"]])){
-        stop("Parameter BedInput2 is requied!");
+      if(is.null(private$paramlist[["bedInput2"]])){
+        stop("Parameter bedInput2 is requied!");
       }
       if(is.null(private$paramlist[["col_num"]])){
         stop("Parameter n.col is requied!");
@@ -54,9 +54,9 @@ BedOverlaps <- R6::R6Class(
     }, # checkRequireParam end
 
     checkAllPath = function(){
-      private$checkFileExist(private$paramlist[["BedInput1"]])
-      private$checkFileExist(private$paramlist[["BedInput2"]])
-      private$checkFileCreatable(private$paramlist[["Output"]])
+      private$checkFileExist(private$paramlist[["bedInput1"]])
+      private$checkFileExist(private$paramlist[["bedInput2"]])
+      private$checkFileCreatable(private$paramlist[["bedOutput"]])
     }
 
   ) # private end
@@ -111,9 +111,9 @@ BedIntersect <- function(Input1, Input2, bed_output, n.col){
 #' @param Output The output bed file.
 #' @param n.col How many columns of the input bed file, only support 3 or 6.
 #' @export
-atacBedOverlaps <- function(atacProc = NULL, BedInput1 = NULL, BedInput2 = NULL, Output = NULL,
+atacBedOverlaps <- function(atacProc = NULL, bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
                             n.col = NULL){
-  tmp <- BedOverlaps$new(atacProc, BedInput1, BedInput2, Output, n.col)
+  tmp <- BedOverlaps$new(atacProc, bedInput1, bedInput2, bedOutput, n.col)
   tmp$process()
   return(tmp)
 }
