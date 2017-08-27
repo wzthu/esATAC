@@ -31,8 +31,6 @@
 #include <string>
 #include <vector>
 
-#include "main_adapter_rm.h"
-#include "main_demultiplex.h"
 #include "alignment.h"
 #include "debug.h"
 #include "demultiplex.h"
@@ -43,7 +41,6 @@
 #include "trimmed_reads.h"
 #include "userconfig.h"
 
-#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -138,11 +135,21 @@ void write_settings(const userconfig& config, std::ostream& output, int nth)
            << "\nQuality score max (input): " << config.quality_input_fmt->max_score()
            << "\nQuality format (output): " << config.quality_output_fmt->name()
            << "\nQuality score max (output): " << config.quality_output_fmt->max_score()
-           << "\nMate-number seperator (input): '" << config.mate_separator << "'"
+           << "\nMate-number separator (input): '" << config.mate_separator << "'"
            << "\nTrimming Ns: " << ((config.trim_ambiguous_bases) ? "Yes" : "No")
            << "\nTrimming Phred scores <= " << config.low_quality_score
            << ": " << (config.trim_by_quality ? "Yes" : "No")
-           << "\nMinimum genomic length: " << config.min_genomic_length
+           << "\nTrimming using sliding windows: ";
+
+    if (config.trim_window_length >= 1) {
+           output << static_cast<size_t>(config.trim_window_length);
+    } else if (config.trim_window_length >= 0) {
+           output << config.trim_window_length;
+    } else {
+           output << "No";
+    }
+
+    output << "\nMinimum genomic length: " << config.min_genomic_length
            << "\nMaximum genomic length: " << config.max_genomic_length
            << "\nCollapse overlapping reads: " << ((config.collapse) ? "Yes" : "No")
            << "\nMinimum overlap (in case of collapse): " << config.min_alignment_length;
@@ -228,6 +235,9 @@ void write_trimming_settings(const userconfig& config,
 
 
 //! Implemented in main_demultiplex.cc
+void write_demultiplex_statistics(std::ofstream& output,
+                                  const userconfig& config,
+                                  const demultiplex_reads* step);
 
 
 bool write_demux_settings(const userconfig& config,
@@ -253,7 +263,7 @@ bool write_demux_settings(const userconfig& config,
         output << "\n";
         write_demultiplex_statistics(output, config, step);
     } catch (const std::ios_base::failure& error) {
-        cerr << "IO error writing demultiplexing statistics; aborting:\n"
+        std::cerr << "IO error writing demultiplexing statistics; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return false;
     }
@@ -509,7 +519,7 @@ public:
             const bool read_2_acceptable = m_config.is_acceptable_read(read_2);
 
             stats->total_number_of_nucleotides += read_1_acceptable ? read_1.length() : 0u;
-            stats->total_number_of_nucleotides += read_1_acceptable ? read_2.length() : 0u;
+            stats->total_number_of_nucleotides += read_2_acceptable ? read_2.length() : 0u;
             stats->total_number_of_good_reads += read_1_acceptable;
             stats->total_number_of_good_reads += read_2_acceptable;
 
@@ -565,7 +575,7 @@ bool write_settings(const userconfig& config, const std::vector<reads_processor*
             output.exceptions(std::ofstream::failbit | std::ofstream::badbit);
             write_trimming_settings(config, *stats, nth, output);
         } catch (const std::ios_base::failure& error) {
-            cerr << "IO error writing settings file; aborting:\n"
+            std::cerr << "IO error writing settings file; aborting:\n"
                       << cli_formatter::fmt(error.what()) << std::endl;
             return false;
         }
@@ -601,7 +611,7 @@ void add_write_step(const userconfig& config, scheduler& sch, size_t offset,
 
 int remove_adapter_sequences_se(const userconfig& config)
 {
-    cerr << "Trimming single ended reads ..." << std::endl;
+    std::cerr << "Trimming single ended reads ..." << std::endl;
 
     scheduler sch;
     std::vector<reads_processor*> processors;
@@ -612,7 +622,7 @@ int remove_adapter_sequences_se(const userconfig& config)
             // Step 1: Read input file
             sch.add_step(ai_read_fastq, "read_fastq",
                          new read_single_fastq(config.quality_input_fmt.get(),
-                                               config.input_file_1,
+                                               config.input_files_1,
                                                ai_demultiplex));
 
             // Step 2: Parse and demultiplex reads based on single or double indices
@@ -624,7 +634,7 @@ int remove_adapter_sequences_se(const userconfig& config)
         } else {
             sch.add_step(ai_read_fastq, "read_fastq",
                          new read_single_fastq(config.quality_input_fmt.get(),
-                                               config.input_file_1,
+                                               config.input_files_1,
                                                ai_analyses_offset));
         }
 
@@ -654,7 +664,7 @@ int remove_adapter_sequences_se(const userconfig& config)
             }
         }
     } catch (const std::ios_base::failure& error) {
-        cerr << "IO error opening file; aborting:\n"
+        std::cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }
@@ -673,7 +683,7 @@ int remove_adapter_sequences_se(const userconfig& config)
 
 int remove_adapter_sequences_pe(const userconfig& config)
 {
-    cerr << "Trimming paired end reads ..." << std::endl;
+    std::cerr << "Trimming paired end reads ..." << std::endl;
 
     scheduler sch;
     std::vector<reads_processor*> processors;
@@ -685,13 +695,13 @@ int remove_adapter_sequences_pe(const userconfig& config)
         if (config.interleaved_input) {
             sch.add_step(ai_read_fastq, "read_interleaved_fastq",
                          new read_interleaved_fastq(config.quality_input_fmt.get(),
-                                                    config.input_file_1,
+                                                    config.input_files_1,
                                                     next_step));
         } else {
             sch.add_step(ai_read_fastq, "read_paired_fastq",
                          new read_paired_fastq(config.quality_input_fmt.get(),
-                                               config.input_file_1,
-                                               config.input_file_2,
+                                               config.input_files_1,
+                                               config.input_files_2,
                                                next_step));
         }
 
@@ -742,7 +752,7 @@ int remove_adapter_sequences_pe(const userconfig& config)
             }
         }
     } catch (const std::ios_base::failure& error) {
-        cerr << "IO error opening file; aborting:\n"
+        std::cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }

@@ -60,7 +60,7 @@ inline size_t COUNT_BITS_128(__m128i value)
     return _mm_extract_epi16(value, 0) + _mm_extract_epi16(value, 4);
 }
 #else
-#warning SEE optimizations disabled!
+//#warning SEE optimizations disabled!//weizheng
 #endif
 
 

@@ -30,7 +30,6 @@
 #include <stdexcept>
 #include <vector>
 
-#include "main_adapter_id.h"
 #include "alignment.h"
 #include "debug.h"
 #include "fastq_io.h"
@@ -56,7 +55,7 @@ const size_t TOP_N_KMERS = 5;
 
 
 /**
- * Hashing function for string consiting of the chars "ACGT" (uppercase only).
+ * Hashing function for string consisting of the chars "ACGT" (uppercase only).
  * Will return a unique number in the range 0 to 4^N - 1 for a given nucleotide
  * sequence. Passing characters other than "ACGT" (uppercase only) will result
  * in hash collisions.
@@ -176,7 +175,7 @@ void print_most_common_kmers(const kmer_map& kmers, size_t print_n = TOP_N_KMERS
 // Consensus adapter related functions and constants
 
 /**
- * Build represention of identity between an adapter and a consensus sequence.
+ * Build representation of identity between an adapter and a consensus sequence.
  *
  * The resulting string represents N with wildcards ('*'), matching bases with
  * pipes ('|') and mismatches with spaces (' '). Only overlapping bases are
@@ -267,42 +266,40 @@ void print_consensus_adapter(const nt_count_vec& counts,
     print_most_common_kmers(kmers);
 }
 
-
 /**
  * * added by weizheng
  * **/
 void save_consensus_adapter(const nt_count_vec& counts,
-                             const kmer_map& kmers,
-                             const std::string& name,
-                             const std::string& ref,
-                             const std::string& inputFile)
+                            const kmer_map& kmers,
+                            const std::string& name,
+                            const std::string& ref,
+                            const std::string& inputFile)
 {
-    std::stringstream sequence;
-    std::stringstream qualities;
-    std::ofstream fout((inputFile+".adapter").c_str());
+ std::stringstream sequence;
+ std::stringstream qualities;
+ std::ofstream fout((inputFile).c_str());
 
-	cout<<inputFile+".adapter"<<std::endl;
+ //cout<<inputFile<<std::endl;
 
-    for(nt_count_vec::const_iterator it = counts.begin(); it != counts.end(); ++it) {
-        const std::pair<char, char> consensus = get_consensus_nt(*it);
+ for(nt_count_vec::const_iterator it = counts.begin(); it != counts.end(); ++it) {
+  const std::pair<char, char> consensus = get_consensus_nt(*it);
 
-        sequence << consensus.first;
-        qualities << consensus.second;
-    }
+  sequence << consensus.first;
+  qualities << consensus.second;
+ }
 
-    const std::string consensus = sequence.str();
-    const std::string identity = compare_consensus_with_ref(ref, consensus);
+ const std::string consensus = sequence.str();
+ const std::string identity = compare_consensus_with_ref(ref, consensus);
 
-    fout << consensus << std::endl;
-    fout.close();
-//    cout << "  " << name << ":  " << ref << "\n"
-//    //              << "               " << identity << "\n"
-//    //              << "   Consensus:  " << consensus << "\n"
-//    //              << "     Quality:  " << qualities.str() << "\n\n";
-//
-//    //    print_most_common_kmers(kmers);
+ fout << consensus << std::endl;
+ fout.close();
+ //    cout << "  " << name << ":  " << ref << "\n"
+ //    //              << "               " << identity << "\n"
+ //    //              << "   Consensus:  " << consensus << "\n"
+ //    //              << "     Quality:  " << qualities.str() << "\n\n";
+ //
+ //    //    print_most_common_kmers(kmers);
 }
-
 
 
 
@@ -400,7 +397,7 @@ public:
     chunk_vec process(analytical_chunk* chunk)
     {
         if (!chunk) {
-            throw std::invalid_argument("sink recieved NULL chunk");
+            throw std::invalid_argument("sink received NULL chunk");
         }
 
         const fastq empty_adapter("dummy", "", "");
@@ -444,20 +441,18 @@ public:
 
 //added by weizheng------
         save_consensus_adapter(sink->pcr1_counts, sink->pcr1_kmers, "--adapter1",
-                               m_config.adapters.get_raw_adapters().front().first.sequence(),                                           m_config.input_file_1);
+                               m_config.adapters.get_raw_adapters().front().first.sequence(),m_config.basename+std::string(".adapter1"));
 //-----------------------
-	
 
         fastq adapter2 = m_config.adapters.get_raw_adapters().front().second;
         adapter2.reverse_complement();
         print_consensus_adapter(sink->pcr2_counts, sink->pcr2_kmers, "--adapter2", adapter2.sequence());
 
 //added by weizheng-------
-	save_consensus_adapter(sink->pcr2_counts, sink->pcr2_kmers, "--adapter2", adapter2.sequence(),
-				m_config.input_file_2);
+        save_consensus_adapter(sink->pcr2_counts, sink->pcr2_kmers, "--adapter2", adapter2.sequence(),
+                               m_config.basename+std::string(".adapter2"));
 //------------------------
-	cout.flush();
-
+        cout.flush();//weizheng
     }
 
 private:
@@ -520,20 +515,20 @@ private:
 
 int identify_adapter_sequences(const userconfig& config)
 {
-    cout << "Attemping to identify adapter sequences ..." << std::endl;
+    cout << "Attempting to identify adapter sequences ..." << std::endl;
 
     scheduler sch;
     try {
         if (config.interleaved_input) {
             sch.add_step(ai_read_fastq, "read_interleaved_fastq",
                          new read_interleaved_fastq(config.quality_input_fmt.get(),
-                                                    config.input_file_1,
+                                                    config.input_files_1,
                                                     ai_identify_adapters));
         } else {
             sch.add_step(ai_read_fastq, "read_paired_fastq",
                          new read_paired_fastq(config.quality_input_fmt.get(),
-                                               config.input_file_1,
-                                               config.input_file_2,
+                                               config.input_files_1,
+                                               config.input_files_2,
                                                ai_identify_adapters));
         }
     } catch (const std::ios_base::failure& error) {

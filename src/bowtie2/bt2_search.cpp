@@ -813,10 +813,10 @@ static void printUsage(ostream& out) {
 	    << "  -h/--help          print this usage message" << endl
 	    ;
 	if(wrapper.empty()) {
-		cerr << endl
+/*		cerr << endl
 		     << "*** Warning ***" << endl
 			 << "'bowtie2-align' was run directly.  It is recommended that you run the wrapper script 'bowtie2' instead." << endl
-			 << endl;
+    << endl;*///weizheng
 	}
 }
 

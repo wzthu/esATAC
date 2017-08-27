@@ -57,7 +57,7 @@ private:
 
 /**
  * This exception may be thrown by a task to abort the thread; error-messages
- * are assumed to have already been printed by the thrower, and no furher
+ * are assumed to have already been printed by the thrower, and no further
  * messages are printed.
  */
 class thread_abort : public thread_error
@@ -70,18 +70,25 @@ public:
 /**
  * Locker for using stdout / stderr.
  *
- * Any useage of stdout and / or stderr should be preceeded by creating a
+ * Any useage of stdout and / or stderr should be preceded by creating a
  * print_locker object. This ensures that output from different threads is
  * not interleaved, regardless of the destination of these pipes.
  */
 class print_locker
 {
 public:
-    //! Locks the mutex (blocking)
-    print_locker();
+    /*
+     * Locks the mutex (blocking). If flush_stderr is true, and
+     * partial_stderr_output has been called, then a newline is first
+     * written to stderr.
+     */
+    print_locker(bool flush_stderr=true);
 
     //! Unlocks the mutex
     ~print_locker();
+
+    //! Call to indicate that a partial line has been written to STDERR.
+    void partial_stderr_output();
 
 private:
     //! Not implemented

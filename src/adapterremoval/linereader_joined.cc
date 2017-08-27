@@ -1,8 +1,7 @@
 /*************************************************************************\
  * AdapterRemoval - cleaning next-generation sequencing reads            *
  *                                                                       *
- * Copyright (C) 2011 by Stinus Lindgreen - stinus@binf.ku.dk            *
- * Copyright (C) 2014 by Mikkel Schubert - mikkelsch@gmail.com           *
+ * Copyright (C) 2015 by Mikkel Schubert - mikkelsch@gmail.com           *
  *                                                                       *
  * If you use the program, please cite the paper:                        *
  * S. Lindgreen (2012): AdapterRemoval: Easy Cleaning of Next Generation *
@@ -22,29 +21,68 @@
  * You should have received a copy of the GNU General Public License     *
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 \*************************************************************************/
-#ifndef MAIN_H
-#define MAIN_H
+#include <algorithm>
+#include <cerrno>
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
 
-#include <string>
+#include "debug.h"
+#include "linereader_joined.h"
+#include "threads.h"
+
+#include "RcoutRcerr.h"
 
 namespace ar
 {
 
-const std::string NAME = "AdapterRemoval";
-const std::string VERSION = "ver. 2.2.1a";
-const std::string HELPTEXT = \
-    "This program searches for and removes remnant adapter sequences from\n"
-    "your read data.  The program can analyze both single end and paired end\n"
-    "data.  For detailed explanation of the parameters, please refer to the\n"
-    "man page.  For comments, suggestions  and feedback please contact Stinus\n"
-    "Lindgreen (stinus@binf.ku.dk) and Mikkel Schubert (MikkelSch@gmail.com).\n"
-    "\n"
-    "If you use the program, please cite the paper:\n"
-    "    Schubert, Lindgreen, and Orlando (2016). AdapterRemoval v2: rapid\n"
-    "    adapter trimming, identification, and read merging.\n"
-    "    BMC Research Notes, 12;9(1):88.\n\n"
-    "    http://bmcresnotes.biomedcentral.com/articles/10.1186/s13104-016-1900-2\n";
+joined_line_readers::joined_line_readers(const string_vec& filenames)
+  : m_filenames(filenames.rbegin(), filenames.rend())
+  , m_reader()
+{
+}
 
-} // namespace ar
 
-#endif
+joined_line_readers::~joined_line_readers()
+{
+}
+
+
+bool joined_line_readers::getline(std::string& dst)
+{
+    dst.clear();
+
+    while (dst.empty()) {
+        if (m_reader && m_reader->getline(dst)) {
+            break;
+        } else if (!open_next_file()) {
+            break;
+        }
+    }
+
+    return !dst.empty();
+}
+
+
+bool joined_line_readers::open_next_file()
+{
+    if (m_filenames.empty()) {
+        return false;
+    }
+
+    auto filename = m_filenames.back();
+
+    {
+        print_locker lock;
+        cerr << "Opening FASTQ file '" << filename << "'" << std::endl;
+    }
+
+    m_reader.reset(new line_reader(filename));
+    m_filenames.pop_back();
+
+    return true;
+}
+
+}

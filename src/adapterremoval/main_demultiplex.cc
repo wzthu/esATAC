@@ -28,8 +28,6 @@
 #include <iostream>
 #include <string>
 
-#include "main_demultiplex.h"
-#include "main_adapter_rm.h"
 #include "debug.h"
 #include "demultiplex.h"
 #include "fastq.h"
@@ -44,6 +42,8 @@ namespace ar
 {
 
 //! Implemented in main_adapter_rm.cc
+void add_write_step(const userconfig& config, scheduler& sch, size_t offset,
+                    const std::string& name, analytical_step* step);
 
 
 void write_demultiplex_statistics(std::ofstream& output,
@@ -276,7 +276,7 @@ int demultiplex_sequences_se(const userconfig& config)
         // Step 1: Read input file
         sch.add_step(ai_read_fastq, "read_fastq",
                      new read_single_fastq(config.quality_input_fmt.get(),
-                                           config.input_file_1,
+                                           config.input_files_1,
                                            ai_demultiplex));
 
         // Step 2: Parse and demultiplex reads based on single or double indices
@@ -331,13 +331,13 @@ int demultiplex_sequences_pe(const userconfig& config)
         if (config.interleaved_input) {
             sch.add_step(ai_read_fastq, "read_interleaved_fastq",
                          new read_interleaved_fastq(config.quality_input_fmt.get(),
-                                                    config.input_file_1,
+                                                    config.input_files_1,
                                                     ai_demultiplex));
         } else {
             sch.add_step(ai_read_fastq, "read_paired_fastq",
                          new read_paired_fastq(config.quality_input_fmt.get(),
-                                               config.input_file_1,
-                                               config.input_file_2,
+                                               config.input_files_1,
+                                               config.input_files_2,
                                                ai_demultiplex));
         }
 
