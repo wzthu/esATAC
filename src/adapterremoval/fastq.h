@@ -25,6 +25,8 @@
 #ifndef FASTQ_H
 #define FASTQ_H
 
+#include <iostream>
+
 #include <string>
 
 #include "commontypes.h"
@@ -104,14 +106,28 @@ public:
     /** The number of bases trimmmed from the 5p and 3p end respectively. **/
     typedef std::pair<size_t, size_t> ntrimmed;
 
-    /**
-     * Trims consequtive low-quality bases from the 5'/3' ends of the sequence.
+   /**
+     * Trims consecutive low-quality bases from the 5'/3' ends of the sequence.
      *
      * @param trim_ns If true, ambiguous bases ('N') are trimmed.
      * @param low_quality Trim bases with a quality score at or below this value.
-     * @return A pair containing hte number of bases trimmed from either end.
+     * @return A pair containing the number of 5' and 3' bases trimmed.
      */
-	ntrimmed trim_low_quality_bases(bool trim_ns = true, char low_quality = -1);
+    ntrimmed trim_trailing_bases(const bool trim_ns = true,
+                                    char low_quality = -1);
+
+    /**
+     * Trims low-quality bases using a sliding window approach.
+     *
+     * @param trim_ns If true, ambiguous bases ('N') are trimmed.
+     * @param low_quality Trim bases with a quality score at or below this value.
+     * @param winlen The length of the sliding window.
+     * @return A pair containing the number of 5' and 3' bases trimmed.
+     */
+    ntrimmed trim_windowed_bases(const bool trim_ns = true,
+                                 char low_quality = -1,
+                                 const double window_size = 0.1);
+
 
     /**
      * Truncates the record in place.
@@ -164,8 +180,8 @@ public:
      * Validate that two reads form a valid pair.
      *
      * The mate separator character is the character expected as the second-to-
-     * last charater, if the last character (either '1' or '2') specify the
-     * mate number. Non-standard mate-seprators (not '/') are changed to '/'.
+     * last character, if the last character (either '1' or '2') specify the
+     * mate number. Non-standard mate-separators (not '/') are changed to '/'.
      */
     static void validate_paired_reads(fastq& mate1, fastq& mate2,
                                       char mate_separator = MATE_SEPARATOR);
@@ -181,6 +197,13 @@ private:
 
     /** Initializes record; used by constructor and read function. **/
     void process_record(const fastq_encoding& encoding);
+
+    /**
+     * Trims the read to the specified bases, and returns a pair specifying the
+     * number of 5' and 3' bases removed.
+     */
+    ntrimmed trim_sequence_and_qualities(const size_t left_inclusive,
+                                         const size_t right_exclusive);
 
     /** Helper function to get mate numbering and fix the separator char. */
     friend mate_info get_and_fix_mate_info(fastq& read, char mate_separator);
@@ -242,6 +265,12 @@ inline const std::string& fastq::sequence() const
 inline const std::string& fastq::qualities() const
 {
     return m_qualities;
+}
+
+
+inline size_t fastq::length() const
+{
+    return m_sequence.length();
 }
 
 } // namespace ar

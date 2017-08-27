@@ -24,9 +24,11 @@
 \*************************************************************************/
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 #include <stdexcept>
 #include <sstream>
 
+#include "debug.h"
 #include "fastq.h"
 #include "linereader.h"
 
@@ -125,25 +127,23 @@ bool fastq::operator==(const fastq& other) const
 }
 
 
-size_t fastq::length() const
-{
-    return m_sequence.length();
-}
-
-
 size_t fastq::count_ns() const
 {
     return static_cast<size_t>(std::count(m_sequence.begin(), m_sequence.end(), 'N'));
 }
 
 
-fastq::ntrimmed fastq::trim_low_quality_bases(bool trim_ns, char low_quality)
+fastq::ntrimmed fastq::trim_trailing_bases(const bool trim_ns, char low_quality)
 {
     low_quality += PHRED_OFFSET_33;
+    auto is_quality_base = [&] (size_t i) {
+        return m_qualities.at(i) > low_quality
+            && (!trim_ns || m_sequence.at(i) != 'N');
+    };
 
     size_t right_exclusive = 0;
     for (size_t i = m_sequence.length(); i; --i) {
-        if ((!trim_ns || m_sequence.at(i - 1) != 'N') && (m_qualities.at(i - 1) > low_quality)) {
+        if (is_quality_base(i - 1)) {
             right_exclusive = i;
             break;
         }
@@ -151,21 +151,88 @@ fastq::ntrimmed fastq::trim_low_quality_bases(bool trim_ns, char low_quality)
 
     size_t left_inclusive = 0;
     for (size_t i = 0; i < right_exclusive; ++i) {
-        if ((!trim_ns || m_sequence.at(i) != 'N') && (m_qualities.at(i) > low_quality)) {
+        if (is_quality_base(i)) {
             left_inclusive = i;
             break;
         }
     }
 
-    const ntrimmed summary(left_inclusive, m_sequence.length() - right_exclusive);
+    return trim_sequence_and_qualities(left_inclusive, right_exclusive);
+}
 
-    if (summary.first || summary.second) {
-        const size_t retained = right_exclusive - left_inclusive;
-        m_sequence = m_sequence.substr(left_inclusive, retained);
-        m_qualities = m_qualities.substr(left_inclusive, retained);
+
+//! Calculates the size of the sliding window for quality trimming given a
+//! read length and a user-defined window-size (fraction or whole number).
+size_t calculate_winlen(const size_t read_length, const double window_size)
+{
+    size_t winlen;
+    if (window_size >= 1.0) {
+        winlen = static_cast<size_t>(window_size);
+    } else {
+        winlen = static_cast<size_t>(window_size * read_length);
     }
 
-    return summary;
+    if (winlen == 0 || winlen > read_length) {
+        winlen = read_length;
+    }
+
+    return winlen;
+}
+
+
+fastq::ntrimmed fastq::trim_windowed_bases(const bool trim_ns,
+                                           char low_quality,
+                                           const double window_size)
+{
+    AR_DEBUG_ASSERT(window_size >= 0.0);
+    if (m_sequence.empty()) {
+        return ntrimmed();
+    }
+
+    low_quality += PHRED_OFFSET_33;
+    auto is_quality_base = [&] (size_t i) {
+        return m_qualities.at(i) > low_quality
+            && (!trim_ns || m_sequence.at(i) != 'N');
+    };
+
+    const size_t winlen = calculate_winlen(length(), window_size);
+    long running_sum = std::accumulate(m_qualities.begin(),
+                                       m_qualities.begin() + winlen,
+                                       0);
+
+    size_t left_inclusive = std::string::npos;
+    size_t right_exclusive = std::string::npos;
+    for (size_t offset = 0; offset + winlen <= length(); ++offset) {
+        const long running_avg = running_sum / static_cast<long>(winlen);
+
+        // We trim away low quality bases and Ns from the start of reads,
+        // **before** we consider windows.
+        if (left_inclusive == std::string::npos && is_quality_base(offset) && running_avg > low_quality) {
+            left_inclusive = offset;
+        }
+
+        if (left_inclusive != std::string::npos && (running_avg <= low_quality || offset + winlen == length())) {
+            right_exclusive = offset;
+            while (right_exclusive < length() && is_quality_base(right_exclusive)) {
+                right_exclusive++;
+            }
+
+            break;
+        }
+
+        running_sum -= m_qualities.at(offset);
+        if (offset + winlen < length()) {
+            running_sum += m_qualities.at(offset + winlen);
+        }
+    }
+
+    if (left_inclusive == std::string::npos) {
+        // No starting window found. Trim all bases starting from start.
+        return trim_sequence_and_qualities(length(), length());
+    }
+
+    AR_DEBUG_ASSERT(right_exclusive != std::string::npos);
+    return trim_sequence_and_qualities(left_inclusive, right_exclusive);
 }
 
 
@@ -334,7 +401,7 @@ void fastq::validate_paired_reads(fastq& mate1, fastq& mate2,
         if (info1.mate == mate_info::unknown || info2.mate == mate_info::unknown) {
             error << "\n\nNote that AdapterRemoval by determines the mate "
                      "numbers as the digit found at the end of the read name, "
-                     "if this is preceeded by the character '"
+                     "if this is preceded by the character '"
                   << mate_separator
                   << "'; if these data makes use of a different character to "
                      "separate the mate number from the read name, then you "
@@ -369,6 +436,21 @@ void fastq::process_record(const fastq_encoding& encoding)
 
     clean_sequence(m_sequence);
     encoding.decode_string(m_qualities.begin(), m_qualities.end());
+}
+
+
+fastq::ntrimmed fastq::trim_sequence_and_qualities(const size_t left_inclusive,
+                                                   const size_t right_exclusive)
+{
+    const ntrimmed summary(left_inclusive, length() - right_exclusive);
+
+    if (summary.first || summary.second) {
+        const size_t retained = right_exclusive - left_inclusive;
+        m_sequence = m_sequence.substr(left_inclusive, retained);
+        m_qualities = m_qualities.substr(left_inclusive, retained);
+    }
+
+    return summary;
 }
 
 } // namespace ar

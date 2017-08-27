@@ -16,7 +16,12 @@ using std::string;
 using std::ifstream;
 using std::ofstream;
 using std::getline;
-#include<cmath>
+#ifdef R_EVN_FLAG
+
+#else
+#include<cstdlib>
+#endif
+
 
 
 BedUtils::BedUtils(const char * inputBedPath,const char * outputBedPath,const char* reportPath, int memSize,

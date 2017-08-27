@@ -1,8 +1,7 @@
 /*************************************************************************\
  * AdapterRemoval - cleaning next-generation sequencing reads            *
  *                                                                       *
- * Copyright (C) 2011 by Stinus Lindgreen - stinus@binf.ku.dk            *
- * Copyright (C) 2014 by Mikkel Schubert - mikkelsch@gmail.com           *
+ * Copyright (C) 2017 by Mikkel Schubert - mikkelsch@gmail.com           *
  *                                                                       *
  * If you use the program, please cite the paper:                        *
  * S. Lindgreen (2012): AdapterRemoval: Easy Cleaning of Next Generation *
@@ -22,28 +21,60 @@
  * You should have received a copy of the GNU General Public License     *
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 \*************************************************************************/
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef LINEREADER_JOINED_H
+#define LINEREADER_JOINED_H
 
-#include <string>
+#include <memory>
+
+#include "commontypes.h"
+#include "linereader.h"
+
 
 namespace ar
 {
 
-const std::string NAME = "AdapterRemoval";
-const std::string VERSION = "ver. 2.2.1a";
-const std::string HELPTEXT = \
-    "This program searches for and removes remnant adapter sequences from\n"
-    "your read data.  The program can analyze both single end and paired end\n"
-    "data.  For detailed explanation of the parameters, please refer to the\n"
-    "man page.  For comments, suggestions  and feedback please contact Stinus\n"
-    "Lindgreen (stinus@binf.ku.dk) and Mikkel Schubert (MikkelSch@gmail.com).\n"
-    "\n"
-    "If you use the program, please cite the paper:\n"
-    "    Schubert, Lindgreen, and Orlando (2016). AdapterRemoval v2: rapid\n"
-    "    adapter trimming, identification, and read merging.\n"
-    "    BMC Research Notes, 12;9(1):88.\n\n"
-    "    http://bmcresnotes.biomedcentral.com/articles/10.1186/s13104-016-1900-2\n";
+
+/**
+ * Multi-file line-reader
+ *
+ * Wrapper around line_reader that automatically reads through one or more
+ * files, returning the content as a contiguous stream of lines. No assumptions
+ * are made about the format of the individual files.
+ */
+class joined_line_readers : public line_reader_base
+{
+public:
+    /** Creates line-reader over multiple files in the specified order. */
+    joined_line_readers(const string_vec& filenames);
+
+    /** Closes any still open files. */
+    ~joined_line_readers();
+
+    /**
+     * Reads a line from the currently open file; if EOF is encountered, the
+     * currently open file is closed and the next file is opened. Returns true
+     * if a line was successfully read, or false if no files remain.
+     */
+    bool getline(std::string& dst);
+
+private:
+    /**
+     * Open the next file, removes it from the queue, and returns true; returns
+     * false if no files remain to be processed.
+     */
+    bool open_next_file();
+
+    //! Not implemented
+    joined_line_readers(const joined_line_readers&);
+    //! Not implemented
+    joined_line_readers& operator=(const joined_line_readers&);
+
+    //! Files left to read; stored in reverse order.
+    string_vec m_filenames;
+    //! Currently open file, if any.
+    std::unique_ptr<line_reader> m_reader;
+};
+
 
 } // namespace ar
 

@@ -35,7 +35,7 @@ int ChrInfoDivi::DoDivi()
   // initialization
   if(!readsifile.getline(line, sizeof(line)))
   {
-    printf("ERROR: the input file is empty!\n");
+    cout<<"ERROR: the input file is empty!"<<endl;
     return 0;
   }
   string tmp_line = line;

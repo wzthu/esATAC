@@ -22,14 +22,15 @@
  * You should have received a copy of the GNU General Public License     *
  * along with this program.  If not, see <http://www.gnu.org/licenses/>. *
 \*************************************************************************/
-#include <stdexcept>
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <limits>
 #include <set>
+#include <stdexcept>
 
 #include <sys/types.h>
-//#include <sys/ioctl.h>
+//#include <sys/ioctl.h> //weizheng
 #include <unistd.h>
 
 #include "argparse.h"
@@ -49,16 +50,15 @@ typedef std::set<consumer_ptr> consumer_set;
 /** Returns the number of columns available in the terminal. */
 size_t get_terminal_columns()
 {
-  return 80;
-/*
-    struct winsize params;
+/*    struct winsize params;
     if (ioctl(STDERR_FILENO, TIOCGWINSZ, &params)) {
         // Default to 80 columns if the parameters could not be retrieved.
         return 80;
     }
 
     return std::min<size_t>(120, std::max<size_t>(80, params.ws_col));
-*/
+*///weizheng
+	return 80;//weizheng
 }
 
 
@@ -398,11 +398,7 @@ size_t any::consume(string_vec_citer start, const string_vec_citer& end)
 {
     if (start != end) {
         m_value_set = true;
-        if (m_ptr) {
-            *m_ptr = *start;
-        } else {
-            m_sink = *start;
-        }
+        (m_ptr ? *m_ptr : m_sink) = *start;
 
         return 1;
     }
@@ -418,6 +414,53 @@ std::string any::to_str() const
         return "<not set>";
     } else {
         return result;
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+
+many::many(string_vec* value, const std::string& metavar, const std::string& help)
+    : consumer_base(metavar, help)
+    , m_ptr(value)
+    , m_sink()
+{
+}
+
+
+size_t many::consume(string_vec_citer start, const string_vec_citer& end)
+{
+    m_value_set = true;
+    string_vec_citer it = start;
+    for (; it != end; ++it) {
+        if (!it->empty() && it->front() == '-') {
+            break;
+        }
+    }
+
+    (m_ptr ? *m_ptr : m_sink).assign(start, it);
+
+    return static_cast<size_t>(it - start);
+}
+
+
+std::string many::to_str() const
+{
+    const string_vec& result = m_ptr ? *m_ptr : m_sink;
+    if (result.empty()) {
+        return "<not set>";
+    } else {
+        std::string output;
+
+        for (auto& s: result) {
+            if (!output.empty()) {
+                output.push_back(';');
+            }
+
+            output.append(s);
+        }
+
+        return output;
     }
 }
 
@@ -502,9 +545,13 @@ size_t floaty_knob::consume(string_vec_citer start, const string_vec_citer& end)
 
 std::string floaty_knob::to_str() const
 {
-    std::stringstream stream;
-    stream << *m_ptr;
-    return stream.str();
+    if (std::isnan(*m_ptr)) {
+        return "<not set>";
+    } else {
+        std::stringstream stream;
+        stream << *m_ptr;
+        return stream.str();
+    }
 }
 
 } // namespace argparse

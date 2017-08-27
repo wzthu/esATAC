@@ -45,7 +45,7 @@ typedef demux_node_vec::iterator node_vec_iter;
 /**
  * Struct representing node in quad-tree; children are referenced using the
  * corresponding indice in the vector representing the tree; -1 is used to
- * represent unasigned children.
+ * represent unassigned children.
  */
 struct demultiplexer_node
 {
@@ -79,7 +79,7 @@ public:
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
- * Returns a lexographically sorted list of mate 1 barcodes, each paired with
+ * Returns a lexicographically sorted list of mate 1 barcodes, each paired with
  * the 0-based index of corresponding barcode in the source vector.
  */
 barcode_vec sort_barcodes(const fastq_pair_vec& barcodes)
@@ -102,7 +102,7 @@ barcode_vec sort_barcodes(const fastq_pair_vec& barcodes)
 }
 
 
-/** Adds a nucleotide sequence with a given ID to a quadtree. */
+/** Adds a nucleotide sequence with a given ID to a quad-tree. */
 void add_sequence_to_tree(demux_node_vec& tree,
                           const std::string& sequence,
                           const size_t barcode_id)
@@ -115,8 +115,8 @@ void add_sequence_to_tree(demux_node_vec& tree,
 
         if (child == -1) {
             // New nodes are added to the end of the list; as barcodes are
-            // added in lexographic order, this helps ensure that a set of
-            // dissimilar barcodes will be placed in mostly contigious runs
+            // added in lexicographic order, this helps ensure that a set of
+            // dissimilar barcodes will be placed in mostly contiguous runs
             // of the vector representation.
             child = node.children[nuc_idx] = tree.size();
             tree.push_back(demultiplexer_node());
@@ -228,6 +228,7 @@ demultiplex_reads::demultiplex_reads(const userconfig* config)
     , m_unidentified_1(new fastq_output_chunk())
     , m_unidentified_2()
     , m_statistics(m_barcodes.size())
+    , m_lock()
 {
     AR_DEBUG_ASSERT(!m_barcodes.empty());
 
@@ -275,7 +276,7 @@ size_t count_mismatches(const std::string& barcode,
  * Returns the best matching barcode (pair) for sequences read_r1 and read_r2
  *
  */
-int demultiplex_reads::select_barcode(const fastq& read_r1, const fastq& read_r2)
+int demultiplex_reads::select_barcode(const fastq& read_r1, const fastq& read_r2) const
 {
     candidate_vec candidates;
     if (m_max_mismatches_r1) {
@@ -371,6 +372,7 @@ demultiplex_se_reads::demultiplex_se_reads(const userconfig* config)
 
 chunk_vec demultiplex_se_reads::process(analytical_chunk* chunk)
 {
+    AR_DEBUG_LOCK(m_lock);
     read_chunk_ptr read_chunk(dynamic_cast<fastq_read_chunk*>(chunk));
 
     const fastq empty_read;
@@ -408,6 +410,7 @@ demultiplex_pe_reads::demultiplex_pe_reads(const userconfig* config)
 
 chunk_vec demultiplex_pe_reads::process(analytical_chunk* chunk)
 {
+    AR_DEBUG_LOCK(m_lock);
     read_chunk_ptr read_chunk(dynamic_cast<fastq_read_chunk*>(chunk));
     AR_DEBUG_ASSERT(read_chunk->reads_1.size() == read_chunk->reads_2.size());
 

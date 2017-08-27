@@ -79,8 +79,8 @@ userconfig::userconfig(const std::string& name,
                        const std::string& help)
     : run_type(ar_trim_adapters)
     , basename("your_output")
-    , input_file_1()
-    , input_file_2()
+    , input_files_1()
+    , input_files_2()
     , paired_ended_mode(false)
     , interleaved_input(false)
     , interleaved_output(false)
@@ -94,6 +94,7 @@ userconfig::userconfig(const std::string& name,
     , quality_input_fmt()
     , quality_output_fmt()
     , trim_by_quality(false)
+    , trim_window_length(std::numeric_limits<double>::quiet_NaN())
     , low_quality_score(2)
     , trim_ambiguous_bases(false)
     , max_ambiguous_bases(1000)
@@ -123,12 +124,13 @@ userconfig::userconfig(const std::string& name,
     , demultiplex_sequences(false)
 {
     argparser["--file1"] =
-        new argparse::any(&input_file_1, "FILE",
-            "Input file containing mate 1 reads or single-ended reads "
-            "[REQUIRED].");
+        new argparse::many(&input_files_1, "FILE [FILE ...]",
+            "Input files containing mate 1 reads or single-ended reads; "
+            "one or more files may be listed [REQUIRED].");
     argparser["--file2"] =
-        new argparse::any(&input_file_2, "FILE",
-            "Input file containing mate 2 reads [OPTIONAL].");
+        new argparse::many(&input_files_2, "[FILE ...]",
+            "Input files containing mate 2 reads; if used, then the same "
+            "number of files as --file1 must be listed [OPTIONAL].");
 
     argparser.add_header("FASTQ OPTIONS:");
     argparser["--qualitybase"] =
@@ -172,7 +174,7 @@ userconfig::userconfig(const std::string& name,
         new argparse::flag(&combined_output,
             "If set, all reads are written to the same file(s), specified by "
             "--output1 and --output2 (--output1 only if --interleaved-output "
-            "is not set). Each read is futher marked by either a \"PASSED\" "
+            "is not set). Each read is further marked by either a \"PASSED\" "
             "or a \"FAILED\" flag, and any read that has been FAILED "
             "(including the mate for collapsed reads) are replaced with a "
             "single 'N' with Phred score 0 [current: %default].");
@@ -268,8 +270,8 @@ userconfig::userconfig(const std::string& name,
         = new argparse::floaty_knob(&mismatch_threshold, "MISMATCH_RATE",
             "Max error-rate when aligning reads and/or adapters. If > 1, the "
             "max error-rate is set to 1 / MISMATCH_RATE; if < 0, the defaults "
-            "are used, otherwise the user-supplied value is used directly. "
-            "[defaults: 1/3 for trimming; 1/10 when identifing adapters].");
+            "are used, otherwise the user-supplied value is used directly "
+            "[defaults: 1/3 for trimming; 1/10 when identifying adapters].");
     argparser["--maxns"] =
         new argparse::knob(&max_ambiguous_bases, "MAX",
             "Reads containing more ambiguous bases (N) than this number after "
@@ -288,10 +290,21 @@ userconfig::userconfig(const std::string& name,
         new argparse::flag(&trim_by_quality,
             "If set, trim bases at 5'/3' termini with quality scores <= to "
             "--minquality value [current: %default]");
+    argparser["--trimwindows"] =
+        new argparse::floaty_knob(&trim_window_length, "INT",
+            "If set, quality trimming will be carried out using window based "
+            "approach, where windows with an average quality less than "
+            "--minquality will be trimmed. If >= 1, this value will be used "
+            "as the window size. If the value is < 1, the value will be "
+            "multiplied with the read length to determine a window size per "
+            "read. If the resulting window size is 0 or larger than the read "
+            "length, the read length is used as the window size. This option "
+            "implies --trimqualities [current: %default].");
     argparser["--minquality"] =
         new argparse::knob(&low_quality_score, "PHRED",
             "Inclusive minimum; see --trimqualities for details "
             "[current: %default]");
+
     argparser["--minlength"] =
         new argparse::knob(&min_genomic_length, "LENGTH",
             "Reads shorter than this length are discarded "
@@ -321,7 +334,7 @@ userconfig::userconfig(const std::string& name,
         new argparse::knob(&min_adapter_overlap, "LENGTH",
             "In single-end mode, reads are only trimmed if the overlap "
             "between read and the adapter is at least X bases long, not "
-            "counting ambiguous nucleotides (N); this is independant of the "
+            "counting ambiguous nucleotides (N); this is independent of the "
             "--minalignmentlength when using --collapse, allowing a "
             "conservative selection of putative complete inserts while "
             "ensuring that all possible adapter contamination is trimmed "
@@ -439,30 +452,33 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
         run_type = ar_demultiplex_sequences;
     }
 
-
     if (low_quality_score > static_cast<unsigned>(MAX_PHRED_SCORE)) {
         cerr << "Error: Invalid value for --minquality: "
                   << low_quality_score << "\n"
                   << "   must be in the range 0 .. " << MAX_PHRED_SCORE
                   << std::endl;
         return argparse::pr_error;
+    } else if (trim_window_length >= 0) {
+        trim_by_quality = true;
+    } else if (trim_window_length < 0.0) {
+        cerr << "Error: Invalid value for --trimwindows ("
+                  << trim_window_length << "); value must be >= 0."
+                  << std::endl;
+        return argparse::pr_error;
     }
 
     // Check for invalid combinations of settings
-    const bool file_1_set = argparser.is_set("--file1");
-    const bool file_2_set = argparser.is_set("--file2");
-
-    if (!(file_1_set || file_2_set)) {
+    if (input_files_1.empty() && input_files_2.empty()) {
         cerr << "Error: No input files (--file1 / --file2) specified.\n"
                   << "Please specify at least one input file using --file1 FILENAME."
                   << std::endl;
 
         return argparse::pr_error;
-    } else if (file_2_set && !file_1_set) {
-        cerr << "Error: --file2 specified, but --file1 is not specified." << std::endl;
+    } else if (!input_files_2.empty() && (input_files_1.size() != input_files_2.size())) {
+        cerr << "Error: Different number of files specified for --file1 and --file2." << std::endl;
 
         return argparse::pr_error;
-    } else if (file_2_set) {
+    } else if (!input_files_2.empty()) {
         paired_ended_mode = true;
         min_adapter_overlap = 0;
     }
@@ -471,7 +487,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
     interleaved_output |= interleaved;
 
     if (interleaved_input) {
-        if (file_2_set) {
+        if (!input_files_2.empty()) {
             cerr << "Error: The options --interleaved and "
                       << "--interleaved-input cannot be used "
                       << "together with the --file2 option; only --file1 must "
@@ -697,14 +713,18 @@ std::string userconfig::get_output_filename(const std::string& key,
 
 fastq::ntrimmed userconfig::trim_sequence_by_quality_if_enabled(fastq& read) const
 {
-    fastq::ntrimmed trimmed;
-    if (trim_ambiguous_bases || trim_by_quality) {
-        char quality_score = trim_by_quality ? low_quality_score : -1;
-        trimmed = read.trim_low_quality_bases(trim_ambiguous_bases,
-                                              quality_score);
+    if (trim_window_length >= 0) {
+        return read.trim_windowed_bases(trim_ambiguous_bases,
+                                        low_quality_score,
+                                        trim_window_length);
+    } else if (trim_ambiguous_bases || trim_by_quality) {
+        const char quality_score = trim_by_quality ? low_quality_score : -1;
+
+        return read.trim_trailing_bases(trim_ambiguous_bases,
+                                        quality_score);
     }
 
-    return trimmed;
+    return fastq::ntrimmed();
 }
 
 

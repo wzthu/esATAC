@@ -28,13 +28,11 @@
 #include "main.h"
 #include "userconfig.h"
 #include "adrm_interface.h"
-#include "main_adapter_id.h"
-#include "main_adapter_rm.h"
-#include "main_demultiplex.h"
 
 #include "RcoutRcerr.h"
 
-/*
+int interface_adapterremoval_main(int argc, char *argv[]);
+
 namespace ar
 {
 
@@ -46,8 +44,9 @@ int identify_adapter_sequences(const userconfig& config);
 int demultiplex_sequences(const userconfig& config);
 
 } // namespace ar
-*/
 
+
+//int main(int argc, char *argv[])
 int interface_adapterremoval_main(int argc, char *argv[])
 {
     using namespace ar;
