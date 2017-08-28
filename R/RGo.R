@@ -10,10 +10,16 @@ RGo <- R6::R6Class(
 
       # necessary parameters
       if(!is.null(atacProc)){
-        print("Parameter atacProc is not using now! We will add more functions in the future!")
+        tmp <- read.table(file = atacProc$getParam("annoOutput"), header = TRUE,
+                          sep = "\t", quote = "");
+        private$paramlist[["gene"]] <- as.character(base::unique(tmp$geneId))
+      }else{
+        private$paramlist[["gene"]] <- gene
       }
-      private$paramlist[["gene"]] <- gene
       private$paramlist[["OrgDb"]] <- OrgDb
+      private$paramlist[["output"]] <- output
+
+      # unnecessary parameters
       private$paramlist[["keytype"]] <- keytype
       private$paramlist[["ont"]] <- ont
       private$paramlist[["pvalueCutoff"]] <- pvalueCutoff
@@ -22,7 +28,7 @@ RGo <- R6::R6Class(
       private$paramlist[["qvalueCutoff"]] <- qvalueCutoff
       private$paramlist[["readable"]] <- readable
       private$paramlist[["pool"]] <- pool
-      private$paramlist[["output"]] <- output
+
       # parameter check
       private$paramValidation()
     } # initialization end
@@ -53,7 +59,7 @@ RGo <- R6::R6Class(
 
     checkRequireParam = function(){
       if(is.null(private$paramlist[["gene"]])){
-        stop("Parameter gene is required!")
+        stop("Parameter atacProc or gene is required!")
       }
       if(is.null(private$paramlist[["OrgDb"]])){
         stop("Parameter OrgDb is required!")
@@ -72,7 +78,7 @@ RGo <- R6::R6Class(
 ) # R6 class end
 
 #' Using clusterProfiler to do GO analysis.
-#'
+#' @param atacProc Result from function "PeakAnno", extract all the gene ID.
 #'
 #'
 GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
