@@ -10,10 +10,12 @@ RGoDavid <- R6::R6Class(
 
       # necessary parameters
       if(!is.null(atacProc)){
-        print("Parameter atacProc is not using now! We will add more functions in the future!")
+        tmp <- read.table(file = atacProc$getParam("annoOutput"), header = TRUE,
+                          sep = "\t", quote = "");
+        private$paramlist[["gene"]] <- as.character(base::unique(tmp$geneId))
+      }else{
+        private$paramlist[["gene"]] <- gene
       }
-
-      private$paramlist[["gene"]] <- gene
       private$paramlist[["idType"]] <- idType
       private$paramlist[["annotation"]] <- annotation
       private$paramlist[["pvalueCutoff"]] <- pvalueCutoff
@@ -41,7 +43,8 @@ RGoDavid <- R6::R6Class(
                                           qvalueCutoff = private$paramlist[["qvalueCutoff"]],
                                           species = private$paramlist[["species"]],
                                           david.user = private$paramlist[["david.user"]])
-      write.table(x = tmp, file = private$paramlist[["output"]], append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
+      write.table(x = tmp, file = private$paramlist[["output"]], append = FALSE,
+                  quote = FALSE, row.names = FALSE, sep = "\t")
     }, # processing end
 
     checkRequireParam = function(){
