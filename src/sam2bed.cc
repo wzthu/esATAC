@@ -44,7 +44,6 @@ SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize,int down_samp
 
 int SamToBed::getReadsLen(string & CIGAR){
     int i = 0;
-    int j = 0;
     int size = CIGAR.size();
     int seqlen = 0;
     for(int j = 0; j < size ; j++){
@@ -99,7 +98,7 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
 
 #ifdef PLF_SYS_WIN
     std::regex re(pattern);
-    std::regex xsre(string(".*\tXS:i:.*"))
+    std::regex xsre(string(".*\tXS:i:.*"));
 #elif PLF_SYS_LINUX
     const char * patt = pattern.c_str();
     regex_t reg;
@@ -112,6 +111,7 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
     regmatch_t xspm[1];
     regcomp(&xsreg,".*\tXS:i:.*",REG_EXTENDED|REG_NOSUB);
 #endif
+    
     string otherFlag="";
     while (getline(samifs,line))
     {
@@ -241,11 +241,11 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
   //char * chr1;
 
     int  chr_start, chr_end, flag, mqs;
-    int  chr_start1, chr_end1, flag1, mqs1;
+    int  chr_start1, chr_end1, /*flag1,*/ mqs1;
     int  start, end, length,length1;
     string CIGAR = "";
     string CIGAR1 = "";
-    bool first = true;
+   // bool first = true;
     int freg_len;
 
     std::string pattern;
@@ -267,7 +267,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 
 #ifdef PLF_SYS_WIN
     std::regex re(pattern);
-    std::regex xsre(string(".*\tXS:i:.*"))
+    std::regex xsre(string(".*\tXS:i:.*"));
 #elif PLF_SYS_LINUX
     const char * patt = pattern.c_str();
     regex_t reg;
@@ -352,7 +352,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
             strand = '-';
             chr_start1 += pos_offset;
             chr_start += neg_offset;
-            chr_end = chr_start + length;
+            chr_end = chr_start + length1;
             //chr_end1 = chr_start1 + length;
             start = chr_start1;
             end = chr_end;
@@ -378,7 +378,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
             stringstream ss;
             ss << tok <<"\t"<< mqs << "\t" << strand;
             string extend = ss.str();
-            sortExtBed->insertBedLine(new BedLine(chr,chr_start,chr_end,extend));
+            sortExtBed->insertBedLine(new BedLine(chr,start,end,extend));
         }
 
     }
