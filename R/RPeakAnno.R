@@ -36,7 +36,7 @@ RPeakAnno <- R6::R6Class(
       # unnecessary parameters
       if(is.null(annoOutput)){
         private$paramlist[["annoOutput"]] <- paste0(dirname(private$paramlist[["peakInput"]]),
-                                                    "/output", collapse = "")
+                                                    "/PeakAnno_output", collapse = "")
       }else{
         private$paramlist[["annoOutput"]] <- annoOutput
       }
@@ -52,8 +52,8 @@ RPeakAnno <- R6::R6Class(
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["peakInput"]]))
       private$writeLog(sprintf("destination:%s", private$paramlist[["annoOutput"]]))
-      peak <- ChIPseeker::readPeakFile(private$paramlist[["peakInput"]])
-      peakAn <- ChIPseeker::annotatePeak(peak = peak,
+      peakGRange <- rtracklayer::import(con = private$paramlist[["peakInput"]], format = "bed")
+      peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
                                          tssRegion = private$paramlist[["tssRegion"]],
                                          TxDb = private$paramlist[["TxDb"]],
                                          level = private$paramlist[["level"]],
@@ -68,8 +68,11 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]],
                                          verbose = private$paramlist[["verbose"]])
-      write.table(x = peakAn, file = private$paramlist[["annoOutput"]],
-                  append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
+      ChIPseeker::plotAnnoPie(x = peakAn)
+      tmp_file <- as.data.frame(peakAn)
+      write.table(x = tmp_file, file = private$paramlist[["annoOutput"]],
+                quote = FALSE, row.names = FALSE, sep = "\t",
+                col.names = TRUE, append = FALSE)
     }, # processing end
 
     checkRequireParam = function(){
@@ -90,8 +93,8 @@ RPeakAnno <- R6::R6Class(
 #' Using ChIPseeker to annotate peak file.
 #'
 #' Just for test, other parameters will be add.
-#' @param Input peak file.
-#' @param Output Output file, default Input_path/output.
+#' @param Input peak file, bed format.
+#' @param Output Output file, default Input_path/output.csv.
 PeakAnno <- function(atacProc = NULL, peakInput = NULL, tssRegion = c(-3000, 3000), TxDb = NULL,
                      level = "transcript", assignGenomicAnnotation = TRUE,
                      genomicAnnotationPriority = c("Promoter", "5UTR", "3UTR", "Exon", "Intron",
