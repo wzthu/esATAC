@@ -98,10 +98,11 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 
     int mem_size = Rcpp::as<int>(argvs["memSize"]);
     int down_sample = Rcpp::as<int>(argvs["downSample"]);
+    bool remove_xs = Rcpp::as<bool>(argvs["removeXS"]);
 
 
 
-    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
+    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample,remove_xs);
 
     int filterSize=filterList.size();
 
@@ -157,8 +158,9 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
     bool save_ext_len = Rcpp::as<bool>(argvs["saveExtLen"]);
     int mem_size = Rcpp::as<int>(argvs["memSize"]);
     int down_sample = Rcpp::as<int>(argvs["downSample"]);
+    bool remove_xs = Rcpp::as<bool>(argvs["removeXS"]);
 
-    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample);
+    SamToBed SB((char*)ipath.c_str(), (char*)opath.c_str(),mem_size,down_sample,remove_xs);
 
     int filterSize=filterList.size();
 
