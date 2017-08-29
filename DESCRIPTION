@@ -34,7 +34,8 @@ Imports:
     GenomicFeatures,
     R.utils,
     GenomeInfoDb,
-    stringr
+    stringr,
+    BiocGenerics
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1

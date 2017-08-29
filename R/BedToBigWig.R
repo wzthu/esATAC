@@ -30,14 +30,13 @@ BedToBigWig <- R6Class(
             }
             
             private$paramlist[["toWig"]] <- toWig
-            print(private$paramlist)
             private$paramValidation()
         }
     ),
     
     private = list(
         processing = function(){
-            genome <- Seqinfo(genome = "hg19")
+            genome <- Seqinfo(genome = .obtainConfigure("genome"))
             bedranges <- import(private$paramlist[["bedInput"]], genome = genome)
             cov <- coverage(bedranges)
             ans <- GRanges(cov)
