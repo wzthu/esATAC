@@ -69,7 +69,7 @@ RemoveAdapter <-R6Class(
           private$paramlist[["findParamList"]]<-c("--threads",as.character(.obtainConfigure("threads")))
       }
       if(!is.null(findParamList)&&sum(findParamList!="default")>0){
-          rejectp<-"--file1|--file2|--threads|--identify-adapters"
+          rejectp<-"--file1|--file2|--threads|--identify-adapters|--basename"
           private$checkParam(findParamList,rejectp)
           private$paramlist[["findParamList"]]<-c(findParamList,private$paramlist[["findParamList"]])
       }
@@ -98,10 +98,19 @@ RemoveAdapter <-R6Class(
               adapter2<-private$paramlist[["adapter2"]]
               if(is.null(private$paramlist[["adapter1"]])){
                   private$writeLog("begin to find adapter")
-                  adapters<-.identify_adapters_call(private$paramlist[["fastqInput1"]],
-                                                    private$paramlist[["fastqInput2"]],private$paramlist[["findParamList"]])
-                  adapter1 <- adapters$adapter1
-                  adapter2 <- adapters$adapter2
+                  if(length(private$paramlist[["findParamList"]])>0){
+                      adapters<-identify_adapters(file1 = private$paramlist[["fastqInput1"]],
+                                                  file2 = private$paramlist[["fastqInput2"]],
+                                                  paste(private$paramlist[["findParamList"]],collapse = " "),
+                                                  basename = private$paramlist[["reportPrefix"]], overwrite=TRUE)
+                  }else{
+                      adapters<-identify_adapters(file1 = private$paramlist[["fastqInput1"]],
+                                                  file2 = private$paramlist[["fastqInput2"]],
+                                                  basename = private$paramlist[["reportPrefix"]],overwrite=TRUE)
+                  }
+                  
+                  adapter1 <- adapters[1]
+                  adapter2 <- adapters[2]
               }
               private$writeLog("begin to remove adapter")
               private$writeLog("source:")
