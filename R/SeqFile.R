@@ -2,10 +2,11 @@ UnzipAndMerge <-R6Class(
     classname = "UnzipAndMerge",
     inherit = BaseProc,
     public = list(
-        initialize = function(fastqInput1, fastqInput2=NULL,fastqOutput1=NULL,fastqOutput2=NULL,editable=FALSE){
+        initialize = function(fastqInput1, fastqInput2=NULL,fastqOutput1=NULL,fastqOutput2=NULL,interleave = FALSE,editable = FALSE){
             super$initialize("UnzipAndMerge",editable,list())
-            if(is.null(fastqInput2)){
-                private$singleEnd<-TRUE
+            private$paramlist[["interleave"]]<-interleave
+            if(interleave){
+                private$singleEnd<-FALSE
                 private$paramlist[["fastqInput1"]]<-fastqInput1
                 for(i in 1:length(private$paramlist[["fastqInput1"]])){
                     private$checkFileExist(private$paramlist[["fastqInput1"]][i]);
@@ -17,34 +18,51 @@ UnzipAndMerge <-R6Class(
                     private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput1"]][1]))
                     private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
                 }
-
             }else{
-                private$paramlist[["fastqInput1"]]<-fastqInput1
-                for(i in 1:length(private$paramlist[["fastqInput1"]])){
-                    private$checkFileExist(private$paramlist[["fastqInput1"]][i]);
-                }
-                private$paramlist[["fastqInput2"]]<-fastqInput2
-                if(length(private$paramlist[["fastqInput1"]])!=length(private$paramlist[["fastqInput2"]])){
-                    stop("The number of pair-end fastq files should be equal.")
-                }
-                for(i in 1:length(private$paramlist[["fastqInput2"]])){
-                    private$checkFileExist(private$paramlist[["fastqInput2"]][i]);
-                }
-                if(!is.null(fastqOutput1)){
-                    private$paramlist[["fastqOutput1"]]<-fastqOutput1
-                    private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
+                if(is.null(fastqInput2)){
+                    private$singleEnd<-TRUE
+                    private$paramlist[["fastqInput1"]]<-fastqInput1
+                    for(i in 1:length(private$paramlist[["fastqInput1"]])){
+                        private$checkFileExist(private$paramlist[["fastqInput1"]][i]);
+                    }
+                    if(!is.null(fastqOutput1)){
+                        private$paramlist[["fastqOutput1"]]<-fastqOutput1
+                        private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
+                    }else{
+                        private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput1"]][1]))
+                        private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
+                    }
+                    
                 }else{
-                    private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput1"]][1]))
-                    private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
-                }
-                if(!is.null(fastqOutput2)){
-                    private$paramlist[["fastqOutput2"]]<-fastqOutput2
-                    private$checkFileCreatable(private$paramlist[["fastqOutput2"]])
-                }else{
-                    private$paramlist[["fastqOutput2"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput2"]][1]))
-                    private$paramlist[["fastqOutput2"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput2"]])
+                    private$singleEnd<-FALSE
+                    private$paramlist[["fastqInput1"]]<-fastqInput1
+                    for(i in 1:length(private$paramlist[["fastqInput1"]])){
+                        private$checkFileExist(private$paramlist[["fastqInput1"]][i]);
+                    }
+                    private$paramlist[["fastqInput2"]]<-fastqInput2
+                    if(length(private$paramlist[["fastqInput1"]])!=length(private$paramlist[["fastqInput2"]])){
+                        stop("The number of pair-end fastq files should be equal.")
+                    }
+                    for(i in 1:length(private$paramlist[["fastqInput2"]])){
+                        private$checkFileExist(private$paramlist[["fastqInput2"]][i]);
+                    }
+                    if(!is.null(fastqOutput1)){
+                        private$paramlist[["fastqOutput1"]]<-fastqOutput1
+                        private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
+                    }else{
+                        private$paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput1"]][1]))
+                        private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
+                    }
+                    if(!is.null(fastqOutput2)){
+                        private$paramlist[["fastqOutput2"]]<-fastqOutput2
+                        private$checkFileCreatable(private$paramlist[["fastqOutput2"]])
+                    }else{
+                        private$paramlist[["fastqOutput2"]]<-file.path(.obtainConfigure("tmpdir"),basename(private$paramlist[["fastqInput2"]][1]))
+                        private$paramlist[["fastqOutput2"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput2"]])
+                    }
                 }
             }
+            
             private$paramValidation()
 
 
@@ -52,7 +70,7 @@ UnzipAndMerge <-R6Class(
     ),
     private = list(
         processing = function(){
-            if(private$singleEnd){
+            if(private$singleEnd||(!private$singleEnd&&private$paramlist[["interleave"]])){
                 fileNumber<-length(private$paramlist[["fastqInput1"]])
                 private$decompress(private$paramlist[["fastqInput1"]][1],private$paramlist[["fastqOutput1"]])
                 if(fileNumber>1){
@@ -87,6 +105,9 @@ UnzipAndMerge <-R6Class(
         checkRequireParam = function(){
             if(is.null(private$paramlist[["fastqInput1"]])){
                 stop("fastqInput1 is required.")
+            }
+            if(private$paramlist[["interleave"]]&&private$singleEnd){
+                stop("Single end data should not be interleave")
             }
         },
         checkAllPath = function(){
@@ -141,8 +162,14 @@ UnzipAndMerge <-R6Class(
 
 
 
-atacUnzipAndMerge<- function(fastqInput1,fastqInput2=NULL){
-    atacproc <- UnzipAndMerge$new(fastqInput1,fastqInput2);
+atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
+                             fastqOutput1=NULL,fastqOutput2=NULL,
+                             interleave = FALSE){
+    atacproc <- UnzipAndMerge$new(fastqInput1 = fastqInput1,
+                                  fastqInput2 = fastqInput2,
+                                  fastqOutput1 = fastqOutput1,
+                                  fastqOutput2 = fastqOutput2,
+                                  interleave = interleave);
     atacproc$process();
     return(atacproc);
 }
