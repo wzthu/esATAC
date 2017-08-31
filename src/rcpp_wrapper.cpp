@@ -35,14 +35,17 @@ int renamer(Rcpp::List argvs) {
         std::string ipath = Rcpp::as<std::string>(argvs["inputFile"]);
         std::string opath = Rcpp::as<std::string>(argvs["outputFile"]);
         std::string filetype = Rcpp::as<std::string>(argvs["fileType"]);
+        bool interleave= Rcpp::as<bool>(argvs["interleave"]);
         Renamer rn((char*)ipath.c_str(),(char*)opath.c_str());
-        if(filetype=="fq"){
-                return rn.renameFastq();
+        if(interleave){
+            rn.renameInterleaveFastq();
+        }else if(filetype=="fq"){
+                rn.renameFastq();
         }else if(filetype=="fa"){
-                return rn.renameFasta();
+                rn.renameFasta();
         }
 
-        return 1;
+        return 0;
 }
 
 // [[Rcpp::export]]

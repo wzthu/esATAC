@@ -1,5 +1,5 @@
-.renamer_call<-function(inputFile,outputFile,fileType="fq"){
-  argv<-list(inputFile=inputFile,outputFile=outputFile,fileType=fileType);
+.renamer_call<-function(inputFile,outputFile,fileType="fq",interleave = FALSE){
+  argv<-list(inputFile=inputFile,outputFile=outputFile,fileType=fileType,interleave=interleave);
   return(renamer(argv));
 }
 
