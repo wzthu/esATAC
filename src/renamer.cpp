@@ -22,7 +22,6 @@ void Renamer::renameFastq(){
     std::ofstream fout(this -> ofilePath);
     char line[BUFFER_LENGTH];
     long i=0L;
-    long j=0L;
     while(fin.getline(line,BUFFER_LENGTH)){
         if(i%2L==0L){
             if(i%4L==0L){
@@ -41,7 +40,6 @@ void Renamer::renameInterleaveFastq(){
     std::ofstream fout(this -> ofilePath);
     char line[BUFFER_LENGTH];
     long i=0L;
-    long j=0L;
     while(fin.getline(line,BUFFER_LENGTH)){
         if(i%2L==0L){
             if(i%4L==0L){
