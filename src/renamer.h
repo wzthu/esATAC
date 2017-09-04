@@ -8,6 +8,7 @@ private:
     const int BUFFER_LENGTH=10000;
 public:
     Renamer(char * ifilePath,char * ofilePath);
-    int renameFasta();
-    int renameFastq();
+    void renameFasta();
+    void renameFastq();
+    void renameInterleaveFastq();
 };

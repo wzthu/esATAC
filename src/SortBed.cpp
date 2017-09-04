@@ -97,7 +97,7 @@ void SortBed::insertBedLine(BedLine * bedLine){
     bed_buf.push(*bedLine);
     //std::cout<<bedLine->chr<<bedLine->start<<bedLine->end<<bedLine->extend<<std::endl;
     //std::cout.flush();
-    if(bed_buf.size()>=max_line){
+    if(((int)bed_buf.size())>=max_line){
         flush_bed_buf();
     }
     saveCounter++;

@@ -2,14 +2,21 @@ Bowtie2Mapping <-R6Class(
     classname = "Bowtie2Mapping",
     inherit = BaseProc,
     public = list(
-        initialize = function(atacProc,samOutput=NULL, bt2Idx=NULL, fastqInput1=NULL, fastqInput2=NULL,paramList="default",reportPrefix =NULL,editable=FALSE){
+        initialize = function(atacProc,samOutput=NULL, bt2Idx=NULL, fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default",reportPrefix =NULL,editable=FALSE){
             super$initialize("Bowtie2Mapping",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["fastqInput1"]] <- atacProc$getParam("fastqOutput1");
                 private$paramlist[["fastqInput2"]] <- atacProc$getParam("fastqOutput2");
                 regexProcName<-sprintf("(fastq|fq|%s)",atacProc$getProcName())
+                private$paramlist[["interleave"]] <- atacProc$getParam("interleave")
             }else{
                 regexProcName<-"(fastq|fq)"
+                private$paramlist[["interleave"]] <- interleave
+                if(is.null(fastqInput2)){
+                    private$singleEnd<-TRUE
+                }else{
+                    private$singleEnd<-FALSE
+                }
             }
 
             if(!is.null(fastqInput1)){
@@ -19,11 +26,6 @@ Bowtie2Mapping <-R6Class(
                 private$paramlist[["fastqInput2"]] <- fastqInput2;
             }
 
-            if(is.null(private$paramlist[["fastqInput2"]])){
-                private$singleEnd<-TRUE
-            }else{
-                private$singleEnd<-FALSE
-            }
 
             if(is.null(samOutput)){
                 if(!is.null(private$paramlist[["fastqInput1"]])){
@@ -50,7 +52,7 @@ Bowtie2Mapping <-R6Class(
                                                     private$paramlist[["paramList"]])
             }else{
                 private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
-                rejectp<-"-p|--threads|-x|-1|-2|-U|-S"
+                rejectp<-"-p|--threads|-x|-1|-2|-U|-S|--interleaved"
                 private$checkParam(paramlist,rejectp)
             }
 
@@ -77,9 +79,17 @@ Bowtie2Mapping <-R6Class(
             private$writeLog(paste0("fastqInput2:",private$paramlist[["fastqInput2"]]))
             private$writeLog(paste0("other parameters:",paste(private$paramlist[["paramList"]],collapse = " ")))
             sink(private$paramlist[["reportPrefix"]])####------------------------------------------------------------std::cout>>Rcpp::Rout
-            .bowtie2_call(bowtie2Index=private$paramlist[["bt2Idx"]],samOutput=private$paramlist[["samOutput"]],
-                          fastqInput1=private$paramlist[["fastqInput1"]],fastqInput2=private$paramlist[["fastqInput2"]],
-                          paramlist=private$paramlist[["paramList"]])
+#            .bowtie2_call(bowtie2Index=private$paramlist[["bt2Idx"]],samOutput=private$paramlist[["samOutput"]],
+#                          fastqInput1=private$paramlist[["fastqInput1"]],fastqInput2=private$paramlist[["fastqInput2"]],
+#                          paramlist=private$paramlist[["paramList"]])
+
+            bowtie2(bt2Index = private$paramlist[["bt2Idx"]],
+                    samOutput = private$paramlist[["samOutput"]],
+                    seq1 = private$paramlist[["fastqInput1"]],
+                    paste(private$paramlist[["paramList"]],collapse = " "),
+                    seq2 = private$paramlist[["fastqInput2"]],
+                    interleaved = private$paramlist[["interleave"]],
+                    overwrite=TRUE)
             sink()
 
 
@@ -104,9 +114,9 @@ Bowtie2Mapping <-R6Class(
 )
 
 
-atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportPrefix =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL,paramList="default"){
+atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportPrefix =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default"){
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                 fastqInput2=fastqInput2,paramList=paramList,reportPrefix=reportPrefix)
+                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportPrefix=reportPrefix)
     atacproc$process()
     return(atacproc)
 }

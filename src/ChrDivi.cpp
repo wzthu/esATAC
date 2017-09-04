@@ -57,7 +57,8 @@ int ChrInfoDivi::DoDivi()
     {
       //********************write data to the output file********************
       ofstream readsofile(outputfile.c_str(), ios::out);
-      for(int i = 0; i < content.size(); i++)
+      int ctsize = content.size();
+      for(int i = 0; i < ctsize; i++)
       {
         readsofile << content[i] << "\n";
       }
@@ -72,7 +73,8 @@ int ChrInfoDivi::DoDivi()
 
   //********************write the last chromatin data to the output file********************
   ofstream readsofile(outputfile.c_str(), ios::out);
-  for(int i = 0; i < content.size(); i++)
+  int ctsize = content.size();
+  for(int i = 0; i < ctsize; i++)
   {
     readsofile << content[i] << "\n";
   }
