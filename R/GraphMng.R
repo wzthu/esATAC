@@ -17,7 +17,7 @@ GraphMng <- R6Class(
             Bowtie2Mapping, SamToBam,
             BamToBed,PeakCallingFseq,
             SamToBed,PeakCallingFseq,
-            PeakCallingFseq,BedOverlaps,
+            PeakCallingFseq,RPeakComp,
             SamToBed,FregLenDistr,
             SamToBed,TSSQC,
             SamToBed,GenicQC,
@@ -50,7 +50,7 @@ GraphMng <- R6Class(
         nodes1<-unique(edges1)
         edges2<-c(
             PeakCallingFseq,FRiPQC,
-            PeakCallingFseq,BedOverlaps
+            PeakCallingFseq,RPeakComp
         )
         edges2<-sapply(edges2,function(x) x$classname)
         nodes2<-unique(edges2)
@@ -90,13 +90,6 @@ GraphMng <- R6Class(
         vertex.attributes(private$graphDep2)$name<-vertex.attributes(private$graphDep2)$label
         private$vtx1<-vertex.attributes(private$graphDep1)
         private$vtx2<-vertex.attributes(private$graphDep2)
-      edges2<-c(
-          "PeakCallingFseq","FRiPQC",
-          "PeakCallingFseq","BedOverlaps"
-      )
-      private$graphDep2<-graph(edges = edges2)
-      private$vtx2<-vertex.attributes(private$graphDep2)
-
     },
 
     checkRelation1 = function(resultProcName,procName){
