@@ -3,39 +3,32 @@ RMotifScan <- R6::R6Class(
   inherit = BaseProc,
 
   public = list(
-    initialize = function(atacProc, seqInput = NULL, motifPWM = NULL, min.score = NULL,
-                          scanOutput = NULL, exPosition = NULL, posOutput = NULL, editable = FALSE){
-      super$initialize("RMotifScan",editable,list(arg1=atacProc))
+    initialize = function(atacProc, peak = NULL, genome = NULL,
+                          motifPWM = NULL, min.score = NULL,
+                          scanOutput = NULL, n.cores = NULL, editable = FALSE){
+      super$initialize("RMotifScan", editable, list(arg1 = atacProc))
 
       # necessary parameters
       if(!is.null(atacProc)){ # get parameter from class DNASeqCut
-        private$paramlist[["seqInput"]] <- atacProc$getParam("seqOutput");
+        private$paramlist[["peak"]] <- atacProc$getParam("bedOutput");
       }else{
-        private$paramlist[["seqInput"]] <- seqInput
+        private$paramlist[["peak"]] <- peak
       }
+      private$paramlist[["genome"]] <- genome
       private$paramlist[["motifPWM"]] <- motifPWM
       private$paramlist[["min.score"]] <- min.score
-      private$paramlist[["exPosition"]] <- exPosition
 
       # unnecessary parameters
       if(is.null(scanOutput)){
-        private$paramlist[["scanOutput"]] <- paste0(dirname(private$paramlist[["seqInput"]]),
-                                                    "/output", collapse = "")
+        private$paramlist[["scanOutput"]] <- dirname(private$paramlist[["peak"]])
       }else{
         private$paramlist[["scanOutput"]] <- scanOutput
       }
-      if(exPosition && is.null(posOutput)){ # set output prefix
-        tmp_Oprefix <- paste0(dirname(private$paramlist[["scanOutput"]]),
-                              "/motif", collapse = "")
-      }else{
-        tmp_Oprefix <- posOutput
-      }
 
-      private$paramlist[["posOutput"]] <- list()
-      name_vec <- as.vector(TFBSTools::name(private$paramlist[["motifPWM"]]))
-      name_num <- length(name_vec)
-      for(i in seq(name_num)){
-        private$paramlist[["posOutput"]][[name_vec[i]]] <- paste0(tmp_Oprefix, "_", name_vec[i], collapse = "")
+      if(is.null(n.cores)){
+        private$paramlist[["n.cores"]] <- parallel::detectCores() / 2
+      }else{
+        private$paramlist[["n.cores"]] <- n.cores
       }
 
       # parameter check
@@ -47,48 +40,49 @@ RMotifScan <- R6::R6Class(
   private = list(
     processing = function(){
       private$writeLog(paste0("processing file:"))
-      private$writeLog(sprintf("Sequence file:%s", private$paramlist[["seqInput"]]))
-      private$writeLog(sprintf("search file destination:%s", private$paramlist[["scanOutput"]]))
-      ref <- Biostrings::readDNAStringSet(private$paramlist[["seqInput"]])
-      pwm <- private$paramlist[["motifPWM"]]
-      sitesetList <- TFBSTools::searchSeq(x = pwm, subject = ref, min.score = private$paramlist[["min.score"]])
-      tmp <- as(sitesetList, "data.frame")
-      write.table(x = tmp, file = private$paramlist[["scanOutput"]], row.names = FALSE,  quote = FALSE)
-      if(private$paramlist[["exPosition"]]){
-        seq_info <- as.data.frame(stringr::str_split_fixed(string = tmp$seqnames, pattern = "[:-]+", n = 3))
-        colnames(seq_info) <- c("chr", "start", "end")
-        seq_info$start <- as.numeric(as.vector(seq_info$start)) + as.numeric(as.vector(tmp$start)) - 1
-        seq_info$end <- as.numeric(as.vector(seq_info$start)) + as.numeric(nchar(tmp$siteSeqs)) - 1
-        seq_info$strand <- tmp$strand
-        seq_info$motif <- tmp$TF
-        seq_info <- seq_info[with(seq_info, order(motif, chr, start)), ]
-        seq_info <- split(seq_info, f = seq_info$motif)
-        motif_num <- length(seq_info)
-        for(i in seq(motif_num)){
-          motif_name <- as.vector(unique(seq_info[[i]]$motif))
-          output_path <- private$paramlist[["posOutput"]][[motif_name]]
-          write.table(x = seq_info[[i]], file = output_path, quote = FALSE, sep = "\t",
-                      row.names = FALSE, col.names = FALSE)
+      private$writeLog(sprintf("peak file:%s", private$paramlist[["peak"]]))
+      private$writeLog(sprintf("Output destination:%s", private$paramlist[["scanOutput"]]))
+      # running
+      cl <- makeCluster(private$paramlist[["n.cores"]])
+      sitesetList <- parLapply(cl = cl, X = private$paramlist[["motifPWM"]],
+                               fun = Biostrings::matchPWM,
+                               subject = private$paramlist[["genome"]],
+                               min.score = private$paramlist[["min.score"]],
+                               with.score = TRUE)
+      stopCluster(cl)
+      n_motif <- length(sitesetList)
+      peak <- rtracklayer::import(private$paramlist[["peak"]])
+      for(i in seq(n_motif)){
+        motif_name <- names(sitesetList[i])
+        output_data <- IRanges::subsetByOverlaps(query = sitesetList[[i]],
+                                                 subject = peak,
+                                                 ignore.strand = TRUE)
+        output_data <- sort(x = output_data, ignore.strand = TRUE)
+        output_data <- as.data.frame(output_data)
+        output_data <- within(output_data, rm(width))
+        output_path <- file.path(private$paramlist[["scanOutput"]], motif_name)
+        write.table(x = output_data, file = output_path, row.names = FALSE,
+                    col.names = FALSE, quote = FALSE)
         }
-      }
-
-
     }, # processing end
 
     checkRequireParam = function(){
-      if(is.null(private$paramlist[["seqInput"]])){
-        stop("Parameter seqInput is required!")
+      if(is.null(private$paramlist[["peak"]])){
+        stop("Parameter peak is required!")
+      }
+      if(is.null(private$paramlist[["genome"]])){
+        stop("Parameter genome is required!")
       }
       if(is.null(private$paramlist[["motifPWM"]])){
         stop("Parameter motifPWM is required!")
-      }
-      if(is.null(private$paramlist[["exPosition"]])){
-        stop("Parameter exPosition is required!")
+        if(!is.list(private$paramlist[["motifPWM"]])){
+          stop("Parameter motifPWM must be a list!")
+        }
       }
     }, # checkRequireParam end
 
     checkAllPath = function(){
-      private$checkFileExist(private$paramlist[["seqInput"]])
+      private$checkFileExist(private$paramlist[["peak"]])
       private$checkPathExist(private$paramlist[["scanOutput"]])
     } # checkAllPath end
 
@@ -98,21 +92,23 @@ RMotifScan <- R6::R6Class(
 
 #' Finding motif binding sites in DNA sequences.
 #'
-#' @param seqInput DNA sequence file, fasta or fastq.
-#' @param motifPWM Motif PWM matrix generated by TFBSTools. Must be a SiteSet Class or SiteSetList Class.
-#' @param min.score The minimum score for the hit. Can be given an character string in the format
-#' of "80%" or as a single absolute value between 0 and 1. When it is percentage value, it represents
-#' the quantile between the minimal and the maximal possible value from the PWM.
-#' @param scanOutput Output file path and name, default: Seq_file_path/output.
-#' @param exPosition TRUE or FALSE. Whether generate accuracy motif position file.Default: FALSE.
-#' ATTENTION: If your DNA sequences are not from function "DnaSeqCut", be sure exPosition = FALSE,
-#' otherwise the program will report an error.
-#' @param posOutput If exPosition = TRUE, the accuracy motif position will be writen in posOutput_MOTIFNAME.mp.
-#' Actually, this is a path and the prefix.
-#' Default: scanOutput_path/motif_MOTIFNAME.mp
-MotifScan <- function(atacProc = NULL, seqInput = NULL, motifPWM = NULL, min.score = "80%",
-                      scanOutput = NULL, exPosition = FALSE, posOutput = NULL){
-  tmp <- RMotifScan$new(atacProc, seqInput, motifPWM, min.score, scanOutput, exPosition, posOutput)
+#' @param atacProc Object from the former step.
+#' @param genome BSgenome refference.
+#' @param motifPWM A list contains several PWM matrix.
+#' @param min.score The minimum score for counting a match. Can be given as a
+#' character string containing a percentage (e.g. "85%") of the highest
+#' possible score or as a single number.
+#' @param scanOutput Output file path.
+#' The output file contains the exact position of each TF binding site, 1-based.
+#' Considering the motifPWM may contains multiple PWM, the program ues the name
+#' in list to generate the output file name.
+#' @param n.cores How many cores to run the program.
+
+MotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
+                      motifPWM = NULL, min.score = "85%", scanOutput = NULL,
+                      n.cores = NULL){
+  tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
+                        scanOutput, n.cores)
   tmp$process()
   return(tmp)
 }
