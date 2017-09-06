@@ -42,18 +42,16 @@ Bowtie2Mapping <-R6Class(
                 private$paramlist[["bt2Idx"]]<-bt2Idx
             }
 
-            if(.obtainConfigure("threads")>1){
-                private$paramlist[["paramList"]]<-c("-p",as.character(.obtainConfigure("threads")))
-            }
+            
             if(is.null(paramList)){
 
-            }else if(paramList=="default"){
+            }else if(length(paramList)==1 && paramList=="default"){
                 private$paramlist[["paramList"]]<-c("--no-discordant","--no-unal","--no-mixed","-X","2000",
                                                     private$paramlist[["paramList"]])
             }else{
                 private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
                 rejectp<-"-p|--threads|-x|-1|-2|-U|-S|--interleaved"
-                private$checkParam(paramlist,rejectp)
+                private$checkParam(paramList,rejectp)
             }
 
             if(is.null(reportPrefix)){
@@ -71,6 +69,10 @@ Bowtie2Mapping <-R6Class(
     ),
     private = list(
         processing = function(){
+            if(.obtainConfigure("threads")>1){
+                paramList<-paste(c(private$paramlist[["paramList"]],"-p",as.character(.obtainConfigure("threads"))),collapse = " ")
+            }
+            
             private$writeLog("start mapping with parameters:")
             private$writeLog(paste0("bowtie2 index:",private$paramlist[["bt2Idx"]]))
             private$writeLog(paste0("samOutput:",private$paramlist[["samOutput"]]))
@@ -82,14 +84,23 @@ Bowtie2Mapping <-R6Class(
 #            .bowtie2_call(bowtie2Index=private$paramlist[["bt2Idx"]],samOutput=private$paramlist[["samOutput"]],
 #                          fastqInput1=private$paramlist[["fastqInput1"]],fastqInput2=private$paramlist[["fastqInput2"]],
 #                          paramlist=private$paramlist[["paramList"]])
-
-            bowtie2(bt2Index = private$paramlist[["bt2Idx"]],
-                    samOutput = private$paramlist[["samOutput"]],
-                    seq1 = private$paramlist[["fastqInput1"]],
-                    paste(private$paramlist[["paramList"]],collapse = " "),
-                    seq2 = private$paramlist[["fastqInput2"]],
-                    interleaved = private$paramlist[["interleave"]],
-                    overwrite=TRUE)
+            if(length(paramList>0)){
+                bowtie2(bt2Index = private$paramlist[["bt2Idx"]],
+                        samOutput = private$paramlist[["samOutput"]],
+                        seq1 = private$paramlist[["fastqInput1"]],
+                        paramList,
+                        seq2 = private$paramlist[["fastqInput2"]],
+                        interleaved = private$paramlist[["interleave"]],
+                        overwrite=TRUE)
+            }else{
+                bowtie2(bt2Index = private$paramlist[["bt2Idx"]],
+                        samOutput = private$paramlist[["samOutput"]],
+                        seq1 = private$paramlist[["fastqInput1"]],
+                        seq2 = private$paramlist[["fastqInput2"]],
+                        interleaved = private$paramlist[["interleave"]],
+                        overwrite=TRUE)
+            }
+            
             sink()
 
 
