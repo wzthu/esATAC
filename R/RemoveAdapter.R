@@ -57,9 +57,7 @@ RemoveAdapter <-R6Class(
       private$paramlist[["adapter1"]] <- adapter1
       private$paramlist[["adapter2"]] <- adapter2
 
-      if(.obtainConfigure("threads")>1){
-          private$paramlist[["paramList"]]<-c("--threads",as.character(.obtainConfigure("threads")))
-      }
+      
       if(!is.null(paramList)&&sum(paramList!="default")>0){
 
           rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
@@ -68,9 +66,7 @@ RemoveAdapter <-R6Class(
       }
 
 
-      if(.obtainConfigure("threads")>1){
-          private$paramlist[["findParamList"]]<-c("--threads",as.character(.obtainConfigure("threads")))
-      }
+      
       if(!is.null(findParamList)&&sum(findParamList!="default")>0){
           rejectp<-"--file1|--file2|--threads|--identify-adapters|--basename"
           private$checkParam(findParamList,rejectp)
@@ -84,6 +80,13 @@ RemoveAdapter <-R6Class(
   ),
   private = list(
       processing = function(){
+          if(.obtainConfigure("threads")>1){
+              threadparam<-c("--threads",as.character(.obtainConfigure("threads")))
+          }else{
+              threadparam<-NULL
+          }
+          findParamList <- paste(c(private$paramlist[["findParamList"]],threadparam),collapse = " ")
+          paramList <- paste(c(private$paramlist[["paramList"]],threadparam), collapse = " ")
           if(private$singleEnd){
               private$writeLog("begin to remove adapter")
               private$writeLog("source:")
@@ -96,21 +99,32 @@ RemoveAdapter <-R6Class(
 #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
 #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
 #                                    paramlist=private$paramlist[["paramList"]])
-              remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
-                              adapter1 = private$paramlist[["adapter1"]], 
-                              output1 = private$paramlist[["fastqOutput1"]],
-                              basename = private$paramlist[["reportPrefix"]],
-                              interleaved = FALSE,
-                              overwrite = TRUE)
+              if(length(paramList)>0){
+                  remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
+                                  paramList,
+                                  adapter1 = private$paramlist[["adapter1"]], 
+                                  output1 = private$paramlist[["fastqOutput1"]],
+                                  basename = private$paramlist[["reportPrefix"]],
+                                  interleaved = FALSE,
+                                  overwrite = TRUE)
+              }else{
+                  remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
+                                  adapter1 = private$paramlist[["adapter1"]], 
+                                  output1 = private$paramlist[["fastqOutput1"]],
+                                  basename = private$paramlist[["reportPrefix"]],
+                                  interleaved = FALSE,
+                                  overwrite = TRUE)
+              }
+              
           }else if(private$paramlist[["interleave"]]){
               adapter1<-private$paramlist[["adapter1"]]
               adapter2<-private$paramlist[["adapter2"]]
               if(is.null(private$paramlist[["adapter1"]])){
                   private$writeLog("begin to find adapter")
-                  if(length(private$paramlist[["findParamList"]])>0){
+                  if(length(findParamList)>0){
                       adapters<-identify_adapters(file1 = private$paramlist[["fastqInput1"]],
                                                   file2 = NULL,
-                                                  paste(private$paramlist[["findParamList"]],collapse = " "),
+                                                  findParamList,
                                                   basename = private$paramlist[["reportPrefix"]], overwrite=TRUE)
                   }else{
                       adapters<-identify_adapters(file1 = private$paramlist[["fastqInput1"]],
@@ -121,23 +135,35 @@ RemoveAdapter <-R6Class(
                   adapter1 <- adapters[1]
                   adapter2 <- adapters[2]
               }
-              remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
-                              adapter1 = adapter1, 
-                              output1 = private$paramlist[["fastqOutput1"]],
-                              adapter2 = adapter2, 
-                              basename = private$paramlist[["reportPrefix"]],
-                              interleaved = TRUE,
-                              overwrite = TRUE)
+              if(length(paramList)>0){
+                  remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
+                                  paramList,
+                                  adapter1 = adapter1, 
+                                  output1 = private$paramlist[["fastqOutput1"]],
+                                  adapter2 = adapter2, 
+                                  basename = private$paramlist[["reportPrefix"]],
+                                  interleaved = TRUE,
+                                  overwrite = TRUE)
+              }else{
+                  remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
+                                  adapter1 = adapter1, 
+                                  output1 = private$paramlist[["fastqOutput1"]],
+                                  adapter2 = adapter2, 
+                                  basename = private$paramlist[["reportPrefix"]],
+                                  interleaved = TRUE,
+                                  overwrite = TRUE)
+              }
+ 
               
           }else{
               adapter1<-private$paramlist[["adapter1"]]
               adapter2<-private$paramlist[["adapter2"]]
               if(is.null(private$paramlist[["adapter1"]])){
                   private$writeLog("begin to find adapter")
-                  if(length(private$paramlist[["findParamList"]])>0){
+                  if(length(findParamList)>0){
                       adapters<-identify_adapters(file1 = private$paramlist[["fastqInput1"]],
                                                   file2 = private$paramlist[["fastqInput2"]],
-                                                  paste(private$paramlist[["findParamList"]],collapse = " "),
+                                                  findParamList,
                                                   basename = private$paramlist[["reportPrefix"]], overwrite=TRUE)
                   }else{
                       adapters<-identify_adapters(file1 = private$paramlist[["fastqInput1"]],
@@ -163,15 +189,30 @@ RemoveAdapter <-R6Class(
 #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
 #                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=adapter2,
 #                                    outputFile2 = private$paramlist[["fastqOutput2"]],paramlist=private$paramlist[["paramList"]])
-              remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
-                              adapter1 = adapter1, 
-                              output1 = private$paramlist[["fastqOutput1"]],
-                              file2 = private$paramlist[["fastqInput2"]], 
-                              adapter2 = adapter2, 
-                              output2 = private$paramlist[["fastqOutput2"]],
-                              basename = private$paramlist[["reportPrefix"]],
-                              interleaved = FALSE,
-                              overwrite = TRUE)
+              if(length(paramList)>0){
+                  remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
+                                  paramList,
+                                  adapter1 = adapter1, 
+                                  output1 = private$paramlist[["fastqOutput1"]],
+                                  file2 = private$paramlist[["fastqInput2"]], 
+                                  adapter2 = adapter2, 
+                                  output2 = private$paramlist[["fastqOutput2"]],
+                                  basename = private$paramlist[["reportPrefix"]],
+                                  interleaved = FALSE,
+                                  overwrite = TRUE)
+              }else{
+                  remove_adapters(file1 = private$paramlist[["fastqInput1"]], 
+                                  adapter1 = adapter1, 
+                                  output1 = private$paramlist[["fastqOutput1"]],
+                                  file2 = private$paramlist[["fastqInput2"]], 
+                                  adapter2 = adapter2, 
+                                  output2 = private$paramlist[["fastqOutput2"]],
+                                  basename = private$paramlist[["reportPrefix"]],
+                                  interleaved = FALSE,
+                                  overwrite = TRUE)
+                  
+              }
+              
           }
       },
     checkRequireParam = function(){
