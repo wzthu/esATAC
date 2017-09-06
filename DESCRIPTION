@@ -35,7 +35,9 @@ Imports:
     R.utils,
     GenomeInfoDb,
     stringr,
-    BiocGenerics
+    BiocGenerics,
+    S4Vectors,
+    IRanges
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
