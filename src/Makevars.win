@@ -11,7 +11,7 @@ ifeq "$(WIN)" "64"
 
 installbin:
 	mkdir -p ../inst
-	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX) -std=gnu++11" -f Makefile.win))
+	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile.win))
 	(cd $(BT2_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile.win))
 
 clean:
