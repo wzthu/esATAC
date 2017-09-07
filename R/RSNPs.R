@@ -2,24 +2,24 @@ RSNPs <- R6::R6Class(
   classname = "RSNPs",
   inherit = BaseProc,
   public = list(
-    initialize = function(atacProc, snp.regions.file = NULL, bio.features.loc = NULL,
-                          built.in.biofeatures = NULL, par.threads = NULL,
-                          verbose = NULL, method.p = NULL, search.window = NULL,
-                          output = NULL, editable = FALSE){
+    initialize = function(atacProc, snp.info = NULL, peak.info = NULL,
+                          annoOutput = NULL, editable = FALSE){
       super$initialize("RSNPs",editable,list(arg1=atacProc))
 
       # necessary parameters
       if(!is.null(atacProc)){
-        print("Parameter atacProc is not using now! We will add more functions in the future!")
+        private$paramlist[["peak.info"]] <- atacProc$getParam("bedOutput")
+      }else{
+        private$paramlist[["peak.info"]] <- peak.info
       }
-      private$paramlist[["snp.regions.file"]] <- snp.regions.file
-      private$paramlist[["bio.features.loc"]] <- bio.features.loc
-      private$paramlist[["built.in.biofeatures"]] <- built.in.biofeatures
-      private$paramlist[["par.threads"]] <- par.threads
-      private$paramlist[["verbose"]] <- verbose
-      private$paramlist[["method.p"]] <- method.p
-      private$paramlist[["search.window"]] <- search.window
-      private$paramlist[["output"]] <- output
+      private$paramlist[["snp.info"]] <- snp.info
+      # unnecessary parameters
+      if(is.null(annoOutput)){
+        private$paramlist[["annoOutput"]] <- paste0(dirname(private$paramlist[["peak.info"]]),
+                                                    "/SNPAnno", collapse = "")
+      }else{
+        private$paramlist[["annoOutput"]] <- annoOutput
+      }
       # parameter check
       private$paramValidation()
     } # initialization end
@@ -30,35 +30,35 @@ RSNPs <- R6::R6Class(
   private = list(
     processing = function(){
       private$writeLog(paste0("processing file:"))
-      private$writeLog(sprintf("SNP source:%s", private$paramlist[["snp.regions.file"]]))
-      private$writeLog(sprintf("bio feature source:%s", private$paramlist[["bio.features.loc"]]))
-      private$writeLog(sprintf("destination:%s", private$paramlist[["output"]]))
-      tmp <- FunciSNP::getFSNPs(snp.regions.file = private$paramlist[["snp.regions.file"]],
-                                bio.features.loc = private$paramlist[["bio.features.loc"]],
-                                built.in.biofeatures = private$paramlist[["built.in.biofeatures"]],
-                                par.threads = private$paramlist[["par.threads"]],
-                                verbose = private$paramlist[["verbose"]],
-                                method.p = private$paramlist[["method.p"]],
-                                search.window = private$paramlist[["search.window"]])
-      saveRDS(tmp, private$paramlist[["output"]])
+      private$writeLog(sprintf("SNP source:%s", private$paramlist[["snp.info"]]))
+      private$writeLog(sprintf("Peak source:%s", private$paramlist[["peak.info"]]))
+      private$writeLog(sprintf("destination:%s", private$paramlist[["annoOutput"]]))
+      SNP_info <- read.table(file = private$paramlist[["snp.info"]],
+                             header = FALSE)
+      peak_info <- read.table(file = private$paramlist[["peak.info"]],
+                              header = FALSE)
+      snp_gr <- with(SNP_info, GRanges(V1, IRanges(V2 - 1, V2)))
+      peak_gr <- with(peak_info, GRanges(V1, IRanges(V2, V3)))
+      overlaps <- GenomicRanges::findOverlaps(query = peak_gr, subject = snp_gr)
+      output <- cbind(peak_info[S4Vectors::queryHits(overlaps), ],
+                      SNP_info[S4Vectors::subjectHits(overlaps), ])
+      write.table(x = output, file = private$paramlist[["annoOutput"]],
+                  quote = FALSE, sep = "\t", row.names = FALSE,
+                  col.names = FALSE)
     }, # processing end
 
     checkRequireParam = function(){
-      if(is.null(private$paramlist[["snp.regions.file"]])){
-        stop("Parameter snp.regions.file is required!")
+      if(is.null(private$paramlist[["peak.info"]])){
+        stop("Parameter peak.info is required!")
       }
-      if(is.null(private$paramlist[["bio.features.loc"]])){
-        stop("Parameter bio.features.loc is required!")
-      }
-      if(is.null(private$paramlist[["output"]])){
-        stop("Parameter output is required!")
+      if(is.null(private$paramlist[["snp.info"]])){
+        stop("Parameter snp.info is required!")
       }
     }, # checkRequireParam end
 
     checkAllPath = function(){
-      private$checkFileExist(private$paramlist[["snp.regions.file"]])
-      private$checkFileExist(private$paramlist[["bio.features.loc"]])
-      private$checkPathExist(private$paramlist[["ReadsOpath"]])
+      private$checkFileExist(private$paramlist[["snp.info"]])
+      private$checkPathExist(private$paramlist[["annoOutput"]])
     } # checkAllPath end
 
   ) # private end
@@ -66,19 +66,17 @@ RSNPs <- R6::R6Class(
 ) # class end
 
 
-#' Using FunciSNP to do SNP analysis.
+#' Find snps in the given peak file
 #'
-#' @param snp.regions.file path: Location of the regions file.
-#' @param bio.features.loc path: Location of the biological features folder.
-#'
-SNPana <- function(atacProc = NULL, snp.regions.file = NULL, bio.features.loc = NULL,
-                   built.in.biofeatures = TRUE,
-                   par.threads = parallel::detectCores()/2,
-                   verbose = par.threads < 2, method.p = "BH",
-                   search.window = 200000, output = NULL){
-  tmp <- RSNPs$new(atacProc, snp.regions.file, bio.features.loc,
-                   built.in.biofeatures, par.threads,
-                   verbose, method.p, search.window, output)
+#' This function do not consider strand.
+#' @param atacProc Result from function "PeakCallingFseq".
+#' @param snp.info Path to your snps file.the first 2 column must be snp position
+#' (chromatin and  position).
+#' @param peak.info Path to your peak file.
+#' @annoOutput Where to save annotation information, default: peak.info_dir/SNPAnno.
+SNPAnno <- function(atacProc = NULL, snp.info = NULL, peak.info = NULL,
+                   annoOutput = NULL){
+  tmp <- RSNPs$new(atacProc, snp.info, peak.info, annoOutput)
   tmp$process()
   return(tmp)
 }

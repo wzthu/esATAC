@@ -36,6 +36,7 @@ GraphMng <- R6Class(
             PeakCallingFseq,DHSQC,
             PeakCallingFseq, RMotifScan,
             PeakCallingFseq, RPeakAnno,
+            PeakCallingFseq, RSNPs,
             BamToBed, CutSitePre,
             SamToBed, CutSitePre,
             CutSitePre, CutSiteCountR,
