@@ -25,7 +25,7 @@
 #include "scoring.h"
 #include "opts.h"
 #include "aligner_sw.h"
-#include "RcoutRcerr.h"
+
 using namespace std;
 
 int gVerbose;               // be talkative
@@ -230,7 +230,7 @@ static int parseFuncType(const std::string& otype) {
 	} else if(type == "G" || type == "Log") {
 		return SIMPLE_FUNC_LOG;
 	}
-	cerr << "Error: Bad function type '" << otype.c_str()
+	std::cerr << "Error: Bad function type '" << otype.c_str()
 	          << "'.  Should be C (constant), L (linear), "
 	          << "S (square root) or G (natural log)." << std::endl;
 	throw 1;
@@ -702,7 +702,7 @@ int main(int argc, const char **argv) {
 			gGapBarrier);   // # rows at top/bot only entered diagonally
 		RandomSource rnd(seed);
 		{
-			Timer tim(cerr, "Alignment ", true);
+			Timer tim(std::cerr, "Alignment ", true);
 			BTDnaString seq, seqrc;
 			BTString qual, qualrc;
 			EList<DpProblem> probs;

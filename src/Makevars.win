@@ -1,38 +1,43 @@
-#include $(R_HOME)/etc${R_ARCH}/Makeconf
-
 ADRM_DIR = adapterremoval
-ADRM_SRC = $(ADRM_DIR)
-ADRM_INCLUDE_DIR = $(ADRM_DIR)
-ADRM_LIB_DIR = $(ADRM_DIR)
-ADRM_LIB = -ladrm
-
 BT2_DIR = bowtie2
-BT2_SRC = $(BT2_DIR)
-BT2_INCLUDE_DIR = $(BT2_DIR)
-BT2_LIB_DIR = $(BT2_DIR)
-BT2_LIB = -lbowtie2
 
 
+.PHONY: clean installbin all
 
-PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_WIN -I$(ADRM_INCLUDE_DIR) -I$(BT2_INCLUDE_DIR) -DR_ENV_FLAG
-PKG_LIBS = -L$(ADRM_LIB_DIR) $(ADRM_LIB) -L$(BT2_LIB_DIR) $(BT2_LIB) -lz
+all: installbin $(SHLIB)
 
+ifeq "$(WIN)" "64"
 
-
-
-.PHONY: mkadapterremoval all
-
-all: mkadapterremoval mkbowtie2 $(SHLIB)
-
-mkadapterremoval:
-	(cd	$(ADRM_DIR) && ($(MAKE) -f Makefile))
-
-mkbowtie2:
-	(cd $(BT2_DIR) && ($(MAKE) -f Makefile.win))
-
+installbin:
+	mkdir -p ../inst
+	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX) -std=gnu++11" -f Makefile.win))
+	(cd $(BT2_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile.win))
 
 clean:
 	rm -f *.dll
 	rm -f *.o
-	(cd	$(ADRM_DIR) && ($(MAKE) clean -f Makefile))
+	(cd	$(ADRM_DIR) && ($(MAKE) clean -f Makefile.win))
 	(cd	$(BT2_DIR) && ($(MAKE) clean -f Makefile.win))
+
+else
+
+installbin:
+	mkdir -p ../inst
+	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX) -std=gnu++11" -f Makefile.win))
+	$(CXX) -c  bowtie2_32.cpp
+	$(CXX) bowtie2_32.o -o bowtie2-align-s
+	$(CXX) bowtie2_32.o -o bowtie2-build-s
+	cp bowtie2-build-s ../inst
+	cp bowtie2-align-s ../inst
+	
+clean:
+	rm -f *.dll
+	rm -f *.o
+	(cd	$(ADRM_DIR) && ($(MAKE) clean -f Makefile))
+	rm -f ../inst/bowtie2-build-s
+	rm -f ../inst/bowtie2-align-s
+	rm -f bowtie2-build-s
+	rm -f bowtie2-align-s
+	rm -f *.o
+
+endif

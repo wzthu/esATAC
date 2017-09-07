@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include "tokenize.h"
 #include "ds.h"
-#include "bowtie2_interface.h"
 
 using namespace std;
 
@@ -40,8 +39,7 @@ extern "C" {
  * per line, and will dispatch each batch of arguments one at a time to
  * bowtie.
  */
-//int main(int argc, const char **argv) {
-int interface_bowtie_main(int argc, const char **argv){
+int main(int argc, const char **argv) {
 	if(argc > 2 && strcmp(argv[1], "-A") == 0) {
 		const char *file = argv[2];
 		ifstream in;

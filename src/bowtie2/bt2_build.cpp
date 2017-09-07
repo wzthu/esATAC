@@ -33,7 +33,7 @@
 #include "filebuf.h"
 #include "reference.h"
 #include "ds.h"
-#include "RcoutRcerr.h"
+
 /**
  * \file Driver for the bowtie-build indexing tool.
  */
@@ -119,7 +119,7 @@ enum {
  */
 static void printUsage(ostream& out) {
 	out << "Bowtie 2 version " << string(BOWTIE2_VERSION).c_str() << " by Ben Langmead (langmea@cs.jhu.edu, www.cs.jhu.edu/~langmea)" << endl;
-
+	
 #ifdef BOWTIE_64BIT_INDEX
 	string tool_name = "bowtie2-build-l";
 #else
@@ -128,7 +128,7 @@ static void printUsage(ostream& out) {
 	if(wrapper == "basic-0") {
 		tool_name = "bowtie2-build";
 	}
-
+	
 	//               1         2         3         4         5         6         7         8
 	//      12345678901234567890123456789012345678901234567890123456789012345678901234567890
 	out << "Usage: " << tool_name << " [options]* <reference_in> <bt2_index_base>" << endl
@@ -164,7 +164,7 @@ static void printUsage(ostream& out) {
 	    << "    --version               print version information and quit" << endl
 	    ;
 	if(wrapper.empty()) {
-	/*	cerr << endl
+/*		cerr << endl
 		     << "*** Warning ***" << endl
 			 << "'" << tool_name << "' was run directly.  It is recommended "
 			 << "that you run the wrapper script 'bowtie2-build' instead."
@@ -341,7 +341,7 @@ static void deleteIdxFiles(
 	bool doRef,
 	bool justRef)
 {
-
+	
 	for(size_t i = 0; i < filesWritten.size(); i++) {
 		cerr << "Deleting \"" << filesWritten[i].c_str()
 		     << "\" file written during aborted indexing attempt." << endl;

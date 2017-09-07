@@ -59,7 +59,7 @@
 # endif
 #endif /* NO_SPINLOCK */
 
-#include "RcoutRcerr.h"
+
 /**
  * Wrap a lock; obtain lock upon construction, release upon destruction.
  */
@@ -67,7 +67,7 @@ class ThreadSafe {
 public:
 
 	ThreadSafe() : ptr_mutex(NULL) { }
-
+	
 	ThreadSafe(MUTEX_T* ptr_mutex, bool locked = true) : ptr_mutex(NULL) {
 		if(locked) {
 #if WITH_TBB && NO_SPINLOCK && WITH_QUEUELOCK
@@ -133,7 +133,7 @@ public:
             if ( errno != EINVAL )  break;
         }
         if ( !mask )
-            cout << "Warning: Failed to obtain process affinity mask. Thread affinitization is disabled." << std::endl;
+            std::cout << "Warning: Failed to obtain process affinity mask. Thread affinitization is disabled." << std::endl;
     }
 
 /*override*/ void on_scheduler_entry( bool ) {
@@ -174,16 +174,16 @@ public:
         CPU_SET_S( mapped_idx, size, target_mask );
         const int err = sched_setaffinity( 0, size, target_mask );
 
-        //cout << "Just set affinity for thread " << thr_idx << "\n";
+        //std::cout << "Just set affinity for thread " << thr_idx << "\n";
         if ( err ) {
-            cout << "Failed to set thread affinity!n";
+            std::cout << "Failed to set thread affinity!n";
             exit( EXIT_FAILURE );
         }
 #if LOG_PINNING
         else {
             std::stringstream ss;
             ss << "Set thread affinity: Thread " << thr_idx << ": CPU " << mapped_idx << std::endl;
-            cerr << ss.str();
+            std::cerr << ss.str();
         }
 #endif
         CPU_FREE( target_mask );

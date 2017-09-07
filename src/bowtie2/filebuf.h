@@ -28,7 +28,7 @@
 #include <stdint.h>
 #include <stdexcept>
 #include "assert_helpers.h"
-#include "RcoutRcerr.h"
+
 /**
  * Simple, fast helper for determining if a character is a newline.
  */
@@ -463,7 +463,7 @@ public:
 		assert(in != NULL);
 		out_ = fopen(in, "wb");
 		if(out_ == NULL) {
-			cerr << "Error: Could not open bitpair-output file " << in << std::endl;
+			std::cerr << "Error: Could not open bitpair-output file " << in << std::endl;
 			throw 1;
 		}
 		memset(buf_, 0, BUF_SZ);
@@ -483,7 +483,7 @@ public:
 			if(cur_ == BUF_SZ) {
 				// Flush the buffer
 				if(!fwrite((const void *)buf_, BUF_SZ, 1, out_)) {
-					cerr << "Error writing to the reference index file (.4.ebwt)" << std::endl;
+					std::cerr << "Error writing to the reference index file (.4.ebwt)" << std::endl;
 					throw 1;
 				}
 				// Reset to beginning of the buffer
@@ -503,7 +503,7 @@ public:
 		if(cur_ > 0 || bpPtr_ > 0) {
 			if(bpPtr_ == 0) cur_--;
 			if(!fwrite((const void *)buf_, cur_ + 1, 1, out_)) {
-				cerr << "Error writing to the reference index file (.4.ebwt)" << std::endl;
+				std::cerr << "Error writing to the reference index file (.4.ebwt)" << std::endl;
 				throw 1;
 			}
 		}
@@ -534,11 +534,11 @@ public:
 	{
 		out_ = fopen(out.c_str(), binary ? "wb" : "w");
 		if(out_ == NULL) {
-			cerr << "Error: Could not open alignment output file " << out.c_str() << std::endl;
+			std::cerr << "Error: Could not open alignment output file " << out.c_str() << std::endl;
 			throw 1;
 		}
 		if(setvbuf(out_, NULL, _IOFBF, 10* 1024* 1024)) 
-			cerr << "Warning: Could not allocate the proper buffer size for output file stream. " << std::endl;
+			std::cerr << "Warning: Could not allocate the proper buffer size for output file stream. " << std::endl;
 	}
 
 	/**
@@ -550,7 +550,7 @@ public:
 		assert(out != NULL);
 		out_ = fopen(out, binary ? "wb" : "w");
 		if(out_ == NULL) {
-			cerr << "Error: Could not open alignment output file " << out << std::endl;
+			std::cerr << "Error: Could not open alignment output file " << out << std::endl;
 			throw 1;
 		}
 	}
@@ -574,7 +574,7 @@ public:
 		assert(out != NULL);
 		out_ = fopen(out, binary ? "wb" : "w");
 		if(out_ == NULL) {
-			cerr << "Error: Could not open alignment output file " << out << std::endl;
+			std::cerr << "Error: Could not open alignment output file " << out << std::endl;
 			throw 1;
 		}
 		reset();
@@ -685,7 +685,7 @@ public:
 
 	void flush() {
 		if(!fwrite((const void *)buf_, cur_, 1, out_)) {
-			cerr << "Error while flushing and closing output" << std::endl;
+			std::cerr << "Error while flushing and closing output" << std::endl;
 			throw 1;
 		}
 		cur_ = 0;

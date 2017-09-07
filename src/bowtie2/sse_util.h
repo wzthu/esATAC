@@ -219,7 +219,7 @@ private:
 		try {
 			last_alloc_ = new __m128i[sz + 2];
 		} catch(std::bad_alloc& e) {
-			cerr << "Error: Out of memory allocating " << sz << " __m128i's for DP matrix: '" << e.what() << "'" << std::endl;
+			std::cerr << "Error: Out of memory allocating " << sz << " __m128i's for DP matrix: '" << e.what() << "'" << std::endl;
 			throw e;
 		}
                 this->last_alloc_ = last_alloc_;

@@ -23,7 +23,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include "bt2_idx.h"
-#include "RcoutRcerr.h"
+
 using namespace std;
 
 #ifdef BOWTIE_64BIT_INDEX

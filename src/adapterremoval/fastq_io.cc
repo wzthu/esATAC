@@ -30,8 +30,6 @@
 #include "fastq_io.h"
 #include "userconfig.h"
 
-#include "RcoutRcerr.h"
-
 namespace ar
 {
 
@@ -51,7 +49,7 @@ size_t read_fastq_reads(fastq_vec& dst, joined_line_readers& reader,
         }
     } catch (const fastq_error& error) {
         print_locker lock;
-        cerr << "Error reading FASTQ record at line "
+        std::cerr << "Error reading FASTQ record at line "
                   << offset + dst.size()
                   << "; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
@@ -198,7 +196,7 @@ chunk_vec read_paired_fastq::process(analytical_chunk* chunk)
 
     if (n_read_1 != n_read_2) {
         print_locker lock;
-        cerr << "ERROR: Input --file1 and --file2 contains different "
+        std::cerr << "ERROR: Input --file1 and --file2 contains different "
                   << "numbers of lines; one or the other file may have been "
                   << "truncated. Please correct before continuing!"
                   << std::endl;
@@ -284,7 +282,7 @@ chunk_vec read_interleaved_fastq::process(analytical_chunk* chunk)
             + file_chunk->reads_2.size() * 4;
 
         print_locker lock;
-        cerr << "Error reading FASTQ record starting at line "
+        std::cerr << "Error reading FASTQ record starting at line "
                   << offset << ":\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
 
@@ -296,7 +294,7 @@ chunk_vec read_interleaved_fastq::process(analytical_chunk* chunk)
 
     if (n_read_1 != n_read_2) {
         print_locker lock;
-        cerr << "ERROR: Interleaved FASTQ file contains uneven number of "
+        std::cerr << "ERROR: Interleaved FASTQ file contains uneven number of "
                   << "reads; file may have been truncated! Please correct "
                   << "before continuing!"
                   << std::endl;

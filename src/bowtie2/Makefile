@@ -23,8 +23,9 @@
 
 
 INC_EXT = -I third_party
-LIBS_BT2 = -lz -lpthread
-CXX_STD = CXX11
+LIBS_BT2 = -pthread
+#LIBS_BT2 = -lz -lpthread
+#CXX_STD = CXX11
 
 MM_DEF = -DBOWTIE_MM
 
@@ -91,29 +92,46 @@ DEFS=-fno-strict-aliasing \
      $(MM_DEF) \
 
 
-PKG_CPPFLAGS = $(RELEASE_DEFS) $(EXTRA_FLAGS) $(DEFS) -DBOWTIE2 \
-               $(NOASSERT_FLAGS) $(INC_EXT) $(LIBS_BT2)  -DR_ENV_FLAG
+CPPFLAGS = $(RELEASE_DEFS) $(EXTRA_FLAGS) $(DEFS) -DBOWTIE2 \
+               $(NOASSERT_FLAGS) $(INC_EXT) $(LIBS_BT2)  
 
 
-PKG_CXXFLAGS = $(RELEASE_FLAGS) -Wall
-
-
-include $(R_HOME)/etc${R_ARCH}/Makeconf
-
-SRCS = bt2_build.cpp bt2_search.cpp $(SEARCH_CPPS_MAIN) $(BUILD_CPPS_MAIN) $(SHARED_CPPS)
+CXXFLAGS = $(RELEASE_FLAGS) -Wall
 
 
 
-OBJS = ${SRCS:.cpp=.o}
+SRCS_SEARCH = bt2_search.cpp $(SEARCH_CPPS) $(SHARED_CPPS) bowtie_main.cpp
 
-.PHONY: all clean
+SRCS_BUILD = bt2_build.cpp $(SHARED_CPPS) $(HEADERS) bowtie_build_main.cpp diff_sample.cpp
 
-all: libbowtie2.a
+OBJS_SEARCH = $(SRCS_SEARCH:.cpp=.o)
+
+OBJS_BUILD = $(SRCS_BUILD:.cpp=.o)
+
+.PHONY: all clean bowtie2-align-s bowtie2-build-s install
+
+all: bowtie2-build-s bowtie2-align-s install
 
 
-libbowtie2.a: $(OBJS)
-		$(AR) cq $@ $^
+
+.cc.o:
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< 
+
+ 
+
+bowtie2-build-s: $(OBJS_BUILD)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^
+	
+bowtie2-align-s: $(OBJS_SEARCH)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -o $@ $^ 
+
+install:
+	cp bowtie2-align-s ../../inst
+	cp bowtie2-build-s ../../inst
 
 clean:
-	rm -f *.a
+	rm -f ../../inst/bowtie2-align-s
+	rm -f ../../inst/bowtie2-build-s
+	rm -f bowtie2-align-s
+	rm -f bowtie2-build-s
 	rm -f *.o

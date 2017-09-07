@@ -107,7 +107,7 @@ bool ReportingState::foundConcordant() {
 bool ReportingState::foundUnpaired(bool mate1) {
 	assert_gt(state_, ReportingState::NO_READ);
 	// Note: it's not right to assert !doneUnpair1_/!doneUnpair2_ here.
-	// Even if we're done with finding
+	// Even if we're done with finding 
 	if(mate1) {
 		nunpair1_++;
 		// Did we just finish with this mate?
@@ -139,7 +139,7 @@ bool ReportingState::foundUnpaired(bool mate1) {
 	}
 	return done();
 }
-
+	
 /**
  * Called to indicate that the aligner has finished searching for
  * alignments.  This gives us a chance to finalize our state.
@@ -188,7 +188,7 @@ void ReportingState::finish() {
 	doneUnpair_ = done_ = true;
 	assert(done());
 }
-
+	
 /**
  * Populate given counters with the number of various kinds of alignments
  * to report for this read.  Concordant alignments are preferable to (and
@@ -246,7 +246,7 @@ void ReportingState::getReport(
 			return;
 		}
 		assert(!p_.mhitsSet() || nconcord_ <= (uint64_t)p_.mhits+1);
-
+		
 		// Do we have a discordant alignment to report?
 		if(exitDiscord_ == ReportingState::EXIT_WITH_ALIGNMENTS) {
 			// Report discordant
@@ -255,7 +255,7 @@ void ReportingState::getReport(
 			return;
 		}
 	}
-
+	
 	assert_neq(ReportingState::EXIT_SHORT_CIRCUIT_TRUMPED, exitUnpair1_);
 	assert_neq(ReportingState::EXIT_SHORT_CIRCUIT_TRUMPED, exitUnpair2_);
 
@@ -385,10 +385,10 @@ void AlnSink::printAlSumm(
 			cout << "    " << met.nconcord_uni1 << " (";
 			printPct(cout, met.nconcord_uni1, met.npaired);
 			cout << ") aligned concordantly exactly 1 time" << endl;
-
+			
 			// Print the number that aligned concordantly more than once but
 			// fewer times than the limit
-
+			
 			cout << "    " << met.nconcord_uni2+met.nconcord_rep << " (";
 			printPct(cout, met.nconcord_uni2+met.nconcord_rep, met.npaired);
 			cout << ") aligned concordantly >1 times" << endl;
@@ -406,7 +406,7 @@ void AlnSink::printAlSumm(
 		}
 		if(discord) {
 			// TODO: what about discoardant and on separate chromosomes?
-
+		
 			// Bring out the unaligned pair total so we can subtract discordants
 			cout << "    ----" << endl;
 			cout << "    " << met.nconcord_0
@@ -451,7 +451,7 @@ void AlnSink::printAlSumm(
 				printPct(cout, met.nunp_0_uni2, ncondiscord_0 * 2);
 				cout << ") aligned >1 times" << endl;
 			}
-
+			
 			//if(canRep) {
 			//	// Bring out the repetitively aligned pair total so we can subtract discordants
 			//	cout << "    ----" << endl;
@@ -459,15 +459,15 @@ void AlnSink::printAlSumm(
 			//		 << " pairs aligned concordantly >" << repThresh
 			//		 << " times; of these:" << endl;
 			//	cout << "      " << (met.nconcord_rep * 2) << " mates make up the pairs; of these:" << endl;
-			//
+			//	
 			//	cout << "        " << met.nunp_rep_0 << " (";
 			//	printPct(cout, met.nunp_rep_0, met.nconcord_rep * 2);
 			//	cout << ") aligned 0 times" << endl;
-			//
+			//	
 			//	cout << "        " << met.nunp_rep_uni << " (";
 			//	printPct(cout, met.nunp_rep_uni, met.nconcord_rep * 2);
 			//	cout << ") aligned >0 and <=" << repThresh << " times" << endl;
-			//
+			//	
 			//	cout << "        " << met.nunp_rep_rep << " (";
 			//	printPct(cout, met.nunp_rep_rep, met.nconcord_rep * 2);
 			//	cout << ") aligned >" << repThresh << " times" << endl;
@@ -480,7 +480,7 @@ void AlnSink::printAlSumm(
 		cout << "  " << totunpair << " (";
 		printPct(cout, totunpair, totread);
 		cout << ") were unpaired; of these:" << endl;
-
+		
 		cout << "    " << met.nunp_0 << " (";
 		printPct(cout, met.nunp_0, met.nunpaired);
 		cout << ") aligned 0 times" << endl;
@@ -488,7 +488,7 @@ void AlnSink::printAlSumm(
 			cout << "reporter:counter:Bowtie 2,Unpaired reads with 0 alignments,"
 			     << met.nunpaired << endl;
 		}
-
+		
 		if(canRep) {
 			// Print the number that aligned exactly once
 			assert_eq(met.nunp_uni, met.nunp_uni1+met.nunp_uni2);
@@ -519,7 +519,7 @@ void AlnSink::printAlSumm(
 		(met.nconcord_uni + met.nconcord_rep)*2 +
 		(met.ndiscord)*2 +
 		met.nunp_0_uni +
-		met.nunp_0_rep +
+		met.nunp_0_rep + 
 		met.nunp_uni +
 		met.nunp_rep;
 	assert_leq(tot_al, tot_al_cand);
@@ -627,7 +627,7 @@ int AlnSinkWrap::nextRead(
  * 1. If there are reportable concordant alignments, report those and stop
  * 2. If there are reportable discordant alignments, report those and stop
  * 3. If unpaired alignments can be reported:
- *    3a. Report
+ *    3a. Report 
  #
  * Update metrics.  Only ambiguity is: what if a pair aligns repetitively and
  * one of its mates aligns uniquely?
@@ -1038,7 +1038,7 @@ void AlnSinkWrap::finishRead(
 				else               met.nunp_0++;
 			}
 		}
-
+		
 		const AlnRes *repRs1 = NULL, *repRs2 = NULL;
 		AlnSetSumm summ1, summ2;
 		AlnFlags flags1, flags2;
@@ -1102,7 +1102,7 @@ void AlnSinkWrap::finishRead(
 			// summary
 			assert(!unpair1Max);
 		}
-
+		
 		if(rep2) {
 			summ2.init(
 				NULL, rd2_, NULL, NULL, NULL, &rs2u_,
@@ -1201,7 +1201,7 @@ void AlnSinkWrap::finishRead(
 				rs2u_[i].setMateParams(ALN_RES_TYPE_UNPAIRED_MATE2, NULL, flags2);
 			}
 		}
-
+		
 		// Now report mate 1
 		if(rep1) {
 			SeedAlSumm ssm1, ssm2;
@@ -1233,7 +1233,7 @@ void AlnSinkWrap::finishRead(
 			refid = rs1u_[select1_[0]].refid();
 			refoff = rs1u_[select1_[0]].refoff();
 		}
-
+		
 		// Now report mate 2
 		//if(rep2 && !rep1) {
 		if(rep2) {
@@ -1266,7 +1266,7 @@ void AlnSinkWrap::finishRead(
 			refid = rs2u_[select2_[0]].refid();
 			refoff = rs2u_[select2_[0]].refoff();
 		}
-
+		
 		if(rd1_ != NULL && nunpair1 == 0) {
 			if(nunpair2 > 0) {
 				assert_neq(-1, refid);
@@ -1304,7 +1304,7 @@ void AlnSinkWrap::finishRead(
 				NULL,    // read 2
 				rdid_,   // read id
 				summ1,   // summ
-				ssm1,    //
+				ssm1,    // 
 				ssm2,
 				&flags1, // flags 1
 				NULL,    // flags 2
@@ -1505,7 +1505,7 @@ size_t AlnSinkWrap::selectByScore(
 	bestUnchosenCDist.invalidate();
 	bestUnchosenP1Dist.invalidate();
 	bestUnchosenP2Dist.invalidate();
-
+	
 	size_t sz = rs1->size(); // sz = # alignments found
 	assert_leq(num, sz);
 	if(sz < num) {
@@ -1529,7 +1529,7 @@ size_t AlnSinkWrap::selectByScore(
 		buf[i].second = i; // original offset
 	}
 	buf.sort(); buf.reverse(); // sort in descending order by score
-
+	
 	// Randomize streaks of alignments that are equal by score
 	size_t streak = 0;
 	for(size_t i = 1; i < buf.size(); i++) {
@@ -1547,14 +1547,14 @@ size_t AlnSinkWrap::selectByScore(
 	if(streak > 1) {
 		buf.shufflePortion(buf.size() - streak, streak, rnd);
 	}
-
+	
 	// Copy the permutation into the 'select' list
 	for(size_t i = 0; i < num; i++) { select[i] = buf[i].second; }
-
+	
 	if(rs2 == NULL) {
 		bestUScore = bestUDist = (*rs1)[select[0]].score();
 	}
-
+	
 	// For paired-end read, find best alignment score among end
 	// alignments not chosen, for both ends
 	if(rs2 != NULL) {
@@ -1601,7 +1601,7 @@ size_t AlnSinkWrap::selectByScore(
 			}
 		}
 	}
-
+	
 	// Returns index of the representative alignment, but in 'select' also
 	// returns the indexes of the next best selected alignments in order by
 	// score.
@@ -1803,7 +1803,7 @@ void AlnSink::appendSeedSummary(
 	//
 	BEGIN_FIELD;
 	printUptoWs(o, rd.name, true);
-
+	
 	//
 	// Total number of seeds tried
 	//
@@ -1827,7 +1827,7 @@ void AlnSink::appendSeedSummary(
 	//
 	BEGIN_FIELD;
 	WRITE_NUM(o, elts);
-
+	
 	//
 	// The same four numbers, but only for seeds extracted from the
 	// forward read representation.
@@ -1939,7 +1939,7 @@ void AlnSinkSam::appendMate(
 			// mate's RNAME and POS as is customary
 			assert(flags.partOfPair());
 			samc_.printRefNameFromIndex(o, (size_t)summ.orefid());
-		} else {
+		} else {		
 			// No alignment
 			o.append('*');
 		}
@@ -2514,7 +2514,7 @@ int main(void) {
 		assert_eq(1, st.numUnpaired2());
 		st.foundUnpaired(false);
 		assert(st.repOk());
-		assert(testDones(st, true, true, true, true, true, true));
+		assert(testDones(st, true, true, true, true, true, true));		
 		assert_eq(2, st.numConcordant());
 		assert_eq(0, st.numDiscordant());
 		assert_eq(2, st.numUnpaired1());

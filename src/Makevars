@@ -1,32 +1,15 @@
-#include $(R_HOME)/etc${R_ARCH}/Makeconf
-
 ADRM_DIR = adapterremoval
-ADRM_SRC = $(ADRM_DIR)
-ADRM_INCLUDE_DIR = $(ADRM_DIR)
-ADRM_LIB_DIR = $(ADRM_DIR)
-ADRM_LIB = -ladrm
-
 BT2_DIR = bowtie2
-BT2_SRC = $(BT2_DIR)
-BT2_INCLUDE_DIR = $(BT2_DIR)
-BT2_LIB_DIR = $(BT2_DIR)
-BT2_LIB = -lbowtie2
 
 
+.PHONY: installbin all clean
 
-PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_LINUX -I$(ADRM_INCLUDE_DIR) -I$(BT2_INCLUDE_DIR) -DR_ENV_FLAG
-PKG_LIBS = -L$(ADRM_LIB_DIR) $(ADRM_LIB) -L$(BT2_LIB_DIR) $(BT2_LIB)
+all: installbin $(SHLIB)
 
-
-.PHONY: mkadapterremoval mkbowtie2 all clean
-
-all: mkadapterremoval mkbowtie2 $(SHLIB)
-
-mkadapterremoval:
-	(cd	$(ADRM_DIR) && ($(MAKE) -f Makefile))
-
-mkbowtie2:
-	(cd $(BT2_DIR) && ($(MAKE) -f Makefile))
+installbin:
+	mkdir -p ../inst
+	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX) -std=gnu++11" -f Makefile))
+	(cd $(BT2_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile))
 
 clean:
 	rm -f *.so

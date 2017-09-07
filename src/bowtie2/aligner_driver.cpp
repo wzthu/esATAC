@@ -175,7 +175,7 @@ void PrioritizedRootSelector::select(
 		}
 	}
 	assert(!roots.empty());
-	//cerr << roots.size() << ", " << ncandidates << std::endl;
+	//std::cerr << roots.size() << ", " << ncandidates << std::endl;
 }
 
 void IntervalRootSelector::select(
@@ -250,7 +250,7 @@ void IntervalRootSelector::select(
 			}
 		}
 	}
-	//cerr << roots.size() << std::endl;
+	//std::cerr << roots.size() << std::endl;
 }
 
 /**

@@ -29,7 +29,7 @@
 #include "bt2_idx.h"
 #include "reference.h"
 #include "ds.h"
-#include "RcoutRcerr.h"
+
 using namespace std;
 
 static bool showVersion = false; // just print version and quit?

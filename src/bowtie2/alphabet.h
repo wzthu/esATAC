@@ -116,7 +116,7 @@ static inline void decodeNuc(char c , int& num, int *alts) {
 	case 'B': alts[0] = 1; alts[1] = 2; alts[2] = 3; num = 3; break;
 	case 'N': alts[0] = 0; alts[1] = 1; alts[2] = 2; alts[3] = 3; num = 4; break;
 	default: {
-		cerr << "Bad IUPAC code: " << c << ", (int: " << (int)c << ")" << std::endl;
+		std::cerr << "Bad IUPAC code: " << c << ", (int: " << (int)c << ")" << std::endl;
 		throw std::runtime_error("");
 	}
 	}

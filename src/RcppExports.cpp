@@ -5,17 +5,6 @@
 
 using namespace Rcpp;
 
-// removeAdapter
-int removeAdapter(Rcpp::CharacterVector argvs);
-RcppExport SEXP _atacpipe_removeAdapter(SEXP argvsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type argvs(argvsSEXP);
-    rcpp_result_gen = Rcpp::wrap(removeAdapter(argvs));
-    return rcpp_result_gen;
-END_RCPP
-}
 // renamer
 int renamer(Rcpp::List argvs);
 RcppExport SEXP _atacpipe_renamer(SEXP argvsSEXP) {
@@ -24,28 +13,6 @@ BEGIN_RCPP
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
     rcpp_result_gen = Rcpp::wrap(renamer(argvs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bowtie2Mapping
-int bowtie2Mapping(Rcpp::CharacterVector argvs);
-RcppExport SEXP _atacpipe_bowtie2Mapping(SEXP argvsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type argvs(argvsSEXP);
-    rcpp_result_gen = Rcpp::wrap(bowtie2Mapping(argvs));
-    return rcpp_result_gen;
-END_RCPP
-}
-// bowtie2Build
-int bowtie2Build(Rcpp::CharacterVector argvs);
-RcppExport SEXP _atacpipe_bowtie2Build(SEXP argvsSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type argvs(argvsSEXP);
-    rcpp_result_gen = Rcpp::wrap(bowtie2Build(argvs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -141,10 +108,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_atacpipe_removeAdapter", (DL_FUNC) &_atacpipe_removeAdapter, 1},
     {"_atacpipe_renamer", (DL_FUNC) &_atacpipe_renamer, 1},
-    {"_atacpipe_bowtie2Mapping", (DL_FUNC) &_atacpipe_bowtie2Mapping, 1},
-    {"_atacpipe_bowtie2Build", (DL_FUNC) &_atacpipe_bowtie2Build, 1},
     {"_atacpipe_mergeFile", (DL_FUNC) &_atacpipe_mergeFile, 2},
     {"_atacpipe_R_sam2bed_wrapper", (DL_FUNC) &_atacpipe_R_sam2bed_wrapper, 2},
     {"_atacpipe_R_sam2bed_merge_wrapper", (DL_FUNC) &_atacpipe_R_sam2bed_merge_wrapper, 2},

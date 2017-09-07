@@ -36,7 +36,6 @@
 //#include "strutils.h"
 #include "userconfig.h"
 
-#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -171,7 +170,7 @@ bool write_demultiplex_settings(const userconfig& config,
             }
         }
     } catch (const std::ios_base::failure& error) {
-        cerr << "IO error writing settings file; aborting:\n"
+        std::cerr << "IO error writing settings file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return false;
     }
@@ -267,7 +266,7 @@ private:
 
 int demultiplex_sequences_se(const userconfig& config)
 {
-    cerr << "Demultiplexing single ended reads ..." << std::endl;
+    std::cerr << "Demultiplexing single ended reads ..." << std::endl;
 
     scheduler sch;
     demultiplex_reads* demultiplexer = NULL;
@@ -298,7 +297,7 @@ int demultiplex_sequences_se(const userconfig& config)
                            new write_fastq(config.get_output_filename("--output1", nth)));
         }
     } catch (const std::ios_base::failure& error) {
-        cerr << "IO error opening file; aborting:\n"
+        std::cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }
@@ -321,7 +320,7 @@ int demultiplex_sequences_se(const userconfig& config)
 
 int demultiplex_sequences_pe(const userconfig& config)
 {
-    cerr << "Demultiplexing paired end reads ..." << std::endl;
+    std::cerr << "Demultiplexing paired end reads ..." << std::endl;
 
     scheduler sch;
     demultiplex_reads* demultiplexer = NULL;
@@ -370,7 +369,7 @@ int demultiplex_sequences_pe(const userconfig& config)
             }
         }
     } catch (const std::ios_base::failure& error) {
-        cerr << "IO error opening file; aborting:\n"
+        std::cerr << "IO error opening file; aborting:\n"
                   << cli_formatter::fmt(error.what()) << std::endl;
         return 1;
     }
