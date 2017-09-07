@@ -112,15 +112,15 @@ GraphMng <- R6Class(
         }else{
             tempMap<-private$graph
             if(preProc){
-                tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
+                tempMap<-tempMap%>%select_nodes(conditions = label==procName)%>%
                     trav_in() %>%set_node_attrs_ws("fillcolor", "Gold") %>%clear_selection()
             }
             if(nextProc){
-                tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
+                tempMap<-tempMap%>%select_nodes(conditions = label==procName)%>%
                     trav_out() %>%set_node_attrs_ws("fillcolor", "SpringGreen") %>%clear_selection()
             }
             if(curProc){
-                tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
+                tempMap<-tempMap%>%select_nodes(conditions = label==procName)%>%
                     set_node_attrs_ws("fillcolor", "Red") %>%clear_selection()
             }
             if(display){
