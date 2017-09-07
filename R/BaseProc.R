@@ -95,7 +95,7 @@ BaseProc <- R6Class(
         }
         rslist<-grep("(o|O)utput",names(private$paramlist))
         for(i in 1:length(rslist)){
-            unlink(private$paramlist[rslist[i]])
+            unlink(private$paramlist[[rslist[i]]])
         }
     },
     isSingleEnd = function(){
@@ -191,6 +191,29 @@ BaseProc <- R6Class(
         for(n in sort(names(private$paramlist))){
             paramstr<-c(paramstr,n)
             paramstr<-c(paramstr,private$paramlist[[n]])
+        }
+        rslist<-grep("((o|O)utput)|((i|I)nput)",names(private$paramlist))
+        flag = FALSE
+        for(i in 1:length(rslist)){
+            filelist<-private$paramlist[[rslist[i]]]
+            for(j in 1:length(filelist)){
+                if(!is.character(filelist[j])){
+                    flag = TRUE
+                    break
+                }
+                fileinfo<-file.info(filelist[j])
+                if(is.na(fileinfo$isdir)){
+                    paramstr<-c(paramstr,runif(1))
+                    flag = TRUE
+                    break
+                }
+                if(!fileinfo$isdir){
+                    paramstr<-c(paramstr,fileinfo$size)
+                }
+            }
+            if(flag){
+                break
+            }
         }
         md5code<-substr(digest(object = paramstr,algo = "md5"),1,8)
         curtmpdir<-.obtainConfigure("tmpdir")
