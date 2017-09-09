@@ -2,7 +2,7 @@ PeakQC <-R6Class(
     classname = "PeakQC",
     inherit = BaseProc,
     public = list(
-        initialize = function(atacProc, reportPrefix=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),bedInput = NULL,editable=FALSE){
+        initialize = function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),bedInput = NULL,editable=FALSE){
             super$initialize("PeakQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
@@ -23,14 +23,13 @@ PeakQC <-R6Class(
                 private$paramlist[["bedInput"]] <- bedInput;
             }
 
-            if(is.null(reportPrefix)){
+            if(is.null(reportOutput)){
                 if(!is.null(private$paramlist[["bedInput"]])){
                     prefix<-private$getBasenamePrefix(private$paramlist[["bedInput"]],regexProcName)
-                    private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+                    private$paramlist[["reportOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report.txt"))
                 }
-                #private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".BlacklistQCreport");
             }else{
-                private$paramlist[["reportPrefix"]] <- reportPrefix;
+                private$paramlist[["reportOutput"]] <- reportOutput;
             }
             private$paramValidation()
         }
@@ -53,7 +52,7 @@ PeakQC <-R6Class(
             qcval[["qcbedRate"]]<-qcval[["qcbedInput"]]/qcval[["totalInput"]]
 
             qcval<-as.matrix(qcval)
-            write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
+            write.table(qcval,file = private$paramlist[["reportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
 
         },
         checkRequireParam = function(){
@@ -68,7 +67,7 @@ PeakQC <-R6Class(
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["bedInput"]]);
             private$checkFileExist(private$paramlist[["qcbedInput"]]);
-            private$checkPathExist(private$paramlist[["reportPrefix"]]);
+            private$checkFileCreatable(private$paramlist[["reportOutput"]]);
         }
     )
 
@@ -76,8 +75,8 @@ PeakQC <-R6Class(
 )
 
 
-atacPeakQC<-function(atacProc, reportPrefix=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), bedInput = NULL){
-    atacproc<-PeakQC$new(atacProc, reportPrefix=reportPrefix,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
+atacPeakQC<-function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), bedInput = NULL){
+    atacproc<-PeakQC$new(atacProc, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
     atacproc$process()
     return(atacproc)
 }
