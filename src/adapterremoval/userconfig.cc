@@ -36,7 +36,6 @@
 #include "strutils.h"
 #include "userconfig.h"
 
-#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -65,7 +64,7 @@ fastq_encoding_ptr select_encoding(const std::string& name,
     } else if (uppercase_value == "SOLEXA") {
         ptr.reset(new fastq_encoding_solexa(quality_max));
     } else {
-        cerr << "Error: Invalid value for " << name << ": '"
+        std::cerr << "Error: Invalid value for " << name << ": '"
                   << value << "'\n" << "   expected values 33, 64, or solexa."
                   << std::endl;
     }
@@ -416,7 +415,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
     }
 
     if (mate_separator_str.size() != 1) {
-        cerr << "Error: The argument for --mate-separator must be "
+        std::cerr << "Error: The argument for --mate-separator must be "
                      "exactly one character long, not "
                      << mate_separator_str.size()
                      << " characters!" << std::endl;
@@ -436,13 +435,13 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
 
     if (demultiplex_sequences) {
         if (identify_adapters) {
-            cerr << "Error: Cannot use --identify-adapters and "
+            std::cerr << "Error: Cannot use --identify-adapters and "
                       << "--demultiplex-only at the same time!"
                       << std::endl;
 
             return argparse::pr_error;
         } else if (!argparser.is_set("--barcode-list")) {
-            cerr << "Error: Cannot use --demultiplex-only without specifying "
+            std::cerr << "Error: Cannot use --demultiplex-only without specifying "
                       << "a list of barcodes using --barcode-list!"
                       << std::endl;
 
@@ -453,7 +452,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
     }
 
     if (low_quality_score > static_cast<unsigned>(MAX_PHRED_SCORE)) {
-        cerr << "Error: Invalid value for --minquality: "
+        std::cerr << "Error: Invalid value for --minquality: "
                   << low_quality_score << "\n"
                   << "   must be in the range 0 .. " << MAX_PHRED_SCORE
                   << std::endl;
@@ -461,7 +460,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
     } else if (trim_window_length >= 0) {
         trim_by_quality = true;
     } else if (trim_window_length < 0.0) {
-        cerr << "Error: Invalid value for --trimwindows ("
+        std::cerr << "Error: Invalid value for --trimwindows ("
                   << trim_window_length << "); value must be >= 0."
                   << std::endl;
         return argparse::pr_error;
@@ -469,13 +468,13 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
 
     // Check for invalid combinations of settings
     if (input_files_1.empty() && input_files_2.empty()) {
-        cerr << "Error: No input files (--file1 / --file2) specified.\n"
+        std::cerr << "Error: No input files (--file1 / --file2) specified.\n"
                   << "Please specify at least one input file using --file1 FILENAME."
                   << std::endl;
 
         return argparse::pr_error;
     } else if (!input_files_2.empty() && (input_files_1.size() != input_files_2.size())) {
-        cerr << "Error: Different number of files specified for --file1 and --file2." << std::endl;
+        std::cerr << "Error: Different number of files specified for --file1 and --file2." << std::endl;
 
         return argparse::pr_error;
     } else if (!input_files_2.empty()) {
@@ -488,7 +487,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
 
     if (interleaved_input) {
         if (!input_files_2.empty()) {
-            cerr << "Error: The options --interleaved and "
+            std::cerr << "Error: The options --interleaved and "
                       << "--interleaved-input cannot be used "
                       << "together with the --file2 option; only --file1 must "
                       << "be specified!"
@@ -502,7 +501,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
     }
 
     if (identify_adapters && !paired_ended_mode) {
-        cerr << "Error: Both input files (--file1 / --file2) must be "
+        std::cerr << "Error: Both input files (--file1 / --file2) must be "
                   << "specified when using --identify-adapters, or input must "
                   << "be interleaved FASTQ reads (requires --interleaved)."
                   << std::endl;
@@ -528,7 +527,7 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
     }
 
     if (gzip_level > 9) {
-        cerr << "Error: --gzip-level must be in the range 0 to 9, not "
+        std::cerr << "Error: --gzip-level must be in the range 0 to 9, not "
                   << gzip_level << std::endl;
         return argparse::pr_error;
 
@@ -536,21 +535,21 @@ argparse::parse_result userconfig::parse_args(int argc, char *argv[])
 
 #ifdef AR_BZIP2_SUPPORT
     if (bzip2_level < 1 || bzip2_level > 9) {
-        cerr << "Error: --bzip2-level must be in the range 1 to 9, not "
+        std::cerr << "Error: --bzip2-level must be in the range 1 to 9, not "
                   << bzip2_level << std::endl;
         return argparse::pr_error;
     } else if (bzip2 && gzip) {
-        cerr << "Error: Cannot enable --gzip and --bzip2 at the same time!"
+        std::cerr << "Error: Cannot enable --gzip and --bzip2 at the same time!"
                   << std::endl;
         return argparse::pr_error;
     }
 #endif
 
     if (!max_threads) {
-        cerr << "Error: --threads must be at least 1!" << std::endl;
+        std::cerr << "Error: --threads must be at least 1!" << std::endl;
         return argparse::pr_error;
     } else if (max_threads > 1 && argparser.is_set("--seed")) {
-        cerr << "Warning: The option --seed should not be used when "
+        std::cerr << "Warning: The option --seed should not be used when "
                   << "using multiple threads; multi-threaded behavior is not "
                   << "deterministic even with a fixed seed!"
                   << std::endl;
@@ -736,7 +735,7 @@ bool check_and_set_barcode_mm(const argparse::parser& argparser,
     if (!argparser.is_set(key)) {
         dst = barcode_mm;
     } else if (dst > barcode_mm) {
-        cerr << "The maximum number of errors for " << key << " is set \n"
+        std::cerr << "The maximum number of errors for " << key << " is set \n"
                      "to a higher value than the total number of mismatches allowed\n"
                      "for barcodes (--barcode-mm). Please correct these settings."
                   << std::endl;
@@ -756,21 +755,21 @@ bool userconfig::setup_adapter_sequences()
     const bool adapter_list_is_set = argparser.is_set("--adapter-list");
 
     if (pcr_is_set) {
-        cerr << "WARNING: Command-line options --pcr1 and --pcr2 are deprecated.\n"
+        std::cerr << "WARNING: Command-line options --pcr1 and --pcr2 are deprecated.\n"
                   << "         Using --adapter1 and --adapter2 is recommended.\n"
                   << "         Please see documentation for more information.\n"
                   << std::endl;
     }
 
     if (pcr_is_set && (adapters_is_set || adapter_list_is_set)) {
-        cerr << "ERROR: "
+        std::cerr << "ERROR: "
                   << "Either use --pcr1 and --pcr2, or use --adapter1 and "
                   << "--adapter2 / --adapter-list, not both!\n\n"
                   << std::endl;
 
         return false;
     } else if (adapters_is_set && adapter_list_is_set) {
-        cerr << "ERROR: "
+        std::cerr << "ERROR: "
                   << "Use either --adapter1 and --adapter2, or "
                   << "--adapter-list, not both!"
                   << std::endl;
@@ -782,18 +781,18 @@ bool userconfig::setup_adapter_sequences()
         if (!adapters.load_adapters(adapter_list, paired_ended_mode)) {
             return false;
         } else if (adapters.adapter_count()) {
-            cerr << "Read " << adapters.adapter_count()
+            std::cerr << "Read " << adapters.adapter_count()
                       << " adapters / adapter pairs from '" << adapter_list
                       << "'..." << std::endl;
         } else {
-            cerr << "Error: No adapter sequences found in table!" << std::endl;
+            std::cerr << "Error: No adapter sequences found in table!" << std::endl;
             return false;
         }
     } else {
         try {
             adapters.add_adapters(adapter_1, adapter_2, !pcr_is_set);
         } catch (const fastq_error& error) {
-            cerr << "Error parsing adapter sequence(s):\n"
+            std::cerr << "Error parsing adapter sequence(s):\n"
                       << "   " << error.what() << std::endl;
 
             return false;
@@ -816,11 +815,11 @@ bool userconfig::setup_adapter_sequences()
         if (!adapters.load_barcodes(barcode_list, paired_ended_mode)) {
             return false;
         } else if (adapters.adapter_count()) {
-            cerr << "Read " << adapters.barcode_count()
+            std::cerr << "Read " << adapters.barcode_count()
                       << " barcodes / barcode pairs from '" << barcode_list
                       << "' ..." << std::endl;
         } else {
-            cerr << "Error: No barcodes sequences found in table!" << std::endl;
+            std::cerr << "Error: No barcodes sequences found in table!" << std::endl;
             return false;
         }
     }

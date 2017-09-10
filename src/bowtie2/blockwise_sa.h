@@ -41,7 +41,7 @@
 #include "ds.h"
 #include "mem_ids.h"
 #include "word_io.h"
-#include "RcoutRcerr.h"
+
 using namespace std;
 
 // Helpers for printing verbose messages

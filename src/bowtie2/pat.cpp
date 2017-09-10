@@ -87,7 +87,7 @@ PatternSource* PatternSource::patsrcFromStrings(
 	switch(p.format) {
 		case FASTA:       return new FastaPatternSource(qs, p);
 		case FASTA_CONT:  return new FastaContinuousPatternSource(qs, p);
-		case RAW_V:         return new RawPatternSource(qs, p);
+		case RAW:         return new RawPatternSource(qs, p);
 		case FASTQ:       return new FastqPatternSource(qs, p);
 		case INTERLEAVED: return new FastqPatternSource(qs, p, true /* interleaved */);
 		case TAB_MATE5:   return new TabbedPatternSource(qs, p, false);
@@ -427,8 +427,10 @@ void CFilePatternSource::open() {
 	if(is_open_) {
 		is_open_ = false;
 		if (compressed_) {
+#ifdef BT2_GZIP_SUPPORT
 			gzclose(zfp_);
 			zfp_ = NULL;
+#endif
 		}
 		else {
 			fclose(fp_);
@@ -439,19 +441,27 @@ void CFilePatternSource::open() {
 		if(infiles_[filecur_] == "-") {
 			// always assume that data from stdin is compressed
 			compressed_ = true;
+#ifdef BT2_GZIP_SUPPORT
 			int fn = dup(fileno(stdin));
 			zfp_ = gzdopen(fn, "rb");
+#endif			
 		}
 		else {
 			compressed_ = false;
 			if (is_gzipped_file(infiles_[filecur_])) {
 				compressed_ = true;
+#ifdef BT2_GZIP_SUPPORT
 				zfp_ = gzopen(infiles_[filecur_].c_str(), "rb");
+#endif				
 			}
 			else {
 				fp_ = fopen(infiles_[filecur_].c_str(), "rb");
 			}
+#ifdef BT2_GZIP_SUPPORT
 			if((compressed_ && zfp_ == NULL) || (!compressed_ && fp_ == NULL)) {
+#else
+			if((!compressed_ && fp_ == NULL)) { 
+#endif
 				if(!errs_[filecur_]) {
 					cerr << "Warning: Could not open read file \""
 					<< infiles_[filecur_].c_str()
@@ -468,7 +478,9 @@ void CFilePatternSource::open() {
             cerr << "Warning: gzbuffer added in zlib v1.2.3.5. Unable to change "
                     "buffer size from default of 8192." << endl;
 #else
+#ifdef BT2_GZIP_SUPPORT          
             gzbuffer(zfp_, 64*1024);
+#endif
 #endif
         }
         else {

@@ -325,8 +325,10 @@ public:
 	virtual ~CFilePatternSource() {
 		if(is_open_) {
 			if (compressed_) {
+#ifdef BT2_GZIP_SUPPORT
 				assert(zfp_ != NULL);
 				gzclose(zfp_);
+#endif
 			}
 			else {
 				assert(fp_ != NULL);
@@ -380,11 +382,19 @@ protected:
 	void open();
 
 	int getc_wrapper() {
+#ifdef BT2_GZIP_SUPPORT
 		return compressed_ ? gzgetc(zfp_) : getc_unlocked(fp_);
+#else
+	    return getc_unlocked(fp_);
+#endif
 	}
 
 	int ungetc_wrapper(int c) {
+#ifdef BT2_GZIP_SUPPORT
 		return compressed_ ? gzungetc(c, zfp_) : ungetc(c, fp_);
+#else
+	    return ungetc(c, fp_);
+#endif
 	}
 
 	bool is_gzipped_file(const std::string& filename) {

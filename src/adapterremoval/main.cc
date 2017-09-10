@@ -27,11 +27,6 @@
 #include "debug.h"
 #include "main.h"
 #include "userconfig.h"
-#include "adrm_interface.h"
-
-#include "RcoutRcerr.h"
-
-int interface_adapterremoval_main(int argc, char *argv[]);
 
 namespace ar
 {
@@ -46,8 +41,7 @@ int demultiplex_sequences(const userconfig& config);
 } // namespace ar
 
 
-//int main(int argc, char *argv[])
-int interface_adapterremoval_main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
     using namespace ar;
     std::ios_base::sync_with_stdio(false);
@@ -75,14 +69,14 @@ int interface_adapterremoval_main(int argc, char *argv[])
             return identify_adapter_sequences(config);
 
         default:
-            cerr << "ERROR: Unknown run-type: "
+            std::cerr << "ERROR: Unknown run-type: "
                       << static_cast<size_t>(config.run_type)
                       << std::endl;
             return 1;
     }
 
     if (returncode) {
-        cerr << "ERROR: AdapterRemoval did not run to completion;\n"
+        std::cerr << "ERROR: AdapterRemoval did not run to completion;\n"
                   << "       do NOT make use of resulting trimmed reads!"
                   << std::endl;
     }

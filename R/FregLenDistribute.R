@@ -73,29 +73,46 @@ FregLenDistr <-R6Class(
           # t<-t[1:as.integer(length(t)/2)]
           #rs<-rs[1:as.integer(length(rs)/2)]
           tp<-rep(0,length(rs))
-          tp[t>10&t<11]<-1
-          tp[t>100&t<200]<-2
-          rs1<-as.data.frame(cbind(t[t<20&t>2],rs[t<20&t>2],tp[t<20&t>2]))
-          #rs_1<-as.data.frame(cbind(t[t<20&t>2&tp==0],rs[t<20&t>2&tp==0],tp[t<20&t>2&tp==0]))
-          #rs_2<-as.data.frame(cbind(t[t<20&t>2&tp!=0],rs[t<20&t>2&tp!=0],tp[t<20&t>2&tp!=0]))
-          #colnames(rs_1)<-c("perior","strength","check")
-          #colnames(rs_2)<-c("perior","strength","check")
-          colnames(rs1)<-c("perior","strength","check")
-          # ggplot(rs1)+geom_line(aes(x=perior,y=strength))+geom_vline(xintercept = 10)+geom_vline(xintercept = 11)
-          #ggplot(rs1,aes(x=perior,y=strength))+geom_area(aes(fill="valence",color=check))
-          checkdna=1
-          ggplot(rs1)+geom_ribbon(data=subset(rs1,perior<=min(rs1$perior[rs1$check==checkdna])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,perior>=max(rs1$perior[rs1$check==checkdna])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,check==checkdna),aes(x=perior,ymin=0,ymax=strength),fill="red")
-          ggsave(paste0(private$paramlist[["reportPrefix"]],".dnagroove.pdf"))
+          if(length(t)>15&&sum(t>10&t<11)<=1){
+              tp[max(which(t>10))+1]<-1
+              tp[min(which(t<11))-1]<-1
+          }else{
+              tp[t>10&t<11]<-1
+          }
+          if(length(t)>220&&sum(t>100&t<200)<=1){
+              tp[max(which(t>100))+1]<-1
+              tp[min(which(t<200))-1]<-1
+          }else{
+              tp[t>100&t<200]<-2
+          }
+          if(length(t)>15){
+              rs1<-as.data.frame(cbind(t[t<20&t>2],rs[t<20&t>2],tp[t<20&t>2]))
+              #rs_1<-as.data.frame(cbind(t[t<20&t>2&tp==0],rs[t<20&t>2&tp==0],tp[t<20&t>2&tp==0]))
+              #rs_2<-as.data.frame(cbind(t[t<20&t>2&tp!=0],rs[t<20&t>2&tp!=0],tp[t<20&t>2&tp!=0]))
+              #colnames(rs_1)<-c("perior","strength","check")
+              #colnames(rs_2)<-c("perior","strength","check")
+              colnames(rs1)<-c("perior","strength","check")
+              # ggplot(rs1)+geom_line(aes(x=perior,y=strength))+geom_vline(xintercept = 10)+geom_vline(xintercept = 11)
+              #ggplot(rs1,aes(x=perior,y=strength))+geom_area(aes(fill="valence",color=check))
+              checkdna=1
+              ggplot(rs1)+geom_ribbon(data=subset(rs1,perior<=min(rs1$perior[rs1$check==checkdna])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,perior>=max(rs1$perior[rs1$check==checkdna])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,check==checkdna),aes(x=perior,ymin=0,ymax=strength),fill="red")
+              ggsave(paste0(private$paramlist[["reportPrefix"]],".dnagroove.pdf"))
+          }
+          if(length(t)>220){
+              rs2<-as.data.frame(cbind(t[t<400&t>2],rs[t<400&t>2],tp[t<400&t>2]))
+              #rs2<-as.data.frame(cbind(t[t<500&t>2&rs>10&rs<11],rs[t<500&t>2&rs>10&rs<11]))
+              colnames(rs2)<-c("perior","strength","check")
+              #ggplot(rs2,aes(x=perior,y=strength))+geom_area(aes(fill="valence"))
+              #ggplot(rs2)+geom_line(aes(x=perior,y=strength))+geom_vline(xintercept = 150)+geom_vline(xintercept = 200)
+              #ggplot(allreadslen)+geom_density(aes(x="strength",fill="clarity"))
+              checkhistone=2
+              ggplot(rs2)+geom_ribbon(data=subset(rs2,perior<=min(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,perior>=max(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,check==checkhistone),aes(x=perior,ymin=0,ymax=strength),fill="red")
+              ggsave(paste0(private$paramlist[["reportPrefix"]],".histone.pdf"))
+                
+          }
 
-          rs2<-as.data.frame(cbind(t[t<400&t>2],rs[t<400&t>2],tp[t<400&t>2]))
-          #rs2<-as.data.frame(cbind(t[t<500&t>2&rs>10&rs<11],rs[t<500&t>2&rs>10&rs<11]))
-          colnames(rs2)<-c("perior","strength","check")
-          #ggplot(rs2,aes(x=perior,y=strength))+geom_area(aes(fill="valence"))
-          #ggplot(rs2)+geom_line(aes(x=perior,y=strength))+geom_vline(xintercept = 150)+geom_vline(xintercept = 200)
-          #ggplot(allreadslen)+geom_density(aes(x="strength",fill="clarity"))
-          checkhistone=2
-          ggplot(rs2)+geom_ribbon(data=subset(rs2,perior<=min(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,perior>=max(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,check==checkhistone),aes(x=perior,ymin=0,ymax=strength),fill="red")
-          ggsave(paste0(private$paramlist[["reportPrefix"]],".histone.pdf"))
+          
+
 
       },
     checkRequireParam = function(){

@@ -33,7 +33,6 @@
 #include "linereader_joined.h"
 #include "threads.h"
 
-#include "RcoutRcerr.h"
 
 namespace ar
 {
@@ -76,7 +75,7 @@ bool joined_line_readers::open_next_file()
 
     {
         print_locker lock;
-        cerr << "Opening FASTQ file '" << filename << "'" << std::endl;
+        std::cerr << "Opening FASTQ file '" << filename << "'" << std::endl;
     }
 
     m_reader.reset(new line_reader(filename));

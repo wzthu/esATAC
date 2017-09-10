@@ -1,13 +1,13 @@
 .ConfigClass<-R6Class(classname = ".ConfigClass",
     public = list(
         initialize = function(){
-            private$validAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",bt2Idx="character")
+            private$validAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",bt2Idx="character",DHS="character",blacklist="character")
             private$validWriteAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character")
         },
         getAllConfigure = function(){
             print(private$configList)
         },
-        getConfigure = function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx")){
+        getConfigure = function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
             private$isValidAttr(item);
             if(item=="tmpdir"||item=="datadir"){
                 return(normalizePath(private$configList[[item]]))
@@ -20,7 +20,7 @@
         }
     ),
     private = list(
-        configList=list(threads=detectCores(),tmpdir=".",datadir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL),
+        configList=list(threads=detectCores(),tmpdir=".",datadir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL),
         validAttr=NULL,
         validWriteAttr=NULL,
         isValidAttr=function(item){
@@ -79,8 +79,7 @@
                      file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))||
                      file.exists(paste0(fileprefix,".rev.1.bt2"))&&file.exists(paste0(fileprefix,".rev.1.bt2")))){
                    file.create(fileprefixlock)
-                    .bowtie2_build_call(fastaFilePath,fileprefix,c("--threads",as.character(.obtainConfigure("threads"))))
-                    #buildBowtie2Index(fastaFilePath)################################赶紧实现
+                    bowtie2_build(fastaFilePath,fileprefix,"--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
                     unlink(fileprefixlock)
                 }
                 private$configList[["bt2Idx"]]<-fileprefix
@@ -97,6 +96,33 @@
                     unlink(knownGeneFilePathlock)
                 }
                 private$configList[["knownGene"]]<-loadDb(knownGeneFilePath)
+                if(sum(val==c("hg19","hg38","mm10","mm9"))){
+                    blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
+                    DHSFilePath<-paste0(fileprefix,".DHS.bed")
+                    downloadFilePathlock<-paste0(fileprefix,".download.lock")
+                    if(file.exists(downloadFilePathlock)){
+                        unlink(blacklistFilePath)
+                        unlink(DHSFilePath)
+                        unlink(downloadFilePathlock)
+                    }
+                    if(!file.exists(blacklistFilePath)||!file.exists(blacklistFilePath)){
+                        file.create(downloadFilePathlock)
+                        #DHS
+                        if(!file.exists(blacklistFilePath)){
+                            download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.DHS.bed",val),
+                                          destfile = DHSFilePath,method = getOption("download.file.method"))
+                        }
+                        #blacklist
+                        if(!file.exists(blacklistFilePath)){
+                            download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.blacklist.bed",val),
+                                          destfile = blacklistFilePath,method = getOption("download.file.method"))
+                        }
+                        unlink(downloadFilePathlock)
+                    }
+                    private$configList[["DHS"]]<-DHSFilePath
+                    private$configList[["blacklist"]]<-blacklistFilePath
+                }
+
 
             }
         },
@@ -139,7 +165,7 @@ getAllConfigure<-function(){
     .configObj$getAllConfigure();
 }
 
-getConfigure <- function(item = c("threads","tmpdir","datadir","genome","kownGene","bsgenome","bt2Idx")){
+getConfigure <- function(item = c("threads","tmpdir","datadir","genome","kownGene","bsgenome","bt2Idx","DHS","blacklist")){
     return(.configObj$getConfigure(item));
 }
 
@@ -159,7 +185,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,datadir=NULL,genome=NULL){
     setConfigure("genome",genome)
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","kownGene","bsgenome","bt2Idx")){
+.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","kownGene","bsgenome","bt2Idx","DHS","blacklist")){
     val<-.configObj$getConfigure(item);
     if(is.null(val)){
         stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))

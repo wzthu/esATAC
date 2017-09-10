@@ -15,29 +15,26 @@ GraphMng <- R6Class(
             RemoveAdapter,Bowtie2Mapping,
             Bowtie2Mapping,SamToBed,
             Bowtie2Mapping, SamToBam,
-            BamToBed,PeakCallingFseq,
+            Bowtie2Mapping,LibComplexQC,
             SamToBed,PeakCallingFseq,
             PeakCallingFseq,RPeakComp,
             SamToBed,FregLenDistr,
             SamToBed,TSSQC,
-            SamToBed,GenicQC,
-            SamToBed,BlacklistQC,
-            SamToBed,DHSQC,
             SamToBed,FRiPQC,
-            SamToBed,LibComplexQC,
             SamToBed,BedToBigWig,
-            BamToBed,BedToBigWig,
+            BamToBed,BedUtils,
             BedUtils,BedToBigWig,
             BedUtils,BedUtils,
+            BedUtils,PeakCallingFseq,
+            BedUtils,FregLenDistr,
+            BedUtils,TSSQC,
+            BedUtils,FRiPQC,
+            BedUtils,CutSitePre,
             SamToBed,BedUtils,
-            BamToBed,BedUtils,
-            PeakCallingFseq,GenicQC,
-            PeakCallingFseq,BlacklistQC,
-            PeakCallingFseq,DHSQC,
+            PeakCallingFseq,PeakQC,
             PeakCallingFseq, RMotifScan,
             PeakCallingFseq, RPeakAnno,
             PeakCallingFseq, RSNPs,
-            BamToBed, CutSitePre,
             SamToBed, CutSitePre,
             CutSitePre, CutSiteCountR,
             RMotifScan, CutSiteCountR,
@@ -113,15 +110,15 @@ GraphMng <- R6Class(
         }else{
             tempMap<-private$graph
             if(preProc){
-                tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
+                tempMap<-tempMap%>%select_nodes(conditions = label==procName)%>%
                     trav_in() %>%set_node_attrs_ws("fillcolor", "Gold") %>%clear_selection()
             }
             if(nextProc){
-                tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
+                tempMap<-tempMap%>%select_nodes(conditions = label==procName)%>%
                     trav_out() %>%set_node_attrs_ws("fillcolor", "SpringGreen") %>%clear_selection()
             }
             if(curProc){
-                tempMap<-tempMap%>%select_nodes(conditions = paste0("label=='",procName,"'"))%>%
+                tempMap<-tempMap%>%select_nodes(conditions = label==procName)%>%
                     set_node_attrs_ws("fillcolor", "Red") %>%clear_selection()
             }
             if(display){

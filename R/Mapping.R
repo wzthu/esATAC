@@ -45,13 +45,13 @@ Bowtie2Mapping <-R6Class(
             
             if(is.null(paramList)){
 
-            }else if(paramList=="default"){
+            }else if(length(paramList)==1 && paramList=="default"){
                 private$paramlist[["paramList"]]<-c("--no-discordant","--no-unal","--no-mixed","-X","2000",
                                                     private$paramlist[["paramList"]])
             }else{
                 private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
                 rejectp<-"-p|--threads|-x|-1|-2|-U|-S|--interleaved"
-                private$checkParam(paramlist,rejectp)
+                private$checkParam(paramList,rejectp)
             }
 
             if(is.null(reportPrefix)){

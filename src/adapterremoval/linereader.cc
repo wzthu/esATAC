@@ -31,8 +31,6 @@
 #include "linereader.h"
 #include "threads.h"
 
-#include "RcoutRcerr.h"
-
 namespace ar
 {
 
@@ -123,7 +121,7 @@ line_reader::~line_reader()
         close();
     } catch (const std::exception& error) {
         print_locker lock;
-        cerr << "Error closing file: " << error.what() << std::endl;
+        std::cerr << "Error closing file: " << error.what() << std::endl;
         std::exit(1);
     }
 }

@@ -71,7 +71,7 @@ static inline int randFromMask(RandomSource& rnd, int mask) {
 			r--;
 		}
 	}
-	cerr << "Shouldn't get here" << std::endl;
+	std::cerr << "Shouldn't get here" << std::endl;
 	throw 1;
 	return -1;
 }

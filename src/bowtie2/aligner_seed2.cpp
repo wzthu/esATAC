@@ -277,7 +277,7 @@ bool DescentAlignmentSink::reportAlignment(
 		ASSERT_ONLY(TIndexOffU bottmp = 0);
 		// Check that the edited string occurs in the reference
 		if(!ebwtFw.contains(rf, &toptmp, &bottmp)) {
-			cerr << rf << std::endl;
+			std::cerr << rf << std::endl;
 			assert(false);
 		}
 	}
@@ -2076,7 +2076,7 @@ int main(int argc, char **argv) {
 			30,    // maxpen
 			NULL,  // opposite mate
 			&sel); // root selector
-		dr.printRoots(cerr);
+		dr.printRoots(std::cerr);
 		assert_eq(12, dr.roots().size());
 		assert_eq(652, dr.roots()[0].pri);
 		assert_eq(652, dr.roots()[1].pri);
@@ -2104,7 +2104,7 @@ int main(int argc, char **argv) {
 			30,    // maxpen
 			NULL,  // opposite mate
 			&sel); // root selector
-		dr.printRoots(cerr);
+		dr.printRoots(std::cerr);
 		assert_eq(24, dr.roots().size());
 		assert_eq(1230, dr.roots()[0].pri);
 		assert_eq(1230, dr.roots()[1].pri);
