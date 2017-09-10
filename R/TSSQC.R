@@ -52,7 +52,7 @@ TSSQC <-R6Class(
 
             txdb<-private$paramlist[["knownGene"]]
             #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
-            TSS <- promoters(txdb, upstream=0-private$paramlist[["updownstream"]], downstream=1+private$paramlist[["updownstream"]])
+            TSS <- promoters(txdb, upstream=private$paramlist[["updownstream"]], downstream=1+private$paramlist[["updownstream"]])
             #end(trans)<-start(trans)+1
             TSS<-unique(TSS)
 
@@ -89,7 +89,7 @@ TSSQC <-R6Class(
 
             df<-data.frame(val=totaldistr,x=-private$paramlist[["updownstream"]]:private$paramlist[["updownstream"]])
             ggplot(df,aes(x,val))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
-            ggsave(paste0(private$paramlist[["tsspdfOutput"]],".pdf"))
+            ggsave(private$paramlist[["tsspdfOutput"]])
             
             write.table(df,file = private$paramlist[["tsstxtOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
 
@@ -116,7 +116,7 @@ TSSQC <-R6Class(
 
             qcval[["totalUniqReads"]]<-length(readsbed)
             print(qcval[["totalUniqReads"]])
-            qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, trans,ignore.strand = TRUE))
+            qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, TSS,ignore.strand = TRUE))
             print(qcval[["TSSReads"]])
             qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
             print(qcval[["TSSRate"]])
