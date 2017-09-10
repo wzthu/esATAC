@@ -67,7 +67,7 @@ FregLenDistr <-R6Class(
           readscounts<-data.frame(readscounts)
           colnames(readscounts)<-c("length","counts")
 
-          write.table(x=readscounts,file = private$paramlist[["lendistrtxtOutput"]],quote = FALSE,row.names = FALSE,sep="\t")
+          
 
           readscounts$length=as.integer(as.character(readscounts$length))
           mg<-data.frame(length=1:max(readscounts$length))
@@ -76,6 +76,7 @@ FregLenDistr <-R6Class(
           
           ggplot(readscounts, aes(length))+geom_ribbon(aes(ymin=0, ymax=counts))
           ggsave(private$paramlist[["lendistrpdfOutput"]])
+          write.table(x=readscounts,file = private$paramlist[["lendistrtxtOutput"]],quote = FALSE,row.names = FALSE,sep="\t")
           
           rs<-Mod(fft(readscounts$counts))/length(readscounts$counts)
           t<-length(readscounts$counts)/(1:(length(readscounts$counts)-1))
