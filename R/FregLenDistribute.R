@@ -75,7 +75,7 @@ FregLenDistr <-R6Class(
           readscounts$counts[is.na(readscounts$counts)]<-0
           
           ggplot(readscounts, aes(length))+geom_ribbon(aes(ymin=0, ymax=counts))
-          ggsave(paste0(private$paramlist[["reportPrefix"]],".lendistr.pdf"))
+          ggsave(private$paramlist[["lendistrpdfOutput"]])
           
           rs<-Mod(fft(readscounts$counts))/length(readscounts$counts)
           t<-length(readscounts$counts)/(1:(length(readscounts$counts)-1))
@@ -134,7 +134,11 @@ FregLenDistr <-R6Class(
     },
     checkAllPath = function(){
         private$checkFileExist(private$paramlist[["bedInput"]])
-        private$checkPathExist(private$paramlist[["reportPrefix"]])
+        private$checkFileCreatable(private$paramlist[["lendistrpdfOutput"]])
+        private$checkFileCreatable(private$paramlist[["lendistrtxtOutput"]])
+        private$checkFileCreatable(private$paramlist[["dnagroovepdfOutput"]])
+        private$checkFileCreatable(private$paramlist[["histonepdfOutput"]])
+
     }
   )
 
