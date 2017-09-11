@@ -2,7 +2,7 @@ BedUtils<-R6::R6Class(
     classname = "BedUtils",
     inherit = BaseProc,
     public = list(
-        initialize = function(atacProc, bedInput = NULL, bedOutput = NULL, report = TRUE, reportPrefix = NULL, mergePair = FALSE, downSample = NULL,
+        initialize = function(atacProc, bedInput = NULL, bedOutput = NULL, report = TRUE, reportOutput = NULL, mergePair = FALSE, downSample = NULL,
                               posOffset = 0L, negOffset= 0L, chrFilterList= NULL,select = TRUE,
                                sortBed = TRUE, uniqueBed = TRUE, minFregLen = 0,maxFregLen = 2e9, editable=FALSE){
             super$initialize("BedUtils",editable,list(arg1=atacProc))
@@ -24,17 +24,15 @@ BedUtils<-R6::R6Class(
                 private$paramlist[["bedOutput"]] <- bedOutput;
             }
             if(report){
-                if(is.null(reportPrefix)){
+                if(is.null(reportOutput)){
                     if(!is.null(private$paramlist[["bedInput"]])){
 
-                        private$paramlist[["reportPrefix"]] <- private$getAutoPath(private$paramlist[["bedInput"]],regexProcName,".report")
+                        private$paramlist[["reportOutput"]] <- private$getAutoPath(private$paramlist[["bedInput"]],regexProcName,".report")
                     }
                 }else{
-                    private$paramlist[["reportPrefix"]] <- reportPrefix;
+                    private$paramlist[["reportOutput"]] <- reportOutput;
                 }
 
-            }else{
-                private$paramlist[["reportPrefix"]] <- ""
             }
 
 
@@ -62,9 +60,13 @@ BedUtils<-R6::R6Class(
 
     private = list(
         processing = function(){
-            .bedOprUtils_call(ibedfile = private$paramlist[["bedInput"]],
+            reportOutput <- private$paramlist[["reportOutput"]]
+            if(is.null(reportOutput)){
+                reportOutput<-""
+            }
+            qcval<-.bedOprUtils_call(ibedfile = private$paramlist[["bedInput"]],
                                         obedfile = private$paramlist[["bedOutput"]],
-                                        reportPrefix = private$paramlist[["reportPrefix"]],
+                                        reportOutput = reportOutput,
                                         mergePair = private$paramlist[["mergePair"]],
                                         downSample = private$paramlist[["downSample"]],
                                         posOffset = private$paramlist[["posOffset"]],
@@ -75,6 +77,8 @@ BedUtils<-R6::R6Class(
                                         maxFregLen = private$paramlist[["maxFregLen"]],
                                         filterList = private$paramlist[["filterList"]],
                                         select = private$paramlist[["select"]])
+            write.table(as.data.frame(qcval),file = private$paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+            
         },
         checkRequireParam = function(){
             if(is.null(private$paramlist[["bedInput"]])){
@@ -84,6 +88,13 @@ BedUtils<-R6::R6Class(
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["bedInput"]]);
             private$checkFileCreatable(private$paramlist[["bedOutput"]]);
+        },
+        getReportValImp = function(item){
+            qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
+            return(qcval[[item]])
+        },
+        getReportItemsImp = function(){
+            return(c("total","save","filted","extlen","unique"))
         }
     )
 
@@ -98,10 +109,10 @@ BedUtils<-R6::R6Class(
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL, report = TRUE, reportPrefix = NULL, mergePair = FALSE, downSample = NULL,
+atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL, report = TRUE, reportOutput = NULL, mergePair = FALSE, downSample = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){
-    atacproc <- BedUtils$new(atacProc, bedInput = bedInput, bedOutput = bedOutput, report = report, reportPrefix = reportPrefix, mergePair = mergePair, downSample = downSample,
+    atacproc <- BedUtils$new(atacProc, bedInput = bedInput, bedOutput = bedOutput, report = report, reportOutput = reportOutput, mergePair = mergePair, downSample = downSample,
                              posOffset = posOffset, negOffset= negOffset, chrFilterList= chrFilterList,select = select,
                              sortBed = sortBed, uniqueBed = uniqueBed, minFregLen = minFregLen,maxFregLen = maxFregLen)
     atacproc$process()

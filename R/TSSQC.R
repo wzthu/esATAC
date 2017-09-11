@@ -138,6 +138,15 @@ TSSQC <-R6Class(
             private$checkFileCreatable(private$paramlist[["tsspdfOutput"]]);
             private$checkFileCreatable(private$paramlist[["tsstxtOutput"]]);
             private$checkFileCreatable(private$paramlist[["tssreportOutput"]]);
+        },
+        getReportValImp = function(item){
+            tss <- read.table(file= private$paramlist[["tsstxtOutput"]],header=TRUE)
+            if(item == "tss"){
+                return(readscounts)
+            }
+        },
+        getReportItemsImp = function(){
+            return(c("tss"))
         }
     )
 

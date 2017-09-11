@@ -52,7 +52,7 @@ void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){
 
 
 // [[Rcpp::export]]
-int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
+Rcpp::List R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
     std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
     std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
@@ -95,14 +95,22 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
             strcpy(filters[i],(char *)(Rcpp::as<std::string>(filterList[i])).c_str());
         }
     }
-    int reads_count = SB.sam2bed(pos_offset,neg_offset,filters,filterSize,sort,unique);
+    SB.sam2bed(pos_offset,neg_offset,filters,filterSize,sort,unique);
     if(filters){
         for(int i=0;i<filterSize;i++){
             delete[] filters[i];
         }
         delete[] filters;
     }
-    return(reads_count);
+
+    Rcpp::List rs = Rcpp::List::create(Rcpp::Named("total")=SB.getTotalCounter(),
+                                       Rcpp::Named("save")=SB.getSaveCounter(),
+                                       Rcpp::Named("filted")=SB.getFiltedCounter(),
+                                       Rcpp::Named("extlen")=SB.getExtLenCOunter(),
+                                       Rcpp::Named("unique")=SB.getUniqueCounter(),
+                                       Rcpp::Named("multimap")=SB.getXsCounter());
+    
+    return rs;
 
 
 }
@@ -110,7 +118,7 @@ int R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 
 
 // [[Rcpp::export]]
-int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
+Rcpp::List R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
     std::string ipath = Rcpp::as<std::string>(argvs["samfile"]);
     std::string opath = Rcpp::as<std::string>(argvs["bedfile"]);
@@ -154,7 +162,7 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
         }
     }
 
-    int reads_count = SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
+    SB.sam2bed_merge(pos_offset,neg_offset,filters,filterSize,sort,unique, min_freg_len, max_freg_len, save_ext_len);
 
     if(filters){
         for(int i=0;i<filterSize;i++){
@@ -162,12 +170,20 @@ int R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
         }
         delete[] filters;
     }
-    return(reads_count);
+
+    Rcpp::List rs = Rcpp::List::create(Rcpp::Named("total")=SB.getTotalCounter(),
+                                       Rcpp::Named("save")=SB.getSaveCounter(),
+                                       Rcpp::Named("filted")=SB.getFiltedCounter(),
+                                       Rcpp::Named("extlen")=SB.getExtLenCOunter(),
+                                       Rcpp::Named("unique")=SB.getUniqueCounter(),
+                                       Rcpp::Named("multimap")=SB.getXsCounter());
+    
+    return rs;
 
 }
 
 // [[Rcpp::export]]
-void bedOprUtils(Rcpp::List argvs,Rcpp::CharacterVector filterList)
+Rcpp::List bedOprUtils(Rcpp::List argvs,Rcpp::CharacterVector filterList)
 {
     std::string ipath = Rcpp::as<std::string>(argvs["ibedfile"]);//
     std::string opath = Rcpp::as<std::string>(argvs["obedfile"]);//
@@ -230,6 +246,15 @@ void bedOprUtils(Rcpp::List argvs,Rcpp::CharacterVector filterList)
         }
         delete[] filters;
     }
+    
+    Rcpp::List rs = Rcpp::List::create(Rcpp::Named("total")=bedUtils.getTotalCounter(),
+                                       Rcpp::Named("save")=bedUtils.getSaveCounter(),
+                                       Rcpp::Named("filted")=bedUtils.getFiltedCounter(),
+                                       Rcpp::Named("extlen")=bedUtils.getExtLenCOunter(),
+                                       Rcpp::Named("unique")=bedUtils.getUniqueCounter());
+                                     
+    
+    return rs;
 }
 
 

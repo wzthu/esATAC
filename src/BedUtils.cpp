@@ -68,7 +68,7 @@ BedUtils::BedUtils(const char * inputBedPath,const char * outputBedPath,const ch
     }
     this->regexPattern = pattern;
     totalCounter=0;
-    saveCouter=0;
+    saveCounter=0;
     filtedCounter=0;
     extLenCounter=0;
     uniqueCounter=0;
@@ -197,7 +197,7 @@ void BedUtils::bedToBed(){
                     sortBed->insertBedLine(bedLine);
                 }else{
                     outputBedLine(ofBed,bedLine);
-                    saveCouter++;
+                    saveCounter++;
                 }
             }
 
@@ -209,7 +209,7 @@ void BedUtils::bedToBed(){
 
         if(sortBed){
             sortBed->mergeBed();
-            saveCouter = sortBed->getSaveCounter();
+            saveCounter = sortBed->getSaveCounter();
             if(unique){
                 uniqueCounter = sortBed->getUniquedCounter();
             }
@@ -332,4 +332,18 @@ void BedUtils::bedToBed(){
     }
 
 
-
+    int BedUtils::getTotalCounter(){
+        return totalCounter;
+    }
+    int BedUtils::getSaveCounter(){
+        return saveCounter;
+    }
+    int BedUtils::getFiltedCounter(){
+        return filtedCounter;
+    }
+    int BedUtils::getExtLenCOunter(){
+        return extLenCounter;
+    }
+    int BedUtils::getUniqueCounter(){
+        return uniqueCounter;
+    }

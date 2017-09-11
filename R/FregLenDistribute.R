@@ -140,6 +140,15 @@ FregLenDistr <-R6Class(
         private$checkFileCreatable(private$paramlist[["dnagroovepdfOutput"]])
         private$checkFileCreatable(private$paramlist[["histonepdfOutput"]])
 
+    },
+    getReportValImp = function(item){
+        readscounts <- read.table(file= private$paramlist[["lendistrtxtOutput"]],header=TRUE)
+        if(item == "readsCounts"){
+            return(readscounts)
+        }
+    },
+    getReportItemsImp = function(){
+        return(c("readsCounts"))
     }
   )
 

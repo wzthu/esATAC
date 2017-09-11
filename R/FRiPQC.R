@@ -45,8 +45,7 @@ FRiPQC <-R6Class(
             qcval[["FRiP"]]<-qcval[["peakReads"]]/qcval[["totalReads"]]
             #unlink(paste0(private$paramlist[["reportPrefix"]],".tmp"))
             ####private$paramlist[["qcval"]]<-qcval
-            qcval<-as.matrix(qcval)
-            write.table(qcval,file = private$paramlist[["reportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+            write.table(as.data.frame(qcval),file = private$paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
 
         },
         checkRequireParam = function(){
@@ -62,6 +61,13 @@ FRiPQC <-R6Class(
             private$checkFileExist(private$paramlist[["readsBedInput"]]);
             private$checkFileExist(private$paramlist[["peakBedInput"]]);
             private$checkFileCreatable(private$paramlist[["reportOutput"]]);
+        },
+        getReportValImp = function(item){
+            qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
+            return(qcval[[item]])
+        },
+        getReportItemsImp = function(){
+            return(c("total","save","filted","extlen","unique"))
         }
     )
 

@@ -1,6 +1,6 @@
 .renamer_call<-function(inputFile,outputFile,fileType="fq",interleave = FALSE){
   argv<-list(inputFile=inputFile,outputFile=outputFile,fileType=fileType,interleave=interleave);
-  return(renamer(argv));
+  invisible(renamer(argv));
 }
 
 .sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen,downSample = 2e9)
@@ -11,7 +11,7 @@
     if(is.null(filterList)){
         filterList = c("NULL");
     }
-    return(R_sam2bed_merge_wrapper(argv,filterList))
+    invisible(R_sam2bed_merge_wrapper(argv,filterList))
 }
 
 .sam2bed_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,downSample = 2e9){
@@ -21,7 +21,7 @@
     if(is.null(filterList)){
         filterList = c("NULL");
     }
-    return(R_sam2bed_wrapper(argv,filterList))
+    invisible(R_sam2bed_wrapper(argv,filterList))
 }
 
 .lib_complex_qc_call <- function(bedfile, sortedBed, max_reads){
@@ -33,27 +33,27 @@
         rs["PBC2"]=NA
     }
     print(rs)
-    return(rs)
+    invisible(rs)
 }
 
 # only chr1-chrY will be saved, chrM and others will be removed.
 .chr_separate_call <- function(ReadsIfile, ReadsOpath, Name){
   argv <- list(readsIfile = ReadsIfile, readsOpath = ReadsOpath, name = Name)
   ChrDivi_wrapper(argv)
-  return(TRUE)
+  invisible(TRUE)
 }
 
 .CutSite_call <- function(InputFile, OutputFile){
   argv <- list(readsIfile = InputFile, readsOpath = OutputFile)
   print(argv)
-  return(CutCountPre_wrapper(argv))
+  invisible(CutCountPre_wrapper(argv))
 }
 
 
 .CutSiteCount <- function(readsfile, motiffile, matrixfile, motif_len, strand_len){
   argv <- list(readsfile = readsfile, motiffile = motiffile, matrixfile = matrixfile,
                motif_len = motif_len, strand_len = strand_len)
-  return(CutSiteCount_wrapper(argv))
+  invisible(CutSiteCount_wrapper(argv))
 }
 
 
@@ -72,7 +72,7 @@
     if(is.null(filterList)){
         filterList = c("NULL");
     }
-    return(bedOprUtils(argv,filterList))
+    invisible(bedOprUtils(argv,filterList))
 
 }
 

@@ -18,7 +18,7 @@ R_sam2bed_merge_wrapper <- function(argvs, filterList) {
 }
 
 bedOprUtils <- function(argvs, filterList) {
-    invisible(.Call('_atacpipe_bedOprUtils', PACKAGE = 'atacpipe', argvs, filterList))
+    .Call('_atacpipe_bedOprUtils', PACKAGE = 'atacpipe', argvs, filterList)
 }
 
 lib_complex_qc <- function(argvs) {

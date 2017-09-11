@@ -35,7 +35,7 @@ SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize,int down_samp
     this->rmXS = rmXS;
 
     this->totalCounter = 0;
-    this->saveCouter = 0;
+    this->saveCounter = 0;
     this->filtedCounter = 0;
     this->extLenCounter = 0;
     this->uniqueCounter = 0;
@@ -180,7 +180,7 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
                 break;
             }
             (*bedofs) << chr << "\t" << chr_start << "\t" << chr_end << "\t" << tok << "\t" << mqs << "\t" << strand << endl;
-            saveCouter ++;
+            saveCounter ++;
         }else{
             stringstream ss;
             ss << tok <<"\t"<< mqs << "\t" << strand;
@@ -196,7 +196,7 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
         delete bedofs;
     }else{
         sortBed->mergeBed();
-        saveCouter = sortBed->getSaveCounter();
+        saveCounter = sortBed->getSaveCounter();
         uniqueCounter = sortBed->getUniquedCounter();
         delete sortBed;
     }
@@ -367,7 +367,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
                     break;
                 }
                 (*bedofs) << chr << "\t" << start << "\t" << end << "\t" << tok << "\t" << mqs << "\t" << strand << endl;
-                saveCouter ++;
+                saveCounter ++;
             }else{
                 stringstream ss;
                 ss << tok <<"\t"<< mqs << "\t" << strand;
@@ -390,7 +390,7 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
         delete bedofs;
     }else{
         sortBed->mergeBed();
-        saveCouter = sortBed->getSaveCounter();
+        saveCounter = sortBed->getSaveCounter();
         uniqueCounter = sortBed->getUniquedCounter();
         delete sortBed;
     }
@@ -409,4 +409,23 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
 #endif
 
     return reads_count;
+}
+
+int SamToBed::getTotalCounter(){
+    return totalCounter;
+}
+int SamToBed::getSaveCounter(){
+    return saveCounter;
+}
+int SamToBed::getFiltedCounter(){
+    return filtedCounter;
+}
+int SamToBed::getExtLenCOunter(){
+    return extLenCounter;
+}
+int SamToBed::getUniqueCounter(){
+    return uniqueCounter;
+}
+int SamToBed::getXsCounter(){
+    return xsCounter;
 }
