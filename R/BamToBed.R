@@ -7,17 +7,29 @@ BamToBed <- R6::R6Class(
       super$initialize("BamToBed", editable, list(arg1 = atacProc))
 
       # necessary parameters
-      # CHECK atacProc!!!!!!!!!!!!!!!!!!!!!!
       if(!is.null(atacProc)){ # atacproc from mapping
         private$paramlist[["bamInput"]] <- atacProc$getParam("bamOutput")
+        regexProcName <- sprintf("(bam|%s)", atacProc$getProcName())
       }else if(is.null(atacProc)){ # input
         private$paramlist[["bamInput"]] <- bamInput
+        regexProcName <- "(bam)"
       }
       # unnecessary parameters
       if(is.null(bedOutput)){
-        private$paramlist[["bedOutput"]] <- paste0(private$paramlist[["bamInput"]], ".bed", collapse = "")
+        prefix <- private$getBasenamePrefix(private$paramlist[["bamInput"]], regexProcName)
+        private$paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                      paste0(prefix, ".",
+                                                             self$getProcName(),
+                                                             ".bed")
+                                                      )
       }else{
-        private$paramlist[["bedOutput"]] <- bedOutput
+        name_split <- unlist(base::strsplit(x = bedOutput, split = ".", fixed = TRUE))
+        suffix <- tail(name_split, 1)
+        if(suffix == "bed"){
+          private$paramlist[["bedOutput"]] <- bedOutput
+        }else{
+          private$paramlist[["bedOutput"]] <- paste0(bedOutput, ".bed", collapse = "")
+        }
       }
 
       # parameter check
@@ -56,7 +68,12 @@ BamToBed <- R6::R6Class(
 ) # R6 class end
 
 
-#' bam2bed using rtracklayer package
+#' @name atacBam2Bed
+#' @title Convert bam format to bed format.
+#' @description This function convert a bam file to a bed file.
+#' @param atacProc Result from atacSam2Bam or atacBamSort.
+#' @param bamInput Path to bam file.
+#' @param bedOutput Where you want save the bed file.
 #' @export
 atacBam2Bed <- function(atacProc = NULL, bamInput = NULL, bedOutput = NULL){
   tmp <- BamToBed$new(atacProc, bamInput, bedOutput)

@@ -12,6 +12,7 @@ GraphMng <- R6Class(
             SamToBam, Rsortbam,
             SamToBam, FastQC,
             SamToBam, BamToBed,
+            Rsortbam, BamToBed,
             RemoveAdapter,Bowtie2Mapping,
             Bowtie2Mapping,SamToBed,
             Bowtie2Mapping, SamToBam,
@@ -38,8 +39,7 @@ GraphMng <- R6Class(
             SamToBed, CutSitePre,
             CutSitePre, CutSiteCountR,
             RMotifScan, CutSiteCountR,
-            RPeakAnno, RGo,
-            RPeakAnno, RGoDavid
+            RPeakAnno, RGo
 
         )
         edges1<-sapply(edges1,function(x) x$classname)
