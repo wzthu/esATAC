@@ -117,10 +117,6 @@ Bowtie2Mapping <-R6Class(
             private$checkFileCreatable(private$paramlist[["reportOutput"]]);
         },
         getReportValImp = function(item){
-            if(sum(item == c("adapter1","adapter2"))>0){
-                adapter<-readLines(paste0(private$paramlist[["reportOutput"]],item))
-                return(adapter[1])
-            }
             txt <- readLines(private$paramlist[["reportOutput"]])
             if(item == "total"){
                 s<-strsplit(txt[1]," ")
