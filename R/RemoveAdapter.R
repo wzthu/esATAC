@@ -284,7 +284,7 @@ RemoveAdapter <-R6Class(
     },
     getTopic = function(topic){
         setLine<-readLines(paste0(private$paramlist[["reportPrefix"]],".settings"))
-        itemstarts<-grep("\\[",setLine)
+        itemstarts<-grep("\\]$",setLine)
         
         itemstart<-grep(topic,setLine)
         itemsendidx<-which(itemstarts == itemstart) + 1
