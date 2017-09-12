@@ -2,7 +2,7 @@ TSSQC <-R6Class(
     classname = "TSSQC",
     inherit = BaseProc,
     public = list(
-        initialize = function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
+        initialize = function(atacProc, txdbKnownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
             super$initialize("TSSQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
@@ -10,8 +10,8 @@ TSSQC <-R6Class(
             }else{
                 regexProcName<-"(BED|bed|Bed)"
             }
-            if(!is.null(txdb.knownGene)){
-                private$paramlist[["knownGene"]] <- txdb.knownGene;
+            if(!is.null(txdbKnownGene)){
+                private$paramlist[["knownGene"]] <- txdbKnownGene;
             }else{
                 private$paramlist[["knownGene"]]<-.obtainConfigure("knownGene");
             }
@@ -23,11 +23,15 @@ TSSQC <-R6Class(
             if(is.null(reportPrefix)){
                 if(!is.null(private$paramlist[["bedInput"]])){
                     prefix<-private$getBasenamePrefix(private$paramlist[["bedInput"]],regexProcName)
-                    private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+                    private$paramlist[["tsspdfOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".pdf"))
+                    private$paramlist[["tsstxtOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".txt"))
+                    private$paramlist[["tssreportOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report.txt"))
                 }
                 #private$paramlist[["reportPrefix"]] <- paste0(private$paramlist[["bedInput"]],".TSSQCreport");
             }else{
-                private$paramlist[["reportPrefix"]] <- reportPrefix;
+                private$paramlist[["tsspdfOutput"]] <- paste0(reportPrefix,".pdf")
+                private$paramlist[["tsstxtOutput"]] <- paste0(reportPrefix,".txt")
+                private$paramlist[["tssreportOutput"]] <- paste0(reportPrefix,".report.txt")
             }
 
             private$paramlist[["updownstream"]] <- tssUpdownstream
@@ -48,15 +52,15 @@ TSSQC <-R6Class(
 
             txdb<-private$paramlist[["knownGene"]]
             #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
-            trans<-GenomicFeatures::transcripts(txdb)
-            end(trans)<-start(trans)+1
-            trans<-unique(trans)
+            TSS <- promoters(txdb, upstream=private$paramlist[["updownstream"]], downstream=1+private$paramlist[["updownstream"]])
+            #end(trans)<-start(trans)+1
+            TSS<-unique(TSS)
 
 
-            end(trans)<-start(trans)+private$paramlist[["updownstream"]]
-            start(trans)<-start(trans)-private$paramlist[["updownstream"]]
+            #end(trans)<-start(trans)+private$paramlist[["updownstream"]]
+            #start(trans)<-start(trans)-private$paramlist[["updownstream"]]
 
-            pairs<-findOverlapPairs(readsbed, trans,ignore.strand = TRUE)
+            pairs<-findOverlapPairs(readsbed, TSS,ignore.strand = TRUE)
             reads<-ranges(first(pairs))
             transspan<-second(pairs)
             #gp<-paste(as.character(start(transspan)),as.character(end(transspan)))
@@ -85,7 +89,9 @@ TSSQC <-R6Class(
 
             df<-data.frame(val=totaldistr,x=-private$paramlist[["updownstream"]]:private$paramlist[["updownstream"]])
             ggplot(df,aes(x,val))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
-            ggsave(paste0(private$paramlist[["reportPrefix"]],".pdf"))
+            ggsave(private$paramlist[["tsspdfOutput"]])
+            
+            write.table(df,file = private$paramlist[["tsstxtOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
 
 
 
@@ -110,18 +116,18 @@ TSSQC <-R6Class(
 
             qcval[["totalUniqReads"]]<-length(readsbed)
             print(qcval[["totalUniqReads"]])
-            qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, trans,ignore.strand = TRUE))
+            qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, TSS,ignore.strand = TRUE))
             print(qcval[["TSSReads"]])
             qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
             print(qcval[["TSSRate"]])
             qcval<-as.matrix(qcval)
-            print(paste0(private$paramlist[["reportPrefix"]],".txt"))
-            write.table(qcval,file = paste0(private$paramlist[["reportPrefix"]],".txt"),sep="\t",quote = FALSE,col.names = FALSE)
+            
+            write.table(qcval,file = private$paramlist[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
 
         },
         checkRequireParam = function(){
             if(is.null(private$paramlist[["knownGene"]])){
-                stop("txdb.knownGene is required.")
+                stop("txdbKnownGene is required.")
             }
             if(is.null(private$paramlist[["bedInput"]])){
                 stop("bedInput is required.")
@@ -129,7 +135,18 @@ TSSQC <-R6Class(
         },
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["bedInput"]]);
-            private$checkPathExist(private$paramlist[["reportPrefix"]]);
+            private$checkFileCreatable(private$paramlist[["tsspdfOutput"]]);
+            private$checkFileCreatable(private$paramlist[["tsstxtOutput"]]);
+            private$checkFileCreatable(private$paramlist[["tssreportOutput"]]);
+        },
+        getReportValImp = function(item){
+            tss <- read.table(file= private$paramlist[["tsstxtOutput"]],header=TRUE)
+            if(item == "tss"){
+                return(readscounts)
+            }
+        },
+        getReportItemsImp = function(){
+            return(c("tss"))
         }
     )
 
@@ -137,8 +154,8 @@ TSSQC <-R6Class(
 )
 
 
-atacTSSQC<-function(atacProc, txdb.knownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
-    tssQC<-TSSQC$new(atacProc=atacProc, txdb.knownGene=txdb.knownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
+atacTSSQC<-function(atacProc, txdbKnownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+    tssQC<-TSSQC$new(atacProc=atacProc, txdbKnownGene=txdbKnownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
     tssQC$process()
     return(tssQC)
 }

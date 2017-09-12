@@ -14,7 +14,7 @@ private:
   bool rmXS;
 
   int totalCounter;
-  int saveCouter;
+  int saveCounter;
   int filtedCounter;
   int extLenCounter;
   int uniqueCounter;
@@ -25,6 +25,12 @@ public:
   int sam2bed(int pos_offset=4,int neg_offset=-5,char ** chrList= NULL,int char_filter_size= 0,bool sort= true,bool unique= true);
   int sam2bed_merge(int pos_offset=4,int neg_offset=-5,char ** chrList = NULL,int char_filter_size = 0,
                     bool sort = true,bool unique = true,int min_freg_len=0, int max_freg_len=100, bool save_ext_len=false);
+  int getTotalCounter();
+  int getSaveCounter();
+  int getFiltedCounter();
+  int getExtLenCOunter();
+  int getUniqueCounter();
+  int getXsCounter();
 private:
     int getReadsLen(std::string & CIGAR);
 };

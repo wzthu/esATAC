@@ -1,7 +1,8 @@
 
 
 CXXFLAGS = -O3
-CPPFLAGS = -pthread -DNDEBUG 
+CPPFLAGS = -pthread -DNDEBUG \
+           -O3
 
 #CPPFLAGS = -pthread -lz -DAR_GZIP_SUPPORT  -DNDEBUG 
 

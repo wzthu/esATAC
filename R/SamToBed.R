@@ -3,7 +3,7 @@ SamToBed <- R6::R6Class(
   inherit = BaseProc,
   public = list(
     initialize = function(atacProc, merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= NULL,
-                          reportPrefix =NULL,samInput = NULL, bedOutput = NULL, sortBed = TRUE, uniqueBed = TRUE,
+                          reportOutput =NULL,samInput = NULL, bedOutput = NULL, sortBed = TRUE, uniqueBed = TRUE,
                           minFregLen = 0,maxFregLen = 100, saveExtLen = FALSE, editable=FALSE){
       super$initialize("SamToBed",editable,list(arg1=atacProc))
       merge=merge[1]
@@ -69,13 +69,13 @@ SamToBed <- R6::R6Class(
       }else{
           private$paramlist[["bedOutput"]] <- bedOutput;
       }
-      if(is.null(reportPrefix)){
+      if(is.null(reportOutput)){
           if(!is.null(private$paramlist[["samInput"]])){
               prefix<-private$getBasenamePrefix(private$paramlist[["samInput"]],regexProcName)
-              private$paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
+              private$paramlist[["reportOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),".report"))
           }
       }else{
-          private$paramlist[["reportPrefix"]] <- reportPrefix;
+          private$paramlist[["reportOutput"]] <- reportOutput;
       }
 
 
@@ -96,20 +96,20 @@ SamToBed <- R6::R6Class(
 
     private = list(
         processing = function(){
-            sink(private$paramlist[["reportPrefix"]])####------------------------------------------------------------std::cout>>Rcpp::Rout
             if(private$paramlist[["merge"]]){
-                .sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
+                qcval<-.sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
                                                                        posOffset = private$paramlist[["posOffset"]], negOffset = private$paramlist[["negOffset"]],
                                                                        sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
                                                                        filterList = private$paramlist[["filterList"]],minFregLen = private$paramlist[["minFregLen"]],
                                                                        maxFregLen = private$paramlist[["maxFregLen"]],saveExtLen = private$paramlist[["saveExtLen"]] )
             }else{
-                .sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
+                qcval<-.sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = private$paramlist[["bedOutput"]],
                                                                  posOffset = private$paramlist[["posOffset"]], negOffset = private$paramlist[["negOffset"]],
                                                                  sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
                                                                  filterList = private$paramlist[["filterList"]])
             }
-            sink()
+            
+            write.table(as.data.frame(qcval),file = private$paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
 
         },
         checkRequireParam = function(){
@@ -120,6 +120,13 @@ SamToBed <- R6::R6Class(
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["samInput"]]);
             private$checkFileCreatable(private$paramlist[["bedOutput"]]);
+        },
+        getReportValImp = function(item){
+            qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
+            return(qcval[[item]])
+        },
+        getReportItemsImp = function(){
+            return(c("total","save","filted","extlen","unique","multimap"))
         }
   )
 
@@ -134,12 +141,12 @@ SamToBed <- R6::R6Class(
 #' @param bedfile bed file dir
 #' @param readlen reads length
 #' @export
-atacSam2Bed <- function(atacProc, reportPrefix =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
+atacSam2Bed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                         samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){
     atacproc <- SamToBed$new(atacProc=atacProc, merge=merge, posOffset=posOffset, negOffset=negOffset, chrFilterList=chrFilterList,
                              samInput=samInput, bedOutput=bedOutput, sortBed=sortBed, uniqueBed=uniqueBed, minFregLen=minFregLen,
-                             maxFregLen=maxFregLen, saveExtLen=saveExtLen,reportPrefix=reportPrefix)
+                             maxFregLen=maxFregLen, saveExtLen=saveExtLen,reportOutput=reportOutput)
     atacproc$process()
     return(atacproc)
 }

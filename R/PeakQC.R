@@ -51,8 +51,7 @@ PeakQC <-R6Class(
             qcval[["qcbedInput"]]<-length(subsetByOverlaps(inputbed, qcbedInput,ignore.strand = TRUE))
             qcval[["qcbedRate"]]<-qcval[["qcbedInput"]]/qcval[["totalInput"]]
 
-            qcval<-as.matrix(qcval)
-            write.table(qcval,file = private$paramlist[["reportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+            write.table(as.data.frame(qcval),file = private$paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
 
         },
         checkRequireParam = function(){
@@ -68,6 +67,13 @@ PeakQC <-R6Class(
             private$checkFileExist(private$paramlist[["bedInput"]]);
             private$checkFileExist(private$paramlist[["qcbedInput"]]);
             private$checkFileCreatable(private$paramlist[["reportOutput"]]);
+        },
+        getReportValImp = function(item){
+            qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
+            return(qcval[[item]])
+        },
+        getReportItemsImp = function(){
+            return(c("total","save","filted","extlen","unique"))
         }
     )
 

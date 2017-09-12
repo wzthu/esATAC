@@ -28,7 +28,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // R_sam2bed_wrapper
-int R_sam2bed_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
+Rcpp::List R_sam2bed_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
 RcppExport SEXP _atacpipe_R_sam2bed_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -40,7 +40,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // R_sam2bed_merge_wrapper
-int R_sam2bed_merge_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
+Rcpp::List R_sam2bed_merge_wrapper(Rcpp::List argvs, Rcpp::CharacterVector filterList);
 RcppExport SEXP _atacpipe_R_sam2bed_merge_wrapper(SEXP argvsSEXP, SEXP filterListSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -52,14 +52,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // bedOprUtils
-void bedOprUtils(Rcpp::List argvs, Rcpp::CharacterVector filterList);
+Rcpp::List bedOprUtils(Rcpp::List argvs, Rcpp::CharacterVector filterList);
 RcppExport SEXP _atacpipe_bedOprUtils(SEXP argvsSEXP, SEXP filterListSEXP) {
 BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type filterList(filterListSEXP);
-    bedOprUtils(argvs, filterList);
-    return R_NilValue;
+    rcpp_result_gen = Rcpp::wrap(bedOprUtils(argvs, filterList));
+    return rcpp_result_gen;
 END_RCPP
 }
 // lib_complex_qc

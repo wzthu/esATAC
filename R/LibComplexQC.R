@@ -44,9 +44,7 @@ LibComplexQC <-R6Class(
             qcval<-.lib_complex_qc_call(bedfile=paste0(private$paramlist[["reportOutput"]],".tmp"), sortedBed=!private$paramlist[["subsample"]], max_reads=private$paramlist[["subsampleSize"]])
 
             unlink(paste0(private$paramlist[["reportOutput"]],".tmp"))
-            private$paramlist[["qcval"]]<-qcval
-            qcval<-as.matrix(qcval)
-            write.table(qcval,file = private$paramlist[["reportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+            write.table(as.data.frame(qcval),file = private$paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
         },
         checkRequireParam = function(){
             if(is.null(private$paramlist[["samInput"]])){
@@ -58,6 +56,13 @@ LibComplexQC <-R6Class(
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["samInput"]]);
             private$checkFileCreatable(private$paramlist[["reportOutput"]]);
+        },
+        getReportValImp = function(item){
+            qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
+            return(qcval[[item]])
+        },
+        getReportItemsImp = function(){
+            return(c("total","save","filted","extlen","unique","multimap"))
         }
     )
 

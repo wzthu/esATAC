@@ -50,9 +50,7 @@ BaseProc <- R6Class(
             return(TRUE)
         }
     },
-    processing = function(){
-        stop("processing function has not been implemented")
-    },
+    
 
     getNextProcList = function(){
       return(private$graphMng$getNextList())
@@ -70,6 +68,9 @@ BaseProc <- R6Class(
     },
     getParam = function(item){
       return(private$paramlist[[item]])
+    },
+    getParamItems = function(item){
+        return(names(private$paramlist))
     },
     setResultParam = function(item,val){
       if(!private$editable){
@@ -97,14 +98,35 @@ BaseProc <- R6Class(
         for(i in 1:length(rslist)){
             unlink(private$paramlist[[rslist[i]]])
         }
+        private$finish<-FALSE
     },
     isSingleEnd = function(){
         return(private$singleEnd)
+    },
+    getReportVal = function(item){
+        if(private$finish){
+            if(sum(item == private$getReportItemsImp())>0){
+                return(private$getReportValImp(item))
+            }else{
+                stop(paste0(item," is not an item of report value.")) 
+            }
+        }else{
+            stop("Unfinished process is not available for report value.")
+        }
+        
+    },
+    getReportItems = function(){
+        if(private$finish){
+            return(private$getReportItemsImp())
+        }else{
+            stop("Unfinished process is not available for report items.")
+        }
     }
   ),
   private = list(
     paramlist = list(),
     paramlistbk = list(),
+    reportVal = list(),
     procName = "",
     completObj = TRUE,
     editable = FALSE,
@@ -253,7 +275,17 @@ BaseProc <- R6Class(
             private$logRecord<-msg
         }
 
+    },
+    processing = function(){
+        stop("processing function has not been implemented")
+    },
+    getReportValImp = function(item){
+        return(private$reportVal[[item]])
+    },
+    getReportItemsImp = function(){
+        return(names(private$reportVal))
     }
+    
 
 
 

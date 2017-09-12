@@ -4,7 +4,7 @@ PeakCallingFseq <-R6Class(
     public = list(
         initialize = function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                               fragmentSize=0,featureLength=NULL,bedOutput=NULL,
-                              outputFormat=c("bed","wig","npf"), ploidyDir=NULL,
+                              fileformat=c("bed","wig","npf"), ploidyDir=NULL,
                               wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                               wgThresholdSet=NULL,editable=FALSE){
             super$initialize("PeakCallingFseq",editable,list(arg1=atacProc))
@@ -37,7 +37,7 @@ PeakCallingFseq <-R6Class(
             private$paramlist[["genomicReadsCount"]] <- genomicReadsCount;
             private$paramlist[["fragmentSize"]] <- fragmentSize;
             private$paramlist[["featureLength"]] <- featureLength;
-            private$paramlist[["outputFormat"]] <- outputFormat[1];
+            private$paramlist[["fileformat"]] <- fileformat[1];
             private$paramlist[["ploidyDir"]] <- ploidyDir;
             private$paramlist[["wiggleTrackStep"]] <- wiggleTrackStep;
             private$paramlist[["threshold"]] <- threshold;
@@ -52,14 +52,14 @@ PeakCallingFseq <-R6Class(
     private = list(
         processing = function(){
             dir.create(private$paramlist[["outputDir"]])
-            result <- .fseq_call(bedFileList=private$paramlist[["bedFileList"]],
+            .fseq_call(bedFileList=private$paramlist[["bedFileList"]],
                                  background=private$paramlist[["background"]],
                                  genomicReadsCount=private$paramlist[["genomicReadsCount"]],
                                  inputDir=private$paramlist[["inputDir"]],
                                  fragmentSize=private$paramlist[["fragmentSize"]],
                                  featureLength=private$paramlist[["featureLength"]],
                                  outputDir=private$paramlist[["outputDir"]],
-                                 outputFormat=private$paramlist[["outputFormat"]],
+                                 outputFormat=private$paramlist[["fileformat"]],
                                  ploidyDir=private$paramlist[["ploidyDir"]],
                                  wiggleTrackStep=private$paramlist[["wiggleTrackStep"]],
                                  threshold=private$paramlist[["threshold"]],
@@ -99,11 +99,11 @@ PeakCallingFseq <-R6Class(
 
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,
-                             ploidyDir=NULL,#outputFormat=c("bed","wig","npf"),
+                             ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                             wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                             wgThresholdSet=NULL){
     peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
-                                       fragmentSize,featureLength,bedOutput,outputFormat="bed", ploidyDir,
+                                       fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
                                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
     peakcalling$process();
     return(peakcalling)

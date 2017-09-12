@@ -40,6 +40,6 @@
   if(!is.null(wgThresholdSet)){
     argvs<-c(argvs,"-wg",wgThresholdSet)
   }
-  fseq(argvs)
+  invisible(fseq(argvs))
 
 }

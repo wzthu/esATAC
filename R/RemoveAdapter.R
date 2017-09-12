@@ -233,6 +233,69 @@ RemoveAdapter <-R6Class(
        private$checkFileCreatable(private$paramlist[["fastqOutput2"]]);
        private$checkPathExist(private$paramlist[["reportPrefix"]]);
 
+    },
+    getReportValImp = function(item){
+        if(sum(item == c("adapter1","adapter2"))>0){
+            tblist <- private$getTopic("\\[Adapter sequences\\]")
+            splitlist <- strsplit(tblist,": ")
+            if(item == "adapter1"){
+                return(splitlist[[1]][2])
+            }
+            if(item == "adapter2"){
+                return(splitlist[[2]][2])
+            }
+        }
+        if(item == "settings"){
+            tblist <- private$getTopic("\\[Adapter trimming\\]")
+            splitlist <- strsplit(tblist,": ")
+            lst <- list()
+            for(i in 1:length(tblist)){
+                lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+            }
+            return(lst)
+            
+        }
+        if(item == "statistics"){
+            tblist <- private$getTopic("\\[Trimming statistics\\]")
+            splitlist <- strsplit(tblist,": ")
+            lst <- list()
+            for(i in 1:length(tblist)){
+                lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+            }
+            return(lst)
+        }
+        if(item == "distribution"){
+            tblist <- private$getTopic("\\[Length distribution\\]")
+            splitlist <- strsplit(tblist,"\t")
+            colkey <- splitlist[[1]]
+            tbdt <- NULL
+            for(i in 2:length(tblist)){
+                tbdt <- c(tbdt,splitlist[[i]])
+            }
+            tbdt<-as.integer(tbdt)
+            df<-as.data.frame(matrix(tbdt,length(tblist)-1,4,TRUE))
+            colnames(df) <- colkey
+            return(df)
+        }
+        stop(paste0(item," is not an item of report value."))
+    },
+    getReportItemsImp = function(){
+        return(c("adapter1","adapter2","settings","statistics","distribution"))
+    },
+    getTopic = function(topic){
+        setLine<-readLines(paste0(private$paramlist[["reportPrefix"]],".settings"))
+        itemstarts<-grep("\\[",setLine)
+        
+        itemstart<-grep(topic,setLine)
+        itemsendidx<-which(itemstarts == itemstart) + 1
+        if(itemsendidx>length(itemstarts)){
+            itemend <- length(setLine)
+        }else{
+            itemend <- itemstarts[itemsendidx]
+            itemend <- itemend - 3
+        }   
+        
+        return(setLine[(itemstart+1):itemend])
     }
   )
 

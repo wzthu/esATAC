@@ -93,7 +93,8 @@ DEFS=-fno-strict-aliasing \
 
 
 CPPFLAGS = $(RELEASE_DEFS) $(EXTRA_FLAGS) $(DEFS) -DBOWTIE2 \
-               $(NOASSERT_FLAGS) $(INC_EXT) $(LIBS_BT2)  
+               $(NOASSERT_FLAGS) $(INC_EXT) $(LIBS_BT2)  \
+               $(RELEASE_FLAGS) -Wall
 
 
 CXXFLAGS = $(RELEASE_FLAGS) -Wall

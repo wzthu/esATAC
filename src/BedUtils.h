@@ -38,7 +38,7 @@ private:
 
 
     int totalCounter;
-    int saveCouter;
+    int saveCounter;
     int filtedCounter;
     int extLenCounter;
     int uniqueCounter;
@@ -66,6 +66,11 @@ public:
     ~BedUtils(void);
     void bedToBed();
     void bedToBedMerge();
+    int getTotalCounter();
+    int getSaveCounter();
+    int getFiltedCounter();
+    int getExtLenCOunter();
+    int getUniqueCounter();
 
 };
 
