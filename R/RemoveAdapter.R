@@ -273,14 +273,24 @@ RemoveAdapter <-R6Class(
                 tbdt <- c(tbdt,splitlist[[i]])
             }
             tbdt<-as.integer(tbdt)
-            df<-as.data.frame(matrix(tbdt,length(tblist)-1,4,TRUE))
+            if(private$isSingleEnd){
+                colsize<-4
+            }else{
+                colsize<-6
+            }
+            df<-as.data.frame(matrix(tbdt,length(tblist)-1,colsize,TRUE))
             colnames(df) <- colkey
             return(df)
         }
         stop(paste0(item," is not an item of report value."))
     },
     getReportItemsImp = function(){
-        return(c("adapter1","adapter2","settings","statistics","distribution"))
+        if(private$isSingleEnd){
+            return(c("adapter1","settings","statistics","distribution"))
+        }else{
+            return(c("adapter1","adapter2","settings","statistics","distribution"))
+        }
+        
     },
     getTopic = function(topic){
         setLine<-readLines(paste0(private$paramlist[["reportPrefix"]],".settings"))
