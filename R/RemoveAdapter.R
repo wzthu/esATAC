@@ -236,7 +236,7 @@ RemoveAdapter <-R6Class(
     },
     getReportValImp = function(item){
         if(sum(item == c("adapter1","adapter2"))>0){
-            adapter<-readLines(paste0(private$paramlist[["reportPrefix"]],item))
+            adapter<-readLines(paste0(private$paramlist[["reportPrefix"]],".",item))
             return(adapter[1])
         }
         if(item == "settings"){
@@ -277,7 +277,7 @@ RemoveAdapter <-R6Class(
         return(c("adapter1","adapter2","settings","statistics","distribution"))
     },
     getTopic = function(topic){
-        setLine<-readLines(paste0(private$paramlist[["reportPrefix"]],"settings"))
+        setLine<-readLines(paste0(private$paramlist[["reportPrefix"]],".settings"))
         itemstarts<-grep("\\[",setLine)
         
         itemstart<-grep(topic,setLine)
