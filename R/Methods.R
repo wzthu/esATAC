@@ -1,4 +1,7 @@
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE){
+    if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
+        stop("adapter1 should not be NULL for single end sequencing data")
+    }
     unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
     renamer <- atacRenamer(unzipAndMerge)
     removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2)
