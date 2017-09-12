@@ -273,7 +273,7 @@ RemoveAdapter <-R6Class(
                 tbdt <- c(tbdt,splitlist[[i]])
             }
             tbdt<-as.integer(tbdt)
-            if(private$isSingleEnd){
+            if(self$isSingleEnd()){
                 colsize<-4
             }else{
                 colsize<-6
@@ -285,7 +285,7 @@ RemoveAdapter <-R6Class(
         stop(paste0(item," is not an item of report value."))
     },
     getReportItemsImp = function(){
-        if(private$isSingleEnd){
+        if(self$isSingleEnd()){
             return(c("adapter1","settings","statistics","distribution"))
         }else{
             return(c("adapter1","adapter2","settings","statistics","distribution"))
