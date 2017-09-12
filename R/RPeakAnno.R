@@ -40,12 +40,21 @@ RPeakAnno <- R6::R6Class(
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
         private$paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
                                                           paste0(prefix, ".", self$getProcName()))
-        private$paramlist[["annoOutput.pdf"]] <- paste0(private$paramlist[["annoOutput"]],
-                                                        ".pdf")
+        private$paramlist[["annoOutput.pdf"]] <- paste(private$paramlist[["annoOutput"]],
+                                                        ".pdf", sep = "")
+        private$paramlist[["annoOutput.df"]] <- paste(private$paramlist[["annoOutput"]],
+                                                        ".df", sep = "")
       }else{
-        private$paramlist[["annoOutput"]] <- annoOutput
-        private$paramlist[["annoOutput.pdf"]] <- paste0(private$paramlist[["annoOutput"]],
-                                                        ".pdf")
+        name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
+        suffix <- tail(name_split, 1)
+        name_split <- head(name_split, -1)
+        if(suffix == "df"){
+        private$paramlist[["annoOutput.df"]] <- annoOutput
+        private$paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
+        }else{
+          private$paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
+          private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
+        }
       }
 
       # parameter check
@@ -58,7 +67,8 @@ RPeakAnno <- R6::R6Class(
     processing = function(){
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["peakInput"]]))
-      private$writeLog(sprintf("destination:%s", private$paramlist[["annoOutput"]]))
+      private$writeLog(sprintf("df destination:%s", private$paramlist[["annoOutput.df"]]))
+      private$writeLog(sprintf("pdf destination:%s", private$paramlist[["annoOutput.pdf"]]))
       peakGRange <- rtracklayer::import(con = private$paramlist[["peakInput"]], format = "bed")
       peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
                                          tssRegion = private$paramlist[["tssRegion"]],
@@ -80,7 +90,7 @@ RPeakAnno <- R6::R6Class(
       dev.off()
       tmp_file <- as.data.frame(peakAn)
       colnames(tmp_file)[1] <- "chromatin"
-      write.table(x = tmp_file, file = private$paramlist[["annoOutput"]],
+      write.table(x = tmp_file, file = private$paramlist[["annoOutput.df"]],
                 quote = FALSE, row.names = FALSE, sep = "\t",
                 col.names = TRUE, append = FALSE)
     }, # processing end
