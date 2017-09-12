@@ -236,8 +236,14 @@ RemoveAdapter <-R6Class(
     },
     getReportValImp = function(item){
         if(sum(item == c("adapter1","adapter2"))>0){
-            adapter<-readLines(paste0(private$paramlist[["reportPrefix"]],".",item))
-            return(adapter[1])
+            tblist <- private$getTopic("\\[Adapter sequences\\]")
+            splitlist <- strsplit(tblist,": ")
+            if(item == "adapter1"){
+                return(splitlist[[1]][2])
+            }
+            if(item == "adapter2"){
+                return(splitlist[[2]][2])
+            }
         }
         if(item == "settings"){
             tblist <- private$getTopic("\\[Adapter trimming\\]")
