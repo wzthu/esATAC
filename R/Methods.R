@@ -7,18 +7,20 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2)
     bowtie2Mapping <- atacBowtie2Mapping(removeAdapter)
     libComplexQC <- atacLibComplexQC(bowtie2Mapping)
-    sam2Bam <- atacSam2Bam(bowtie2Mapping)
     sam2Bed <-atacSam2Bed(bowtie2Mapping,maxFregLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
-    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
-    tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc180_247"),fregLenRange = c(180,247))
-    fregLenDistr <- atacFregLenDistr(sam2Bed)
+    tssqc100 <-atacTSSQC(sam2Bed,reportOutput = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
     shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
-    peakCalling <- atacPeakCalling(shortBed)
-    atacPeakQC(peakCalling,qcbedInput = "DHS",reportPrefix = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
-    atacPeakQC(peakCalling,qcbedInput = "blacklist",reportPrefix = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+    atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
+    atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
     atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
-     
+    if(is.null(fastqInput2)&&!interleave){
+
+    }else{
+        tssqc180_247 <-atacTSSQC(sam2Bed,reportOutput = file.path(.obtainConfigure("tmpdir"),"tssqc180_247"),fregLenRange = c(180,247))
+        fregLenDistr <- atacFregLenDistr(sam2Bed)
+    }
+    
     
 }
 
@@ -29,7 +31,7 @@ atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,d
         GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
     }else{
         atacProc$printMap(preProc,nextProc,curProc,display=display)
-        return(atacProc)
+        invisible(atacProc)
     }
 }
 
@@ -38,7 +40,7 @@ atacPrintNextList<-function(atacProc){
         GraphMng$new()$getNextProcs(atacProc)
     }else{
         GraphMng$new()$getNextProcs(atacProc$getProcName())
-        return(atacProc)
+        invisible(atacProc)
     }
 }
 
@@ -47,7 +49,7 @@ atacPrintPrevList<-function(atacProc){
         GraphMng$new()$getPrevProcs(atacProc)
     }else{
         GraphMng$new()$getPrevProcs(atacProc$getProcName())
-        return(atacProc)
+        invisible(atacProc)
     }
 }
 

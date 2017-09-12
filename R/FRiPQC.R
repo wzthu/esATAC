@@ -79,5 +79,5 @@ atacFripQC<-function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=
     fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportOutput=reportOutput,
                        readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
     fripQC$process()
-    return(fripQC)
+    invisible(fripQC)
 }

@@ -326,6 +326,6 @@ atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,
                                        fastqInput2 = fastqInput2, interleave = interleave,
                                        paramList = paramList,findParamList = findParamList)
     removeAdapter$process()
-    return(removeAdapter)
+    invisible(removeAdapter)
 }
 

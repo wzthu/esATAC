@@ -131,5 +131,5 @@ PeakAnno <- function(atacProc = NULL, peakInput = NULL, tssRegion = c(-3000, 300
                        ignoreUpstream, ignoreDownstream, overlap,
                        verbose, annoOutput)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

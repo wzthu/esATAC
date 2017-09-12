@@ -144,5 +144,5 @@ atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Id
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                  fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }

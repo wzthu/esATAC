@@ -119,5 +119,5 @@ PeakComp <- function(atacProc = NULL, bedInput1 = NULL, bedInput2 = NULL,
                      bedOutput = NULL, operation = NULL){
   tmp <- RPeakComp$new(atacProc, bedInput1, bedInput2, bedOutput, operation)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

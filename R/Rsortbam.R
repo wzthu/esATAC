@@ -71,5 +71,5 @@ Rsortbam <- R6::R6Class(
 atacBamSort <- function(atacProc = NULL, bamInput = NULL, bamOutput = NULL){
   tmp <- Rsortbam$new(atacProc, bamInput, bamOutput)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

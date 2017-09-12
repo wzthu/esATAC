@@ -150,7 +150,7 @@ void BedUtils::bedToBed(){
     ifstream ifBed(inputBedPath);
     while(NULL!=(bedLine=(this->*getFregPt)(ifBed))){
         sampleCounter++;
-        cout<<sampleCounter<<endl;
+        //cout<<sampleCounter<<endl;
         //discard down sampling
         if(isDownSample){
             if(idxqueue.empty()){

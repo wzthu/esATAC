@@ -110,6 +110,6 @@ atacRenamer <- function(atacProc,
                             fastqInput1 = fastqInput1,
                             fastqInput2 = fastqInput2)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }
 

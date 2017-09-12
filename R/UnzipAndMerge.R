@@ -171,5 +171,5 @@ atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                                   fastqOutput2 = fastqOutput2,
                                   interleave = interleave);
     atacproc$process();
-    return(atacproc);
+    invisible(atacproc);
 }

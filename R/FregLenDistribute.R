@@ -158,5 +158,5 @@ FregLenDistr <-R6Class(
 atacFregLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
     atacproc<-FregLenDistr$new(atacProc,reportPrefix,bedInput)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }

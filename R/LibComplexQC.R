@@ -78,5 +78,5 @@ atacLibComplexQC<-function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = 
     libqc<-LibComplexQC$new(atacProc,reportOutput=reportOutput,samInput=samInput,singleEnd = singleEnd,
                             subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
     libqc$process()
-    return(libqc)
+    invisible(libqc)
 }

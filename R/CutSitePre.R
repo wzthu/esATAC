@@ -62,6 +62,6 @@ CutSitePre <- R6::R6Class(
 atacCutSitePre <- function(atacProc = NULL, bedInput = NULL, csOutput = NULL, prefix = NULL){
   tmp <- CutSitePre$new(atacProc, bedInput, csOutput, prefix)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }
 

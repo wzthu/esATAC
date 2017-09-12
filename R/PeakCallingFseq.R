@@ -106,5 +106,5 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
                                        fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
                                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
     peakcalling$process();
-    return(peakcalling)
+    invisible(peakcalling)
 }

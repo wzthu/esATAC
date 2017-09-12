@@ -148,5 +148,5 @@ atacSam2Bed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"
                              samInput=samInput, bedOutput=bedOutput, sortBed=sortBed, uniqueBed=uniqueBed, minFregLen=minFregLen,
                              maxFregLen=maxFregLen, saveExtLen=saveExtLen,reportOutput=reportOutput)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }

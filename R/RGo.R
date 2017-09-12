@@ -103,5 +103,5 @@ GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "EN
   tmp <- RGo$new(atacProc, gene, OrgDb, keytype, ont, pvalueCutoff,
                  pAdjustMethod , universe, qvalueCutoff, readable, pool, goOutput)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

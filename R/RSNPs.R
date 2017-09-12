@@ -78,5 +78,5 @@ SNPAnno <- function(atacProc = NULL, snp.info = NULL, peak.info = NULL,
                    annoOutput = NULL){
   tmp <- RSNPs$new(atacProc, snp.info, peak.info, annoOutput)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

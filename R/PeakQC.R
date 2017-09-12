@@ -84,5 +84,5 @@ PeakQC <-R6Class(
 atacPeakQC<-function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), bedInput = NULL){
     atacproc<-PeakQC$new(atacProc, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }

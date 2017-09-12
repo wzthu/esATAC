@@ -54,7 +54,7 @@ checkAddArgus<- function(pattern,...){
                             "argument. Please set them as fixed arguments."),
                      invalidp))
     }
-    return(paramArray)
+    invisible(paramArray)
 }
 
 

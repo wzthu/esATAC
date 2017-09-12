@@ -78,5 +78,5 @@ SamToBam <-R6::R6Class(
 atacSam2Bam <- function(atacProc = NULL, samfile = NULL, bamfile = NULL){
   tmp <- SamToBam$new(atacProc, samfile, bamfile)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }
