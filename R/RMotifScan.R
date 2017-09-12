@@ -9,12 +9,17 @@ RMotifScan <- R6::R6Class(
       super$initialize("RMotifScan", editable, list(arg1 = atacProc))
 
       # necessary parameters
-      if(!is.null(atacProc)){ # get parameter from class DNASeqCut
+      if(!is.null(atacProc)){
         private$paramlist[["peak"]] <- atacProc$getParam("bedOutput");
       }else{
         private$paramlist[["peak"]] <- peak
       }
-      private$paramlist[["genome"]] <- genome
+      if(!is.null(genome)){
+        private$paramlist[["genome"]] <- genome
+      }else{
+        private$paramlist[["genome"]] <- .obtainConfigure("bsgenome")
+        print(private$paramlist[["genome"]])
+      }
       private$paramlist[["motifPWM"]] <- motifPWM
       private$paramlist[["min.score"]] <- min.score
 
@@ -26,7 +31,8 @@ RMotifScan <- R6::R6Class(
       }
 
       if(is.null(n.cores)){
-        private$paramlist[["n.cores"]] <- parallel::detectCores() / 2
+        private$paramlist[["n.cores"]] <- .obtainConfigure("threads")
+        print(private$paramlist[["n.cores"]])
       }else{
         private$paramlist[["n.cores"]] <- n.cores
       }
@@ -44,7 +50,8 @@ RMotifScan <- R6::R6Class(
       private$writeLog(sprintf("Output destination:%s", private$paramlist[["scanOutput"]]))
       # running
       cl <- makeCluster(private$paramlist[["n.cores"]])
-      sitesetList <- parLapply(cl = cl, X = private$paramlist[["motifPWM"]],
+      sitesetList <- parLapply(cl = cl,
+                               X = private$paramlist[["motifPWM"]],
                                fun = Biostrings::matchPWM,
                                subject = private$paramlist[["genome"]],
                                min.score = private$paramlist[["min.score"]],
@@ -69,9 +76,6 @@ RMotifScan <- R6::R6Class(
     checkRequireParam = function(){
       if(is.null(private$paramlist[["peak"]])){
         stop("Parameter peak is required!")
-      }
-      if(is.null(private$paramlist[["genome"]])){
-        stop("Parameter genome is required!")
       }
       if(is.null(private$paramlist[["motifPWM"]])){
         stop("Parameter motifPWM is required!")

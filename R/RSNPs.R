@@ -73,7 +73,7 @@ RSNPs <- R6::R6Class(
 #' @param snp.info Path to your snps file.the first 2 column must be snp position
 #' (chromatin and  position).
 #' @param peak.info Path to your peak file.
-#' @annoOutput Where to save annotation information, default: peak.info_dir/SNPAnno.
+#' @param annoOutput Where to save annotation information, default: peak.info_dir/SNPAnno.
 SNPAnno <- function(atacProc = NULL, snp.info = NULL, peak.info = NULL,
                    annoOutput = NULL){
   tmp <- RSNPs$new(atacProc, snp.info, peak.info, annoOutput)

@@ -10,13 +10,15 @@ RPeakAnno <- R6::R6Class(
                           flankDistance = NULL, sameStrand = NULL, ignoreOverlap = NULL,
                           ignoreUpstream = NULL, ignoreDownstream = NULL, overlap = NULL,
                           verbose = NULL, annoOutput = NULL, editable = FALSE){
-      super$initialize("RPeakAnno",editable,list(arg1=atacProc))
+      super$initialize("RPeakAnno", editable, list(arg1 = atacProc))
 
       # necessary parameters
-      if(!is.null(atacProc)){
-        private$paramlist[["peakInput"]] <- atacProc$getParam("bedOutput");
+      if(!is.null(atacProc)){ # class from PeakCallingFseq
+        private$paramlist[["peakInput"]] <- atacProc$getParam("bedOutput")
+        regexProcName <- sprintf("(bed|%s)", atacProc$getProcName())
       }else{
         private$paramlist[["peakInput"]] <- peakInput
+        regexProcName <- "(bed|%s)"
       }
       private$paramlist[["tssRegion"]] <- tssRegion
       private$paramlist[["TxDb"]] <- TxDb
@@ -35,10 +37,15 @@ RPeakAnno <- R6::R6Class(
 
       # unnecessary parameters
       if(is.null(annoOutput)){
-        private$paramlist[["annoOutput"]] <- paste0(dirname(private$paramlist[["peakInput"]]),
-                                                    "/PeakAnno_output", collapse = "")
+        prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
+        private$paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                          paste0(prefix, ".", self$getProcName()))
+        private$paramlist[["annoOutput.pdf"]] <- paste0(private$paramlist[["annoOutput"]],
+                                                        ".pdf")
       }else{
         private$paramlist[["annoOutput"]] <- annoOutput
+        private$paramlist[["annoOutput.pdf"]] <- paste0(private$paramlist[["annoOutput"]],
+                                                        ".pdf")
       }
 
       # parameter check
@@ -68,8 +75,11 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]],
                                          verbose = private$paramlist[["verbose"]])
+      pdf(file = private$paramlist[["annoOutput.pdf"]])
       ChIPseeker::plotAnnoPie(x = peakAn)
+      dev.off()
       tmp_file <- as.data.frame(peakAn)
+      colnames(tmp_file)[1] <- "chromatin"
       write.table(x = tmp_file, file = private$paramlist[["annoOutput"]],
                 quote = FALSE, row.names = FALSE, sep = "\t",
                 col.names = TRUE, append = FALSE)
