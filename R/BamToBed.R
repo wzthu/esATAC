@@ -18,10 +18,7 @@ BamToBed <- R6::R6Class(
       if(is.null(bedOutput)){
         prefix <- private$getBasenamePrefix(private$paramlist[["bamInput"]], regexProcName)
         private$paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                      paste0(prefix, ".",
-                                                             self$getProcName(),
-                                                             ".bed")
-                                                      )
+                                                      paste0(prefix, ".", self$getProcName(), ".bed"))
       }else{
         name_split <- unlist(base::strsplit(x = bedOutput, split = ".", fixed = TRUE))
         suffix <- tail(name_split, 1)

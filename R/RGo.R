@@ -5,21 +5,40 @@ RGo <- R6::R6Class(
   public = list(
     initialize = function(atacProc, gene = NULL, OrgDb = NULL, keytype = NULL, ont = NULL,
                           pvalueCutoff = NULL, pAdjustMethod = NULL, universe = NULL, qvalueCutoff = NULL,
-                          readable = NULL, pool = NULL, output = NULL, editable = FALSE){
-      super$initialize("RGo", editable, list(arg1=atacProc))
+                          readable = NULL, pool = NULL, goOutput = NULL, editable = FALSE){
+      super$initialize("RGo", editable, list(arg1 = atacProc))
 
       # necessary parameters
       if(!is.null(atacProc)){
-        tmp <- read.table(file = atacProc$getParam("annoOutput"), header = TRUE,
-                          sep = "\t", quote = "");
+        tmp <- read.table(file = atacProc$getParam("annoOutput.df"), header = TRUE,
+                          sep = "\t", quote = "")
         private$paramlist[["gene"]] <- as.character(base::unique(tmp$geneId))
+        regexProcName <- sprintf("(df|%s)", atacProc$getProcName())
       }else{
         private$paramlist[["gene"]] <- gene
       }
       private$paramlist[["OrgDb"]] <- OrgDb
-      private$paramlist[["output"]] <- output
 
       # unnecessary parameters
+      if(is.null(goOutput)){
+        if(!is.null(atacProc)){
+          prefix <- private$getBasenamePrefix(atacProc$getParam("annoOutput.df"), regexProcName)
+          private$paramlist[["goOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                        paste(prefix, ".", self$getProcName(), ".df", sep = ""))
+        }else{
+          private$paramlist[["goOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                        paste("GOanalysis.", self$getProcName(), ".df", sep = ""))
+        }
+      }else{
+        name_split <- unlist(base::strsplit(x = goOutput, split = ".", fixed = TRUE))
+        suffix <- tail(name_split, 1)
+        if(suffix == "df"){
+          private$paramlist[["goOutput"]] <- goOutput
+        }else{
+          private$paramlist[["goOutput"]] <- paste(goOutput, ".df", sep = "")
+        }
+      }
+
       private$paramlist[["keytype"]] <- keytype
       private$paramlist[["ont"]] <- ont
       private$paramlist[["pvalueCutoff"]] <- pvalueCutoff
@@ -40,7 +59,7 @@ RGo <- R6::R6Class(
     processing = function(){
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("Database:%s", private$paramlist[["OrgDb"]]))
-      private$writeLog(sprintf("destination:%s", private$paramlist[["output"]]))
+      private$writeLog(sprintf("destination:%s", private$paramlist[["goOutput"]]))
       private$writeLog(sprintf("keytype of input gene:%s", private$paramlist[["keytype"]]))
       tmp <- clusterProfiler::enrichGO(gene = private$paramlist[["gene"]],
                                        OrgDb = private$paramlist[["OrgDb"]],
@@ -52,7 +71,7 @@ RGo <- R6::R6Class(
                                        qvalueCutoff = private$paramlist[["qvalueCutoff"]],
                                        readable = private$paramlist[["readable"]],
                                        pool = private$paramlist[["pool"]])
-      write.table(x = tmp, file = private$paramlist[["output"]],
+      write.table(x = tmp, file = private$paramlist[["goOutput"]],
                   append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
     }, # processing end
 
@@ -64,13 +83,10 @@ RGo <- R6::R6Class(
       if(is.null(private$paramlist[["OrgDb"]])){
         stop("Parameter OrgDb is required!")
       }
-      if(is.null(private$paramlist[["output"]])){
-        stop("Parameter output is required!")
-      }
     }, # checkRequireParam end
 
     checkAllPath = function(){
-      private$checkPathExist(private$paramlist[["output"]])
+      private$checkPathExist(private$paramlist[["goOutput"]])
     } # checkAllPath end
 
   ) # private end
@@ -83,9 +99,9 @@ RGo <- R6::R6Class(
 #'
 GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                        pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-                       readable = FALSE, pool = FALSE, output = NULL){
+                       readable = FALSE, pool = FALSE, goOutput = NULL){
   tmp <- RGo$new(atacProc, gene, OrgDb, keytype, ont, pvalueCutoff,
-                 pAdjustMethod , universe, qvalueCutoff, readable, pool, output)
+                 pAdjustMethod , universe, qvalueCutoff, readable, pool, goOutput)
   tmp$process()
   return(tmp)
 }
