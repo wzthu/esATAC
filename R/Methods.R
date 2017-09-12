@@ -9,16 +9,21 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     libComplexQC <- atacLibComplexQC(bowtie2Mapping)
     sam2Bed <-atacSam2Bed(bowtie2Mapping,maxFregLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
-    tssqc100 <-atacTSSQC(sam2Bed,reportOutput = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
-    shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
-    atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
-    atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
-    atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
+    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
+   
     if(is.null(fastqInput2)&&!interleave){
-
+        peakCalling <- atacPeakCalling(sam2Bed)
+        atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
+        atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+        atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
     }else{
-        tssqc180_247 <-atacTSSQC(sam2Bed,reportOutput = file.path(.obtainConfigure("tmpdir"),"tssqc180_247"),fregLenRange = c(180,247))
+        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc180_247"),fregLenRange = c(180,247))
         fregLenDistr <- atacFregLenDistr(sam2Bed)
+        shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
+        peakCalling <- atacPeakCalling(shortBed)
+        atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
+        atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+        atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
     }
     
     
