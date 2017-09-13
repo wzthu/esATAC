@@ -75,5 +75,5 @@ BamToBed <- R6::R6Class(
 atacBam2Bed <- function(atacProc = NULL, bamInput = NULL, bedOutput = NULL){
   tmp <- BamToBed$new(atacProc, bamInput, bedOutput)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

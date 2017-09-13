@@ -117,10 +117,6 @@ Bowtie2Mapping <-R6Class(
             private$checkFileCreatable(private$paramlist[["reportOutput"]]);
         },
         getReportValImp = function(item){
-            if(sum(item == c("adapter1","adapter2"))>0){
-                adapter<-readLines(paste0(private$paramlist[["reportOutput"]],item))
-                return(adapter[1])
-            }
             txt <- readLines(private$paramlist[["reportOutput"]])
             if(item == "total"){
                 s<-strsplit(txt[1]," ")
@@ -148,5 +144,5 @@ atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Id
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                  fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }

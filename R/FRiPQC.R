@@ -7,7 +7,7 @@ FRiPQC <-R6Class(
             if(!is.null(atacProcReads)){
                 private$paramlist[["readsBedInput"]] <- atacProcReads$getParam("bedOutput");
                 #private$paramlist[["readsCount"]] <- atacProcReads$getParam("readsCount")
-                regexProcName<-sprintf("(BED|bed|Bed|%s)",atacProc$getProcName())
+                regexProcName<-sprintf("(BED|bed|Bed|%s)",atacProcReads$getProcName())
             }else{
                 regexProcName<-"(BED|bed|Bed)"
             }
@@ -79,5 +79,5 @@ atacFripQC<-function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=
     fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportOutput=reportOutput,
                        readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
     fripQC$process()
-    return(fripQC)
+    invisible(fripQC)
 }

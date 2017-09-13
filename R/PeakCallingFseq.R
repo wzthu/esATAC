@@ -11,7 +11,7 @@ PeakCallingFseq <-R6Class(
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
                 private$paramlist[["bedFileList"]] <- basename(atacProc$getParam("bedOutput"));
-                private$paramlist[["inputDir"]] <- dirname(atacProc$getParam("bedOutput"));
+                private$paramlist[["inBedDir"]] <- dirname(atacProc$getParam("bedOutput"));
                 regexProcName<-sprintf("(BED|bed|Bed|%s)",atacProc$getProcName())
             }else{
                 regexProcName<-"(BED|bed|Bed)"
@@ -20,7 +20,7 @@ PeakCallingFseq <-R6Class(
             if(!is.null(bedInput)){
                 private$paramlist[["bedInput"]] <- bedInput;
                 private$paramlist[["bedFileList"]] <- basename(bedInput)
-                private$paramlist[["inputDir"]] <- dirname(bedInput);
+                private$paramlist[["inBedDir"]] <- dirname(bedInput);
             }
             if(!is.null(bedOutput)){
                 private$paramlist[["bedOutput"]] <-bedOutput
@@ -31,7 +31,7 @@ PeakCallingFseq <-R6Class(
                 }
                 #private$paramlist[["bedOutput"]] <-paste(private$paramlist[["bedInput"]],".peak.bed",sep="");
             }
-            private$paramlist[["outputDir"]] <- paste0(private$paramlist[["bedOutput"]],".tmp");
+            private$paramlist[["outTmpDir"]] <- paste0(private$paramlist[["bedOutput"]],".tmp");
 
             private$paramlist[["background"]] <- background;
             private$paramlist[["genomicReadsCount"]] <- genomicReadsCount;
@@ -51,14 +51,14 @@ PeakCallingFseq <-R6Class(
     ),
     private = list(
         processing = function(){
-            dir.create(private$paramlist[["outputDir"]])
+            dir.create(private$paramlist[["outTmpDir"]])
             .fseq_call(bedFileList=private$paramlist[["bedFileList"]],
                                  background=private$paramlist[["background"]],
                                  genomicReadsCount=private$paramlist[["genomicReadsCount"]],
-                                 inputDir=private$paramlist[["inputDir"]],
+                                 inputDir=private$paramlist[["inBedDir"]],
                                  fragmentSize=private$paramlist[["fragmentSize"]],
                                  featureLength=private$paramlist[["featureLength"]],
-                                 outputDir=private$paramlist[["outputDir"]],
+                                 outputDir=private$paramlist[["outTmpDir"]],
                                  outputFormat=private$paramlist[["fileformat"]],
                                  ploidyDir=private$paramlist[["ploidyDir"]],
                                  wiggleTrackStep=private$paramlist[["wiggleTrackStep"]],
@@ -66,19 +66,19 @@ PeakCallingFseq <-R6Class(
                                  verbose=private$paramlist[["verbose"]],
                                  wgThresholdSet=private$paramlist[["wgThresholdSet"]]);
 
-            filename<-list.files(private$paramlist[["outputDir"]])
+            filename<-list.files(private$paramlist[["outTmpDir"]])
             for(i in 1:length(filename)){
                 filename[i]<-strsplit(filename[i],split="\\.")[[1]][1]
             }
             peakfiles <- sort(filename)
             peakfiles<-paste0(peakfiles,".bed")
-            peakfiles <- paste0(private$paramlist[["outputDir"]],"/",peakfiles)
+            peakfiles <- paste0(private$paramlist[["outTmpDir"]],"/",peakfiles)
             file.create(private$paramlist[["bedOutput"]])
             for(i in 1:length(peakfiles)){
                 file.append(private$paramlist[["bedOutput"]],peakfiles[i])
             }
             #mergeFile(private$paramlist[["bedOutput"]],peakfiles)
-            unlink(private$paramlist[["outputDir"]],recursive = TRUE,force = TRUE)
+            unlink(private$paramlist[["outTmpDir"]],recursive = TRUE,force = TRUE)
             private$setFinish()
         },
         checkRequireParam = function(){
@@ -106,5 +106,5 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
                                        fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
                                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
     peakcalling$process();
-    return(peakcalling)
+    invisible(peakcalling)
 }

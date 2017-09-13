@@ -90,5 +90,5 @@ FastQC <- R6::R6Class(
 atacQCReport <- function(atacProc = NULL, input_file = NULL, output_file = NULL){
   tmp <- FastQC$new(atacProc, input_file, output_file)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

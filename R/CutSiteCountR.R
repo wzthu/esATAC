@@ -125,5 +125,5 @@ atacCutSiteCount <- function(atacProcCutSite = NULL, csInput = NULL,
   tmp <- CutSiteCountR$new(atacProcCutSite, csInput, motifInput,
                            matrixOutput, motifLength, strandLength, FootPrint)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

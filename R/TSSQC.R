@@ -157,7 +157,7 @@ TSSQC <-R6Class(
 atacTSSQC<-function(atacProc, txdbKnownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
     tssQC<-TSSQC$new(atacProc=atacProc, txdbKnownGene=txdbKnownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
     tssQC$process()
-    return(tssQC)
+    invisible(tssQC)
 }
 
 

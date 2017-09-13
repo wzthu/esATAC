@@ -66,7 +66,7 @@ BedUtils<-R6::R6Class(
             }
             qcval<-.bedOprUtils_call(ibedfile = private$paramlist[["bedInput"]],
                                         obedfile = private$paramlist[["bedOutput"]],
-                                        reportOutput = reportOutput,
+                                        reportPrefix = reportOutput,
                                         mergePair = private$paramlist[["mergePair"]],
                                         downSample = private$paramlist[["downSample"]],
                                         posOffset = private$paramlist[["posOffset"]],
@@ -116,5 +116,5 @@ atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL, report = T
                              posOffset = posOffset, negOffset= negOffset, chrFilterList= chrFilterList,select = select,
                              sortBed = sortBed, uniqueBed = uniqueBed, minFregLen = minFregLen,maxFregLen = maxFregLen)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }

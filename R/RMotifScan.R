@@ -114,5 +114,5 @@ MotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
   tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
                         scanOutput, n.cores)
   tmp$process()
-  return(tmp)
+  invisible(tmp)
 }

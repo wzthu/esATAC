@@ -68,5 +68,5 @@ BedToBigWig <- R6Class(
 atacBedToBigWig <- function(atacProc, bedInput = NULL, bwOutput = NULL, toWig = FALSE){
     atacproc <- BedToBigWig$new(atacProc = atacProc, bedInput = bedInput, bwOutput = bwOutput, toWig = toWig)
     atacproc$process()
-    return(atacproc)
+    invisible(atacproc)
 }
