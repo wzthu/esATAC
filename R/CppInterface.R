@@ -36,7 +36,7 @@
     invisible(rs)
 }
 
-# only chr1-chrY will be saved, chrM and others will be removed.
+
 .chr_separate_call <- function(ReadsIfile, ReadsOpath, Name){
   argv <- list(readsIfile = ReadsIfile, readsOpath = ReadsOpath, name = Name)
   ChrDivi_wrapper(argv)
