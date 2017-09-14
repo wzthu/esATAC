@@ -1,0 +1,42 @@
+---
+title: "ATACFlow Report For testtest"
+author: "Zheng Wei and Wei Zhang"
+date: "`r Sys.Date()`"
+output: 
+    html_document:
+        df_print: paged
+        toc: true
+        toc_float: true
+        number_sections: true
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r eval=TRUE, echo=FALSE,message=FALSE}
+scriptscpritsadf
+```
+
+# Summary Table
+
+```{r eval=TRUE, echo=FALSE,warning=FALSE}
+rsdata$wholesummary
+```
+
+
+
+# Including Plots
+
+```{r cols.print=3, rows.print=3, eval=TRUE, echo=FALSE}
+cars
+```
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

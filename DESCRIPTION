@@ -37,7 +37,8 @@ Imports:
     stringr,
     BiocGenerics,
     S4Vectors,
-    IRanges
+    IRanges,
+    rmarkdown
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
