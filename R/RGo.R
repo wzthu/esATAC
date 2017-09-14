@@ -95,7 +95,8 @@ RGo <- R6::R6Class(
 
 #' Using clusterProfiler to do GO analysis.
 #' @param atacProc Result from function "PeakAnno", extract all the gene ID.
-#'
+#' @param ont One of "MF", "BP", and "CC" subontologies. "MF" for molecular function,
+#' "BP" for biological process, "CC" for cellular component.
 #'
 GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                        pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,

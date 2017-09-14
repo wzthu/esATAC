@@ -32,6 +32,7 @@ int CutCountPre::EXCutCount()
   // parameters used in this program
   char line[100000] = {0};
   const char *sep = "\t ";
+  int cut_number = 0;
 
   // initialization
   if(!readsifile.getline(line, sizeof(line)))
@@ -47,12 +48,14 @@ int CutCountPre::EXCutCount()
   string outputfile = opath + "_" + chr + ".cs";
   cutsite.push_back(start);
   cutsite.push_back(end);
+  cut_number++;
 
   while(readsifile.getline(line, sizeof(line)))
   {
     chr = strtok(line, sep);
     start = atoi(strtok(NULL, sep)) + 1;
     end = atoi(strtok(NULL, sep));
+    cut_number++;
     if(chr == chr_flag)
     {
       cutsite.push_back(start);
@@ -60,7 +63,6 @@ int CutCountPre::EXCutCount()
     }
     else
     {
-      //cout << outputfile << endl;
       //********************write data to the output file********************
       ofstream readsofile(outputfile.c_str(), ios::out);
       sort(cutsite.begin(), cutsite.end());
@@ -90,5 +92,7 @@ int CutCountPre::EXCutCount()
   //****************************************************************************************
 
   readsifile.close();
-  return 0;
+  cut_number = 2*cut_number;
+
+  return cut_number;
 }

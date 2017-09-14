@@ -3,20 +3,30 @@ CutSitePre <- R6::R6Class(
   inherit = BaseProc,
 
   public = list(
-    initialize = function(atacProc, bedInput = NULL, csOutput = NULL, prefix = NULL, editable = FALSE){
+    initialize = function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL, editable = FALSE){
       super$initialize("CutSitePre",editable,list(arg1=atacProc))
 
       # necessary parameters
       if(!is.null(atacProc)){ # get parameter from class BamToBed or SamToBed
-        private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
+        private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput")
+        regexProcName <- sprintf("(bed|%s)", atacProc$getProcName())
       }else{
         private$paramlist[["bedInput"]] <- bedInput
+        regexProcName <- "(bed)"
       }
       # unnecessary parameters
-      if(is.null(prefix)){
-        private$paramlist[["csOutput"]] <- paste0(csOutput, "/", "output", collapse = "")
+      if(is.null(csOutput.dir)){
+        dir_name <- private$getBasenamePrefix(private$paramlist[["bedInput"]], regexProcName)
+        private$paramlist[["csOutput.dir"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                         dir_name)
+        dir.create(private$paramlist[["csOutput.dir"]])
       }else{
-        private$paramlist[["csOutput"]] <- paste0(csOutput, "/", prefix, collapse = "")
+        private$paramlist[["csOutput.dir"]] <- csOutput.dir
+      }
+      if(is.null(prefix)){
+        private$paramlist[["csOutput"]] <- paste0(private$paramlist[["csOutput.dir"]], "/", "Cutsite", collapse = "")
+      }else{
+        private$paramlist[["csOutput"]] <- paste0(private$paramlist[["csOutput.dir"]], "/", prefix, collapse = "")
       }
       # parameter check
       private$paramValidation()
@@ -30,15 +40,13 @@ CutSitePre <- R6::R6Class(
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["bedInput"]]))
       private$writeLog(sprintf("destination:%s", private$paramlist[["csOutput"]]))
-      .CutSite_call(InputFile = private$paramlist[["bedInput"]], OutputFile = private$paramlist[["csOutput"]])
+      Cut_Site_Number <- .CutSite_call(InputFile = private$paramlist[["bedInput"]], OutputFile = private$paramlist[["csOutput"]])
+      print(sprintf("Total Cut Site Number is: %d", Cut_Site_Number))
     }, # processing end
 
     checkRequireParam = function(){
       if(is.null(private$paramlist[["bedInput"]])){
         stop("Parameter bedInput is required!")
-      }
-      if(is.null(private$paramlist[["csOutput"]])){
-        stop("Parameter csOutput is required! An empty file is recommented!")
       }
     }, # checkRequireParam end
 
@@ -56,11 +64,11 @@ CutSitePre <- R6::R6Class(
 #' @param atacProc Do not use this parameter, we will add nore functions in the future!
 #' @param bedInput Input file path, the No.1-3 column is chromatin name, start cut site, end cut site.
 #' The merged bed file is recommented.
-#' @param csOutput The output path, an empty folder would be great.
-#' @param prefix Output file name prefix, e.g. prefix_chr*.bed, default "output".
+#' @param csOutput.dir The output path, an empty folder would be great.
+#' @param prefix Output file name prefix, e.g. prefix_chr*.bed, default "Cutsite".
 #' @export
-atacCutSitePre <- function(atacProc = NULL, bedInput = NULL, csOutput = NULL, prefix = NULL){
-  tmp <- CutSitePre$new(atacProc, bedInput, csOutput, prefix)
+atacCutSitePre <- function(atacProc = NULL, bedInput = NULL, csOutput.dir = NULL, prefix = NULL){
+  tmp <- CutSitePre$new(atacProc, bedInput, csOutput.dir, prefix)
   tmp$process()
   invisible(tmp)
 }

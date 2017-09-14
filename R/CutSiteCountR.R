@@ -3,7 +3,7 @@ CutSiteCountR <- R6::R6Class(
   inherit = BaseProc,
   public = list(
     initialize = function(atacProcCutSite, csInput = NULL,
-                          motifInput = NULL, matrixOutput = NULL, motifLength = NULL,
+                          motifInput = NULL, chr = NULL, matrixOutput = NULL, motifLength = NULL,
                           strandLength = NULL, FootPrint = NULL, editable = FALSE){
       super$initialize("CutSiteCountR", editable, list(arg1 = atacProcCutSite))
 
@@ -14,10 +14,22 @@ CutSiteCountR <- R6::R6Class(
         private$paramlist[["csInput"]] <- csInput
       }
       private$paramlist[["motifInput"]] <- motifInput
-      private$paramlist[["matrixOutput"]] <- matrixOutput
+      private$paramlist[["chr"]] <- as.list(chr)
       private$paramlist[["motifLength"]] <- motifLength
       private$paramlist[["strandLength"]] <- strandLength
       private$paramlist[["FootPrint"]] <- FootPrint
+      # unnecessary parameters
+      if(is.null(matrixOutput)){
+        prefix <- private$getBasenamePrefix(private$paramlist[["motifInput"]], "")
+        private$paramlist[["matrixOutput.dir"]] <- paste(.obtainConfigure("tmpdir"),
+                                                         "/Motif_",
+                                                         prefix, sep = "")
+        dir.create(private$paramlist[["matrixOutput.dir"]])
+        private$paramlist[["matrixOutput"]] <- paste(private$paramlist[["matrixOutput.dir"]],
+                                                     "/", prefix, sep = "")
+      }else{
+        private$paramlist[["matrixOutput"]] <- matrixOutput
+      }
       # parameter check
       private$paramValidation()
     } # initialization end
@@ -38,8 +50,9 @@ CutSiteCountR <- R6::R6Class(
                          Name = "/Motif")
       motif_tmp <- paste(tmp_dir, "/Motif", sep = "")
 
-      chr <- as.list(c(1:22, "X", "Y"))
-      for(i in seq(1:24)){
+      chr <- private$paramlist[["chr"]]
+      chr_len <- length(chr)
+      for(i in seq(1:chr_len)){
         echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
         print(echo_str)
         CutSiteInput <- paste0(private$paramlist[["csInput"]], "_chr", chr[[i]], ".cs", collapse = "")
@@ -60,8 +73,6 @@ CutSiteCountR <- R6::R6Class(
           data <- rbind(data, temp)
         }
       }
-      OverallMatrix <- paste0(private$paramlist[["matrixOutput"]], "data", ".matrix", collapse = "")
-      write.table(data, file = OverallMatrix, row.names = FALSE, col.names = FALSE, quote = FALSE)
       if(private$paramlist[["FootPrint"]]){
         fp <- apply(data, 2, sum)
         plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
@@ -84,14 +95,8 @@ CutSiteCountR <- R6::R6Class(
       if(is.null(private$paramlist[["motifInput"]])){
         stop("Parameter motifInput is required!")
       }
-      if(is.null(private$paramlist[["matrixOutput"]])){
-        stop("Parameter matrixOutput is required!")
-      }
       if(is.null(private$paramlist[["motifLength"]])){
         stop("Parameter motifLength is required!")
-      }
-      if(is.null(private$paramlist[["strandLength"]])){
-        stop("Parameter strandLength is required!")
       }
     }, # checkRequireParam end
 
@@ -108,21 +113,22 @@ CutSiteCountR <- R6::R6Class(
 
 #' Counting cut site around motif.
 #' @param atacProcCutSite Result from function atacCutSitePre.
-#' @param atacProcMotif Result from function MotifScan.
 #' @param csInput Your cut site information file(from atacCutSitePre function) path with prefix.
 #' e.g. "/your_cut_site_information_path/prefix"
 #' @param motifInput Your motif information file(from MotifScan function, set position = TRUE).
 #' The first 4 columns of the motif file must be "chr start_site end_site strand".
+#' @param chr Which chromatin the program will processing.Default:c(1:22, "X", "Y").
 #' @param matrixOutput The output path with a prefix, an empty folder would be great.
-#' e.g. "/where_you_want_to_save_output/prefix"
+#' e.g. "/where_you_want_to_save_output/prefix".Default:tmp/MOTIF_name/MOTIF_name.
 #' @param motifLength Motif length.
 #' @param strandLength How many bp(base pair) do you want to count up/downstream of the motif.
+#' default:100.
 #' @param FootPrint TRUE or FALSE, plot footprint or not.
 #' @export
 atacCutSiteCount <- function(atacProcCutSite = NULL, csInput = NULL,
-                             motifInput = NULL, matrixOutput = NULL, motifLength = NULL,
-                             strandLength = NULL, FootPrint = FALSE){
-  tmp <- CutSiteCountR$new(atacProcCutSite, csInput, motifInput,
+                             motifInput = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL, motifLength = NULL,
+                             strandLength = 100, FootPrint = TRUE){
+  tmp <- CutSiteCountR$new(atacProcCutSite, csInput, motifInput, chr,
                            matrixOutput, motifLength, strandLength, FootPrint)
   tmp$process()
   invisible(tmp)
