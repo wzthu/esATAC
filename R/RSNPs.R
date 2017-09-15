@@ -9,16 +9,26 @@ RSNPs <- R6::R6Class(
       # necessary parameters
       if(!is.null(atacProc)){
         private$paramlist[["peak.info"]] <- atacProc$getParam("bedOutput")
+        regexProcName <- sprintf("(bed|%s)", atacProc$getProcName())
       }else{
         private$paramlist[["peak.info"]] <- peak.info
+        regexProcName <- "(bed)"
       }
       private$paramlist[["snp.info"]] <- snp.info
       # unnecessary parameters
       if(is.null(annoOutput)){
-        private$paramlist[["annoOutput"]] <- paste0(dirname(private$paramlist[["peak.info"]]),
-                                                    "/SNPAnno", collapse = "")
+        prefix <- private$getBasenamePrefix(private$paramlist[["peak.info"]], regexProcName)
+        private$paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                       paste0(prefix, ".", self$getProcName(), ".df"))
       }else{
-        private$paramlist[["annoOutput"]] <- annoOutput
+        name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
+        suffix <- tail(name_split, 1)
+        name_split <- head(name_split, -1)
+        if(suffix == "df"){
+          private$paramlist[["annoOutput"]] <- annoOutput
+        }else{
+          private$paramlist[["annoOutput"]] <- paste(annoOutput, "df", sep = ".")
+        }
       }
       # parameter check
       private$paramValidation()
