@@ -43,53 +43,54 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         freg <- 2
     }
     if(is.null(fastqInput2)){
-        filelist <- paste(fastqInput1,collapse =", ")
+        filelist <- data.frame(`File(s)`=fastqInput1)
     }else{
-        filelist <- paste0("mate1: ",paste(fastqInput1,collapse =", "),
-                           "; mate2: ",paste(fastqInput2,collapse = ", "))
+        filelist <- data.frame(`Mate1 files`=fastqInput1,
+                          `Mate2 files`=fastqInput2)
     }
-    
-    conclusion <- list(wholesummary = data.frame(Items=c("Files",
-                                                         "Sequence Type",
-                                                         "Original total reads",
-                                                         "Adapter removed reads for mapping",
-                                                         "Locations mapped once/twice/total",
-                                                         "Non-Redundant Fraction (NRF)",
-                                                         "PCR Bottlenecking Coefficients 1 (PBC1)",
-                                                         "PCR Bottlenecking Coefficients 2 (PBC2)",
-                                                         "Chromosome mitochondria reads ratio",
-                                                         "Total peaks",
-                                                         "Fraction of reads in peaks(FRiP)",
-                                                         "Peaks ratio overlaped with union DHS",
-                                                         "Peaks ratio overlaped with blacklist"),
-                                                 Values=c(filelist,
-                                                          seqtype,
-                                                          removeAdapter$getReportVal("statistics")[[1]],
-                                                          as.integer(removeAdapter$getReportVal("statistics")[["Number of retained reads"]])/freg,
-                                                          sprintf("%s/%s/%s",libComplexQC$getReportVal("one"),libComplexQC$getReportVal("two"),libComplexQC$getReportVal("total")),
-                                                          sprintf("%.2f",as.numeric(libComplexQC$getReportVal("NRF"))),
-                                                          sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC1"))),
-                                                          sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC2"))),
-                                                          sprintf("%.2f",as.numeric(sam2Bed$getReportVal("filted"))/as.numeric(sam2Bed$getReportVal("total"))),
-                                                          sprintf("%.2f",as.numeric(fripQC$getReportVal("totalPeaks"))),
-                                                          sprintf("%.2f",as.numeric(fripQC$getReportVal("FRiP"))),
-                                                          sprintf("%.2f",as.numeric(DHSQC$getReportVal("qcbedRate"))),
-                                                          sprintf("%.2f",as.numeric(blacklistQC$getReportVal("qcbedRate"))))
-                                                 ),
-                       atacProcs=list(unzipAndMerge = unzipAndMerge,
-                                      renamer = renamer,
-                                      removeAdapter = removeAdapter,
-                                      bowtie2Mapping = bowtie2Mapping,
-                                      libComplexQC = libComplexQC,
-                                      sam2Bed = sam2Bed,
-                                      bedToBigWig = bedToBigWig,
-                                      tssqc100 = tssqc100,
-                                      tssqc180_247 = tssqc180_247,
-                                      peakCalling = peakCalling,
-                                      DHSQC = DHSQC,
-                                      blacklistQC = blacklistQC,
-                                      fripQC = fripQC
-                       ))
+    wholesummary = data.frame(Items=c("Sequence Type",
+                                      "Original total reads",
+                                      "Adapter removed reads for mapping",
+                                      "Locations mapped once / twice / total",
+                                      "Non-Redundant Fraction (NRF)",
+                                      "PCR Bottlenecking Coefficients 1 (PBC1)",
+                                      "PCR Bottlenecking Coefficients 2 (PBC2)",
+                                      "Chromosome mitochondria reads ratio",
+                                      "Total peaks",
+                                      "Fraction of reads in peaks(FRiP)",
+                                      "Peaks ratio overlaped with union DHS",
+                                      "Peaks ratio overlaped with blacklist"),
+                              Values=c(seqtype,
+                                       removeAdapter$getReportVal("statistics")[[1]],
+                                       as.integer(removeAdapter$getReportVal("statistics")[["Number of retained reads"]])/freg,
+                                       sprintf("%s / %s / %s",libComplexQC$getReportVal("one"),libComplexQC$getReportVal("two"),libComplexQC$getReportVal("total")),
+                                       sprintf("%.2f",as.numeric(libComplexQC$getReportVal("NRF"))),
+                                       sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC1"))),
+                                       sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC2"))),
+                                       sprintf("%.2f",as.numeric(sam2Bed$getReportVal("filted"))/as.numeric(sam2Bed$getReportVal("total"))),
+                                       sprintf("%d",as.numeric(fripQC$getReportVal("totalPeaks"))),
+                                       sprintf("%.2f",as.numeric(fripQC$getReportVal("FRiP"))),
+                                       sprintf("%.2f",as.numeric(DHSQC$getReportVal("qcbedRate"))),
+                                       sprintf("%.2f",as.numeric(blacklistQC$getReportVal("qcbedRate"))))
+    )
+    atacProcs=list(unzipAndMerge = unzipAndMerge,
+                   renamer = renamer,
+                   removeAdapter = removeAdapter,
+                   bowtie2Mapping = bowtie2Mapping,
+                   libComplexQC = libComplexQC,
+                   sam2Bed = sam2Bed,
+                   bedToBigWig = bedToBigWig,
+                   tssqc100 = tssqc100,
+                   tssqc180_247 = tssqc180_247,
+                   peakCalling = peakCalling,
+                   DHSQC = DHSQC,
+                   blacklistQC = blacklistQC,
+                   fripQC = fripQC
+    )
+    conclusion <- list(filelist=filelist,
+                       wholesummary = wholesummary,
+                       atacProcs = atacProcs
+                       )
                        
     if(createReport){
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
@@ -99,7 +100,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         rmdtext<-sprintf(rmdtext,filename)
         
         workdir <- getwd()
-        save(conclusion,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
+        save(filelist,wholesummary,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
         
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
         render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))

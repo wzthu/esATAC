@@ -123,10 +123,14 @@ SamToBed <- R6::R6Class(
         },
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
-            return(qcval[[item]])
+            if(item == "report"){
+                return(qcval)
+            }else{
+                return(qcval[[item]])
+            }
         },
         getReportItemsImp = function(){
-            return(c("total","save","filted","extlen","unique","multimap"))
+            return(c("report","total","save","filted","extlen","unique","multimap"))
         }
   )
 

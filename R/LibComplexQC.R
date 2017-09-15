@@ -64,10 +64,14 @@ LibComplexQC <-R6Class(
         },
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
-            return(qcval[[item]])
+            if(item == "report"){
+                return(qcval)
+            }else{
+                return(qcval[[item]])
+            }
         },
         getReportItemsImp = function(){
-            return(c("NRF","PBC1","PBC2","one","two","total","reads"))
+            return(c("report","NRF","PBC1","PBC2","one","two","total","reads"))
         }
     )
 

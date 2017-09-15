@@ -65,10 +65,14 @@ FRiPQC <-R6Class(
         },
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
-            return(qcval[[item]])
+            if(item == "report"){
+                return(qcval)
+            }else{
+                return(qcval[[item]])
+            }
         },
         getReportItemsImp = function(){
-            return(c("peakReads","totalReads","totalPeaks","FRiP"))
+            return(c("report","peakReads","totalReads","totalPeaks","FRiP"))
         }
     )
 

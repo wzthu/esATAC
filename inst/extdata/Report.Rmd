@@ -18,29 +18,71 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
 load("Report.Rdata")
 #setwd(workdir)
-
+listToFrame<-function(a){
+    return(data.frame(Item=names(a),Value=as.character(a)))
+}
 ```
 
 # Summary Table
 
-```{r eval=TRUE, echo=FALSE,warning=FALSE}
-conclusion$wholesummary
+Sequence files below are set as inputs of the pipeline 
+
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+filelist
+```
+
+Summerized infomation on sequence files has been shown showed below. You can see details in later sections
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+wholesummary
 ```
 
 # FastQC
 
 # Remove Adapter
 
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+listToFrame(atacProcs$removeAdapter$getReportVal("adapters"))
+
+```
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+listToFrame(atacProcs$removeAdapter$getReportVal("settings"))
+```
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+listToFrame(atacProcs$removeAdapter$getReportVal("statistics"))
+```
+
+```{r cols.print=6, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+as.data.frame(atacProcs$removeAdapter$getReportVal("distribution"))
+```
+
 # Mapping QC
 
 ## Mapping result
 
+```{r eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$bowtie2Mapping$getReportVal("detail")
+```
+
 ## Library complexity
+
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+listToFrame(atacProcs$libComplexQC$getReportVal("report"))
+```
 
 ## Filted reads component
 
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+listToFrame(atacProcs$sam2Bed$getReportVal("report"))
+```
+
 ## Fraction of reads in peaks (FRiP)
 
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+listToFrame(atacProcs$fripQC$getReportVal("report"))
+```
 
 # Fregment size distribution QC
 
@@ -61,7 +103,7 @@ cars
 You can also embed plots, for example:
 
 ```{r pressure, echo=FALSE}
-plot(pressure)
+#plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
