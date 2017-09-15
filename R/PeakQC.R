@@ -73,7 +73,7 @@ PeakQC <-R6Class(
             return(qcval[[item]])
         },
         getReportItemsImp = function(){
-            return(c("total","save","filted","extlen","unique"))
+            return(c("totalInput","qcbedInput","qcbedRate"))
         }
     )
 

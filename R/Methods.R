@@ -1,6 +1,12 @@
-atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE){
+atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
+    }
+    if(!is.null(fastqInput1)){
+        fastqInput1 = normalizePath(fastqInput1)
+    }
+    if(!is.null(fastqInput2)){
+        fastqInput2 = normalizePath(fastqInput2)
     }
     unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
     renamer <- atacRenamer(unzipAndMerge)
@@ -13,18 +19,96 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
    
     if(is.null(fastqInput2)&&!interleave){
         peakCalling <- atacPeakCalling(sam2Bed)
-        atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
-        atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
-        atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+        fripQC <- atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
     }else{
         tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc180_247"),fregLenRange = c(180,247))
         fregLenDistr <- atacFregLenDistr(sam2Bed)
         shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
         peakCalling <- atacPeakCalling(shortBed)
-        atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
-        atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
-        atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+        fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
     }
+    
+    if(interleave){
+        seqtype <- "paired end(interleave)"
+        freg <- 2
+    }else if(is.null(fastqInput2)){
+        seqtype <- "single end"
+        freg <- 1
+    }else{
+        seqtype <- "paired end"
+        freg <- 2
+    }
+    if(is.null(fastqInput2)){
+        filelist <- paste(fastqInput1,collapse =", ")
+    }else{
+        filelist <- paste0("mate1: ",paste(fastqInput1,collapse =", "),
+                           "; mate2: ",paste(fastqInput2,collapse = ", "))
+    }
+    
+    conclusion <- list(wholesummary = data.frame(Items=c("Files",
+                                                         "Sequence Type",
+                                                         "Original total reads",
+                                                         "Adapter removed reads for mapping",
+                                                         "Locations mapped once/twice/total",
+                                                         "Non-Redundant Fraction (NRF)",
+                                                         "PCR Bottlenecking Coefficients 1 (PBC1)",
+                                                         "PCR Bottlenecking Coefficients 2 (PBC2)",
+                                                         "Chromosome mitochondria reads ratio",
+                                                         "Total peaks",
+                                                         "Fraction of reads in peaks(FRiP)",
+                                                         "Peaks ratio overlaped with union DHS",
+                                                         "Peaks ratio overlaped with blacklist"),
+                                                 Values=c(filelist,
+                                                          seqtype,
+                                                          removeAdapter$getReportVal("statistics")[[1]],
+                                                          as.integer(removeAdapter$getReportVal("statistics")[["Number of retained reads"]])/freg,
+                                                          sprintf("%s/%s/%s",libComplexQC$getReportVal("one"),libComplexQC$getReportVal("two"),libComplexQC$getReportVal("total")),
+                                                          sprintf("%.2f",as.numeric(libComplexQC$getReportVal("NRF"))),
+                                                          sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC1"))),
+                                                          sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC2"))),
+                                                          sprintf("%.2f",as.numeric(sam2Bed$getReportVal("filted"))/as.numeric(sam2Bed$getReportVal("total"))),
+                                                          sprintf("%.2f",as.numeric(fripQC$getReportVal("totalPeaks"))),
+                                                          sprintf("%.2f",as.numeric(fripQC$getReportVal("FRiP"))),
+                                                          sprintf("%.2f",as.numeric(DHSQC$getReportVal("qcbedRate"))),
+                                                          sprintf("%.2f",as.numeric(blacklistQC$getReportVal("qcbedRate"))))
+                                                 ),
+                       atacProcs=list(unzipAndMerge = unzipAndMerge,
+                                      renamer = renamer,
+                                      removeAdapter = removeAdapter,
+                                      bowtie2Mapping = bowtie2Mapping,
+                                      libComplexQC = libComplexQC,
+                                      sam2Bed = sam2Bed,
+                                      bedToBigWig = bedToBigWig,
+                                      tssqc100 = tssqc100,
+                                      tssqc180_247 = tssqc180_247,
+                                      peakCalling = peakCalling,
+                                      DHSQC = DHSQC,
+                                      blacklistQC = blacklistQC,
+                                      fripQC = fripQC
+                       ))
+                       
+    if(createReport){
+        filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
+        
+        rmdfile<-system.file(package="atacpipe", "extdata", "Report.Rmd")
+        rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size)
+        rmdtext<-sprintf(rmdtext,filename)
+        
+        workdir <- getwd()
+        save(conclusion,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
+        
+        writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
+        render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
+        #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
+        #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
+        #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
+    }
+   
+    
     
     
 }

@@ -42,6 +42,7 @@ FRiPQC <-R6Class(
             gr_b <- import(private$paramlist[["peakBedInput"]], genome = genome)
             qcval[["peakReads"]]<-length(subsetByOverlaps(gr_a, gr_b, ignore.strand = TRUE))
             qcval[["totalReads"]]<-R.utils::countLines(private$paramlist[["readsBedInput"]])
+            qcval[["totalPeaks"]]<-length(gr_b)
             qcval[["FRiP"]]<-qcval[["peakReads"]]/qcval[["totalReads"]]
             #unlink(paste0(private$paramlist[["reportPrefix"]],".tmp"))
             ####private$paramlist[["qcval"]]<-qcval
@@ -67,7 +68,7 @@ FRiPQC <-R6Class(
             return(qcval[[item]])
         },
         getReportItemsImp = function(){
-            return(c("total","save","filted","extlen","unique"))
+            return(c("peakReads","totalReads","totalPeaks","FRiP"))
         }
     )
 
