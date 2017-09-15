@@ -52,9 +52,9 @@ vignettes/*.pdf
 /src/*/*.a
 .Rproj.user
 *.exe
-inst/AdapterRemoval.exe
-inst/bowtie2-align-s.exe
-inst/bowtie2-build-s.exe
-src/adapterremoval/AdapterRemoval.exe
-src/bowtie2/bowtie2-align-s.exe
-src/bowtie2/bowtie2-build-s.exe
+inst/AdapterRemoval*
+inst/bowtie2-align-s*
+inst/bowtie2-build-s*
+src/adapterremoval/AdapterRemoval*
+src/bowtie2/bowtie2-align-s*
+src/bowtie2/bowtie2-build-s*
