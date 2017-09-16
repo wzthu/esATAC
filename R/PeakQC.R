@@ -70,10 +70,14 @@ PeakQC <-R6Class(
         },
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
-            return(qcval[[item]])
+            if(item == "report"){
+                return(data.frame(Item=names(qcval),Value=as.character(qcval)))
+            }else{
+                return(qcval[[item]])
+            }
         },
         getReportItemsImp = function(){
-            return(c("totalInput","qcbedInput","qcbedRate"))
+            return(c("report","totalInput","qcbedInput","qcbedRate"))
         }
     )
 

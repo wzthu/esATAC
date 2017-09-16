@@ -141,18 +141,12 @@ ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("r
 
 ## Blacklist ratio
 
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$blacklistQC$getReportVal("report")
+```
+
 ## DHS ratio
 
-
-
-```{r cols.print=3, rows.print=3, eval=TRUE, echo=FALSE}
-cars
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$DHSQC$getReportVal("report")
 ```
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-#plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
