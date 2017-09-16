@@ -48,7 +48,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filelist <- data.frame(`Mate1 files`=fastqInput1,
                           `Mate2 files`=fastqInput2)
     }
-    wholesummary = data.frame(Items=c("Sequence Type",
+    wholesummary = data.frame(Item=c("Sequence Type",
                                       "Original total reads",
                                       "Adapter removed reads for mapping",
                                       "Locations mapped once / twice / total",
@@ -60,9 +60,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                                       "Fraction of reads in peaks(FRiP)",
                                       "Peaks ratio overlaped with union DHS",
                                       "Peaks ratio overlaped with blacklist"),
-                              Values=c(seqtype,
-                                       removeAdapter$getReportVal("statistics")[[1]],
-                                       as.integer(removeAdapter$getReportVal("statistics")[["Number of retained reads"]])/freg,
+                              Value=c(seqtype,
+                                       removeAdapter$getReportVal("statisticslist")[[1]],
+                                       as.integer(removeAdapter$getReportVal("statisticslist")[["Number of retained reads"]])/freg,
                                        sprintf("%s / %s / %s",libComplexQC$getReportVal("one"),libComplexQC$getReportVal("two"),libComplexQC$getReportVal("total")),
                                        sprintf("%.2f",as.numeric(libComplexQC$getReportVal("NRF"))),
                                        sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC1"))),

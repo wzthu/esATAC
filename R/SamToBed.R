@@ -124,7 +124,7 @@ SamToBed <- R6::R6Class(
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
             if(item == "report"){
-                return(qcval)
+                return(data.frame(Item=names(qcval),Value=as.character(qcval)))
             }else{
                 return(qcval[[item]])
             }

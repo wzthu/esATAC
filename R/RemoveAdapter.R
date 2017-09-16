@@ -235,7 +235,7 @@ RemoveAdapter <-R6Class(
             
         },
         getReportValImp = function(item){
-            if(item == "adapters"){
+            if(item == "adapterslist"){
                 tblist <- private$getTopic("\\[Adapter sequences\\]")
                 splitlist <- strsplit(tblist,": ")
                 if(private$singleEnd){
@@ -243,6 +243,16 @@ RemoveAdapter <-R6Class(
                 }else{
                     return(list(adapter1=splitlist[[1]][2],
                                 adapter2=splitlist[[2]][2]))
+                }
+            }
+            if(item == "adapters"){
+                tblist <- private$getTopic("\\[Adapter sequences\\]")
+                splitlist <- strsplit(tblist,": ")
+                if(private$singleEnd){
+                    return(private$listToFrame(list(adpater1=splitlist[[1]][2])))
+                }else{
+                    return(private$listToFrame(list(adapter1=splitlist[[1]][2],
+                                                    adapter2=splitlist[[2]][2])))
                 }
             }
             if(sum(item == c("adapter1","adapter2"))>0){
@@ -255,7 +265,7 @@ RemoveAdapter <-R6Class(
                     return(splitlist[[2]][2])
                 }
             }
-            if(item == "settings"){
+            if(item == "settingslist"){
                 tblist <- private$getTopic("\\[Adapter trimming\\]")
                 splitlist <- strsplit(tblist,": ")
                 lst <- list()
@@ -263,7 +273,25 @@ RemoveAdapter <-R6Class(
                     lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
                 }
                 return(lst)
+            }
+            if(item == "settings"){
+                tblist <- private$getTopic("\\[Adapter trimming\\]")
+                splitlist <- strsplit(tblist,": ")
+                lst <- list()
+                for(i in 1:length(tblist)){
+                    lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+                }
+                return(private$listToFrame(lst))
                 
+            }
+            if(item == "statisticslist"){
+                tblist <- private$getTopic("\\[Trimming statistics\\]")
+                splitlist <- strsplit(tblist,": ")
+                lst <- list()
+                for(i in 1:length(tblist)){
+                    lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+                }
+                return(lst)
             }
             if(item == "statistics"){
                 tblist <- private$getTopic("\\[Trimming statistics\\]")
@@ -272,7 +300,7 @@ RemoveAdapter <-R6Class(
                 for(i in 1:length(tblist)){
                     lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
                 }
-                return(lst)
+                return(private$listToFrame(lst))
             }
             if(item == "distribution"){
                 tblist <- private$getTopic("\\[Length distribution\\]")
@@ -296,9 +324,9 @@ RemoveAdapter <-R6Class(
         },
         getReportItemsImp = function(){
             if(self$isSingleEnd()){
-                return(c("adapters","adapter1","settings","statistics","distribution"))
+                return(c("adapters","adapterslist","adapter1","settings","statistics","settingslist","statisticslist","distribution"))
             }else{
-                return(c("adapters","adapter1","adapter2","settings","statistics","distribution"))
+                return(c("adapters","adapterslist","adapter1","adapter2","settings","statistics","settingslist","statisticslist","distribution"))
             }
             
         },
@@ -316,6 +344,9 @@ RemoveAdapter <-R6Class(
             }   
             
             return(setLine[(itemstart+1):itemend])
+        },
+        listToFrame = function(a){
+            return(data.frame(Item=names(a),Value=as.character(a)))
         }
     )
     

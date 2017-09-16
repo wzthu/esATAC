@@ -16,11 +16,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
+library(ggplot2)
 load("Report.Rdata")
-#setwd(workdir)
-listToFrame<-function(a){
-    return(data.frame(Item=names(a),Value=as.character(a)))
-}
+
 ```
 
 # Summary Table
@@ -42,20 +40,20 @@ wholesummary
 # Remove Adapter
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-listToFrame(atacProcs$removeAdapter$getReportVal("adapters"))
+atacProcs$removeAdapter$getReportVal("adapters")
 
 ```
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-listToFrame(atacProcs$removeAdapter$getReportVal("settings"))
+atacProcs$removeAdapter$getReportVal("settings")
 ```
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-listToFrame(atacProcs$removeAdapter$getReportVal("statistics"))
+atacProcs$removeAdapter$getReportVal("statistics")
 ```
 
 ```{r cols.print=6, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-as.data.frame(atacProcs$removeAdapter$getReportVal("distribution"))
+atacProcs$removeAdapter$getReportVal("distribution")
 ```
 
 # Mapping QC
@@ -69,22 +67,24 @@ atacProcs$bowtie2Mapping$getReportVal("detail")
 ## Library complexity
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-listToFrame(atacProcs$libComplexQC$getReportVal("report"))
+atacProcs$libComplexQC$getReportVal("report")
 ```
 
 ## Filted reads component
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-listToFrame(atacProcs$sam2Bed$getReportVal("report"))
+atacProcs$sam2Bed$getReportVal("report")
 ```
 
 ## Fraction of reads in peaks (FRiP)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-listToFrame(atacProcs$fripQC$getReportVal("report"))
+atacProcs$fripQC$getReportVal("report")
 ```
 
 # Fregment size distribution QC
+
+
 
 # TSS enrichment QC
 
