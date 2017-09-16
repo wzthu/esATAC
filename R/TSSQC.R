@@ -87,11 +87,11 @@ TSSQC <-R6Class(
 
             totaldistr<-as.numeric(coverage(reads,width = 2*private$paramlist[["updownstream"]]+1))
 
-            df<-data.frame(val=totaldistr,x=-private$paramlist[["updownstream"]]:private$paramlist[["updownstream"]])
-            ggplot(df,aes(x,val))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+            df<-data.frame(counts=totaldistr,pos=-private$paramlist[["updownstream"]]:private$paramlist[["updownstream"]])
+            ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
             ggsave(private$paramlist[["tsspdfOutput"]])
             
-            write.table(df,file = private$paramlist[["tsstxtOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+            write.table(df,file = private$paramlist[["tsstxtOutput"]],sep="\t",quote = FALSE,row.names = FALSE,col.names = TRUE)
 
 
 
@@ -142,7 +142,7 @@ TSSQC <-R6Class(
         getReportValImp = function(item){
             tss <- read.table(file= private$paramlist[["tsstxtOutput"]],header=TRUE)
             if(item == "tss"){
-                return(readscounts)
+                return(tss)
             }
         },
         getReportItemsImp = function(){

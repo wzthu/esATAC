@@ -82,6 +82,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                    bedToBigWig = bedToBigWig,
                    tssqc100 = tssqc100,
                    tssqc180_247 = tssqc180_247,
+                   fregLenDistr = fregLenDistr,
                    peakCalling = peakCalling,
                    DHSQC = DHSQC,
                    blacklistQC = blacklistQC,
