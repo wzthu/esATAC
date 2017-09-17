@@ -16,52 +16,137 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
+library(ggplot2)
 load("Report.Rdata")
-#setwd(workdir)
 
 ```
 
 # Summary Table
 
-```{r eval=TRUE, echo=FALSE,warning=FALSE}
-conclusion$wholesummary
+Sequence files below are set as inputs of the pipeline 
+
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+filelist
+```
+
+Summerized infomation on sequence files has been shown showed below. You can see details in later sections
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+wholesummary
 ```
 
 # FastQC
 
 # Remove Adapter
 
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$removeAdapter$getReportVal("adapters")
+
+```
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$removeAdapter$getReportVal("settings")
+```
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$removeAdapter$getReportVal("statistics")
+```
+
+```{r cols.print=6, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$removeAdapter$getReportVal("distribution")
+```
+
 # Mapping QC
 
 ## Mapping result
 
+```{r eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$bowtie2Mapping$getReportVal("detail")
+```
+
 ## Library complexity
+
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$libComplexQC$getReportVal("report")
+```
 
 ## Filted reads component
 
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$sam2Bed$getReportVal("report")
+```
+
 ## Fraction of reads in peaks (FRiP)
 
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$fripQC$getReportVal("report")
+```
 
 # Fregment size distribution QC
 
+```{r fegdist, eval=TRUE}
+library(ggplot2)
+load("Report.Rdata")
+readsCounts<-atacProcs$fregLenDistr$getReportVal("readsCounts")
+ggplot(readsCounts, aes(length))+geom_ribbon(aes(ymin=0, ymax=counts))
+
+library(stats)
+strength<-Mod(fft(readsCounts$counts))/length(readsCounts$counts)
+periodx<-length(readsCounts$counts)/(1:(length(readsCounts$counts)-1))
+strength<-strength[2:length(strength)]
+
+          tp<-rep(0,length(strength))
+          if(length(periodx)>15&&sum(periodx>10&periodx<11)<=1){
+              tp[max(which(periodx>10))+1]<-1
+              tp[min(which(periodx<11))-1]<-1
+          }else{
+              tp[periodx>10&periodx<11]<-1
+          }
+          if(length(periodx)>220&&sum(periodx>100&periodx<200)<=1){
+              tp[max(which(periodx>100))+1]<-1
+              tp[min(which(periodx<200))-1]<-1
+          }else{
+              tp[periodx>100&periodx<200]<-2
+          }
+          if(length(periodx)>15){
+              rs1<-as.data.frame(cbind(periodx[periodx<20&periodx>2],strength[periodx<20&periodx>2],tp[periodx<20&periodx>2]))
+              colnames(rs1)<-c("period","strength","check")
+              checkdna=1
+              ggplot(rs1)+geom_ribbon(data=subset(rs1,period<=min(rs1$period[rs1$check==checkdna])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,period>=max(rs1$period[rs1$check==checkdna])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,check==checkdna),aes(x=period,ymin=0,ymax=strength),fill="red")
+              
+          }
+          if(length(periodx)>220){
+              rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],tp[periodx<400&periodx>2]))
+              colnames(rs2)<-c("period","strength","check")
+              checkhistone=2
+              ggplot(rs2)+geom_ribbon(data=subset(rs2,period<=min(rs2$period[rs2$check==checkhistone])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,period>=max(rs2$period[rs2$check==checkhistone])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,check==checkhistone),aes(x=period,ymin=0,ymax=strength),fill="red")
+                
+          }
+```
+
+
 # TSS enrichment QC
+
+```{r TSSenrich, eval=TRUE}
+
+library(ggplot2)
+load("Report.Rdata")
+df<-atacProcs$tssqc100$getReportVal("tss")
+ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+df<-atacProcs$tssqc180_247$getReportVal("tss")
+ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+```
 
 # Peak QC
 
 ## Blacklist ratio
 
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$blacklistQC$getReportVal("report")
+```
+
 ## DHS ratio
 
-
-
-```{r cols.print=3, rows.print=3, eval=TRUE, echo=FALSE}
-cars
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$DHSQC$getReportVal("report")
 ```
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

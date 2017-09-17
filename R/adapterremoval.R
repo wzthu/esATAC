@@ -264,7 +264,7 @@ adapterremoval_version<- function(){
 .callbinary<- function(bin, args)
 {
     args <- gsub("^ *| *$", "", args)
-    call <- paste(shQuote(file.path(system.file(package="Rbowtie2"), bin)), args)
+    call <- paste(shQuote(file.path(system.file(package="atacpipe"), bin)), args)
     output <- system(call, intern=TRUE,show.output.on.console=TRUE)
     return(output)
 }
