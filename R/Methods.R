@@ -1,4 +1,5 @@
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
+
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
     }
@@ -30,6 +31,15 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
+       # peak annotation and GO analysis
+        peakAnnotation <- PeakAnno(atacProc = peakCalling)
+        goAna <- GOAnalysis(atacProc = peakCalling, OrgDb = "org.Hs.eg.db",
+                            ont = "BP", pvalueCutoff = 0.01)
+        # Motif Scan and footprint
+        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="atacpipe"))
+        output_motifscan <- MotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
+        cs_output <- atacCutSitePre(bedInput = sam2Bed, prefix = "ATAC")
+        footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
     }
     
     if(interleave){
@@ -114,45 +124,46 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     
     
     
+
 }
 
 atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
-    if(is.null(atacProc)){
-        GraphMng$new()$printMap(display=display)
-    }else if(class(atacProc)=="character"){
-        GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
-    }else{
-        atacProc$printMap(preProc,nextProc,curProc,display=display)
-        invisible(atacProc)
-    }
+  if(is.null(atacProc)){
+    GraphMng$new()$printMap(display=display)
+  }else if(class(atacProc)=="character"){
+    GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
+  }else{
+    atacProc$printMap(preProc,nextProc,curProc,display=display)
+    invisible(atacProc)
+  }
 }
 
 atacPrintNextList<-function(atacProc){
-    if(class(atacProc)=="character"){
-        GraphMng$new()$getNextProcs(atacProc)
-    }else{
-        GraphMng$new()$getNextProcs(atacProc$getProcName())
-        invisible(atacProc)
-    }
+  if(class(atacProc)=="character"){
+    GraphMng$new()$getNextProcs(atacProc)
+  }else{
+    GraphMng$new()$getNextProcs(atacProc$getProcName())
+    invisible(atacProc)
+  }
 }
 
 atacPrintPrevList<-function(atacProc){
-    if(class(atacProc)=="character"){
-        GraphMng$new()$getPrevProcs(atacProc)
-    }else{
-        GraphMng$new()$getPrevProcs(atacProc$getProcName())
-        invisible(atacProc)
-    }
+  if(class(atacProc)=="character"){
+    GraphMng$new()$getPrevProcs(atacProc)
+  }else{
+    GraphMng$new()$getPrevProcs(atacProc$getProcName())
+    invisible(atacProc)
+  }
 }
 
 atacClearCache <- function(atacProc){
-    atacProc$clearCache()
-    invisible(atacProc)
+  atacProc$clearCache()
+  invisible(atacProc)
 }
 
 atacProcessing <- function(atacProc){
-    atacProc$process()
-    invisible(atacProc)
+  atacProc$process()
+  invisible(atacProc)
 }
 
 

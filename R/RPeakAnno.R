@@ -44,21 +44,25 @@ RPeakAnno <- R6::R6Class(
       if(is.null(annoOutput)){
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
         private$paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                          paste0(prefix, ".", self$getProcName()))
+                                                       paste0(prefix, ".", self$getProcName()))
         private$paramlist[["annoOutput.pdf"]] <- paste(private$paramlist[["annoOutput"]],
-                                                        ".pdf", sep = "")
+                                                       ".pdf", sep = "")
         private$paramlist[["annoOutput.df"]] <- paste(private$paramlist[["annoOutput"]],
-                                                        ".df", sep = "")
+                                                      ".df", sep = "")
+        private$paramlist[["annoOutput.rds"]] <- paste(private$paramlist[["annoOutput"]],
+                                                      ".rds", sep = "")
       }else{
         name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
         suffix <- tail(name_split, 1)
         name_split <- head(name_split, -1)
         if(suffix == "df"){
-        private$paramlist[["annoOutput.df"]] <- annoOutput
-        private$paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
+          private$paramlist[["annoOutput.df"]] <- annoOutput
+          private$paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
+          private$paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
         }else{
           private$paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
           private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
+          private$paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
         }
       }
 
@@ -90,14 +94,15 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]],
                                          verbose = private$paramlist[["verbose"]])
+      saveRDS(peakAn, private$paramlist[["annoOutput.rds"]])
       pdf(file = private$paramlist[["annoOutput.pdf"]])
       ChIPseeker::plotAnnoPie(x = peakAn)
       dev.off()
       tmp_file <- as.data.frame(peakAn)
       colnames(tmp_file)[1] <- "chromatin"
       write.table(x = tmp_file, file = private$paramlist[["annoOutput.df"]],
-                quote = FALSE, row.names = FALSE, sep = "\t",
-                col.names = TRUE, append = FALSE)
+                  quote = FALSE, row.names = FALSE, sep = "\t",
+                  col.names = TRUE, append = FALSE)
     }, # processing end
 
     checkRequireParam = function(){
@@ -109,7 +114,18 @@ RPeakAnno <- R6::R6Class(
     checkAllPath = function(){
       private$checkFileExist(private$paramlist[["peakInput"]])
       private$checkPathExist(private$paramlist[["annoOutput"]])
-    } # checkAllPath end
+    }, # checkAllPath end
+
+    getReportValImp = function(item){
+      if(item == "annoOutput.rds"){
+        peakAnno <- readRDS(private$paramlist[["annoOutput.rds"]])
+        return(peakAnno)
+      }
+    },
+
+    getReportItemsImp = function(){
+      return(c("annoOutput.rds"))
+    }
 
   ) # private end
 
