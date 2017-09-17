@@ -21,7 +21,12 @@ RPeakAnno <- R6::R6Class(
         regexProcName <- "(bed|%s)"
       }
       private$paramlist[["tssRegion"]] <- tssRegion
-      private$paramlist[["TxDb"]] <- TxDb
+      if(!is.null(TxDb)){
+        private$paramlist[["TxDb"]] <- TxDb
+      }else{
+        private$paramlist[["TxDb"]] <- .obtainConfigure("knownGene")
+      }
+
       private$paramlist[["level"]] <- level
       private$paramlist[["assignGenomicAnnotation"]] <- assignGenomicAnnotation
       private$paramlist[["genomicAnnotationPriority"]] <- genomicAnnotationPriority
