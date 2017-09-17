@@ -33,7 +33,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
        # peak annotation and GO analysis
         peakAnnotation <- PeakAnno(atacProc = peakCalling)
-        goAna <- GOAnalysis(atacProc = peakCalling, OrgDb = "org.Hs.eg.db",
+        goAna <- GOAnalysis(atacProc = peakAnnotation, OrgDb = "org.Hs.eg.db",
                             ont = "BP", pvalueCutoff = 0.01)
         # Motif Scan and footprint
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="atacpipe"))
