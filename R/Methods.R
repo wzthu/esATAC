@@ -35,11 +35,10 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     goAna <- GOAnalysis(atacProc = peakCalling, OrgDb = "org.Hs.eg.db",
                         ont = "BP", pvalueCutoff = 0.01)
     # Motif Scan and footprint
-    pwm <- list()
-    pwm[["CTCF"]] <- readRDS(system.file("extdata", "CTCF_PWM.rds", package="atacpipe"))
+    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="atacpipe"))
     output_motifscan <- MotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
     cs_output <- atacCutSitePre(bedInput = sam2Bed, prefix = "ATAC")
-
+    footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
   }
 
   if(interleave){
