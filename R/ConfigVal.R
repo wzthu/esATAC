@@ -154,6 +154,11 @@
                 append <- TRUE
             }
             return(outFile)
+        },
+        GetOrgDb = function(genome){
+            if(genome == hg19||genome == hg38){
+                return("org.Hs.eg.db")
+            }
         }
 
     )
