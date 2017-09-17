@@ -4,7 +4,7 @@ CutSiteCountR <- R6::R6Class(
   public = list(
     initialize = function(atacProcCutSite, csInput = NULL,
                           motifInput = NULL, chr = NULL, matrixOutput = NULL, motifLength = NULL,
-                          strandLength = NULL, FootPrint = NULL, editable = FALSE){
+                          strandLength = NULL, FootPrint = NULL, pdf.name = NULL, editable = FALSE){
       super$initialize("CutSiteCountR", editable, list(arg1 = atacProcCutSite))
 
       # necessary parameters
@@ -29,6 +29,14 @@ CutSiteCountR <- R6::R6Class(
                                                      "/", prefix, sep = "")
       }else{
         private$paramlist[["matrixOutput"]] <- matrixOutput
+      }
+      if(private$paramlist[["FootPrint"]]){
+        if(is.null(pdf.name)){
+          private$paramlist[["pdf.name"]] <- paste(.obtainConfigure("tmpdir"),
+                "/", prefix, ".pdf", sep = "")
+        }else{
+          private$paramlist[["pdf.name"]] <- pdf.name
+        }
       }
       # parameter check
       private$paramValidation()
@@ -75,6 +83,7 @@ CutSiteCountR <- R6::R6Class(
       }
       if(private$paramlist[["FootPrint"]]){
         fp <- apply(data, 2, sum)
+        pdf(file = private$paramlist[["pdf.name"]])
         plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
         axis(1, at = seq(1, private$paramlist[["strandLength"]], len = 3),
              labels = -(private$paramlist[["strandLength"]] + 1 - seq(1, private$paramlist[["strandLength"]] + 1, len = 3)),
@@ -85,6 +94,7 @@ CutSiteCountR <- R6::R6Class(
         axis(2, padj = 1.0,tck = -0.02)
         abline(v = c(private$paramlist[["strandLength"]], private$paramlist[["strandLength"]] + private$paramlist[["motifLength"]] + 1),
                lty = 2)
+        dev.off()
       }
     }, # processing end
 
@@ -127,9 +137,9 @@ CutSiteCountR <- R6::R6Class(
 #' @export
 atacCutSiteCount <- function(atacProcCutSite = NULL, csInput = NULL,
                              motifInput = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL, motifLength = NULL,
-                             strandLength = 100, FootPrint = TRUE){
+                             strandLength = 100, FootPrint = TRUE, pdf.name = NULL){
   tmp <- CutSiteCountR$new(atacProcCutSite, csInput, motifInput, chr,
-                           matrixOutput, motifLength, strandLength, FootPrint)
+                           matrixOutput, motifLength, strandLength, FootPrint, pdf.name)
   tmp$process()
   invisible(tmp)
 }

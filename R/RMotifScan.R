@@ -61,8 +61,8 @@ RMotifScan <- R6::R6Class(
       peak <- rtracklayer::import(private$paramlist[["peak"]])
       for(i in seq(n_motif)){
         motif_name <- names(sitesetList[i])
-        output_data <- IRanges::subsetByOverlaps(query = sitesetList[[i]],
-                                                 subject = peak,
+        output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                 ranges = peak,
                                                  ignore.strand = TRUE)
         output_data <- sort(x = output_data, ignore.strand = TRUE)
         output_data <- as.data.frame(output_data)
@@ -102,7 +102,7 @@ RMotifScan <- R6::R6Class(
 #' @param min.score The minimum score for counting a match. Can be given as a
 #' character string containing a percentage (e.g. "85%") of the highest
 #' possible score or as a single number.
-#' @param scanOutput Output file path.
+#' @param scanOutput Output file directory.
 #' The output file contains the exact position of each TF binding site, 1-based.
 #' Considering the motifPWM may contains multiple PWM, the program ues the name
 #' in list to generate the output file name.
