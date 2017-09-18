@@ -9,9 +9,9 @@ CutSiteCountR <- R6::R6Class(
 
       # necessary parameters
       if(!is.null(atacProcCutSite)){
-        private$paramlist[["csInput"]] <- atacProcCutSite$getParam("csOutput");
+        private$paramlist[["csfile.dir"]] <- atacProcCutSite$getParam("csfile.dir");
       }else{
-        private$paramlist[["csInput"]] <- csInput
+        private$paramlist[["csfile.dir"]] <- csInput
       }
       if(!is.null(atacProcMotifScan)){
         private$paramlist[["motif_info"]] <- readRDS(atacProcMotifScan$getParam("rdsOutput"))
@@ -23,12 +23,12 @@ CutSiteCountR <- R6::R6Class(
       private$paramlist[["FootPrint"]] <- FootPrint
 
       if(is.null(matrixOutput)){
-        private$paramlist[["matrixOutput"]] <- paste(.obtainConfigure("tmpdir"),
-                                                     "/Footprint", sep = "")
+        private$paramlist[["matrixfile.dir"]] <- paste(.obtainConfigure("tmpdir"),
+                                                       "/Footprint", sep = "")
       }else{
-        private$paramlist[["matrixOutput"]] <- matrixOutput
+        private$paramlist[["matrixfile.dir"]] <- matrixOutput
       }
-      dir.create(private$paramlist[["matrixOutput"]])
+      dir.create(private$paramlist[["matrixfile.dir"]])
 
       # parameter check
       private$paramValidation()
@@ -44,7 +44,7 @@ CutSiteCountR <- R6::R6Class(
         motif_name <- private$paramlist[["motif_info"]][i,1]
         motif_file <- private$paramlist[["motif_info"]][i,2]
         motif_length <- private$paramlist[["motif_info"]][i,3]
-        matrixsave.dir <- file.path(private$paramlist[["matrixOutput"]], motif_name)
+        matrixsave.dir <- file.path(private$paramlist[["matrixfile.dir"]], motif_name)
         dir.create(matrixsave.dir)
         footprint.path <- file.path(.obtainConfigure("tmpdir"), paste(motif_name, ".pdf", sep = ""))
         # start!
@@ -64,7 +64,7 @@ CutSiteCountR <- R6::R6Class(
         for(i in seq(1:chr_len)){
           echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
           print(echo_str)
-          CutSiteInput <- paste0(private$paramlist[["csInput"]], "_chr", chr[[i]], ".cs", collapse = "")
+          CutSiteInput <- paste0(private$paramlist[["csfile.dir"]], "_chr", chr[[i]], ".cs", collapse = "")
           MotifInput <- paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
           MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
           .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
@@ -100,17 +100,16 @@ CutSiteCountR <- R6::R6Class(
 
       }
 
-
     }, # processing end
 
     checkRequireParam = function(){
-      if(is.null(private$paramlist[["csInput"]])){
+      if(is.null(private$paramlist[["csfile.dir"]])){
         stop("Parameter csInput is required!")
       }
     }, # checkRequireParam end
 
     checkAllPath = function(){
-      private$checkPathExist(private$paramlist[["csInput"]])
+      private$checkPathExist(private$paramlist[["csfile.dir"]])
     } # checkAllPath end
 
   ) # private end
@@ -118,23 +117,63 @@ CutSiteCountR <- R6::R6Class(
 ) # class end
 
 
-#' Counting cut site around motif.
-#' @param atacProcCutSite Result from function atacCutSitePre.
-#' @param atacProcMotifScan Result from function MotifScan.
-#' @param csInput Your cut site information file(from atacCutSitePre function) path with prefix.
+#' @name atacCutSiteCount
+#' @title Count cut site number in given motif region.
+#' @description This function is used to count cut site number in given motif
+#' region and plot footprint. Multi-motif is supported.
+#' NOTE: The input parameter is a a little bit complex,
+#' \code{atacCutSitePre} and \code{atacMotifScan} is recommended to use which
+#' makes the entire procedure easier.
+#' @param atacProcCutSite \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacCutSitePre}}.
+#' @param atacProcMotifScan \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacMotifScan}}.
+#' @param csInput Your cut site information file(from atacCutSitePre function,
+#' separated by chromatin name and all cut site are sorted) path with prefix.
 #' e.g. "/your_cut_site_information_path/prefix"
-#' @param motif_info A file as the same as rds as the output as MotifScan.
-#' @param chr Which chromatin the program will processing.Default:c(1:22, "X", "Y").
-#' @param matrixOutput The output directory, an empty folder would be great.
+#' @param motif_info A rds file from function \code{\link{atacMotifScan}}.
+#' In the rds file, it saves 3 column information(motif, motif exact position
+#' information file path and motif length).
+#' @param chr Which chromatin the program will processing. It must be identical
+#' with the file name of cut site information file.
+#' Default:c(1:22, "X", "Y").
+#' @param matrixOutput The output directory, where to save your cut site count
+#' of every motif position. an empty folder would be great.
 #' Default:tmpdir/Footprint
-#' @param strandLength How many bp(base pair) do you want to count up/downstream of the motif.
-#' default:100.
+#' @param strandLength How many bp(base pair) do you want to count
+#' up/downstream of the motif. default:100.
 #' @param FootPrint TRUE or FALSE, plot footprint or not.
-#' @export
+#' @details The parameter is simplified because of too many input file.
+#' parameter \code{atacProcCutSite} and \code{atacProcMotifScan} contains all
+#' input information so function \code{\link{atacCutSitePre}} and
+#' \code{\link{atacMotifScan}} is recommended to use together. For instance,
+#' if you want footprint of 3 TFs (transcription factor) of human in
+#' chr1-22, X, Y, then you need 24 chromatin cut site files, 3 motif position
+#' files as well as 3 integers of the motif. Function \code{atacCutSitePre} and
+#' \code{atacMotifScan} will do all this, you just specify which motif you want.
+#' Therefore, \code{\link{atacCutSitePre}} and \code{\link{atacMotifScan}} is
+#' recommended to use together.
+#' @return An invisible \code{\link{ATACProc}} object scalar.
+#' @author Wei Zhang
+#' @export atacCutSiteCount
+#' @export CutSiteCount
+#' @seealso
+#' \code{\link{atacCutSitePre}}
+#' \code{\link{atacMotifScan}}
 atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                              motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                              strandLength = 100, FootPrint = TRUE){
   tmp <- CutSiteCountR$new(atacProcCutSite, atacProcMotifScan, csInput,
+                           motif_info, chr, matrixOutput, strandLength, FootPrint)
+  tmp$process()
+  invisible(tmp)
+}
+
+CutSiteCount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
+                         matrixOutput = NULL, strandLength = 100, FootPrint = TRUE){
+  tmp <- CutSiteCountR$new(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput,
                            motif_info, chr, matrixOutput, strandLength, FootPrint)
   tmp$process()
   invisible(tmp)
