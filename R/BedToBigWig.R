@@ -86,7 +86,8 @@ BedToBigWig <- R6Class(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently, 
-#' \code{atacProc} should set \code{NULL} or use \code{bedToBigWig} instead.
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{bedToBigWig} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @export atacBedToBigWig
