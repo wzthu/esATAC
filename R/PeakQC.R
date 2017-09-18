@@ -122,7 +122,7 @@ PeakQC <-R6Class(
 #' @importFrom R6  R6Class
 #' @importFrom igraph  graph
 #' @importFrom igraph vertex.attributes
-#' @importFrom igraph `vertex.attributes<-`
+#' @importFrom igraph vertex.attributes<-
 #' @importFrom igraph are.connected
 #' @importFrom Rcpp sourceCpp
 #' @importFrom rJava .jpackage
@@ -150,7 +150,7 @@ PeakQC <-R6Class(
 #' @importFrom DiagrammeR create_graph
 #' @importFrom DiagrammeR set_global_graph_attrs
 #' @importFrom DiagrammeR export_graph
-#' @importFrom magrittr `%>%`
+#' @importFrom magrittr %>%
 #' @importFrom digest digest
 #' @importFrom BSgenome getBSgenome
 #' @importFrom Biostrings writeXStringSet
