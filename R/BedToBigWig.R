@@ -1,6 +1,6 @@
 BedToBigWig <- R6Class(
     classname = "BedToBigWig",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc, bedInput = NULL, bwOutput = NULL, toWig = FALSE, editable=FALSE){
             super$initialize("BedToBigWig",editable,list(arg1=atacProc))

@@ -1,6 +1,6 @@
 FRiPQC <-R6Class(
     classname = "FRiPQC",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL,editable=FALSE){
             super$initialize("FRiPQC",editable,list(arg1=atacProcReads,arg2=atacProcPeak))

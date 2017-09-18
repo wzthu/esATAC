@@ -1,6 +1,6 @@
 FregLenDistr <-R6Class(
   classname = "FregLenDistr",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc,reportPrefix=NULL,bedInput=NULL,editable=FALSE){
       super$initialize("FregLenDistr",editable,list(arg1=atacProc))

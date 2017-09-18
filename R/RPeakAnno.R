@@ -1,6 +1,6 @@
 RPeakAnno <- R6::R6Class(
   classname = "RPeakAnno",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, peakInput = NULL, tssRegion = NULL, TxDb = NULL,

@@ -1,6 +1,6 @@
 TSSQC <-R6Class(
     classname = "TSSQC",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc, txdbKnownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
             super$initialize("TSSQC",editable,list(arg1=atacProc))

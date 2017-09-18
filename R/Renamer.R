@@ -1,6 +1,6 @@
 Renamer <-R6Class(
   classname = "Renamer",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, fastqOutput1=NULL, fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, editable=FALSE){
       super$initialize("Renamer",editable,list(arg1=atacProc))

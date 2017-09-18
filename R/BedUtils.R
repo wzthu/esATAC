@@ -1,6 +1,6 @@
 BedUtils<-R6::R6Class(
     classname = "BedUtils",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc, bedInput = NULL, bedOutput = NULL, report = TRUE, reportOutput = NULL, mergePair = FALSE, downSample = NULL,
                               posOffset = 0L, negOffset= 0L, chrFilterList= NULL,select = TRUE,

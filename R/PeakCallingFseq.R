@@ -1,6 +1,6 @@
 PeakCallingFseq <-R6Class(
     classname = "PeakCallingFseq",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                               fragmentSize=0,featureLength=NULL,bedOutput=NULL,

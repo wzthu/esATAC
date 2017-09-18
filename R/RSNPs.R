@@ -1,6 +1,6 @@
 RSNPs <- R6::R6Class(
   classname = "RSNPs",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, snp.info = NULL, peak.info = NULL,
                           annoOutput = NULL, editable = FALSE){

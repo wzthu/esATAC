@@ -1,6 +1,6 @@
 UnzipAndMerge <-R6Class(
     classname = "UnzipAndMerge",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(fastqInput1, fastqInput2=NULL,fastqOutput1=NULL,fastqOutput2=NULL,interleave = FALSE,editable = FALSE){
             super$initialize("UnzipAndMerge",editable,list())

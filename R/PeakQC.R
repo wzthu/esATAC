@@ -1,6 +1,6 @@
 PeakQC <-R6Class(
     classname = "PeakQC",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),bedInput = NULL,editable=FALSE){
             super$initialize("PeakQC",editable,list(arg1=atacProc))

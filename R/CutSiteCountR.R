@@ -1,6 +1,6 @@
 CutSiteCountR <- R6::R6Class(
   classname = "CutSiteCountR",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProcCutSite, atacProcMotifScan, csInput = NULL,
                           motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
