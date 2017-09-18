@@ -4,7 +4,7 @@ CutSitePre <- R6::R6Class(
 
   public = list(
     initialize = function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL, editable = FALSE){
-      super$initialize("CutSitePre",editable,list(arg1=atacProc))
+      super$initialize("CutSitePre", editable, list(arg1 = atacProc))
 
       # necessary parameters
       if(!is.null(atacProc)){ # get parameter from class BamToBed or SamToBed
@@ -17,16 +17,16 @@ CutSitePre <- R6::R6Class(
       # unnecessary parameters
       if(is.null(csOutput.dir)){
         dir_name <- private$getBasenamePrefix(private$paramlist[["bedInput"]], regexProcName)
-        private$paramlist[["csOutput.dir"]] <- file.path(.obtainConfigure("tmpdir"),
+        csOutput_dir <- file.path(.obtainConfigure("tmpdir"),
                                                          dir_name)
-        dir.create(private$paramlist[["csOutput.dir"]])
+        dir.create(csOutput_dir)
       }else{
-        private$paramlist[["csOutput.dir"]] <- csOutput.dir
+        csOutput_dir <- csOutput.dir
       }
       if(is.null(prefix)){
-        private$paramlist[["csOutput"]] <- paste0(private$paramlist[["csOutput.dir"]], "/", "Cutsite", collapse = "")
+        private$paramlist[["csfile.dir"]] <- paste0(csOutput_dir, "/", "Cutsite", collapse = "")
       }else{
-        private$paramlist[["csOutput"]] <- paste0(private$paramlist[["csOutput.dir"]], "/", prefix, collapse = "")
+        private$paramlist[["csfile.dir"]] <- paste0(csOutput_dir, "/", prefix, collapse = "")
       }
       # parameter check
       private$paramValidation()
@@ -39,8 +39,8 @@ CutSitePre <- R6::R6Class(
     processing = function(){
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["bedInput"]]))
-      private$writeLog(sprintf("destination:%s", private$paramlist[["csOutput"]]))
-      Cut_Site_Number <- .CutSite_call(InputFile = private$paramlist[["bedInput"]], OutputFile = private$paramlist[["csOutput"]])
+      private$writeLog(sprintf("destination:%s", private$paramlist[["csfile.dir"]]))
+      Cut_Site_Number <- .CutSite_call(InputFile = private$paramlist[["bedInput"]], OutputFile = private$paramlist[["csfile.dir"]])
       print(sprintf("Total Cut Site Number is: %d", Cut_Site_Number))
     }, # processing end
 
@@ -52,7 +52,7 @@ CutSitePre <- R6::R6Class(
 
     checkAllPath = function(){
       private$checkFileExist(private$paramlist[["bedInput"]])
-      private$checkPathExist(private$paramlist[["csOutput"]])
+      private$checkPathExist(private$paramlist[["csfile.dir"]])
     } # checkAllPath end
 
   ) # private end
