@@ -1,4 +1,4 @@
-useDynLib(atacpipe)
+useDynLib(ATACFlow)
 exportPattern("^[[:alpha:]]+")
 importFrom(Rcpp, evalCpp)
 importFrom(R6, R6Class)
