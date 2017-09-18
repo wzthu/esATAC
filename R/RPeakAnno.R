@@ -43,13 +43,13 @@ RPeakAnno <- R6::R6Class(
       # unnecessary parameters
       if(is.null(annoOutput)){
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
-        annoOutdir <- file.path(.obtainConfigure("tmpdir"),
+        annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
                                                        paste0(prefix, ".", self$getProcName()))
-        private$paramlist[["annoOutput.pdf"]] <- paste(annoOutdir,
+        private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
                                                        ".pdf", sep = "")
-        private$paramlist[["annoOutput.df"]] <- paste(annoOutdir,
+        private$paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
                                                       ".df", sep = "")
-        private$paramlist[["annoOutput.rds"]] <- paste(annoOutdir,
+        private$paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
                                                       ".rds", sep = "")
       }else{
         name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
@@ -74,7 +74,6 @@ RPeakAnno <- R6::R6Class(
 
   private = list(
     processing = function(){
-        print(private$paramlist)
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["peakInput"]]))
       private$writeLog(sprintf("df destination:%s", private$paramlist[["annoOutput.df"]]))
@@ -104,7 +103,6 @@ RPeakAnno <- R6::R6Class(
       write.table(x = tmp_file, file = private$paramlist[["annoOutput.df"]],
                   quote = FALSE, row.names = FALSE, sep = "\t",
                   col.names = TRUE, append = FALSE)
-      print(private$paramlist)
     }, # processing end
 
     checkRequireParam = function(){
@@ -115,7 +113,9 @@ RPeakAnno <- R6::R6Class(
 
     checkAllPath = function(){
       private$checkFileExist(private$paramlist[["peakInput"]])
-      private$checkPathExist(private$paramlist[["annoOutput"]])
+      private$checkPathExist(private$paramlist[["annoOutput.df"]])
+      private$checkPathExist(private$paramlist[["annoOutput.pdf"]])
+      private$checkPathExist(private$paramlist[["annoOutput.rds"]])
     }, # checkAllPath end
 
     getReportValImp = function(item){
