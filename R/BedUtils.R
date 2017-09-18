@@ -104,6 +104,8 @@ BedUtils<-R6::R6Class(
 
 
 #' @name atacBedUtils
+#' @aliases atacBedUtils
+#' @aliases bedUtils
 #' @title process bed file with limit memory
 #' @description 
 #' This function is used to 
@@ -154,8 +156,6 @@ BedUtils<-R6::R6Class(
 #' or you can use \code{bedUtils} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @export atacBedUtils
-#' @export bedUtils
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBamToBed}}
@@ -166,6 +166,8 @@ BedUtils<-R6::R6Class(
 #' \code{\link{atacBamToBed}}
 #' \code{\link{atacBamToBed}}
 
+#' @rdname atacBedUtils
+#' @export 
 atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){
@@ -176,6 +178,8 @@ atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair
     invisible(atacproc)
 }
 
+#' @rdname atacBedUtils
+#' @export 
 bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){

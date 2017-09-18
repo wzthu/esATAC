@@ -48,7 +48,7 @@ Imports:
     rmarkdown
 LinkingTo: Rcpp
 SystemRequirements: C++11
-RoxygenNote: 6.0.1
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage
 VignetteBuilder: knitr
 Archs: x64
+RoxygenNote: 6.0.1

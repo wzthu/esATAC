@@ -64,6 +64,8 @@ BedToBigWig <- R6Class(
 
 
 #' @name atacBedToBigWig
+#' @aliases atacBedToBigWig
+#' @aliases bedToBigWig
 #' @title generate BigWig file from BED file
 #' @description 
 #' This function is used to generate BigWig file 
@@ -90,19 +92,19 @@ BedToBigWig <- R6Class(
 #' or you can use \code{bedToBigWig} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @export atacBedToBigWig
-#' @export bedToBigWig
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBedUtils}}
 
+#' @rdname atacBedToBigWig
+#' @export 
 atacBedToBigWig <- function(atacProc, bedInput = NULL, bwOutput = NULL, toWig = FALSE){
     atacproc <- BedToBigWig$new(atacProc = atacProc, bedInput = bedInput, bwOutput = bwOutput, toWig = toWig)
     atacproc$process()
     invisible(atacproc)
 }
-
-
+#' @rdname atacBedToBigWig
+#' @export
 bedToBigWig <- function(bedInput, bwOutput = NULL, toWig = FALSE){
     atacproc <- BedToBigWig$new(atacProc = NULL, bedInput = bedInput, bwOutput = bwOutput, toWig = toWig)
     atacproc$process()
