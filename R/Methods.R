@@ -38,7 +38,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         # Motif Scan and footprint
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="atacpipe"))
         output_motifscan <- MotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
-        cs_output <- atacCutSitePre(bedInput = sam2Bed, prefix = "ATAC")
+        cs_output <- atacCutSitePre(atacProc = sam2Bed, prefix = "ATAC")
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
     }
     
