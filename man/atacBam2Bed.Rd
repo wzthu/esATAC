@@ -4,15 +4,36 @@
 \alias{atacBam2Bed}
 \title{Convert bam format to bed format.}
 \usage{
-atacBam2Bed(atacProc = NULL, bamInput = NULL, bedOutput = NULL)
+atacBam2Bed(atacProc, bamInput = NULL, bedOutput = NULL)
 }
 \arguments{
-\item{atacProc}{Result from atacSam2Bam or atacBamSort.}
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacBamSort}},
+\code{\link{atacSam2Bam}}.}
 
-\item{bamInput}{Path to bam file.}
+\item{bamInput}{\code{Character} scalar.
+Bam file input path.}
 
-\item{bedOutput}{Where you want save the bed file.}
+\item{bedOutput}{\code{Character} scalar.
+Bed file output path. If ignored, bed file will be put in the same path as
+the bam file.}
+}
+\value{
+An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-This function convert a bam file to a bed file.
+This function convert a bam file into a bed file.
+Note:bed file is 0-based.
+}
+\details{
+The bam file wiil be automatically obtained from
+object(\code{atacProc}) or input by hand. Output can be ignored.
+}
+\seealso{
+\code{\link{atacBamSort}}
+\code{\link{atacSam2Bam}}
+}
+\author{
+Wei Zhang
 }

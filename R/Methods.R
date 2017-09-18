@@ -14,7 +14,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2)
     bowtie2Mapping <- atacBowtie2Mapping(removeAdapter)
     libComplexQC <- atacLibComplexQC(bowtie2Mapping)
-    sam2Bed <-atacSam2Bed(bowtie2Mapping,maxFregLen = 2000)
+    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFregLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
     tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
    

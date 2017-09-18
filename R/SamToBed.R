@@ -139,14 +139,87 @@ SamToBed <- R6::R6Class(
 
 
 
-#' convert sam to bed
-#' @param ATAC_obj obj returned from ATAC_mapping
-#' @param samfile sam file dir
-#' @param bedfile bed file dir
-#' @param readlen reads length
-#' @export
-atacSam2Bed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
+
+
+#' @name atacSamToBed
+#' @aliases atacSamToBed
+#' @aliases samToBed
+#' @title Convert SAM file to BED file
+#' @description 
+#' This function is used to convert SAM file to BED file and
+#' merge interleave paired end reads,
+#' shift reads,
+#' filter reads according to chromosome,
+#' filter reads according to fregment size,
+#' sort,
+#' remove duplicates reads before generating BED file.
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBamToBed}}.
+#' @param samInput \code{Character} scalar. 
+#' SAM file input path. 
+#' @param bedOutput \code{Character} scalar. 
+#' Bed file output path.
+#' @param reportOutput \code{Character} scalar
+#' report file path
+#' @param merge \code{Logical} scalar
+#' Merge paired end reads.
+#' @param posOffset \code{Integer} scalar
+#' The offset that positive strand reads will shift. 
+#' @param negOffset \code{Integer} scalar
+#' The offset that negative strand reads will shift. 
+#' @param chrFilterList \code{Character} vector
+#' The chromatin(or regex of chromatin) will be retain/discard 
+#' if \code{select} is TRUE/FALSE
+#' @param select \code{Logical} scalar
+#' The chromatin in \code{chrFilterList} will be retain if TRUE. default: FALSE
+#' @param sortBed \code{Logical} scalar
+#' Sort bed file in the order of chromatin, start, end
+#' @param uniqueBed \code{Logical} scalar
+#' Remove duplicates reads in bed if TRUE. default: FALSE
+#' @param minFregLen \code{Integer} scalar
+#' The minimum fregment size will be retained.
+#' @param maxFregLen \code{Integer} scalar
+#' The maximum fregment size will be retained.
+#' @param saveExtLen \code{Logical} scaler
+#' Save the fregment that are not in the range of minFregLen and MaxFregLen
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{samToBed} instead.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBamToBed}}
+#' \code{\link{atacPeakCalling}}
+#' \code{\link{atacBamToBed}}
+#' \code{\link{atacBamToBed}}
+#' \code{\link{atacBamToBed}}
+#' \code{\link{atacBamToBed}}
+#' \code{\link{atacBamToBed}}
+
+#' @rdname atacSamToBed
+#' @export 
+atacSamToBed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                         samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
+                        saveExtLen = FALSE,uniqueBed = TRUE){
+    atacproc <- SamToBed$new(atacProc=atacProc, merge=merge, posOffset=posOffset, negOffset=negOffset, chrFilterList=chrFilterList,
+                             samInput=samInput, bedOutput=bedOutput, sortBed=sortBed, uniqueBed=uniqueBed, minFregLen=minFregLen,
+                             maxFregLen=maxFregLen, saveExtLen=saveExtLen,reportOutput=reportOutput)
+    atacproc$process()
+    invisible(atacproc)
+}
+#' @rdname atacSamToBed
+#' @export 
+samToBed <- function(samInput, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
+                         bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){
     atacproc <- SamToBed$new(atacProc=atacProc, merge=merge, posOffset=posOffset, negOffset=negOffset, chrFilterList=chrFilterList,
                              samInput=samInput, bedOutput=bedOutput, sortBed=sortBed, uniqueBed=uniqueBed, minFregLen=minFregLen,

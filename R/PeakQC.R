@@ -84,9 +84,52 @@ PeakQC <-R6Class(
 
 )
 
+#' @name atacPeakQC
+#' @aliases atacPeakQC
+#' @aliases peakQC
+#' @title Quality control for peak overlap 
+#' @description 
+#' These functions are used to generate fregment distribution plot.  
+#' The fourier transform of fregment distribution will be calculated.
+#' Strength distribution around period at 10.4bp and 180bp 
+#' will be shown in another two plots.
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param reportOutput \code{Character} scalar. 
+#' The report file path. 
+#' @param qcbedInput \code{Character} scalar. 
+#' It can be "DHS","blacklist" or 
+#' Other quality control BED file input path.
+#' @param bedInput \code{Character} scalar. 
+#' BED file input path for quality control.
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{peakQC} instead.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacPeakQC
+#' @export 
 atacPeakQC<-function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), bedInput = NULL){
     atacproc<-PeakQC$new(atacProc, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
+    atacproc$process()
+    invisible(atacproc)
+}
+#' @rdname atacPeakQC
+#' @export
+peakQC<-function(bedInput, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed")){
+    atacproc<-PeakQC$new(atacProc=NULL, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
     atacproc$process()
     invisible(atacproc)
 }

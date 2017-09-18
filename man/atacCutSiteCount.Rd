@@ -2,32 +2,68 @@
 % Please edit documentation in R/CutSiteCountR.R
 \name{atacCutSiteCount}
 \alias{atacCutSiteCount}
-\title{Counting cut site around motif.}
+\title{Count cut site number in given motif region.}
 \usage{
 atacCutSiteCount(atacProcCutSite = NULL, atacProcMotifScan = NULL,
   csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
   matrixOutput = NULL, strandLength = 100, FootPrint = TRUE)
 }
 \arguments{
-\item{atacProcCutSite}{Result from function atacCutSitePre.}
+\item{atacProcCutSite}{\code{\link{ATACProc}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacCutSitePre}}.}
 
-\item{atacProcMotifScan}{Result from function MotifScan.}
+\item{atacProcMotifScan}{\code{\link{ATACProc}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacMotifScan}}.}
 
-\item{csInput}{Your cut site information file(from atacCutSitePre function) path with prefix.
+\item{csInput}{Your cut site information file(from atacCutSitePre function,
+separated by chromatin name and all cut site are sorted) path with prefix.
 e.g. "/your_cut_site_information_path/prefix"}
 
-\item{motif_info}{A file as the same as rds as the output as MotifScan.}
+\item{motif_info}{A rds file from function \code{\link{atacMotifScan}}.
+In the rds file, it saves 3 column information(motif, motif exact position
+information file path and motif length).}
 
-\item{chr}{Which chromatin the program will processing.Default:c(1:22, "X", "Y").}
+\item{chr}{Which chromatin the program will processing. It must be identical
+with the file name of cut site information file.
+Default:c(1:22, "X", "Y").}
 
-\item{matrixOutput}{The output directory, an empty folder would be great.
+\item{matrixOutput}{The output directory, where to save your cut site count
+of every motif position. an empty folder would be great.
 Default:tmpdir/Footprint}
 
-\item{strandLength}{How many bp(base pair) do you want to count up/downstream of the motif.
-default:100.}
+\item{strandLength}{How many bp(base pair) do you want to count
+up/downstream of the motif. default:100.}
 
 \item{FootPrint}{TRUE or FALSE, plot footprint or not.}
 }
+\value{
+An invisible \code{\link{ATACProc}} object scalar.
+}
 \description{
-Counting cut site around motif.
+This function is used to count cut site number in given motif
+region and plot footprint. Multi-motif is supported.
+NOTE: The input parameter is a a little bit complex,
+\code{atacCutSitePre} and \code{atacMotifScan} is recommended to use which
+makes the entire procedure easier.
+}
+\details{
+The parameter is simplified because of too many input file.
+parameter \code{atacProcCutSite} and \code{atacProcMotifScan} contains all
+input information so function \code{\link{atacCutSitePre}} and
+\code{\link{atacMotifScan}} is recommended to use together. For instance,
+if you want footprint of 3 TFs (transcription factor) of human in
+chr1-22, X, Y, then you need 24 chromatin cut site files, 3 motif position
+files as well as 3 integers of the motif. Function \code{atacCutSitePre} and
+\code{atacMotifScan} will do all this, you just specify which motif you want.
+Therefore, \code{\link{atacCutSitePre}} and \code{\link{atacMotifScan}} is
+recommended to use together.
+}
+\seealso{
+\code{\link{atacCutSitePre}}
+\code{\link{atacMotifScan}}
+}
+\author{
+Wei Zhang
 }
