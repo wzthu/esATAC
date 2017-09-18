@@ -116,7 +116,7 @@ RMotifScan <- R6::R6Class(
 #' in list to generate the output file name.
 #' @param n.cores How many cores to run the program.
 
-MotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
+atacMotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanOutput = NULL,
                       n.cores = NULL){
   tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
