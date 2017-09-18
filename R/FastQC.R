@@ -1,6 +1,6 @@
 FastQC <- R6::R6Class(
   classname = "FastQC",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, input_file = NULL, output_file = NULL, editable = FALSE){
       super$initialize("FastQC", editable, list(arg1 = atacProc))

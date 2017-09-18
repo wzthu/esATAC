@@ -1,6 +1,6 @@
 RMotifScan <- R6::R6Class(
   classname = "RMotifScan",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, peak = NULL, genome = NULL,

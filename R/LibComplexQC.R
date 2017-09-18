@@ -1,6 +1,6 @@
 LibComplexQC <-R6Class(
     classname = "LibComplexQC",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = FALSE,subsample=TRUE,subsampleSize=4e6,editable=FALSE){
             super$initialize("LibComplexQC",editable,list(arg1=atacProc))

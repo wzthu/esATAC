@@ -1,14 +1,21 @@
-Package: atacpipe
+Package: ATACFlow
 Type: Package
-Title: What the Package Does in One 'Title Case' Line
-Version: 1.0
+Title: Pipeline for Quantifying and Annotating ATAC-seq and DNase-seq Reads in R
+Version: 0.99.0
 Date: 2017-06-25
-Author: Your Name
-Maintainer: Your Name <your@email.com>
-Description: One paragraph description of what the package does as one
-        or more full sentences.
+Author: Zheng Wei, Wei Zhang
+Maintainer: Zheng Wei <wzweizheng@qq.com>
+Description: This package provides a framework and 
+        complete default pipeline for the quantification
+        and analysis of ATAC-seq and DNase-seq Reads. 
+        It covers a complete workflow
+        starting from raw sequence reads, 
+        over creation of alignments
+        and quality control report, to the quantification of genomic
+        regions of interest. 
+        Users can buid their own pipeline easily. 
 Depends: R (>= 3.2.3), QuasR, Rsamtools, GenomicRanges
-License: GPL (>= 2)
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
 Imports: 
@@ -42,3 +49,6 @@ Imports:
 LinkingTo: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
+biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage
+VignetteBuilder: knitr
+Archs: x64

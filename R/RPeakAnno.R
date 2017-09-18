@@ -1,6 +1,6 @@
 RPeakAnno <- R6::R6Class(
   classname = "RPeakAnno",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, peakInput = NULL, tssRegion = NULL, TxDb = NULL,
@@ -43,13 +43,13 @@ RPeakAnno <- R6::R6Class(
       # unnecessary parameters
       if(is.null(annoOutput)){
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
-        private$paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+        annoOutdir <- file.path(.obtainConfigure("tmpdir"),
                                                        paste0(prefix, ".", self$getProcName()))
-        private$paramlist[["annoOutput.pdf"]] <- paste(private$paramlist[["annoOutput"]],
+        private$paramlist[["annoOutput.pdf"]] <- paste(annoOutdir,
                                                        ".pdf", sep = "")
-        private$paramlist[["annoOutput.df"]] <- paste(private$paramlist[["annoOutput"]],
+        private$paramlist[["annoOutput.df"]] <- paste(annoOutdir,
                                                       ".df", sep = "")
-        private$paramlist[["annoOutput.rds"]] <- paste(private$paramlist[["annoOutput"]],
+        private$paramlist[["annoOutput.rds"]] <- paste(annoOutdir,
                                                       ".rds", sep = "")
       }else{
         name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
@@ -74,6 +74,7 @@ RPeakAnno <- R6::R6Class(
 
   private = list(
     processing = function(){
+        print(private$paramlist)
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["peakInput"]]))
       private$writeLog(sprintf("df destination:%s", private$paramlist[["annoOutput.df"]]))
@@ -103,6 +104,7 @@ RPeakAnno <- R6::R6Class(
       write.table(x = tmp_file, file = private$paramlist[["annoOutput.df"]],
                   quote = FALSE, row.names = FALSE, sep = "\t",
                   col.names = TRUE, append = FALSE)
+      print(private$paramlist)
     }, # processing end
 
     checkRequireParam = function(){

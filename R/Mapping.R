@@ -1,6 +1,6 @@
 Bowtie2Mapping <-R6Class(
     classname = "Bowtie2Mapping",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,samOutput=NULL, bt2Idx=NULL, fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default",reportOutput =NULL,editable=FALSE){
             super$initialize("Bowtie2Mapping",editable,list(arg1=atacProc))

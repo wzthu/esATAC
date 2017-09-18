@@ -1,6 +1,6 @@
 SamToBam <-R6::R6Class(
   classname = "SamToBam",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, samfile = NULL, bamfile = NULL, editable=FALSE){
       super$initialize("SamToBam", editable, list(arg1 = atacProc))

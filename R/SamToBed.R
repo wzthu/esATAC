@@ -1,6 +1,6 @@
 SamToBed <- R6::R6Class(
   classname = "SamToBed",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= NULL,
                           reportOutput =NULL,samInput = NULL, bedOutput = NULL, sortBed = TRUE, uniqueBed = TRUE,

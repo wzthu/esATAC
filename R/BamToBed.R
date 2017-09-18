@@ -1,6 +1,6 @@
 BamToBed <- R6::R6Class(
   classname = "BamToBed",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, bamInput = NULL, bedOutput = NULL, editable=FALSE){

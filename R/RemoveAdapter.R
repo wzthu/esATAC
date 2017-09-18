@@ -1,6 +1,6 @@
 RemoveAdapter <-R6Class(
     classname = "RemoveAdapter",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL,interleave=FALSE,paramList="default",findParamList="default",editable=FALSE){

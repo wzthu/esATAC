@@ -1,6 +1,6 @@
 CutSitePre <- R6::R6Class(
   classname = "CutSitePre",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL, editable = FALSE){

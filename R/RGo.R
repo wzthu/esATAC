@@ -1,6 +1,6 @@
 RGo <- R6::R6Class(
   classname = "RGo",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, gene = NULL, OrgDb = NULL, keytype = NULL, ont = NULL,
