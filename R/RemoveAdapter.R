@@ -66,7 +66,7 @@ RemoveAdapter <-R6Class(
                 if(length(paramList)>0){
                     rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
                     private$checkParam(paramList,rejectp)
-                    private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
+                    private$paramlist[["paramList"]]<-paramList
                 }
             }
             
@@ -79,7 +79,7 @@ RemoveAdapter <-R6Class(
                 if(length(paramList)>0){
                     rejectp<-"--file1|--file2|--threads|--identify-adapters|--basename"
                     private$checkParam(findParamList,rejectp)
-                    private$paramlist[["findParamList"]]<-c(findParamList,private$paramlist[["findParamList"]])
+                    private$paramlist[["findParamList"]]<-findParamList
                 }
             }
             
@@ -94,8 +94,10 @@ RemoveAdapter <-R6Class(
     ),
     private = list(
         processing = function(){
-            if(!is.null(private$paramlist[["threads"]])&&private$paramlist[["threads"]]>1){
-                threadparam<-c("--threads",as.character(private$paramlist[["threads"]]))
+            if(!is.null(private$paramlist[["threads"]])){
+                if(private$paramlist[["threads"]]>1){
+                    threadparam<-c("--threads",as.character(private$paramlist[["threads"]]))
+                }
             }else if(.obtainConfigure("threads")>1){
                 threadparam<-c("--threads",as.character(.obtainConfigure("threads")))
             }else{
@@ -442,7 +444,7 @@ atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,
                               fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,fastqInput1=NULL, 
                               fastqInput2=NULL,interleave=FALSE,
-                              paramList="default",findParamList="default"){
+                              paramList= NULL,findParamList=NULL){
     atacproc <- RemoveAdapter$new(atacProc = atacProc,
                                        adapter1 = adapter1,adapter2 = adapter2,
                                        fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,
@@ -459,7 +461,7 @@ removeAdapter <- function(fastqInput1, fastqInput2=NULL,
                               fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL, 
                               interleave=FALSE,
-                              paramList="default",findParamList="default"){
+                              paramList = NULL,findParamList = NULL){
     atacproc <- RemoveAdapter$new(atacProc = NULL,
                                        adapter1 = adapter1,adapter2 = adapter2,
                                        fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,

@@ -2,7 +2,11 @@ Bowtie2Mapping <-R6Class(
     classname = "Bowtie2Mapping",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProc,samOutput=NULL, bt2Idx=NULL, fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default",reportOutput =NULL,editable=FALSE){
+        initialize = function(atacProc,samOutput=NULL, bt2Idx=NULL, 
+                              fastqInput1=NULL, fastqInput2=NULL, 
+                              interleave = FALSE, 
+                              paramList="--no-discordant --no-unal --no-mixed -X 2000",
+                              reportOutput = NULL, threads = NULL, editable=FALSE){
             super$initialize("Bowtie2Mapping",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["fastqInput1"]] <- atacProc$getParam("fastqOutput1");
@@ -43,15 +47,15 @@ Bowtie2Mapping <-R6Class(
             }
 
             
-            if(is.null(paramList)){
-
-            }else if(length(paramList)==1 && paramList=="default"){
-                private$paramlist[["paramList"]]<-c("--no-discordant","--no-unal","--no-mixed","-X","2000",
-                                                    private$paramlist[["paramList"]])
-            }else{
-                private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
-                rejectp<-"-p|--threads|-x|-1|-2|-U|-S|--interleaved"
-                private$checkParam(paramList,rejectp)
+            if(!is.null(paramList)){
+                paramList<-trimws(as.character(paramList))
+                paramList<-paste(paramList,collapse = " ")
+                paramList <- strsplit(paramList,"\\s+")[[1]]
+                if(length(paramList)>0){
+                    rejectp<-"-p|--threads|-x|-1|-2|-U|-S|--interleaved"
+                    private$checkParam(paramList,rejectp)
+                    private$paramlist[["paramList"]]<-paramList
+                }
             }
 
             if(is.null(reportOutput)){
@@ -62,6 +66,9 @@ Bowtie2Mapping <-R6Class(
             }else{
                 private$paramlist[["reportOutput"]] <- reportOutput;
             }
+            if(!is.null(threads)){
+                private$paramlist[["threads"]] <- as.integer(threads)
+            }
             private$paramValidation()
         }
 
@@ -69,7 +76,11 @@ Bowtie2Mapping <-R6Class(
     ),
     private = list(
         processing = function(){
-            if(.obtainConfigure("threads")>1){
+            if(!is.null(private$paramlist[["threads"]])){
+                if(private$paramlist[["threads"]]>1){
+                    paramList<-paste(c(private$paramlist[["paramList"]],"-p",as.character(private$paramlist[["threads"]])),collapse = " ")
+                }
+            }else if(.obtainConfigure("threads")>1){
                 paramList<-paste(c(private$paramlist[["paramList"]],"-p",as.character(.obtainConfigure("threads"))),collapse = " ")
             }
             
@@ -200,7 +211,7 @@ Bowtie2Mapping <-R6Class(
 
 #' @rdname atacBowtie2Mapping
 #' @export 
-atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default"){
+atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                  fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
     atacproc$process()
@@ -209,7 +220,7 @@ atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Id
 
 #' @rdname atacBowtie2Mapping
 #' @export
-bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, paramList="default"){
+bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-Bowtie2Mapping$new(atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                  fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
     atacproc$process()
