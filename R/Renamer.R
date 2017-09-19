@@ -2,7 +2,9 @@ Renamer <-R6Class(
   classname = "Renamer",
   inherit = ATACProc,
   public = list(
-    initialize = function(atacProc, fastqOutput1=NULL, fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, editable=FALSE){
+    initialize = function(atacProc, fastqOutput1=NULL, fastqOutput2=NULL,
+                          fastqInput1=NULL, fastqInput2=NULL, 
+                          interleave = FALSE, threads = NULL, editable=FALSE){
       super$initialize("Renamer",editable,list(arg1=atacProc))
       if(!is.null(atacProc)){
         private$paramlist[["fastqInput1"]] <- atacProc$getParam("fastqOutput1");
@@ -43,6 +45,9 @@ Renamer <-R6Class(
       }else{
         private$paramlist[["fastqOutput2"]] <- fastqOutput2;
       }
+        if(!is.null(threads)){
+            private$paramlist[["threads"]] <- as.integer(threads)
+        }
 
       private$paramValidation()
 
@@ -53,9 +58,13 @@ Renamer <-R6Class(
         private$writeLog(paste0("processing file:"))
         private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput1"]]))
         private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput1"]]))
+        threads <- .obtainConfigure("threads")
+        if(!is.null(private$paramlist[["threads"]])){
+             threads <- private$paramlist[["threads"]]
+        }
         if(private$singleEnd||private$paramlist[["interleave"]]){
             private$singleCall(1)
-        }else if(.obtainConfigure("threads")>=2){
+        }else if(threads>=2){
             private$writeLog(paste0("processing file:"))
             private$writeLog(sprintf("source:%s",private$paramlist[["fastqInput2"]]))
             private$writeLog(sprintf("destination:%s",private$paramlist[["fastqOutput2"]]))
@@ -162,12 +171,14 @@ renamer <- function(fastqInput1=NULL,
                     fastqInput2=NULL, 
                     fastqOutput1=NULL,
                     fastqOutput2=NULL,
-                    interleave = FALSE){
+                    interleave = FALSE,
+                    threads = NULL){
     atacproc <- Renamer$new(atacProc = NULL,
                             fastqOutput1 = fastqOutput1,
                             fastqOutput2 = fastqOutput2,
                             fastqInput1 = fastqInput1,
-                            fastqInput2 = fastqInput2)
+                            fastqInput2 = fastqInput2,
+                            threads = NULL)
     atacproc$process()
     invisible(atacproc)
 }

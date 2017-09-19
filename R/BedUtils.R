@@ -171,7 +171,7 @@ BedUtils<-R6::R6Class(
 atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){
-    atacproc <- BedUtils$new(atacProc, bedInput = bedInput, bedOutput = bedOutput, report = FALSE, reportOutput = NULL, mergePair = mergePair, downSample = downSample,
+    atacproc <- BedUtils$new(atacProc, bedInput = bedInput, bedOutput = bedOutput, reportOutput = NULL, mergePair = mergePair, downSample = downSample,
                              posOffset = posOffset, negOffset= negOffset, chrFilterList= chrFilterList,select = select,
                              sortBed = sortBed, uniqueBed = uniqueBed, minFregLen = minFregLen,maxFregLen = maxFregLen)
     atacproc$process()

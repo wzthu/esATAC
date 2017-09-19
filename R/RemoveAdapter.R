@@ -2,8 +2,9 @@ RemoveAdapter <-R6Class(
     classname = "RemoveAdapter",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
-                              fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL,interleave=FALSE,paramList="default",findParamList="default",editable=FALSE){
+        initialize = function(atacProc, adapter1=NULL,adapter2=NULL,fastqOutput1=NULL, reportPrefix=NULL,
+                              fastqOutput2=NULL, fastqInput1=NULL, fastqInput2=NULL,interleave=FALSE,
+                              threads=NULL, paramList= NULL,findParamList=NULL,editable=FALSE){
             super$initialize("RemoveAdapter",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["fastqInput1"]] <- atacProc$getParam("fastqOutput1");
@@ -57,20 +58,33 @@ RemoveAdapter <-R6Class(
             private$paramlist[["adapter1"]] <- adapter1
             private$paramlist[["adapter2"]] <- adapter2
             
-            
-            if(!is.null(paramList)&&sum(paramList!="default")>0){
-                
-                rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
-                private$checkParam(paramList,rejectp)
-                private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
+            private$paramlist[["paramList"]]<-""
+            if(!is.null(paramList)){
+                paramList<-trimws(as.character(paramList))
+                paramList<-paste(paramList,collapse = " ")
+                paramList <- strsplit(paramList,"\\s+")[[1]]
+                if(length(paramList)>0){
+                    rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
+                    private$checkParam(paramList,rejectp)
+                    private$paramlist[["paramList"]]<-c(paramList,private$paramlist[["paramList"]])
+                }
             }
             
             
+            private$paramlist[["findParamList"]] <- ""         
+            if(!is.null(findParamList)){
+                findParamList<-trimws(as.character(findParamList))
+                findParamList<-paste(findParamList,collapse = " ")
+                findParamList <- strsplit(findParamList,"\\s+")[[1]]  
+                if(length(paramList)>0){
+                    rejectp<-"--file1|--file2|--threads|--identify-adapters|--basename"
+                    private$checkParam(findParamList,rejectp)
+                    private$paramlist[["findParamList"]]<-c(findParamList,private$paramlist[["findParamList"]])
+                }
+            }
             
-            if(!is.null(findParamList)&&sum(findParamList!="default")>0){
-                rejectp<-"--file1|--file2|--threads|--identify-adapters|--basename"
-                private$checkParam(findParamList,rejectp)
-                private$paramlist[["findParamList"]]<-c(findParamList,private$paramlist[["findParamList"]])
+            if(!is.null(threads)){
+                private$paramlist[["threads"]] <- as.integer(threads)
             }
             
             private$paramValidation()
@@ -80,7 +94,9 @@ RemoveAdapter <-R6Class(
     ),
     private = list(
         processing = function(){
-            if(.obtainConfigure("threads")>1){
+            if(!is.null(private$paramlist[["threads"]])&&private$paramlist[["threads"]]>1){
+                threadparam<-c("--threads",as.character(private$paramlist[["threads"]]))
+            }else if(.obtainConfigure("threads")>1){
                 threadparam<-c("--threads",as.character(.obtainConfigure("threads")))
             }else{
                 threadparam<-NULL
