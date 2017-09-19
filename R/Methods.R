@@ -67,7 +67,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                             ont = "BP", pvalueCutoff = 0.01)
         # Motif Scan and footprint
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
-        output_motifscan <- MotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
+        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
         cs_output <- atacCutSitePre(atacProc = sam2Bed, prefix = "ATAC")
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
     }
@@ -126,7 +126,8 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                    peakCalling = peakCalling,
                    DHSQC = DHSQC,
                    blacklistQC = blacklistQC,
-                   fripQC = fripQC
+                   fripQC = fripQC,
+                   shortBed = shortBed
     )
     conclusion <- list(filelist=filelist,
                        wholesummary = wholesummary,
@@ -151,7 +152,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
     }
    
-    
+    invisible(conclusion)
     
     
 
