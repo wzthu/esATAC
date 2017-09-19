@@ -11,9 +11,9 @@ atacBedUtils(atacProc, bedInput = NULL, bedOutput = NULL,
   uniqueBed = FALSE, minFregLen = 0, maxFregLen = 2e+09)
 
 bedUtils(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,
-  posOffset = 0L, negOffset = 0L, chrFilterList = c("chrM"),
-  select = FALSE, sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,
-  maxFregLen = 2e+09)
+  reportOutput = NULL, posOffset = 0L, negOffset = 0L,
+  chrFilterList = c("chrM"), select = FALSE, sortBed = FALSE,
+  uniqueBed = FALSE, minFregLen = 0, maxFregLen = 2e+09)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
