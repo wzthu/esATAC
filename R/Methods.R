@@ -95,15 +95,16 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                        
     if(createReport){
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
+        filename <- basename(filename)
         
         rmdfile<-system.file(package="atacpipe", "extdata", "Report.Rmd")
-        rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size)
+        rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         rmdtext<-sprintf(rmdtext,filename)
         
         workdir <- getwd()
         save(filelist,wholesummary,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
         
-        writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
+        writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
