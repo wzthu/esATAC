@@ -1,3 +1,33 @@
+#' @name atacPipe
+#' @title Unzip and merge fastq files
+#' @description 
+#' Unzip and merge fastq files that are in format of bzip, gzip or fastq
+#' @param fastqInput1 \code{Character} vector. For single-end sequencing,
+#' it contains sequence file paths.
+#' For paired-end sequencing, it can be file paths with #1 mates paired
+#' with file paths in fastqInput2
+#' And it can also be interleaved file paths when argument
+#' interleaved=\code{TRUE}
+#' @param fastqInput2 \code{Character} vector. It contains file paths with #2
+#' mates paired with file paths in fastqInput1
+#' For single-end sequencing files and interleaved paired-end sequencing
+#' files(argument interleaved=\code{TRUE}),
+#' it must be \code{NULL}.
+#' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
+#' path for fastqInput2. 
+#' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
+#' path for fastqInput2. 
+#' @param adapter1 \code{Character}. It is an adapter sequence for file1. 
+#' For single end data, it is requied.
+#' @param adapter2 \code{Character}. It is an adapter sequence for file2.
+#' @param interleave \code{Logical}. Set \code{TRUE} when files are
+#' interleaved paired-end sequencing data.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
+#' @export
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
