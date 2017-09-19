@@ -42,7 +42,7 @@ GraphMng <- R6Class(
             RPeakAnno, RGo
 
         )
-        edges1<-sapply(edges1,function(x) x$getProcName())
+        edges1<-sapply(edges1,function(x) x$classname)
 
 
         nodes1<-unique(edges1)
@@ -50,7 +50,7 @@ GraphMng <- R6Class(
             PeakCallingFseq,FRiPQC,
             PeakCallingFseq,RPeakComp
         )
-        edges2<-sapply(edges2,function(x) x$getProcName())
+        edges2<-sapply(edges2,function(x) x$classname)
         nodes2<-unique(edges2)
 
         allNodes<-unique(edges1)
