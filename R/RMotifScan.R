@@ -102,24 +102,59 @@ RMotifScan <- R6::R6Class(
 
 ) # R6 class end
 
-#' Finding motif binding sites in DNA sequences.
-#'
-#' @param atacProc Object from the former step.
-#' @param genome BSgenome refference.
-#' @param motifPWM A list contains several PWM matrix.
+#' @name atacMotifScan
+#' @aliases atacMotifScan
+#' @aliases motifscan
+#' @title Search Motif Position in Given Regions
+#' @description
+#' Search motif position in given genome regions according PWM matrix.
+#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacPeakCalling}}.
+#' @param peak \code{Character} scalar.
+#' Input region path. UCSC bed file is recommented. Other file should be able
+#' to import as \link[GenomicRanges]{GRanges} objects through
+#' \link[rtracklayer]{import}.
+#' @param genome A DNAString object.
+#' @param motifPWM \code{list} scalar. Default: from \code{\link{setConfigure}}.
+#' Every element in the \code{list} contains a motif PWM matrix.
+#' e.g. pwm <- list("CTCF" = CTCF_PWMmatrix)
 #' @param min.score The minimum score for counting a match. Can be given as a
 #' character string containing a percentage (e.g. "85%") of the highest
 #' possible score or as a single number.
-#' @param scanOutput Output file directory.
-#' The output file contains the exact position of each TF binding site, 1-based.
-#' Considering the motifPWM may contains multiple PWM, the program ues the name
-#' in list to generate the output file name.
-#' @param n.cores How many cores to run the program.
+#' @param scanOutput \code{Character} scalar.
+#' the output file directory. This function will use the index in motifPWM as
+#' the file name to save the motif position information in separate files.
+#' @param n.cores How many core to run this function.
+#' Default: from \code{\link{setConfigure}}.
+#' @details This function scan motif position in a given genome regions.
+#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' downstream analysis.
+#' @author Wei Zhang
+#' @seealso
+#' \code{\link{atacPeakCalling}}
+#' \code{\link{atacCutSiteCount}}
+#' \link[Biostrings]{matchPWM}
+#' \link[IRanges]{subsetByOverlaps}
+#'
 
-atacMotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
+#' @rdname atacMotifScan
+#' @export
+atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanOutput = NULL,
                       n.cores = NULL){
   tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
+                        scanOutput, n.cores)
+  tmp$process()
+  invisible(tmp)
+}
+
+#' @rdname atacMotifScan
+#' @export
+motifscan <- function(peak, genome = NULL,
+                      motifPWM = NULL, min.score = "85%", scanOutput = NULL,
+                      n.cores = NULL){
+  tmp <- RMotifScan$new(atacProc = NULL, peak, genome, motifPWM, min.score,
                         scanOutput, n.cores)
   tmp$process()
   invisible(tmp)

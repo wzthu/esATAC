@@ -94,15 +94,59 @@ RGo <- R6::R6Class(
 
 ) # R6 class end
 
-#' Using clusterProfiler to do GO analysis.
-#' @param atacProc Result from function "PeakAnno", extract all the gene ID.
-#' @param ont One of "MF", "BP", and "CC" subontologies. "MF" for molecular function,
+#' @name atacGOAnalysis
+#' @aliases atacGOAnalysis
+#' @aliases goanalysis
+#' @title Gene Ontology Analysis
+#' @description
+#' Ranking functional groups based on a set of genes. For more information,
+#' please see \link[clusterProfiler]{enrichGO}.
+#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacPeakAnno}}.
+#' @param gene A vector of entrez gene id.
+#' @param OrgDb Genome wide annotation databese.
+#' @param keytype Keytype of input gene.
+#' @param ont One of "MF", "BP", and "CC" subontologies.
+#' "MF" for molecular function,
 #' "BP" for biological process, "CC" for cellular component.
-#'
-GOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
+#' @param pvalueCutoff pvalueCutoff.
+#' @param pAdjustMethod One of "holm", "hochberg", "hommel",
+#' "bonferroni", "BH", "BY", "fdr", "none".
+#' @param universe Background genes.
+#' @param qvalueCutoff qvalue cutoff.
+#' @param readable whether mapping gene ID to gene Name.
+#' @param pool If ont=’ALL’, whether pool 3 GO sub-ontologies.
+#' @param goOutput \code{Character} scalar.
+#' Output file path. Defult:in the same folder as your input file with the
+#' suffix "df".
+#' @details This function using \link[clusterProfiler]{enrichGO} to do GO
+#' analysis but fixed some parameters. If atacProc is not NULL, it will read
+#' the gene ID from the output of \code{\link{atacPeakAnno}}.
+#' @return An invisible \code{\link{ATACProc}} object scalar.
+#' @author Wei Zhang
+#' @seealso
+#' \code{\link{atacPeakAnno}}
+#' \link[clusterProfiler]{enrichGO} function enrichGO in package
+#' "clusterProfiler"
+
+#' @rdname atacGOAnalysis
+#' @export
+atacGOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                        pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
                        readable = FALSE, pool = FALSE, goOutput = NULL){
   tmp <- RGo$new(atacProc, gene, OrgDb, keytype, ont, pvalueCutoff,
+                 pAdjustMethod , universe, qvalueCutoff, readable, pool, goOutput)
+  tmp$process()
+  invisible(tmp)
+}
+
+#' @rdname atacGOAnalysis
+#' @export
+goanalysis <- function(gene, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
+                       pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
+                       readable = FALSE, pool = FALSE, goOutput = NULL){
+  tmp <- RGo$new(atacProc = NULL, gene, OrgDb, keytype, ont, pvalueCutoff,
                  pAdjustMethod , universe, qvalueCutoff, readable, pool, goOutput)
   tmp$process()
   invisible(tmp)

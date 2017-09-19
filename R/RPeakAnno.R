@@ -3,13 +3,10 @@ RPeakAnno <- R6::R6Class(
   inherit = ATACProc,
 
   public = list(
-    initialize = function(atacProc, peakInput = NULL, tssRegion = NULL, TxDb = NULL,
-                          level = NULL, assignGenomicAnnotation = NULL,
-                          genomicAnnotationPriority = NULL,
-                          annoDb = NULL, addFlankGeneInfo = NULL,
-                          flankDistance = NULL, sameStrand = NULL, ignoreOverlap = NULL,
-                          ignoreUpstream = NULL, ignoreDownstream = NULL, overlap = NULL,
-                          verbose = NULL, annoOutput = NULL, editable = FALSE){
+    initialize = function(atacProc = NULL, peakInput = NULL, tssRegion = NULL, TxDb = NULL, level = NULL,
+                          genomicAnnotationPriority = NULL, annoDb = NULL, addFlankGeneInfo = NULL,
+                          flankDistance = NULL, sameStrand = NULL, ignoreOverlap = NULL, ignoreUpstream = NULL,
+                          ignoreDownstream = NULL, overlap = NULL, annoOutput = NULL, editable = FALSE){
       super$initialize("RPeakAnno", editable, list(arg1 = atacProc))
 
       # necessary parameters
@@ -28,7 +25,6 @@ RPeakAnno <- R6::R6Class(
       }
 
       private$paramlist[["level"]] <- level
-      private$paramlist[["assignGenomicAnnotation"]] <- assignGenomicAnnotation
       private$paramlist[["genomicAnnotationPriority"]] <- genomicAnnotationPriority
       private$paramlist[["annoDb"]] <- annoDb
       private$paramlist[["addFlankGeneInfo"]] <- addFlankGeneInfo
@@ -38,19 +34,18 @@ RPeakAnno <- R6::R6Class(
       private$paramlist[["ignoreUpstream"]] <- ignoreUpstream
       private$paramlist[["ignoreDownstream"]] <- ignoreDownstream
       private$paramlist[["overlap"]] <- overlap
-      private$paramlist[["verbose"]] <- verbose
 
       # unnecessary parameters
       if(is.null(annoOutput)){
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
         annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
-                                                       paste0(prefix, ".", self$getProcName()))
+                                    paste0(prefix, ".", self$getProcName()))
         private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
                                                        ".pdf", sep = "")
         private$paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
                                                       ".df", sep = "")
         private$paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
-                                                      ".rds", sep = "")
+                                                       ".rds", sep = "")
       }else{
         name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
         suffix <- tail(name_split, 1)
@@ -83,7 +78,6 @@ RPeakAnno <- R6::R6Class(
                                          tssRegion = private$paramlist[["tssRegion"]],
                                          TxDb = private$paramlist[["TxDb"]],
                                          level = private$paramlist[["level"]],
-                                         assignGenomicAnnotation = private$paramlist[["assignGenomicAnnotation"]],
                                          genomicAnnotationPriority = private$paramlist[["genomicAnnotationPriority"]],
                                          annoDb = private$paramlist[["annoDb"]],
                                          addFlankGeneInfo = private$paramlist[["addFlankGeneInfo"]],
@@ -92,8 +86,7 @@ RPeakAnno <- R6::R6Class(
                                          ignoreOverlap = private$paramlist[["ignoreOverlap"]],
                                          ignoreUpstream = private$paramlist[["ignoreUpstream"]],
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
-                                         overlap = private$paramlist[["overlap"]],
-                                         verbose = private$paramlist[["verbose"]])
+                                         overlap = private$paramlist[["overlap"]])
       saveRDS(peakAn, private$paramlist[["annoOutput.rds"]])
       pdf(file = private$paramlist[["annoOutput.pdf"]])
       ChIPseeker::plotAnnoPie(x = peakAn)
@@ -133,26 +126,83 @@ RPeakAnno <- R6::R6Class(
 
 ) # R6 class end
 
-#' Using ChIPseeker to annotate peak file.
-#'
-#' Just for test, other parameters will be add.
-#' @param Input peak file, bed format.
-#' @param Output Output file, default Input_path/output.csv.
-PeakAnno <- function(atacProc = NULL, peakInput = NULL, tssRegion = c(-3000, 3000), TxDb = NULL,
-                     level = "transcript", assignGenomicAnnotation = TRUE,
-                     genomicAnnotationPriority = c("Promoter", "5UTR", "3UTR", "Exon", "Intron",
+#' @name atacPeakAnno
+#' @aliases atacPeakAnno
+#' @aliases peakanno
+#' @title Annotate ATAC-seq Peak
+#' @description
+#' This function annotates ATAC-seq peak by a given annotation database.
+#' For more information, please see \link[ChIPseeker]{annotatePeak}.
+#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacPeakCalling}}.
+#' @param peakInput \code{Character} scalar.
+#' Input peak file path. UCSC bed file is recommented. Other file should be
+#' able to import as \link[GenomicRanges]{GRanges} objects through
+#' \link[rtracklayer]{import}.
+#' @param tssRegion Region range of TSS, default:c(-1000, 1000).
+#' @param TxDb TxDb object, annotation database.
+#' @param level "transcript" or "gene".
+#' @param genomicAnnotationPriority genomic annotation priority.
+#' @param annoDb Gene annotation database.
+#' @param addFlankGeneInfo logical, add flanking gene information from
+#' the peaks.
+#' @param flankDistance distance of flanking sequence.
+#' @param sameStrand logical, whether find nearest/overlap gene in the
+#' same strand.
+#' @param ignoreOverlap logical, whether ignore overlap of TSS with peak.
+#' @param ignoreUpstream logical, if True only annotate gene at the 3'
+#' of the peak.
+#' @param ignoreDownstream logical, if True only annotate gene at the
+#' 5' of the peak.
+#' @param overlap one of 'TSS' or 'all', if overlap="all", then gene overlap
+#' with peak will be reported as nearest gene, no matter the overlap is at TSS
+#' region or not.
+#' @param annoOutput \code{Character} scalar.
+#' the output file path.
+#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' downstream analysis.
+#' @author Wei Zhang
+#' @seealso
+#' \code{\link{atacPeakCalling}}
+#' \code{\link{atacGOAnalysis}}
+
+#' @rdname atacPeakAnno
+#' @export
+atacPeakAnno <- function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
+                         TxDb = NULL, level = "transcript",
+                         genomicAnnotationPriority = c("Promoter", "5UTR",
+                                                       "3UTR", "Exon", "Intron",
+                                                       "Downstream", "Intergenic"),
+                         annoDb = NULL, addFlankGeneInfo = FALSE,
+                         flankDistance = 5000, sameStrand = FALSE,
+                         ignoreOverlap = FALSE, ignoreUpstream = FALSE,
+                         ignoreDownstream = FALSE, overlap = "TSS",
+                         annoOutput = NULL){
+  tmp <- RPeakAnno$new(atacProc, peakInput, tssRegion, TxDb, level,
+                       genomicAnnotationPriority, annoDb, addFlankGeneInfo,
+                       flankDistance, sameStrand, ignoreOverlap, ignoreUpstream,
+                       ignoreDownstream, overlap, annoOutput)
+  tmp$process()
+  invisible(tmp)
+}
+
+#' @rdname atacPeakAnno
+#' @export
+peakanno <- function(peakInput, tssRegion = c(-1000, 1000),
+                     TxDb = NULL, level = "transcript",
+                     genomicAnnotationPriority = c("Promoter", "5UTR",
+                                                   "3UTR", "Exon", "Intron",
                                                    "Downstream", "Intergenic"),
                      annoDb = NULL, addFlankGeneInfo = FALSE,
-                     flankDistance = 5000, sameStrand = FALSE, ignoreOverlap = FALSE,
-                     ignoreUpstream = FALSE, ignoreDownstream = FALSE, overlap = "TSS",
-                     verbose = TRUE, annoOutput = NULL){
-  tmp <- RPeakAnno$new(atacProc, peakInput, tssRegion, TxDb,
-                       level, assignGenomicAnnotation,
-                       genomicAnnotationPriority,
-                       annoDb, addFlankGeneInfo,
-                       flankDistance, sameStrand, ignoreOverlap,
-                       ignoreUpstream, ignoreDownstream, overlap,
-                       verbose, annoOutput)
+                     flankDistance = 5000, sameStrand = FALSE,
+                     ignoreOverlap = FALSE, ignoreUpstream = FALSE,
+                     ignoreDownstream = FALSE, overlap = "TSS",
+                     annoOutput = NULL){
+  tmp <- RPeakAnno$new(atacProc = NULL, peakInput, tssRegion, TxDb, level,
+                       genomicAnnotationPriority, annoDb, addFlankGeneInfo,
+                       flankDistance, sameStrand, ignoreOverlap, ignoreUpstream,
+                       ignoreDownstream, overlap, annoOutput)
   tmp$process()
   invisible(tmp)
 }

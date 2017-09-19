@@ -66,6 +66,8 @@ BamToBed <- R6::R6Class(
 
 
 #' @name atacBam2Bed
+#' @aliases atacBam2Bed
+#' @aliases bam2bed
 #' @title Convert bam format to bed format.
 #' @description
 #' This function convert a bam file into a bed file.
@@ -81,20 +83,27 @@ BamToBed <- R6::R6Class(
 #' the bam file.
 #' @details The bam file wiil be automatically obtained from
 #' object(\code{atacProc}) or input by hand. Output can be ignored.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' downstream analysis.
 #' @author Wei Zhang
-#' @export atacBam2Bed
-#' @export Bam2Bed
 #' @seealso
 #' \code{\link{atacBamSort}}
 #' \code{\link{atacSam2Bam}}
+#' \link[rtracklayer]{import}
+#' \link[rtracklayer]{export}
+
+
+#' @rdname atacBam2Bed
+#' @export
 atacBam2Bed <- function(atacProc, bamInput = NULL, bedOutput = NULL){
   tmp <- BamToBed$new(atacProc, bamInput, bedOutput)
   tmp$process()
   invisible(tmp)
 }
 
-Bam2Bed <- function(bamInput, bedOutput = NULL){
+#' @rdname atacBam2Bed
+#' @export
+bam2bed <- function(bamInput, bedOutput = NULL){
   tmp <- BamToBed$new(atacProc = NULL, bamInput, bedOutput)
   tmp$process()
   invisible(tmp)
