@@ -36,7 +36,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         goAna <- GOAnalysis(atacProc = peakAnnotation, OrgDb = "org.Hs.eg.db",
                             ont = "BP", pvalueCutoff = 0.01)
         # Motif Scan and footprint
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="atacpipe"))
+        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
         output_motifscan <- MotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
         cs_output <- atacCutSitePre(atacProc = sam2Bed, prefix = "ATAC")
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
@@ -107,7 +107,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
         
-        rmdfile<-system.file(package="atacpipe", "extdata", "Report.Rmd")
+        rmdfile<-system.file(package="ATACFlow", "extdata", "Report.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         rmdtext<-sprintf(rmdtext,filename)
         
