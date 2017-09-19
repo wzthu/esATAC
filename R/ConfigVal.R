@@ -167,9 +167,9 @@
 .configObj<-.ConfigClass$new()
 
 
-#' @name atacBedToBigWig
-#' @aliases atacBedToBigWig
-#' @aliases bedToBigWig
+#' @name configureValue
+#' @aliases getConfigure
+#' @aliases setConfigure
 #' @title generate BigWig file from BED file
 #' @description 
 #' This function is used to generate BigWig file 
@@ -179,39 +179,29 @@
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSamToBed}}, 
 #' \code{\link{atacBedUtils}}.
-#' @param bedInput \code{Character} scalar. 
+#' @param item \code{Character} scalar. 
 #' Bed file input path. 
-#' @param bwOutput \code{Character} scalar. 
+#' @param val \code{Character} scalar. 
 #' BigWig file output path.
-#' @param toWig \code{Logical} scalar.
-#' Save as wig file instead of binary BigWig file
-#' @details The parameter related to input and output file path
-#' will be automatically 
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-#' generated based on known parameters 
-#' if their values are default(e.g. \code{NULL}).
-#' Otherwise, the generated values will be overwrited.
-#' If you want to use this function independently, 
-#' \code{atacProc} should be set \code{NULL} 
-#' or you can use \code{bedToBigWig} instead.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return \code{Character} scalar or TxDb object.
 #' @author Zheng Wei
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBedUtils}}
 
-#' @rdname atacBedToBigWig
-#' @export 
+
 getAllConfigure<-function(){
     .configObj$getAllConfigure();
 }
-
+#' @rdname configureValue
+#' @export 
 getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
     return(.configObj$getConfigure(item));
 }
 
 
-
+#' @rdname configureValue
+#' @export 
 setConfigure<- function(item = c("threads","tmpdir","refdir","genome"),val){
     if(is.null(val)){
         return()
