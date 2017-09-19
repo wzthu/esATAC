@@ -17,7 +17,7 @@
 #include <Rcpp.h>
 
 // [[Rcpp::export]]
-int renamer(Rcpp::List argvs) {
+int fastxrenamer(Rcpp::List argvs) {
         std::string ipath = Rcpp::as<std::string>(argvs["inputFile"]);
         std::string opath = Rcpp::as<std::string>(argvs["outputFile"]);
         std::string filetype = Rcpp::as<std::string>(argvs["fileType"]);

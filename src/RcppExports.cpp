@@ -5,14 +5,14 @@
 
 using namespace Rcpp;
 
-// renamer
-int renamer(Rcpp::List argvs);
-RcppExport SEXP _ATACFlow_renamer(SEXP argvsSEXP) {
+// fastxrenamer
+int fastxrenamer(Rcpp::List argvs);
+RcppExport SEXP _ATACFlow_fastxrenamer(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
-    rcpp_result_gen = Rcpp::wrap(renamer(argvs));
+    rcpp_result_gen = Rcpp::wrap(fastxrenamer(argvs));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -109,7 +109,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_ATACFlow_renamer", (DL_FUNC) &_ATACFlow_renamer, 1},
+    {"_ATACFlow_fastxrenamer", (DL_FUNC) &_ATACFlow_fastxrenamer, 1},
     {"_ATACFlow_mergeFile", (DL_FUNC) &_ATACFlow_mergeFile, 2},
     {"_ATACFlow_R_sam2bed_wrapper", (DL_FUNC) &_ATACFlow_R_sam2bed_wrapper, 2},
     {"_ATACFlow_R_sam2bed_merge_wrapper", (DL_FUNC) &_ATACFlow_R_sam2bed_merge_wrapper, 2},
