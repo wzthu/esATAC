@@ -1,6 +1,6 @@
 Renamer <-R6Class(
   classname = "Renamer",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, fastqOutput1=NULL, fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, editable=FALSE){
       super$initialize("Renamer",editable,list(arg1=atacProc))
@@ -97,7 +97,51 @@ Renamer <-R6Class(
 
 )
 
+#' @name atacRenamer
+#' @aliases atacRenamer
+#' @aliases renamer
+#' @title Rename reads name in fastq 
+#' @description 
+#' Rename reads name in fastq with increasing integer  
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param fastqInput1 \code{Character} scalar. For single-end sequencing,
+#' it contains sequence file paths.
+#' For paired-end sequencing, it can be file path with #1 mates paired
+#' with file path in file2
+#' And it can also be interleaved file paths when argument
+#' interleave=\code{TRUE}
+#' @param fastqInput2 \code{Character} scalar. It contains file path with #2
+#' mates paired with file paths in fastqInput1
+#' For single-end sequencing files and interleaved paired-end sequencing
+#' files(argument interleaved=\code{TRUE}),
+#' it must be \code{NULL}.
+#' @param fastqOutput1 \code{Character} scalar. 
+#' The output file path of renamed fastqInput1.
+#' @param fastqOutput2 \code{Character} scalar. 
+#' The output file path of renamed fastqInput2.
+#' @param interleave \code{Character} scalar. 
+#' Set \code{TRUE} when files are
+#' interleaved paired-end sequencing data.
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{renamer} instead.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacRenamer
+#' @export 
 atacRenamer <- function(atacProc, 
                         fastqOutput1=NULL,
                         fastqOutput2=NULL,
@@ -105,6 +149,21 @@ atacRenamer <- function(atacProc,
                         fastqInput2=NULL, 
                         interleave = FALSE){
     atacproc <- Renamer$new(atacProc = atacProc,
+                            fastqOutput1 = fastqOutput1,
+                            fastqOutput2 = fastqOutput2,
+                            fastqInput1 = fastqInput1,
+                            fastqInput2 = fastqInput2)
+    atacproc$process()
+    invisible(atacproc)
+}
+#' @rdname atacRenamer
+#' @export 
+renamer <- function(fastqInput1=NULL, 
+                    fastqInput2=NULL, 
+                    fastqOutput1=NULL,
+                    fastqOutput2=NULL,
+                    interleave = FALSE){
+    atacproc <- Renamer$new(atacProc = NULL,
                             fastqOutput1 = fastqOutput1,
                             fastqOutput2 = fastqOutput2,
                             fastqInput1 = fastqInput1,

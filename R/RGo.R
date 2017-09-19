@@ -1,6 +1,6 @@
 RGo <- R6::R6Class(
   classname = "RGo",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, gene = NULL, OrgDb = NULL, keytype = NULL, ont = NULL,
@@ -12,7 +12,8 @@ RGo <- R6::R6Class(
       if(!is.null(atacProc)){
         tmp <- read.table(file = atacProc$getParam("annoOutput.df"), header = TRUE,
                           sep = "\t", quote = "")
-        private$paramlist[["gene"]] <- as.character(base::unique(tmp$geneId))
+        # private$paramlist[["gene"]] <- as.character(base::unique(tmp$geneId))
+        private$paramlist[["gene"]] <- as.character(tmp$geneId)
         regexProcName <- sprintf("(df|%s)", atacProc$getProcName())
       }else{
         private$paramlist[["gene"]] <- gene

@@ -1,35 +1,35 @@
 CutSiteCountR <- R6::R6Class(
   classname = "CutSiteCountR",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
-    initialize = function(atacProcCutSite, csInput = NULL,
-                          motifInput = NULL, chr = NULL, matrixOutput = NULL, motifLength = NULL,
-                          strandLength = NULL, FootPrint = NULL, editable = FALSE){
-      super$initialize("CutSiteCountR", editable, list(arg1 = atacProcCutSite))
+    initialize = function(atacProcCutSite, atacProcMotifScan, csInput = NULL,
+                          motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
+                          strandLength = NULL, FootPrint = TRUE, editable = FALSE){
+      super$initialize("CutSiteCountR", editable, list(arg1 = atacProcCutSite, arg2 = atacProcMotifScan))
 
       # necessary parameters
       if(!is.null(atacProcCutSite)){
-        private$paramlist[["csInput"]] <- atacProcCutSite$getParam("csOutput");
+        private$paramlist[["csfile.dir"]] <- atacProcCutSite$getParam("csfile.dir");
       }else{
-        private$paramlist[["csInput"]] <- csInput
+        private$paramlist[["csfile.dir"]] <- csInput
       }
-      private$paramlist[["motifInput"]] <- motifInput
+      if(!is.null(atacProcMotifScan)){
+        private$paramlist[["motif_info"]] <- readRDS(atacProcMotifScan$getParam("rdsOutput"))
+      }else{
+        private$paramlist[["motif_info"]] <- read.table(motif_info)
+      }
       private$paramlist[["chr"]] <- as.list(chr)
-      private$paramlist[["motifLength"]] <- motifLength
       private$paramlist[["strandLength"]] <- strandLength
       private$paramlist[["FootPrint"]] <- FootPrint
-      # unnecessary parameters
+
       if(is.null(matrixOutput)){
-        prefix <- private$getBasenamePrefix(private$paramlist[["motifInput"]], "")
-        private$paramlist[["matrixOutput.dir"]] <- paste(.obtainConfigure("tmpdir"),
-                                                         "/Motif_",
-                                                         prefix, sep = "")
-        dir.create(private$paramlist[["matrixOutput.dir"]])
-        private$paramlist[["matrixOutput"]] <- paste(private$paramlist[["matrixOutput.dir"]],
-                                                     "/", prefix, sep = "")
+        private$paramlist[["matrixfile.dir"]] <- paste(.obtainConfigure("tmpdir"),
+                                                       "/Footprint", sep = "")
       }else{
-        private$paramlist[["matrixOutput"]] <- matrixOutput
+        private$paramlist[["matrixfile.dir"]] <- matrixOutput
       }
+      dir.create(private$paramlist[["matrixfile.dir"]])
+
       # parameter check
       private$paramValidation()
     } # initialization end
@@ -38,72 +38,78 @@ CutSiteCountR <- R6::R6Class(
 
   private = list(
     processing = function(){
-      private$writeLog(paste0("processing file:"))
-      private$writeLog(sprintf("Cut site:%s", private$paramlist[["csInput"]]))
-      private$writeLog(sprintf("Motif:%s", private$paramlist[["motifInput"]]))
-      private$writeLog(sprintf("Matrix destination:%s", private$paramlist[["matrixOutput"]]))
-      tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
-      # using tmp dir to save temp data
-      dir.create(tmp_dir, FALSE, TRUE, "0700")
-      .chr_separate_call(ReadsIfile = private$paramlist[["motifInput"]],
-                         ReadsOpath = tmp_dir,
-                         Name = "/Motif")
-      motif_tmp <- paste(tmp_dir, "/Motif", sep = "")
+      private$writeLog(paste0("Now, start processing!"))
+      motif_num <- nrow(private$paramlist[["motif_info"]])
+      for(i in seq(motif_num)){
+        motif_name <- private$paramlist[["motif_info"]][i,1]
+        motif_file <- private$paramlist[["motif_info"]][i,2]
+        motif_length <- private$paramlist[["motif_info"]][i,3]
+        matrixsave.dir <- file.path(private$paramlist[["matrixfile.dir"]], motif_name)
+        dir.create(matrixsave.dir)
+        footprint.path <- file.path(.obtainConfigure("tmpdir"), paste(motif_name, ".pdf", sep = ""))
+        # start!
+        private$writeLog(sprintf("Start Processing %s", motif_name))
+        private$writeLog(sprintf("Matrix Destination:%s", matrixsave.dir))
+        private$writeLog(sprintf("Footprint PDF Destination:%s", matrixsave.dir))
+        tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
+        # using tmp dir to save temp data
+        dir.create(tmp_dir, FALSE, TRUE, "0700")
+        .chr_separate_call(ReadsIfile = motif_file,
+                           ReadsOpath = tmp_dir,
+                           Name = "/Motif")
+        motif_tmp <- paste(tmp_dir, "/Motif", sep = "")
 
-      chr <- private$paramlist[["chr"]]
-      chr_len <- length(chr)
-      for(i in seq(1:chr_len)){
-        echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
-        print(echo_str)
-        CutSiteInput <- paste0(private$paramlist[["csInput"]], "_chr", chr[[i]], ".cs", collapse = "")
-        MotifInput <- paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
-        MatrixOutput <- paste0(private$paramlist[["matrixOutput"]], "_chr", chr[[i]], ".matrix", collapse = "")
-        .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
-                      motif_len = private$paramlist[["motifLength"]], strand_len = private$paramlist[["strandLength"]])
-        if(i == 1){
-          data <- try(read.table(MatrixOutput), silent = TRUE)
-          if(inherits(data, "try-error")){
-            data <- data.frame()
+        chr <- private$paramlist[["chr"]]
+        chr_len <- length(chr)
+        for(i in seq(1:chr_len)){
+          echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
+          print(echo_str)
+          CutSiteInput <- paste0(private$paramlist[["csfile.dir"]], "_chr", chr[[i]], ".cs", collapse = "")
+          MotifInput <- paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
+          MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
+          .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
+                        motif_len = motif_length, strand_len = private$paramlist[["strandLength"]])
+          if(i == 1){
+            data <- try(read.table(MatrixOutput), silent = TRUE)
+            if(inherits(data, "try-error")){
+              data <- data.frame()
+            }
+          }else{
+            temp <- try(read.table(MatrixOutput), silent = TRUE)
+            if(inherits(temp, "try-error")){
+              temp <- data.frame()
+            }
+            data <- rbind(data, temp)
           }
-        }else{
-          temp <- try(read.table(MatrixOutput), silent = TRUE)
-          if(inherits(temp, "try-error")){
-            temp <- data.frame()
-          }
-          data <- rbind(data, temp)
         }
+        if(private$paramlist[["FootPrint"]]){
+          fp <- apply(data, 2, sum)
+          pdf(file = footprint.path)
+          plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+          axis(1, at = seq(1, private$paramlist[["strandLength"]], len = 3),
+               labels = -(private$paramlist[["strandLength"]] + 1 - seq(1, private$paramlist[["strandLength"]] + 1, len = 3)),
+               padj = -1.0, tck = -0.01)
+          axis(1, at = private$paramlist[["strandLength"]] + motif_length + seq(1, private$paramlist[["strandLength"]], len = 3),
+               labels = seq(0, private$paramlist[["strandLength"]], len = 3),
+               padj = -1.0, tck = -0.01)
+          axis(2, padj = 1.0,tck = -0.02)
+          abline(v = c(private$paramlist[["strandLength"]], private$paramlist[["strandLength"]] + motif_length + 1),
+                 lty = 2)
+          dev.off()
+        }
+
       }
-      if(private$paramlist[["FootPrint"]]){
-        fp <- apply(data, 2, sum)
-        plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-        axis(1, at = seq(1, private$paramlist[["strandLength"]], len = 3),
-             labels = -(private$paramlist[["strandLength"]] + 1 - seq(1, private$paramlist[["strandLength"]] + 1, len = 3)),
-             padj = -1.0, tck = -0.01)
-        axis(1, at = private$paramlist[["strandLength"]] + private$paramlist[["motifLength"]] + seq(1, private$paramlist[["strandLength"]], len = 3),
-             labels = seq(0, private$paramlist[["strandLength"]], len = 3),
-             padj = -1.0, tck = -0.01)
-        axis(2, padj = 1.0,tck = -0.02)
-        abline(v = c(private$paramlist[["strandLength"]], private$paramlist[["strandLength"]] + private$paramlist[["motifLength"]] + 1),
-               lty = 2)
-      }
+
     }, # processing end
 
     checkRequireParam = function(){
-      if(is.null(private$paramlist[["csInput"]])){
+      if(is.null(private$paramlist[["csfile.dir"]])){
         stop("Parameter csInput is required!")
-      }
-      if(is.null(private$paramlist[["motifInput"]])){
-        stop("Parameter motifInput is required!")
-      }
-      if(is.null(private$paramlist[["motifLength"]])){
-        stop("Parameter motifLength is required!")
       }
     }, # checkRequireParam end
 
     checkAllPath = function(){
-      private$checkPathExist(private$paramlist[["csInput"]])
-      private$checkPathExist(private$paramlist[["motifInput"]])
-      private$checkPathExist(private$paramlist[["matrixOutput"]])
+      private$checkPathExist(private$paramlist[["csfile.dir"]])
     } # checkAllPath end
 
   ) # private end
@@ -111,25 +117,64 @@ CutSiteCountR <- R6::R6Class(
 ) # class end
 
 
-#' Counting cut site around motif.
-#' @param atacProcCutSite Result from function atacCutSitePre.
-#' @param csInput Your cut site information file(from atacCutSitePre function) path with prefix.
+#' @name atacCutSiteCount
+#' @title Count cut site number in given motif region.
+#' @description This function is used to count cut site number in given motif
+#' region and plot footprint. Multi-motif is supported.
+#' NOTE: The input parameter is a a little bit complex,
+#' \code{atacCutSitePre} and \code{atacMotifScan} is recommended to use which
+#' makes the entire procedure easier.
+#' @param atacProcCutSite \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacCutSitePre}}.
+#' @param atacProcMotifScan \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacMotifScan}}.
+#' @param csInput Your cut site information file(from atacCutSitePre function,
+#' separated by chromatin name and all cut site are sorted) path with prefix.
 #' e.g. "/your_cut_site_information_path/prefix"
-#' @param motifInput Your motif information file(from MotifScan function, set position = TRUE).
-#' The first 4 columns of the motif file must be "chr start_site end_site strand".
-#' @param chr Which chromatin the program will processing.Default:c(1:22, "X", "Y").
-#' @param matrixOutput The output path with a prefix, an empty folder would be great.
-#' e.g. "/where_you_want_to_save_output/prefix".Default:tmp/MOTIF_name/MOTIF_name.
-#' @param motifLength Motif length.
-#' @param strandLength How many bp(base pair) do you want to count up/downstream of the motif.
-#' default:100.
+#' @param motif_info A rds file from function \code{\link{atacMotifScan}}.
+#' In the rds file, it saves 3 column information(motif, motif exact position
+#' information file path and motif length).
+#' @param chr Which chromatin the program will processing. It must be identical
+#' with the file name of cut site information file.
+#' Default:c(1:22, "X", "Y").
+#' @param matrixOutput The output directory, where to save your cut site count
+#' of every motif position. an empty folder would be great.
+#' Default:tmpdir/Footprint
+#' @param strandLength How many bp(base pair) do you want to count
+#' up/downstream of the motif. default:100.
 #' @param FootPrint TRUE or FALSE, plot footprint or not.
-#' @export
-atacCutSiteCount <- function(atacProcCutSite = NULL, csInput = NULL,
-                             motifInput = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL, motifLength = NULL,
+#' @details The parameter is simplified because of too many input file.
+#' parameter \code{atacProcCutSite} and \code{atacProcMotifScan} contains all
+#' input information so function \code{\link{atacCutSitePre}} and
+#' \code{\link{atacMotifScan}} is recommended to use together. For instance,
+#' if you want footprint of 3 TFs (transcription factor) of human in
+#' chr1-22, X, Y, then you need 24 chromatin cut site files, 3 motif position
+#' files as well as 3 integers of the motif. Function \code{atacCutSitePre} and
+#' \code{atacMotifScan} will do all this, you just specify which motif you want.
+#' Therefore, \code{\link{atacCutSitePre}} and \code{\link{atacMotifScan}} is
+#' recommended to use together.
+#' @return An invisible \code{\link{ATACProc}} object scalar.
+#' @author Wei Zhang
+#' @export atacCutSiteCount
+#' @export CutSiteCount
+#' @seealso
+#' \code{\link{atacCutSitePre}}
+#' \code{\link{atacMotifScan}}
+atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
+                             motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                              strandLength = 100, FootPrint = TRUE){
-  tmp <- CutSiteCountR$new(atacProcCutSite, csInput, motifInput, chr,
-                           matrixOutput, motifLength, strandLength, FootPrint)
+  tmp <- CutSiteCountR$new(atacProcCutSite, atacProcMotifScan, csInput,
+                           motif_info, chr, matrixOutput, strandLength, FootPrint)
+  tmp$process()
+  invisible(tmp)
+}
+
+CutSiteCount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
+                         matrixOutput = NULL, strandLength = 100, FootPrint = TRUE){
+  tmp <- CutSiteCountR$new(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput,
+                           motif_info, chr, matrixOutput, strandLength, FootPrint)
   tmp$process()
   invisible(tmp)
 }

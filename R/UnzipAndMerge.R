@@ -1,6 +1,6 @@
 UnzipAndMerge <-R6Class(
     classname = "UnzipAndMerge",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(fastqInput1, fastqInput2=NULL,fastqOutput1=NULL,fastqOutput2=NULL,interleave = FALSE,editable = FALSE){
             super$initialize("UnzipAndMerge",editable,list())
@@ -161,7 +161,37 @@ UnzipAndMerge <-R6Class(
 
 
 
+#' @name atacUnzipAndMerge
+#' @aliases atacUnzipAndMerge
+#' @aliases removeAdapter
+#' @title Unzip and merge fastq files
+#' @description 
+#' Unzip and merge fastq files that are in format of bzip, gzip or fastq
+#' @param fastqInput1 \code{Character} vector. For single-end sequencing,
+#' it contains sequence file paths.
+#' For paired-end sequencing, it can be file paths with #1 mates paired
+#' with file paths in fastqInput2
+#' And it can also be interleaved file paths when argument
+#' interleaved=\code{TRUE}
+#' @param fastqInput2 \code{Character} vector. It contains file paths with #2
+#' mates paired with file paths in fastqInput1
+#' For single-end sequencing files and interleaved paired-end sequencing
+#' files(argument interleaved=\code{TRUE}),
+#' it must be \code{NULL}.
+#' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
+#' path for fastqInput2. 
+#' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
+#' path for fastqInput2. 
+#' @param interleave \code{Logical}. Set \code{TRUE} when files are
+#' interleaved paired-end sequencing data.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacUnzipAndMerge
+#' @export 
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
                              interleave = FALSE){
@@ -173,3 +203,18 @@ atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
     atacproc$process();
     invisible(atacproc);
 }
+
+#' @rdname atacUnzipAndMerge
+#' @export 
+unzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
+                             fastqOutput1=NULL,fastqOutput2=NULL,
+                             interleave = FALSE){
+    atacproc <- UnzipAndMerge$new(fastqInput1 = fastqInput1,
+                                  fastqInput2 = fastqInput2,
+                                  fastqOutput1 = fastqOutput1,
+                                  fastqOutput2 = fastqOutput2,
+                                  interleave = interleave);
+    atacproc$process();
+    invisible(atacproc);
+}
+

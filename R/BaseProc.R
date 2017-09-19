@@ -1,5 +1,5 @@
-BaseProc <- R6Class(
-  classname = "BaseProc",
+ATACProc <- R6Class(
+  classname = "ATACProc",
   public = list(
     fileType = list(fq="fq",fastq="fq",fa="fa",fasta="fa"),
     initialize = function(procName,editable,atacProcs){

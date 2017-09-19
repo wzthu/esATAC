@@ -154,6 +154,11 @@
                 append <- TRUE
             }
             return(outFile)
+        },
+        GetOrgDb = function(genome){
+            if(genome == hg19||genome == hg38){
+                return("org.Hs.eg.db")
+            }
         }
 
     )
@@ -165,7 +170,7 @@ getAllConfigure<-function(){
     .configObj$getAllConfigure();
 }
 
-getConfigure <- function(item = c("threads","tmpdir","datadir","genome","kownGene","bsgenome","bt2Idx","DHS","blacklist")){
+getConfigure <- function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
     return(.configObj$getConfigure(item));
 }
 
@@ -185,7 +190,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,datadir=NULL,genome=NULL){
     setConfigure("genome",genome)
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","kownGene","bsgenome","bt2Idx","DHS","blacklist")){
+.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
     val<-.configObj$getConfigure(item);
     if(is.null(val)){
         stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))

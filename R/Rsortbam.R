@@ -1,6 +1,6 @@
 Rsortbam <- R6::R6Class(
   classname = "Rsortbam",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, bamInput = NULL, bamOutput = NULL, editable=FALSE){
       super$initialize("Rsortbam", editable, list(arg1 = atacProc))

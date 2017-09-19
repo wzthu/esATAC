@@ -1,6 +1,6 @@
 Bowtie2Mapping <-R6Class(
     classname = "Bowtie2Mapping",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,samOutput=NULL, bt2Idx=NULL, fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default",reportOutput =NULL,editable=FALSE){
             super$initialize("Bowtie2Mapping",editable,list(arg1=atacProc))
@@ -139,9 +139,78 @@ Bowtie2Mapping <-R6Class(
 
 )
 
+#' @name atacBowtie2Mapping
+#' @aliases atacBowtie2Mapping
+#' @aliases bowtie2Mapping
+#' @title Use bowtie2 aligner to map reads to reference genome 
+#' @description 
+#' Use bowtie2 aligner to map reads to reference genome 
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacRemoveAdapter}}.
+#' @param reportOutput \code{Character} scalar. 
+#' The prefix of report files path. 
+#' @param bt2Idx \code{Character} scalar. 
+#' bowtie2 index files
+#' prefix: 'dir/basename'
+#' (minus trailing '.*.bt2' of 'dir/basename.*.bt2').
+#' @param samOutput \code{Character} scalar. 
+#' A path to a SAM file
+#' used for the alignment output.
+#' @param fastqInput1 \code{Character} vector. For single-end sequencing,
+#' it contains sequence file paths.
+#' For paired-end sequencing, it can be file paths with #1 mates
+#' paired with file paths in fastqInput2.
+#' And it can also be interleaved file paths when argument
+#' interleaved=\code{TRUE}
+#' @param fastqInput2 \code{Character} vector. It contains file paths with
+#' #2 mates paired with file paths in fastqInput1.
+#' For single-end sequencing files and interleaved paired-end
+#' sequencing files(argument interleaved=\code{TRUE}),
+#' it must be \code{NULL}.
+#' @param paramList Additional arguments to be passed on to the binaries.
+#' See below for details.
+#' @param interleave \code{Logical}. Set \code{TRUE} when files are
+#' interleaved paired-end sequencing data.
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{fregLenDistr} instead.
+#’ All additional arguments in paramList are interpreted as
+#' additional parameters to be passed on to
+#' bowtie2. You can put all aditional
+#' arguments in one \code{Character}(e.g. "--threads 8 --no-mixed")
+#' with white space splited just like command line,
+#' or put them as \code{Character} vector
+#' (e.g. c("--threads","8","--no-mixed")). Note that some
+#' arguments("-x","--interleaved","-U","-1","-2","-S","threads") to the
+#' bowtie2 are invalid if they are already handled as explicit
+#' function arguments. See the output of
+#' \code{bowtie2_usage()} for details about available parameters.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacBowtie2Mapping
+#' @export 
 atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="default"){
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
+                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
+    atacproc$process()
+    invisible(atacproc)
+}
+
+#' @rdname atacBowtie2Mapping
+#' @export
+bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, paramList="default"){
+    atacproc<-Bowtie2Mapping$new(atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                  fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
     atacproc$process()
     invisible(atacproc)

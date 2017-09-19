@@ -1,6 +1,6 @@
 RemoveAdapter <-R6Class(
     classname = "RemoveAdapter",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,adapter1=NULL,adapter2=NULL,fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,fastqInput1=NULL, fastqInput2=NULL,interleave=FALSE,paramList="default",findParamList="default",editable=FALSE){
@@ -354,19 +354,103 @@ RemoveAdapter <-R6Class(
 )
 
 
+#' @name atacRemoveAdapter
+#' @aliases atacRemoveAdapter
+#' @aliases removeAdapter
+#' @title Use AdapterRemoval to remove adapters
+#' @description 
+#' Use AdapterRemoval to remove adapters
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param fastqInput1 \code{Character} vector. For single-end sequencing,
+#' it contains sequence file paths.
+#' For paired-end sequencing, it can be file paths with #1 mates paired
+#' with file paths in fastqInput2
+#' And it can also be interleaved file paths when argument
+#' interleaved=\code{TRUE}
+#' @param fastqInput2 \code{Character} vector. It contains file paths with #2
+#' mates paired with file paths in fastqInput1
+#' For single-end sequencing files and interleaved paired-end sequencing
+#' files(argument interleaved=\code{TRUE}),
+#' it must be \code{NULL}.
+#' @param adapter1 \code{Character}. It is an adapter sequence for file1. 
+#' For single end data, it is requied.
+#' @param adapter2 \code{Character}. It is an adapter sequence for file2.
+#' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
+#' path for fastqInput2. Defualt:
+#' basename.pair1.truncated (paired-end),
+#' basename.truncated (single-end), or
+#' basename.paired.truncated (interleaved)
+#' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
+#' path for fastqInput2. Default:
+#' BASENAME.pair2.truncated (only used in PE mode, but not if
+#' --interleaved-output is enabled)
+#' @param interleave \code{Logical}. Set \code{TRUE} when files are
+#' interleaved paired-end sequencing data.
+#' @param paramList Additional arguments to be passed on to the binaries 
+#' for removing adapter. See below for details.
+#' @param findParamList Additional arguments to be passed on to the binaries
+#' for identifying adapter. See below for details.
+#' @param reportPrefix \code{Character}. The prefix of report files path. 
+#' Default: generate from known parameters
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{fregLenDistr} instead.
+#' You can put all aditional
+#' arguments in one \code{Character}(e.g. "--threads 8") with white space
+#' splited just like command line,
+#' or put them in \code{Character} vector(e.g. c("--threads","8")).
+#' Note that some arguments(
+#' "--file1","--file2","--adapter1","--adapter2","--output1","--output2",
+#' "--basename","--interleaved","thread") to the
+#' paramList and findParamList are invalid if they are already handled as explicit
+#' function arguments. See the output of
+#' \code{adapterremoval_usage()} for details about available parameters.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacRemoveAdapter
+#' @export 
 atacRemoveAdapter <- function(atacProc,adapter1=NULL,adapter2=NULL,
                               fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,fastqInput1=NULL, 
                               fastqInput2=NULL,interleave=FALSE,
                               paramList="default",findParamList="default"){
-    removeAdapter <- RemoveAdapter$new(atacProc = atacProc,
+    atacproc <- RemoveAdapter$new(atacProc = atacProc,
                                        adapter1 = adapter1,adapter2 = adapter2,
                                        fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,
                                        fastqOutput2 = fastqOutput2, fastqInput1 = fastqInput1, 
                                        fastqInput2 = fastqInput2, interleave = interleave,
                                        paramList = paramList,findParamList = findParamList)
-    removeAdapter$process()
-    invisible(removeAdapter)
+    atacproc$process()
+    invisible(atacproc)
+}
+#' @rdname atacRemoveAdapter
+#' @export 
+removeAdapter <- function(fastqInput1, fastqInput2=NULL,
+                              adapter1=NULL,adapter2=NULL,
+                              fastqOutput1=NULL,reportPrefix=NULL,
+                              fastqOutput2=NULL, 
+                              interleave=FALSE,
+                              paramList="default",findParamList="default"){
+    atacproc <- RemoveAdapter$new(atacProc = NULL,
+                                       adapter1 = adapter1,adapter2 = adapter2,
+                                       fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,
+                                       fastqOutput2 = fastqOutput2, fastqInput1 = fastqInput1, 
+                                       fastqInput2 = fastqInput2, interleave = interleave,
+                                       paramList = paramList,findParamList = findParamList)
+    atacproc$process()
+    invisible(atacproc)
 }
 

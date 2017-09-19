@@ -1,6 +1,6 @@
 RMotifScan <- R6::R6Class(
   classname = "RMotifScan",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, peak = NULL, genome = NULL,
@@ -21,6 +21,7 @@ RMotifScan <- R6::R6Class(
         print(private$paramlist[["genome"]])
       }
       private$paramlist[["motifPWM"]] <- motifPWM
+      private$paramlist[["motifPWM.len"]] <- lapply(X = private$paramlist[["motifPWM"]], FUN = ncol)
       private$paramlist[["min.score"]] <- min.score
 
       # unnecessary parameters
@@ -29,6 +30,7 @@ RMotifScan <- R6::R6Class(
       }else{
         private$paramlist[["scanOutput"]] <- scanOutput
       }
+      private$paramlist[["rdsOutput"]] <- file.path(private$paramlist[["scanOutput"]], "/RMotifScan.rds")
 
       if(is.null(n.cores)){
         private$paramlist[["n.cores"]] <- .obtainConfigure("threads")
@@ -59,18 +61,24 @@ RMotifScan <- R6::R6Class(
       stopCluster(cl)
       n_motif <- length(sitesetList)
       peak <- rtracklayer::import(private$paramlist[["peak"]])
+      save_info <- data.frame()
       for(i in seq(n_motif)){
         motif_name <- names(sitesetList[i])
-        output_data <- IRanges::subsetByOverlaps(query = sitesetList[[i]],
-                                                 subject = peak,
+        output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                 ranges = peak,
                                                  ignore.strand = TRUE)
         output_data <- sort(x = output_data, ignore.strand = TRUE)
         output_data <- as.data.frame(output_data)
         output_data <- within(output_data, rm(width))
         output_path <- file.path(private$paramlist[["scanOutput"]], motif_name)
+        motif_len <- private$paramlist[["motifPWM.len"]][[motif_name]]
+        save_info[i, 1] <- motif_name
+        save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
+        save_info[i, 3] <- motif_len
         write.table(x = output_data, file = output_path, row.names = FALSE,
                     col.names = FALSE, quote = FALSE)
-        }
+      }
+      saveRDS(object = save_info, file = private$paramlist[["rdsOutput"]])
     }, # processing end
 
     checkRequireParam = function(){
@@ -102,13 +110,13 @@ RMotifScan <- R6::R6Class(
 #' @param min.score The minimum score for counting a match. Can be given as a
 #' character string containing a percentage (e.g. "85%") of the highest
 #' possible score or as a single number.
-#' @param scanOutput Output file path.
+#' @param scanOutput Output file directory.
 #' The output file contains the exact position of each TF binding site, 1-based.
 #' Considering the motifPWM may contains multiple PWM, the program ues the name
 #' in list to generate the output file name.
 #' @param n.cores How many cores to run the program.
 
-MotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
+atacMotifScan <- function(atacProc = NULL, peak = NULL, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanOutput = NULL,
                       n.cores = NULL){
   tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,

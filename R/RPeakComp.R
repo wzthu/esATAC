@@ -1,6 +1,6 @@
 RPeakComp <- R6::R6Class(
   classname = "RPeakComp",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc, bedInput1 = NULL, bedInput2 = NULL,
                           bedOutput = NULL, operation = NULL,

@@ -1,6 +1,6 @@
 FregLenDistr <-R6Class(
   classname = "FregLenDistr",
-  inherit = BaseProc,
+  inherit = ATACProc,
   public = list(
     initialize = function(atacProc,reportPrefix=NULL,bedInput=NULL,editable=FALSE){
       super$initialize("FregLenDistr",editable,list(arg1=atacProc))
@@ -155,8 +155,49 @@ FregLenDistr <-R6Class(
 
 )
 
+#' @name atacFregLenDistr
+#' @aliases atacFregLenDistr
+#' @aliases fregLenDistr
+#' @title Quality control for fregment length distribution 
+#' @description 
+#' These functions are used to generate fregment distribution plot.  
+#' The fourier transform of fregment distribution will be calculated.
+#' Strength distribution around period at 10.4bp and 180bp 
+#' will be shown in another two plots.
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param reportPrefix \code{Character} scalar. 
+#' The prefix of report files path. 
+#' @param bedInput \code{Character} scalar. 
+#' BED file input path.
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{fregLenDistr} instead.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
+
+#' @rdname atacFregLenDistr
+#' @export 
 atacFregLenDistr<-function(atacProc,reportPrefix=NULL,bedInput=NULL){
-    atacproc<-FregLenDistr$new(atacProc,reportPrefix,bedInput)
+    atacproc<-FregLenDistr$new(atacProc = atacProc,reportPrefix = reportPrefix,bedInput = bedInput)
+    atacproc$process()
+    invisible(atacproc)
+}
+#' @rdname atacFregLenDistr
+#' @export 
+fregLenDistr<-function(bedInput, reportPrefix=NULL){
+    atacproc<-FregLenDistr$new(atacProc = NULL,reportPrefix = reportPrefix,bedInput = bedInput)
     atacproc$process()
     invisible(atacproc)
 }

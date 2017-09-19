@@ -1,6 +1,6 @@
 FRiPQC <-R6Class(
     classname = "FRiPQC",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL,editable=FALSE){
             super$initialize("FRiPQC",editable,list(arg1=atacProcReads,arg2=atacProcPeak))
@@ -79,9 +79,50 @@ FRiPQC <-R6Class(
 
 )
 
+#' @name atacFripQC
+#' @aliases atacFripQC
+#' @aliases fripQC
+#' @title Quality control for fraction of reads in peaks (FRiP)  
+#' @description 
+#' Calculate the fraction of reads falling within peak regions  
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param reportOutput \code{Character} scalar. 
+#' The report file path 
+#' @param readsBedInput \code{Character} scalar. 
+#' Reads BED file for peak calling.
+#' @param peakBedInput \code{Character} scalar. 
+#' Peaks BED file
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{fregLenDistr} instead.
+#' @return An invisible \code{\link{fripQC}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacFripQC
+#' @export 
 atacFripQC<-function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL){
     fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportOutput=reportOutput,
+                       readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
+    fripQC$process()
+    invisible(fripQC)
+}
+
+#' @rdname atacFripQC
+#' @export
+fripQC<-function(readsBedInput, peakBedInput, reportOutput=NULL){
+    fripQC<-FRiPQC$new(atacProcReads=NULL,atacProcPeak=NULL,reportOutput=reportOutput,
                        readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
     fripQC$process()
     invisible(fripQC)

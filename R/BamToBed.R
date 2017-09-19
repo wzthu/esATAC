@@ -1,6 +1,6 @@
 BamToBed <- R6::R6Class(
   classname = "BamToBed",
-  inherit = BaseProc,
+  inherit = ATACProc,
 
   public = list(
     initialize = function(atacProc, bamInput = NULL, bedOutput = NULL, editable=FALSE){
@@ -67,13 +67,35 @@ BamToBed <- R6::R6Class(
 
 #' @name atacBam2Bed
 #' @title Convert bam format to bed format.
-#' @description This function convert a bam file to a bed file.
-#' @param atacProc Result from atacSam2Bam or atacBamSort.
-#' @param bamInput Path to bam file.
-#' @param bedOutput Where you want save the bed file.
-#' @export
-atacBam2Bed <- function(atacProc = NULL, bamInput = NULL, bedOutput = NULL){
+#' @description
+#' This function convert a bam file into a bed file.
+#' Note:bed file is 0-based.
+#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacBamSort}},
+#' \code{\link{atacSam2Bam}}.
+#' @param bamInput \code{Character} scalar.
+#' Bam file input path.
+#' @param bedOutput \code{Character} scalar.
+#' Bed file output path. If ignored, bed file will be put in the same path as
+#' the bam file.
+#' @details The bam file wiil be automatically obtained from
+#' object(\code{atacProc}) or input by hand. Output can be ignored.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Wei Zhang
+#' @export atacBam2Bed
+#' @export Bam2Bed
+#' @seealso
+#' \code{\link{atacBamSort}}
+#' \code{\link{atacSam2Bam}}
+atacBam2Bed <- function(atacProc, bamInput = NULL, bedOutput = NULL){
   tmp <- BamToBed$new(atacProc, bamInput, bedOutput)
+  tmp$process()
+  invisible(tmp)
+}
+
+Bam2Bed <- function(bamInput, bedOutput = NULL){
+  tmp <- BamToBed$new(atacProc = NULL, bamInput, bedOutput)
   tmp$process()
   invisible(tmp)
 }

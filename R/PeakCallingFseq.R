@@ -1,6 +1,6 @@
 PeakCallingFseq <-R6Class(
     classname = "PeakCallingFseq",
-    inherit = BaseProc,
+    inherit = ATACProc,
     public = list(
         initialize = function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                               fragmentSize=0,featureLength=NULL,bedOutput=NULL,
@@ -96,13 +96,74 @@ PeakCallingFseq <-R6Class(
 
 
 )
+#' @name atacPeakCalling
+#' @aliases atacPeakCalling
+#' @aliases peakCalling
+#' @title Use F-seq to call peak 
+#' @description 
+#' Use F-seq to call peak  
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param bedInput \code{Character} scalar. 
+#' BED file input path.
+#' @param background \code{Character} scalar. 
+#' background directory default: NULL (none)
+#' @param genomicReadsCount \code{Integer} scalar. 
+#' genomic count of sequence reads. default: NULL (calculated)
+#' @param fragmentSize \code{Integer} scalar. 
+#' fragment size. set NULL to estimat from data. default:0
+#' @param featureLength \code{Character} scalar. 
+#' feature length default: NULL (600)
+#' @param bedOutput \code{Character} scalar.
+#' the output bed file path 
+#' @param ploidyDir \code{Character} scalar. 
+#' ploidy/input directory. default: NULL
+#' @param wiggleTrackStep \code{Integer} scalar. 
+#' wiggle track step default: NULL (1)
+#' @param threshold \code{Numeric} scalar. 
+#' threshold (standard deviations) default: NULL (4.0)
+#' @param verbose \code{Logical} scalar. 
+#' verbose output if TRUE.
+#' @param wgThresholdSet \code{Character} scalar.
+#' wg threshold set default: NULL (calculated)
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{peakCalling} instead.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
 
+#' @rdname atacFregLenDistr
+#' @export 
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                              ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                             wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                             wgThresholdSet=NULL){
     peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
+                                       fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
+                                       wiggleTrackStep,threshold,verbose,wgThresholdSet)
+    peakcalling$process();
+    invisible(peakcalling)
+}
+#' @rdname atacFregLenDistr
+#' @export 
+peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
+                            fragmentSize=0,featureLength=NULL,bedOutput=NULL,
+                            ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
+                            wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
+                            wgThresholdSet=NULL){
+    peakcalling <- PeakCallingFseq$new(atacProc = NULL,bedInput,background,genomicReadsCount,
                                        fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
                                        wiggleTrackStep,threshold,verbose,wgThresholdSet)
     peakcalling$process();
