@@ -1,26 +1,26 @@
 .ConfigClass<-R6Class(classname = ".ConfigClass",
     public = list(
         initialize = function(){
-            private$validAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",bt2Idx="character",DHS="character",blacklist="character")
-            private$validWriteAttr=list(threads="numeric",tmpdir="character",datadir="character",genome="character")
+            private$validAttr=list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",bt2Idx="character",DHS="character",blacklist="character")
+            private$validWriteAttr=list(threads="numeric",tmpdir="character",refdir="character",genome="character")
         },
         getAllConfigure = function(){
             print(private$configList)
         },
-        getConfigure = function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
+        getConfigure = function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
             private$isValidAttr(item);
-            if(item=="tmpdir"||item=="datadir"){
+            if(item=="tmpdir"||item=="refdir"){
                 return(normalizePath(private$configList[[item]]))
             }
             return(private$configList[[item]]);
         },
-        setConfigure = function(item = c("threads","tmpdir","datadir","genome"),val){
+        setConfigure = function(item = c("threads","tmpdir","refdir","genome"),val){
             private$isValidVal(item,val);
             private$configList[[item]]<-val;
         }
     ),
     private = list(
-        configList=list(threads=detectCores(),tmpdir=".",datadir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL),
+        configList=list(threads=detectCores(),tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL),
         validAttr=NULL,
         validWriteAttr=NULL,
         isValidAttr=function(item){
@@ -41,16 +41,16 @@
             if(private$validAttr[[item]]!=class(val)){
                 stop(paste(item,"is requied to be",private$validAttr[[item]],",\"",val,"\" is ",class(val)))
             }
-            if(item=="datadir"||item=="tmpdir"){
+            if(item=="refdir"||item=="tmpdir"){
                 private$checkPathExist(val)
                 val<-normalizePath(val)
             }
             if(item=="genome"){
                 private$configList[["bsgenome"]]<-getBSgenome(val)
-                if(is.null(private$configList[["datadir"]])){
-                    stop("'datadir' should be configured before 'genome'")
+                if(is.null(private$configList[["refdir"]])){
+                    stop("'refdir' should be configured before 'genome'")
                 }
-                fileprefix<-file.path(private$configList[["datadir"]],val)
+                fileprefix<-file.path(private$configList[["refdir"]],val)
                 #genome fasta
                 fastaFilePath<-paste0(fileprefix,".fa")
                 fastaFilePathlock<-paste0(fileprefix,".fa.lock")
@@ -166,31 +166,67 @@
 
 .configObj<-.ConfigClass$new()
 
+
+#' @name atacBedToBigWig
+#' @aliases atacBedToBigWig
+#' @aliases bedToBigWig
+#' @title generate BigWig file from BED file
+#' @description 
+#' This function is used to generate BigWig file 
+#' from BED reads file.
+#' The BigWig file can be shown reads coverage on genome browser.
+#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacBedUtils}}.
+#' @param bedInput \code{Character} scalar. 
+#' Bed file input path. 
+#' @param bwOutput \code{Character} scalar. 
+#' BigWig file output path.
+#' @param toWig \code{Logical} scalar.
+#' Save as wig file instead of binary BigWig file
+#' @details The parameter related to input and output file path
+#' will be automatically 
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
+#' generated based on known parameters 
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently, 
+#' \code{atacProc} should be set \code{NULL} 
+#' or you can use \code{bedToBigWig} instead.
+#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @author Zheng Wei
+#' @seealso 
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{atacBedUtils}}
+
+#' @rdname atacBedToBigWig
+#' @export 
 getAllConfigure<-function(){
     .configObj$getAllConfigure();
 }
 
-getConfigure <- function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
+getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
     return(.configObj$getConfigure(item));
 }
 
 
 
-setConfigure<- function(item = c("threads","tmpdir","datadir","genome"),val){
+setConfigure<- function(item = c("threads","tmpdir","refdir","genome"),val){
     if(is.null(val)){
         return()
     }
     .configObj$setConfigure(item,val);
 }
 
-setAllConfigure<-function(threads=NULL,tmpdir=NULL,datadir=NULL,genome=NULL){
+setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     setConfigure("threads",threads)
     setConfigure("tmpdir",tmpdir)
-    setConfigure("datadir",datadir)
+    setConfigure("refdir",refdir)
     setConfigure("genome",genome)
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","datadir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
+.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
     val<-.configObj$getConfigure(item);
     if(is.null(val)){
         stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))
