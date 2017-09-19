@@ -180,7 +180,7 @@ atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair
 
 #' @rdname atacBedUtils
 #' @export 
-bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,reportOutput = NULL
+bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,reportOutput = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){
     atacproc <- BedUtils$new(atacProc = NULL, bedInput = bedInput, bedOutput = bedOutput, reportOutput = reportOutput, mergePair = mergePair, downSample = downSample,
