@@ -254,10 +254,9 @@ getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGen
 #' @rdname configureValue
 #' @export 
 setConfigure<- function(item = c("threads","tmpdir","refdir","genome"),val){
-    if(is.null(val)){
-        return()
+    if(!is.null(val)){
+        .configObj$setConfigure(item,val)
     }
-    .configObj$setConfigure(item,val);
 }
 
 setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
