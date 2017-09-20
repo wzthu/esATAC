@@ -118,6 +118,8 @@ CutSiteCountR <- R6::R6Class(
 
 
 #' @name atacCutSiteCount
+#' @aliases atacCutSiteCount
+#' @aliases cutsitecount
 #' @title Count cut site number in given motif region.
 #' @description This function is used to count cut site number in given motif
 #' region and plot footprint. Multi-motif is supported.
@@ -157,11 +159,13 @@ CutSiteCountR <- R6::R6Class(
 #' recommended to use together.
 #' @return An invisible \code{\link{ATACProc}} object scalar.
 #' @author Wei Zhang
-#' @export atacCutSiteCount
-#' @export CutSiteCount
 #' @seealso
 #' \code{\link{atacCutSitePre}}
 #' \code{\link{atacMotifScan}}
+#'
+
+#' @rdname atacCutSiteCount
+#' @export
 atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                              motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                              strandLength = 100, FootPrint = TRUE){
@@ -171,7 +175,9 @@ atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, c
   invisible(tmp)
 }
 
-CutSiteCount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
+#' @rdname atacCutSiteCount
+#' @export
+cutsitecount <- function(csInput, motif_info, chr = c(1:22, "X", "Y"),
                          matrixOutput = NULL, strandLength = 100, FootPrint = TRUE){
   tmp <- CutSiteCountR$new(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput,
                            motif_info, chr, matrixOutput, strandLength, FootPrint)

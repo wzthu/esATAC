@@ -108,7 +108,7 @@ SamToBed <- R6::R6Class(
                                                                  sortBed = private$paramlist[["sortBed"]],uniqueBed = private$paramlist[["uniqueBed"]],
                                                                  filterList = private$paramlist[["filterList"]])
             }
-            
+
             write.table(as.data.frame(qcval),file = private$paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
 
         },
@@ -145,7 +145,7 @@ SamToBed <- R6::R6Class(
 #' @aliases atacSamToBed
 #' @aliases samToBed
 #' @title Convert SAM file to BED file
-#' @description 
+#' @description
 #' This function is used to convert SAM file to BED file and
 #' merge interleave paired end reads,
 #' shift reads,
@@ -153,24 +153,24 @@ SamToBed <- R6::R6Class(
 #' filter reads according to fregment size,
 #' sort,
 #' remove duplicates reads before generating BED file.
-#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' @param atacProc \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacSamToBed}},
 #' \code{\link{atacBamToBed}}.
-#' @param samInput \code{Character} scalar. 
-#' SAM file input path. 
-#' @param bedOutput \code{Character} scalar. 
+#' @param samInput \code{Character} scalar.
+#' SAM file input path.
+#' @param bedOutput \code{Character} scalar.
 #' Bed file output path.
 #' @param reportOutput \code{Character} scalar
 #' report file path
 #' @param merge \code{Logical} scalar
 #' Merge paired end reads.
 #' @param posOffset \code{Integer} scalar
-#' The offset that positive strand reads will shift. 
+#' The offset that positive strand reads will shift.
 #' @param negOffset \code{Integer} scalar
-#' The offset that negative strand reads will shift. 
+#' The offset that negative strand reads will shift.
 #' @param chrFilterList \code{Character} vector
-#' The chromatin(or regex of chromatin) will be retain/discard 
+#' The chromatin(or regex of chromatin) will be retain/discard
 #' if \code{select} is TRUE/FALSE
 #' @param select \code{Logical} scalar
 #' The chromatin in \code{chrFilterList} will be retain if TRUE. default: FALSE
@@ -185,18 +185,18 @@ SamToBed <- R6::R6Class(
 #' @param saveExtLen \code{Logical} scaler
 #' Save the fregment that are not in the range of minFregLen and MaxFregLen
 #' @details The parameter related to input and output file path
-#' will be automatically 
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-#' generated based on known parameters 
+#' will be automatically
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
-#' If you want to use this function independently, 
-#' \code{atacProc} should be set \code{NULL} 
+#' If you want to use this function independently,
+#' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{samToBed} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacSamToBed}} 
+#' @seealso
+#' \code{\link{atacSamToBed}}
 #' \code{\link{atacBamToBed}}
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacBamToBed}}
@@ -206,7 +206,7 @@ SamToBed <- R6::R6Class(
 #' \code{\link{atacBamToBed}}
 
 #' @rdname atacSamToBed
-#' @export 
+#' @export
 atacSamToBed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                         samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){
@@ -217,7 +217,7 @@ atacSamToBed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no
     invisible(atacproc)
 }
 #' @rdname atacSamToBed
-#' @export 
+#' @export
 samToBed <- function(samInput, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                          bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){

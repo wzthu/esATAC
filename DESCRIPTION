@@ -45,7 +45,8 @@ Imports:
     BiocGenerics,
     S4Vectors,
     IRanges,
-    rmarkdown
+    rmarkdown,
+    tools
 LinkingTo: Rcpp
 SystemRequirements: C++11
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage
