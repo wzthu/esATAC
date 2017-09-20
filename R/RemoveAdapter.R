@@ -103,8 +103,8 @@ RemoveAdapter <-R6Class(
             }else{
                 threadparam<-NULL
             }
-            findParamList <- paste(c(private$paramlist[["findParamList"]],threadparam),collapse = " ")
-            paramList <- paste(c(private$paramlist[["paramList"]],threadparam), collapse = " ")
+            findParamList <- paste(c(threadparam, private$paramlist[["findParamList"]]),collapse = " ")
+            paramList <- paste(c(threadparam, private$paramlist[["paramList"]]), collapse = " ")
             if(private$singleEnd){
                 private$writeLog("begin to remove adapter")
                 private$writeLog("source:")

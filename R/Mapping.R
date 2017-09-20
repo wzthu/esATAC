@@ -78,10 +78,10 @@ Bowtie2Mapping <-R6Class(
         processing = function(){
             if(!is.null(private$paramlist[["threads"]])){
                 if(private$paramlist[["threads"]]>1){
-                    paramList<-paste(c(private$paramlist[["paramList"]],"-p",as.character(private$paramlist[["threads"]])),collapse = " ")
+                    paramList<-paste(c("-p",as.character(private$paramlist[["threads"]]),private$paramlist[["paramList"]]),collapse = " ")
                 }
             }else if(.obtainConfigure("threads")>1){
-                paramList<-paste(c(private$paramlist[["paramList"]],"-p",as.character(.obtainConfigure("threads"))),collapse = " ")
+                paramList<-paste(c("-p",as.character(.obtainConfigure("threads")),private$paramlist[["paramList"]]),collapse = " ")
             }
             
             private$writeLog("start mapping with parameters:")
