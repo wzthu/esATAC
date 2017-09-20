@@ -16,9 +16,9 @@ samToBed(samInput, reportOutput = NULL, merge = c("auto", "yes", "no"),
   saveExtLen = FALSE, uniqueBed = TRUE)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
+\code{\link{atacSamToBed}},
 \code{\link{atacBamToBed}}.}
 
 \item{reportOutput}{\code{Character} scalar
@@ -34,13 +34,13 @@ The offset that positive strand reads will shift.}
 The offset that negative strand reads will shift.}
 
 \item{chrFilterList}{\code{Character} vector
-The chromatin(or regex of chromatin) will be retain/discard 
+The chromatin(or regex of chromatin) will be retain/discard
 if \code{select} is TRUE/FALSE}
 
-\item{samInput}{\code{Character} scalar. 
+\item{samInput}{\code{Character} scalar.
 SAM file input path.}
 
-\item{bedOutput}{\code{Character} scalar. 
+\item{bedOutput}{\code{Character} scalar.
 Bed file output path.}
 
 \item{sortBed}{\code{Logical} scalar
@@ -75,17 +75,17 @@ remove duplicates reads before generating BED file.
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{samToBed} instead.
 }
 \seealso{
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{atacBamToBed}}
 \code{\link{atacPeakCalling}}
 \code{\link{atacBamToBed}}

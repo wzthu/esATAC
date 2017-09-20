@@ -7,11 +7,12 @@
 \usage{
 atacBowtie2Mapping(atacProc, samOutput = NULL, reportOutput = NULL,
   bt2Idx = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE, paramList = "default")
+  interleave = FALSE,
+  paramList = "--no-discordant --no-unal --no-mixed -X 2000")
 
 bowtie2Mapping(fastqInput1, fastqInput2 = NULL, samOutput = NULL,
   reportOutput = NULL, bt2Idx = NULL, interleave = FALSE,
-  paramList = "default")
+  paramList = "--no-discordant --no-unal --no-mixed -X 2000")
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 

@@ -33,42 +33,42 @@ The prefix of report files path.}
 \item{bedInput}{\code{Character} scalar. 
 BED file input path.}
 
-\item{background}{\code{Character} scalar. 
+\item{background}{\code{Character} scalar.
 background directory default: NULL (none)}
 
-\item{genomicReadsCount}{\code{Integer} scalar. 
+\item{genomicReadsCount}{\code{Integer} scalar.
 genomic count of sequence reads. default: NULL (calculated)}
 
-\item{fragmentSize}{\code{Integer} scalar. 
+\item{fragmentSize}{\code{Integer} scalar.
 fragment size. set NULL to estimat from data. default:0}
 
-\item{featureLength}{\code{Character} scalar. 
+\item{featureLength}{\code{Character} scalar.
 feature length default: NULL (600)}
 
 \item{bedOutput}{\code{Character} scalar.
 the output bed file path}
 
-\item{ploidyDir}{\code{Character} scalar. 
+\item{ploidyDir}{\code{Character} scalar.
 ploidy/input directory. default: NULL}
 
-\item{wiggleTrackStep}{\code{Integer} scalar. 
+\item{wiggleTrackStep}{\code{Integer} scalar.
 wiggle track step default: NULL (1)}
 
-\item{threshold}{\code{Numeric} scalar. 
+\item{threshold}{\code{Numeric} scalar.
 threshold (standard deviations) default: NULL (4.0)}
 
-\item{verbose}{\code{Logical} scalar. 
+\item{verbose}{\code{Logical} scalar.
 verbose output if TRUE.}
 
 \item{wgThresholdSet}{\code{Character} scalar.
 wg threshold set default: NULL (calculated)}
 
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
+\code{\link{atacSamToBed}},
 \code{\link{atacBedUtils}}.}
 
-\item{bedInput}{\code{Character} scalar. 
+\item{bedInput}{\code{Character} scalar.
 BED file input path.}
 }
 \value{
@@ -96,20 +96,20 @@ If you want to use this function independently,
 or you can use \code{fregLenDistr} instead.
 
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{peakCalling} instead.
 }
 \seealso{
 \code{\link{atacSamToBed}} 
 \code{\link{atacBedUtils}}
 
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
 \author{

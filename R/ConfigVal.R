@@ -170,20 +170,32 @@
 #' @name configureValue
 #' @aliases getConfigure
 #' @aliases setConfigure
-#' @title generate BigWig file from BED file
+#' @aliases getAllConfigure
+#' @title Global parameters configure
 #' @description 
-#' This function is used to generate BigWig file 
-#' from BED reads file.
-#' The BigWig file can be shown reads coverage on genome browser.
-#' @param atacProc \code{\link{ATACProc}} object scalar. 
-#' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' These functions are used to configure and 
+#' query global parameters. The items include 
+#' "threads","tmpdir","refdir","genome","knownGene",
+#' "bsgenome","bt2Idx","DHS" and "blacklist".  
+#' "threads","tmpdir","refdir","genome" are setable
+#' and getable. While the others are readable only.
+#' You should consider to configure these parameters
+#' before starting the workflow
 #' @param item \code{Character} scalar. 
-#' Bed file input path. 
-#' @param val \code{Character} scalar. 
-#' BigWig file output path.
-#' @return \code{Character} scalar or TxDb object.
+#' The items that are setable or gettable including 
+#' "threads","tmpdir","refdir","genome","knownGene",
+#' "bsgenome","bt2Idx","DHS" and "blacklist".  
+#' @param val \code{Character} or \code{Integer} scalar. 
+#' The items value that are setable including 
+#' "threads","tmpdir","refdir","genome"
+#' @return \code{Character} scalar for getting 
+#' "tmpdir","refdir", bt2Idx","DHS" and "blacklist", 
+#' all of them are file or directory path. 
+#' Getting "genome" will return the genome tag like "hg19" "mm10" etc.
+#' \code{Integer} scalar for getting "threads", 
+#' the max threads can be created by the process.
+#' \code{TxDb} object for getting "knownGene".
+#' \code{BSGenome} object for getting "bsgenome"
 #' @author Zheng Wei
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
@@ -241,6 +253,8 @@
 #' @importFrom markdown markdownToHTML
 #' @useDynLib ATACFlow
 
+#' @rdname configureValue
+#' @export 
 getAllConfigure<-function(){
     .configObj$getAllConfigure();
 }
@@ -258,6 +272,7 @@ setConfigure<- function(item = c("threads","tmpdir","refdir","genome"),val){
         .configObj$setConfigure(item,val)
     }
 }
+
 
 setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     setConfigure("threads",threads)

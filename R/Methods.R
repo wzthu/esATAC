@@ -62,13 +62,13 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
        # peak annotation and GO analysis
-        peakAnnotation <- PeakAnno(atacProc = peakCalling)
-        goAna <- GOAnalysis(atacProc = peakAnnotation, OrgDb = "org.Hs.eg.db",
+        peakAnnotation <- atacPeakAnno(atacProc = peakCalling)
+        goAna <- atacGOAnalysis(atacProc = peakAnnotation, OrgDb = "org.Hs.eg.db",
                             ont = "BP", pvalueCutoff = 0.01)
         # Motif Scan and footprint
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
-        cs_output <- atacCutSitePre(atacProc = sam2Bed, prefix = "ATAC")
+        cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = "ATAC")
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
     }
     
@@ -158,43 +158,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
 }
 
-atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
-  if(is.null(atacProc)){
-    GraphMng$new()$printMap(display=display)
-  }else if(class(atacProc)=="character"){
-    GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
-  }else{
-    atacProc$printMap(preProc,nextProc,curProc,display=display)
-    invisible(atacProc)
-  }
-}
 
-atacPrintNextList<-function(atacProc){
-  if(class(atacProc)=="character"){
-    GraphMng$new()$getNextProcs(atacProc)
-  }else{
-    GraphMng$new()$getNextProcs(atacProc$getProcName())
-    invisible(atacProc)
-  }
-}
-
-atacPrintPrevList<-function(atacProc){
-  if(class(atacProc)=="character"){
-    GraphMng$new()$getPrevProcs(atacProc)
-  }else{
-    GraphMng$new()$getPrevProcs(atacProc$getProcName())
-    invisible(atacProc)
-  }
-}
-
-atacClearCache <- function(atacProc){
-  atacProc$clearCache()
-  invisible(atacProc)
-}
-
-atacProcessing <- function(atacProc){
-  atacProc$process()
-  invisible(atacProc)
-}
 
 
