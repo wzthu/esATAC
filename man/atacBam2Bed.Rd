@@ -2,9 +2,12 @@
 % Please edit documentation in R/BamToBed.R
 \name{atacBam2Bed}
 \alias{atacBam2Bed}
+\alias{bam2bed}
 \title{Convert bam format to bed format.}
 \usage{
 atacBam2Bed(atacProc, bamInput = NULL, bedOutput = NULL)
+
+bam2bed(bamInput, bedOutput = NULL)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
@@ -20,7 +23,8 @@ Bed file output path. If ignored, bed file will be put in the same path as
 the bam file.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc}} object scalar for
+downstream analysis.
 }
 \description{
 This function convert a bam file into a bed file.
@@ -33,6 +37,8 @@ object(\code{atacProc}) or input by hand. Output can be ignored.
 \seealso{
 \code{\link{atacBamSort}}
 \code{\link{atacSam2Bam}}
+\link[rtracklayer]{import}
+\link[rtracklayer]{export}
 }
 \author{
 Wei Zhang

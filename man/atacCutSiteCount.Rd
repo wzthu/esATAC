@@ -2,10 +2,14 @@
 % Please edit documentation in R/CutSiteCountR.R
 \name{atacCutSiteCount}
 \alias{atacCutSiteCount}
+\alias{cutsitecount}
 \title{Count cut site number in given motif region.}
 \usage{
 atacCutSiteCount(atacProcCutSite = NULL, atacProcMotifScan = NULL,
   csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
+  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE)
+
+cutsitecount(csInput, motif_info, chr = c(1:22, "X", "Y"),
   matrixOutput = NULL, strandLength = 100, FootPrint = TRUE)
 }
 \arguments{

@@ -2,30 +2,58 @@
 % Please edit documentation in R/RMotifScan.R
 \name{atacMotifScan}
 \alias{atacMotifScan}
-\title{Finding motif binding sites in DNA sequences.}
+\alias{motifscan}
+\title{Search Motif Position in Given Regions}
 \usage{
-atacMotifScan(atacProc = NULL, peak = NULL, genome = NULL,
-  motifPWM = NULL, min.score = "85\%", scanOutput = NULL,
-  n.cores = NULL)
+atacMotifScan(atacProc, peak = NULL, genome = NULL, motifPWM = NULL,
+  min.score = "85\%", scanO.dir = NULL, n.cores = NULL)
+
+motifscan(peak, genome = NULL, motifPWM = NULL, min.score = "85\%",
+  scanO.dir = NULL, n.cores = NULL)
 }
 \arguments{
-\item{atacProc}{Object from the former step.}
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacPeakCalling}}.}
 
-\item{genome}{BSgenome refference.}
+\item{peak}{\code{Character} scalar.
+Input region path. UCSC bed file is recommented. Other file should be able
+to import as \link[GenomicRanges]{GRanges} objects through
+\link[rtracklayer]{import}.}
 
-\item{motifPWM}{A list contains several PWM matrix.}
+\item{genome}{A DNAString object.}
+
+\item{motifPWM}{\code{list} scalar. Default: from \code{\link{setConfigure}}.
+Every element in the \code{list} contains a motif PWM matrix.
+e.g. pwm <- list("CTCF" = CTCF_PWMmatrix)}
 
 \item{min.score}{The minimum score for counting a match. Can be given as a
 character string containing a percentage (e.g. "85%") of the highest
 possible score or as a single number.}
 
-\item{scanOutput}{Output file directory.
-The output file contains the exact position of each TF binding site, 1-based.
-Considering the motifPWM may contains multiple PWM, the program ues the name
-in list to generate the output file name.}
+\item{scanO.dir}{\code{Character} scalar.
+the output file directory. This function will use the index in motifPWM as
+the file name to save the motif position information in separate files.}
 
-\item{n.cores}{How many cores to run the program.}
+\item{n.cores}{How many core to run this function.
+Default: from \code{\link{setConfigure}}.}
+}
+\value{
+An invisible \code{\link{ATACProc}} object scalar for
+downstream analysis.
 }
 \description{
-Finding motif binding sites in DNA sequences.
+Search motif position in given genome regions according PWM matrix.
+}
+\details{
+This function scan motif position in a given genome regions.
+}
+\seealso{
+\code{\link{atacPeakCalling}}
+\code{\link{atacCutSiteCount}}
+\link[Biostrings]{matchPWM}
+\link[IRanges]{subsetByOverlaps}
+}
+\author{
+Wei Zhang
 }

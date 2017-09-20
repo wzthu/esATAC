@@ -2,13 +2,43 @@
 % Please edit documentation in R/FastQC.R
 \name{atacQCReport}
 \alias{atacQCReport}
-\title{Quality control using Quasr::qQCreport}
+\alias{qcreport}
+\title{Quality control for ATAC-seq data.}
 \usage{
 atacQCReport(atacProc = NULL, input_file = NULL, output_file = NULL)
+
+qcreport(input_file, output_file = NULL)
 }
 \arguments{
-\item{input_file}{a vector.}
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacUnzipAndMerge}},
+\code{\link{atacRenamer}},
+\code{\link{SamToBam}}.}
+
+\item{input_file}{\code{Character} scalar.
+Input file path. One or two(\code{vector}) fastq/a or a bam file path.}
+
+\item{output_file}{\code{Character} scalar.
+output file path. Defult:"input_file_FastQC.pdf" in the same
+folder as your input file.}
+}
+\value{
+An invisible \code{\link{ATACProc}} object scalar for downstream
+analysis.
 }
 \description{
-Quality control using Quasr::qQCreport
+Generate quality control plots from fastq/fasta/bam of ATAC-seq data.
+}
+\details{
+Every highthroughput sequencing need quality control analysis, this
+function provide QC for ATAC-seq, such as GC content.
+}
+\seealso{
+\code{\link{atacUnzipAndMerge}},
+\code{\link{atacRenamer}},
+\code{\link{SamToBam}}.
+}
+\author{
+Wei Zhang
 }

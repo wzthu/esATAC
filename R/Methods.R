@@ -13,10 +13,6 @@
 #' For single-end sequencing files and interleaved paired-end sequencing
 #' files(argument interleaved=\code{TRUE}),
 #' it must be \code{NULL}.
-#' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
-#' path for fastqInput2.
-#' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
-#' path for fastqInput2.
 #' @param adapter1 \code{Character}. It is an adapter sequence for file1.
 #' For single end data, it is requied.
 #' @param adapter2 \code{Character}. It is an adapter sequence for file2.
@@ -155,43 +151,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
 }
 
-atacPrintMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
-  if(is.null(atacProc)){
-    GraphMng$new()$printMap(display=display)
-  }else if(class(atacProc)=="character"){
-    GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
-  }else{
-    atacProc$printMap(preProc,nextProc,curProc,display=display)
-    invisible(atacProc)
-  }
-}
 
-atacPrintNextList<-function(atacProc){
-  if(class(atacProc)=="character"){
-    GraphMng$new()$getNextProcs(atacProc)
-  }else{
-    GraphMng$new()$getNextProcs(atacProc$getProcName())
-    invisible(atacProc)
-  }
-}
-
-atacPrintPrevList<-function(atacProc){
-  if(class(atacProc)=="character"){
-    GraphMng$new()$getPrevProcs(atacProc)
-  }else{
-    GraphMng$new()$getPrevProcs(atacProc$getProcName())
-    invisible(atacProc)
-  }
-}
-
-atacClearCache <- function(atacProc){
-  atacProc$clearCache()
-  invisible(atacProc)
-}
-
-atacProcessing <- function(atacProc){
-  atacProc$process()
-  invisible(atacProc)
-}
 
 

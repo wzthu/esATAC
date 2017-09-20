@@ -22,19 +22,13 @@ For single-end sequencing files and interleaved paired-end sequencing
 files(argument interleaved=\code{TRUE}),
 it must be \code{NULL}.}
 
-\item{adapter1}{\code{Character}. It is an adapter sequence for file1. 
+\item{adapter1}{\code{Character}. It is an adapter sequence for file1.
 For single end data, it is requied.}
 
 \item{adapter2}{\code{Character}. It is an adapter sequence for file2.}
 
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
-
-\item{fastqOutput1}{\code{Character}. The trimmed mate1 reads output file
-path for fastqInput2.}
-
-\item{fastqOutput2}{\code{Character}. The trimmed mate2 reads output file
-path for fastqInput2.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
@@ -43,7 +37,7 @@ An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \seealso{
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
 \author{

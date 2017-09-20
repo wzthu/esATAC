@@ -2,18 +2,41 @@
 % Please edit documentation in R/SamToBam.R
 \name{atacSam2Bam}
 \alias{atacSam2Bam}
-\title{Convert sam format to bam format}
+\alias{sam2bam}
+\title{Convert sam format to bam format.}
 \usage{
-atacSam2Bam(atacProc = NULL, samfile = NULL, bamfile = NULL)
+atacSam2Bam(atacProc = NULL, samInput = NULL, bamOutput = NULL)
+
+sam2bam(samInput, bamOutput = NULL)
 }
 \arguments{
-\item{atacProc}{Result from Mapping.}
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacBowtie2Mapping}}.}
 
-\item{samfile}{Path to sam file.}
+\item{samInput}{\code{Character} scalar.
+Sam file input path.}
 
-\item{bamfile}{Where you want save the bam file.}
+\item{bamOutput}{\code{Character} scalar.
+Bam file output path. If ignored, bed file will be put in the same path as
+the sam file.}
+}
+\value{
+An invisible \code{\link{ATACProc}} object scalar for
+downstream analysis.
 }
 \description{
-This function convert sam file(from mapping) to bam file
-(with a .bai index).
+This function convert a sam file into a bam file.
+}
+\details{
+The sam file wiil be automatically obtained from
+object(\code{atacProc}) or input by hand. bamOutput can be ignored.
+}
+\seealso{
+\code{\link{atacBowtie2Mapping}}
+\code{\link{atacBam2Bed}}
+\code{\link{atacBamSort}}
+}
+\author{
+Wei Zhang
 }

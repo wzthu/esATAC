@@ -9,7 +9,7 @@ atacRenamer(atacProc, fastqOutput1 = NULL, fastqOutput2 = NULL,
   fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE)
 
 renamer(fastqInput1 = NULL, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE)
+  fastqOutput2 = NULL, interleave = FALSE, threads = NULL)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
