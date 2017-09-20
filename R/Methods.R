@@ -1,6 +1,6 @@
 #' @name atacPipe
 #' @title Unzip and merge fastq files
-#' @description 
+#' @description
 #' Unzip and merge fastq files that are in format of bzip, gzip or fastq
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
 #' it contains sequence file paths.
@@ -14,18 +14,18 @@
 #' files(argument interleaved=\code{TRUE}),
 #' it must be \code{NULL}.
 #' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
-#' path for fastqInput2. 
+#' path for fastqInput2.
 #' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
-#' path for fastqInput2. 
-#' @param adapter1 \code{Character}. It is an adapter sequence for file1. 
+#' path for fastqInput2.
+#' @param adapter1 \code{Character}. It is an adapter sequence for file1.
 #' For single end data, it is requied.
 #' @param adapter2 \code{Character}. It is an adapter sequence for file2.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacSamToBed}} 
+#' @seealso
+#' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
 #' @export
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
@@ -47,7 +47,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     sam2Bed <-atacSamToBed(bowtie2Mapping,maxFregLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
     tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
-   
+
     if(is.null(fastqInput2)&&!interleave){
         peakCalling <- atacPeakCalling(sam2Bed)
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
@@ -61,17 +61,14 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
-       # peak annotation and GO analysis
-        peakAnnotation <- atacPeakAnno(atacProc = peakCalling)
-        goAna <- atacGOAnalysis(atacProc = peakAnnotation, OrgDb = "org.Hs.eg.db",
-                            ont = "BP", pvalueCutoff = 0.01)
-        # Motif Scan and footprint
+        Peakanno <- atacPeakAnno(atacProc = peakCalling, annoDb = "org.Hs.eg.db")
+        goAna <- atacGOAnalysis(atacProc = Peakanno, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = "ATAC")
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
     }
-    
+
     if(interleave){
         seqtype <- "paired end(interleave)"
         freg <- 2
@@ -133,28 +130,28 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                        wholesummary = wholesummary,
                        atacProcs = atacProcs
                        )
-                       
+
     if(createReport){
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
-        
+
         rmdfile<-system.file(package="ATACFlow", "extdata", "Report.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         rmdtext<-sprintf(rmdtext,filename)
-        
+
         workdir <- getwd()
         save(filelist,wholesummary,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
-        
+
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
     }
-   
+
     invisible(conclusion)
-    
-    
+
+
 
 }
 
