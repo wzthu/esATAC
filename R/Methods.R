@@ -13,10 +13,6 @@
 #' For single-end sequencing files and interleaved paired-end sequencing
 #' files(argument interleaved=\code{TRUE}),
 #' it must be \code{NULL}.
-#' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
-#' path for fastqInput2.
-#' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
-#' path for fastqInput2.
 #' @param adapter1 \code{Character}. It is an adapter sequence for file1.
 #' For single end data, it is requied.
 #' @param adapter2 \code{Character}. It is an adapter sequence for file2.

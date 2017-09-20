@@ -6,10 +6,10 @@
 \title{Search Motif Position in Given Regions}
 \usage{
 atacMotifScan(atacProc, peak = NULL, genome = NULL, motifPWM = NULL,
-  min.score = "85\%", scanOutput = NULL, n.cores = NULL)
+  min.score = "85\%", scanO.dir = NULL, n.cores = NULL)
 
 motifscan(peak, genome = NULL, motifPWM = NULL, min.score = "85\%",
-  scanOutput = NULL, n.cores = NULL)
+  scanO.dir = NULL, n.cores = NULL)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
@@ -31,7 +31,7 @@ e.g. pwm <- list("CTCF" = CTCF_PWMmatrix)}
 character string containing a percentage (e.g. "85%") of the highest
 possible score or as a single number.}
 
-\item{scanOutput}{\code{Character} scalar.
+\item{scanO.dir}{\code{Character} scalar.
 the output file directory. This function will use the index in motifPWM as
 the file name to save the motif position information in separate files.}
 
