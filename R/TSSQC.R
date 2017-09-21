@@ -44,7 +44,7 @@ TSSQC <-R6Class(
     private = list(
         processing = function(){
 
-            genome <- Seqinfo(genome = .obtainConfigure("genome"))
+            genome <- seqinfo(.obtainConfigure("bsgenome"))
             readsbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
 
             readsbed<-readsbed[(width(readsbed)>=private$paramlist[["fregLenRange"]][1])&

@@ -1,7 +1,9 @@
 #' @name atacPipe
-#' @title Unzip and merge fastq files
+#' @title Pipeline for single replicate
 #' @description
-#' Unzip and merge fastq files that are in format of bzip, gzip or fastq
+#' The pipeline to process sequencing data into destination files including
+#' a HTML report file reads storage files (BED BAM)
+#' and various quality control report files.
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
 #' it contains sequence file paths.
 #' For paired-end sequencing, it can be file paths with #1 mates paired

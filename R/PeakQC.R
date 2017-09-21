@@ -36,7 +36,7 @@ PeakQC <-R6Class(
     ),
     private = list(
         processing = function(){
-            genome <- Seqinfo(genome = .obtainConfigure("genome"))
+            genome <- seqinfo(.obtainConfigure("bsgenome"))
 
             inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
 

@@ -36,7 +36,7 @@ BedToBigWig <- R6Class(
     
     private = list(
         processing = function(){
-            genome <- Seqinfo(genome = .obtainConfigure("genome"))
+            genome <- seqinfo(.obtainConfigure("bsgenome"))
             bedranges <- import(private$paramlist[["bedInput"]], genome = genome)
             cov <- coverage(bedranges)
             ans <- GRanges(cov)
