@@ -40,8 +40,8 @@ RPeakAnno <- R6::R6Class(
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
         annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
                                     paste0(prefix, ".", self$getProcName()))
-        private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
-                                                       ".pdf", sep = "")
+        private$paramlist[["annoOutput.img"]] <- paste(annoOutput.dir,
+                                                       ".jpg", sep = "")
         private$paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
                                                       ".df", sep = "")
         private$paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
@@ -52,11 +52,11 @@ RPeakAnno <- R6::R6Class(
         name_split <- head(name_split, -1)
         if(suffix == "df"){
           private$paramlist[["annoOutput.df"]] <- annoOutput
-          private$paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
+          private$paramlist[["annoOutput.img"]] <- paste(name_split, "jpg", sep = ".")
           private$paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
         }else{
           private$paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
-          private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
+          private$paramlist[["annoOutput.img"]] <- paste(annoOutput, "jpg", sep = ".")
           private$paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
         }
       }
@@ -71,8 +71,8 @@ RPeakAnno <- R6::R6Class(
     processing = function(){
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["peakInput"]]))
-      private$writeLog(sprintf("df destination:%s", private$paramlist[["annoOutput.df"]]))
-      private$writeLog(sprintf("pdf destination:%s", private$paramlist[["annoOutput.pdf"]]))
+      private$writeLog(sprintf("dataframe destination:%s", private$paramlist[["annoOutput.df"]]))
+      private$writeLog(sprintf("Image destination:%s", private$paramlist[["annoOutput.img"]]))
       peakGRange <- rtracklayer::import(con = private$paramlist[["peakInput"]], format = "bed")
       peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
                                          tssRegion = private$paramlist[["tssRegion"]],
@@ -88,7 +88,7 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]])
       saveRDS(peakAn, private$paramlist[["annoOutput.rds"]])
-      pdf(file = private$paramlist[["annoOutput.pdf"]])
+      jpeg(file = private$paramlist[["annoOutput.img"]])
       ChIPseeker::plotAnnoPie(x = peakAn)
       dev.off()
       tmp_file <- as.data.frame(peakAn)
@@ -107,7 +107,7 @@ RPeakAnno <- R6::R6Class(
     checkAllPath = function(){
       private$checkFileExist(private$paramlist[["peakInput"]])
       private$checkPathExist(private$paramlist[["annoOutput.df"]])
-      private$checkPathExist(private$paramlist[["annoOutput.pdf"]])
+      private$checkPathExist(private$paramlist[["annoOutput.img"]])
       private$checkPathExist(private$paramlist[["annoOutput.rds"]])
     }, # checkAllPath end
 
