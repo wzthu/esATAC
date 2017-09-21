@@ -38,6 +38,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         fastqInput2 = normalizePath(fastqInput2)
     }
     unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
+    atacQC <- atacQCReport(atacProc = unzipAndMerge)
     renamer <- atacRenamer(unzipAndMerge)
     removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2)
     bowtie2Mapping <- atacBowtie2Mapping(removeAdapter)
@@ -122,7 +123,13 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                    DHSQC = DHSQC,
                    blacklistQC = blacklistQC,
                    fripQC = fripQC,
-                   shortBed = shortBed
+                   shortBed = shortBed,
+                   Peakanno = Peakanno,
+                   goAna = goAna,
+                   output_motifscan = output_motifscan,
+                   cs_output = cs_output,
+                   footprint = footprint,
+                   atacQC = atacQC
     )
     conclusion <- list(filelist=filelist,
                        wholesummary = wholesummary,
