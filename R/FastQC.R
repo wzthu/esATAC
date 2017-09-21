@@ -64,8 +64,17 @@ FastQC <- R6::R6Class(
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["Input"]])
             private$checkPathExist(private$paramlist[["Output"]])
-        } # checkAllPath end
+        }, # checkAllPath end
 
+        getReportValImp = function(item){
+            if(item == "pdf"){
+                return(private$paramlist[["Output"]])
+            }
+        }, # getReportValImp end
+
+        getReportItemsImp = function(){
+            return(c("pdf"))
+        } # getReportItemsImp end
     ) # private end
 
 ) # class end
