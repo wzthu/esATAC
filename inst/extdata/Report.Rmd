@@ -16,28 +16,26 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
-library(ggplot2)
 load("Report.Rdata")
-
 ```
 
 # Summary Table
 
-Sequence files below are set as inputs of the pipeline 
+Sequence files below are set as inputs of the pipeline. 
 
-```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=3, eval=TRUE, echo=FALSE,warning=FALSE}
 filelist
 ```
 
 Summerized infomation on sequence files has been shown showed below. You can see details in later sections
 
-```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=3, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
 wholesummary
 ```
+# Sequence statistics
+## FastQC
 
-# FastQC
-
-# Remove Adapter
+## Remove Adapter
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
 atacProcs$removeAdapter$getReportVal("adapters")
@@ -56,9 +54,9 @@ atacProcs$removeAdapter$getReportVal("statistics")
 atacProcs$removeAdapter$getReportVal("distribution")
 ```
 
-# Mapping QC
+# Reads alignment statistics
 
-## Mapping result
+## Bowtie2 alignment log
 
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
 atacProcs$bowtie2Mapping$getReportVal("detail")
@@ -70,19 +68,14 @@ atacProcs$bowtie2Mapping$getReportVal("detail")
 atacProcs$libComplexQC$getReportVal("report")
 ```
 
-## Filted reads component
+## Filtering statistics
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 atacProcs$sam2Bed$getReportVal("report")
 ```
 
-## Fraction of reads in peaks (FRiP)
 
-```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$fripQC$getReportVal("report")
-```
-
-# Fregment size distribution QC
+## Fregment size distribution QC
 
 ```{r fegdist, eval=TRUE}
 library(ggplot2)
@@ -125,7 +118,7 @@ strength<-strength[2:length(strength)]
 ```
 
 
-# TSS enrichment QC
+## TSS enrichment QC
 
 ```{r TSSenrich, eval=TRUE}
 
@@ -137,7 +130,7 @@ df<-atacProcs$tssqc180_247$getReportVal("tss")
 ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
 ```
 
-# Peak QC
+# Peak statistics
 
 ## Blacklist ratio
 
@@ -149,4 +142,10 @@ atacProcs$blacklistQC$getReportVal("report")
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 atacProcs$DHSQC$getReportVal("report")
+```
+
+## Fraction of reads in peaks (FRiP)
+
+```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$fripQC$getReportVal("report")
 ```
