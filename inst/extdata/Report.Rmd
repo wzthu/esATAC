@@ -35,6 +35,12 @@ wholesummary
 # Sequence statistics
 ## FastQC
 
+Quality control for the sequence data
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+QC_path <- atacProcs$atacQC$getReportVal("pdf")
+```
+[Click to Visit Report](`r QC_path`)
+
 ## Remove Adapter
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
@@ -149,3 +155,45 @@ atacProcs$DHSQC$getReportVal("report")
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 atacProcs$fripQC$getReportVal("report")
 ```
+
+
+## Peak Annotation
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+library(ChIPseeker)
+peakanno <- atacProcs$Peakanno$getReportVal("annoOutput.rds")
+plotAnnoPie(x = peakanno)
+```
+
+# Go analysis
+
+Gene ontology analysis for all genes around peak regions.
+
+```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
+go_path <- atacProcs$goAna$getReportVal("goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+go_data
+```
+For more GO information, please see data.frame file:`r go_path`
+
+# Footprint analysis
+
+CTCF footprint.
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+footprint_data <- atacProcs$footprint$getReportVal("footprint.data")
+CTCF_data <- as.vector(footprint_data[["CTCF"]])
+plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
+     xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+     padj = -1.0, tck = -0.01)
+axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+     labels = seq(0, 100, len = 3),
+     padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + 19 + 1), lty = 2)
+```
+
+All motif footprint figures are saved as pdf files.
