@@ -88,7 +88,17 @@ RGo <- R6::R6Class(
 
     checkAllPath = function(){
       private$checkPathExist(private$paramlist[["goOutput"]])
-    } # checkAllPath end
+    }, # checkAllPath end
+
+    getReportValImp = function(item){
+        if(item == "goOutput"){
+            return(private$paramlist[["goOutput"]])
+        }
+    },
+
+    getReportItemsImp = function(){
+        return(c("goOutput"))
+    }
 
   ) # private end
 
