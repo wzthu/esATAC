@@ -98,7 +98,7 @@ reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
 if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
     (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
        samOutput = file.path(td, "result.sam"),
-       fastqInput1=reads_1,fastqInput2=reads_2,paramList="--threads 3"))
+       fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
     head(readLines(file.path(td, "result.sam")))
 }
 }
