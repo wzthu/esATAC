@@ -2,7 +2,7 @@ LibComplexQC <-R6Class(
     classname = "LibComplexQC",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = FALSE,subsample=TRUE,subsampleSize=4e6,editable=FALSE){
+        initialize = function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = FALSE,subsampleSize=Inf,editable=FALSE){
             super$initialize("LibComplexQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["samInput"]] <- atacProc$getParam("samOutput");
@@ -22,9 +22,15 @@ LibComplexQC <-R6Class(
             }else{
                 private$paramlist[["reportOutput"]] <- reportOutput;
             }
-
-            private$paramlist[["subsample"]] <- subsample;
-            private$paramlist[["subsampleSize"]] <- subsampleSize;
+            
+            if(is.infinite(subsampleSize)){
+                private$paramlist[["subsample"]] <- FALSE;
+                private$paramlist[["subsampleSize"]] <- 1e9;
+            }else{
+                private$paramlist[["subsample"]] <- TRUE;
+                private$paramlist[["subsampleSize"]] <- subsampleSize;
+            }
+            
 
 
 
@@ -34,17 +40,21 @@ LibComplexQC <-R6Class(
     private = list(
         processing = function(){
             if(!private$singleEnd){
-                .sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportOutput"]],".tmp"),
-                                    posOffset = 0, negOffset = 0,sortBed = !private$paramlist[["subsample"]],
+                qcval0<-.sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportOutput"]],".tmp"),
+                                    posOffset = 0, negOffset = 0,sortBed = FALSE,
                                     uniqueBed = FALSE, filterList = NULL,minFregLen = 0,maxFregLen = 1000000,saveExtLen = FALSE ,downSample=private$paramlist[["subsampleSize"]])
                 print("test00")
             }else{
-                .sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportOutput"]],".tmp"),
-                              posOffset = 0, negOffset = 0, sortBed = !private$paramlist[["subsample"]],uniqueBed = FALSE,  filterList = NULL,downSample=private$paramlist[["subsampleSize"]])
+                qcval0<-.sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportOutput"]],".tmp"),
+                              posOffset = 0, negOffset = 0, sortBed = FALSE, uniqueBed = FALSE,  filterList = NULL,downSample=private$paramlist[["subsampleSize"]])
                 print("test01")
             }
             print("test1")
-            qcval<-.lib_complex_qc_call(bedfile=paste0(private$paramlist[["reportOutput"]],".tmp"), sortedBed=!private$paramlist[["subsample"]], max_reads=private$paramlist[["subsampleSize"]])
+            qcval<-.lib_complex_qc_call(bedfile=paste0(private$paramlist[["reportOutput"]],".tmp"), sortedBed=FALSE, max_reads=private$paramlist[["subsampleSize"]])
+            qcval[["samTotal"]] <- qcval0[["total"]]
+            qcval[["chrM"]] <- qcval0[["filted"]]
+            qcval[["multimap"]] <- qcval0[["multimap"]]
+            qcval[["NRF"]] <- as.numeric(qcval[["total"]])/as.numeric(qcval0[["total"]])
             print("test2")
             unlink(paste0(private$paramlist[["reportOutput"]],".tmp"))
             print(qcval)
@@ -65,7 +75,35 @@ LibComplexQC <-R6Class(
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
             if(item == "report"){
-                return(data.frame(Item=names(qcval),Value=as.character(qcval)))
+                showdf<-data.frame(
+                    Item = c(                                     
+                        "Total mapped reads (ratio of original reads)",
+                        "Unique locations mapped uniquely by reads",
+                        "Non-Redundant Fraction (NRF)",
+                        "Locations with only 1 reads mapping uniquely",
+                        "Locations with only 2 reads mapping uniquely",
+                        "PCR Bottlenecking Coefficients 1 (PBC1)",
+                        "PCR Bottlenecking Coefficients 2 (PBC2)"),
+                    Value = c(
+                        getVMShow(qcval[["samTotal"]],TRUE),
+                        getVMShow(qcval[["total"]],TRUE),
+                        sprintf("%.2f",qcval[["NRF"]]),
+                        getVMShow(qcval[["one"]],TRUE),
+                        getVMShow(qcval[["two"]],TRUE),
+                        sprintf("%.2f",qcval[["PBC1"]]),
+                        sprintf("%.2f",qcval[["PBC2"]])
+                    ),
+                    Reference = c("",
+                                  "",
+                                  ">0.9",
+                                  "",
+                                  "",
+                                  ">0.9",
+                                  ">3"
+                    )
+                )
+                return(showdf)
+                #return(data.frame(Item=names(qcval),Value=as.character(qcval)))
             }else{
                 return(qcval[[item]])
             }
@@ -121,17 +159,17 @@ LibComplexQC <-R6Class(
 
 #' @rdname atacLibComplexQC
 #' @export 
-atacLibComplexQC<-function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = FALSE,subsample=TRUE,subsampleSize=4*10e6){
+atacLibComplexQC<-function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = FALSE,subsampleSize=Inf){
     libqc<-LibComplexQC$new(atacProc=atacProc, reportOutput=reportOutput,samInput=samInput,singleEnd = singleEnd,
-                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
+                            subsampleSize=subsampleSize,editable=FALSE)
     libqc$process()
     invisible(libqc)
 }
 #' @rdname atacLibComplexQC
 #' @export 
-libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsample=TRUE,subsampleSize=4*10e6){
+libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsampleSize=Inf){
     libqc<-LibComplexQC$new(atacProc=NULL,reportOutput=reportOutput,samInput=samInput,singleEnd = singleEnd,
-                            subsample=subsample,subsampleSize=subsampleSize,editable=FALSE)
+                            subsampleSize=subsampleSize,editable=FALSE)
     libqc$process()
     invisible(libqc)
 }

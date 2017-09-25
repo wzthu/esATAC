@@ -161,6 +161,8 @@ void SortBed::mergeBed(){
                 (*ofsunique) << bedLine.end;
                 (*ofsunique) << bedLine.extend << std::endl;
                 uniquedCounter++;
+            }else{
+                uniquedCounter++;
             }
             oldLine = bedLine;
             // std::cout<<bedLine->extend<<std::endl;
