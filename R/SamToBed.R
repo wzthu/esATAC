@@ -136,7 +136,7 @@ SamToBed <- R6::R6Class(
                               as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])),
                               as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]] - as.integer(qcval[["extlen"]]))),
                               qcval[["save"]]
-                              
+
                     ),
                     Filted = c("/",
                                qcval[["filted"]],
@@ -144,7 +144,7 @@ SamToBed <- R6::R6Class(
                                qcval[["unique"]],
                                qcval[["extlen"]]
                     )
-                    
+
                 )
                 return(data.frame(Item=names(qcval),Value=as.character(qcval)))
             }else if(item == "non-mitochondrial")(
@@ -221,6 +221,14 @@ SamToBed <- R6::R6Class(
 #' or you can use \code{samToBed} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
+#' @examples
+#'
+#' sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACFlow")
+#' sam_path <- as.vector(bunzip2(filename = sam_bz,
+#' destname = file.path(getwd(), "Example.sam"),
+#' ext="bz2", FUN=bzfile, remove = FALSE))
+#' samToBed(samInput = sam_path)
+#'
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBamToBed}}
@@ -247,7 +255,7 @@ atacSamToBed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no
 samToBed <- function(samInput, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                          bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE){
-    atacproc <- SamToBed$new(atacProc=atacProc, merge=merge, posOffset=posOffset, negOffset=negOffset, chrFilterList=chrFilterList,
+    atacproc <- SamToBed$new(atacProc=NULL, merge=merge, posOffset=posOffset, negOffset=negOffset, chrFilterList=chrFilterList,
                              samInput=samInput, bedOutput=bedOutput, sortBed=sortBed, uniqueBed=uniqueBed, minFregLen=minFregLen,
                              maxFregLen=maxFregLen, saveExtLen=saveExtLen,reportOutput=reportOutput)
     atacproc$process()

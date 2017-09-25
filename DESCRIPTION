@@ -31,7 +31,7 @@ Imports:
     ChIPseeker,
     clusterProfiler,
     FunciSNP,
-    igraph,
+    igraph, 
     rJava,
     DiagrammeR,
     magrittr,
@@ -46,7 +46,8 @@ Imports:
     S4Vectors,
     IRanges,
     rmarkdown,
-    tools
+    tools,
+    JASPAR2016
 LinkingTo: Rcpp
 SystemRequirements: C++11
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage

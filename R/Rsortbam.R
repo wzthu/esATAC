@@ -75,6 +75,12 @@ Rsortbam <- R6::R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
+#' @examples
+#'
+#' library(Rsamtools)
+#' ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+#' bamsort(bamInput = ex1_file)
+#'
 #' @seealso
 #' \link[Rsamtools]{sortBam}
 #' \link[Rsamtools]{indexBam}
@@ -91,8 +97,8 @@ atacBamSort <- function(atacProc = NULL, bamInput = NULL, bamOutput = NULL){
 
 #' @rdname atacBamSort
 #' @export
-bamsort <- function(atacProc = NULL, bamInput = NULL, bamOutput = NULL){
-    tmp <- Rsortbam$new(atacProc, bamInput, bamOutput)
+bamsort <- function(bamInput = NULL, bamOutput = NULL){
+    tmp <- Rsortbam$new(atacProc = NULL, bamInput, bamOutput)
     tmp$process()
     invisible(tmp)
 }

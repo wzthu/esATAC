@@ -14,7 +14,7 @@ SamToBam <-R6::R6Class(
                 regexProcName <- "(sam)"
             }
             # unnecessary parameters
-            if(is.null(bamInput)){
+            if(is.null(bamOutput)){
                 prefix <- private$getBasenamePrefix(private$paramlist[["samInput"]], regexProcName)
                 private$paramlist[["name_tmp"]] <- file.path(.obtainConfigure("tmpdir"),
                                                              paste0(prefix, ".", self$getProcName()))
@@ -23,7 +23,7 @@ SamToBam <-R6::R6Class(
                 private$paramlist[["baiOutput"]] <- file.path(.obtainConfigure("tmpdir"),
                                                               paste0(prefix, ".", self$getProcName(), ".bam.bai"))
             }else{
-                name_split <- unlist(base::strsplit(x = bamInput, split = ".", fixed = TRUE))
+                name_split <- unlist(base::strsplit(x = bamOutput, split = ".", fixed = TRUE))
                 suffix <- tail(name_split, 1)
                 if(suffix == "bam"){
                     private$paramlist[["name_tmp"]] <- paste0(name_split[-length(name_split)], collapse = ".")
@@ -87,6 +87,14 @@ SamToBam <-R6::R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
+#' @examples
+#'
+#' sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACFlow")
+#' sam_path <- as.vector(bunzip2(filename = sam_bz,
+#' destname = file.path(getwd(), "Example.sam"),
+#' ext="bz2", FUN=bzfile, remove = FALSE))
+#' sam2bam(samInput = sam_path)
+#'
 #' @seealso
 #' \code{\link{atacBowtie2Mapping}}
 #' \code{\link{atacBam2Bed}}
