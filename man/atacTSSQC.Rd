@@ -60,7 +60,7 @@ bedfile <- file.path(td,"chr18.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(BSgenome.Hsapiens.UCSC.hg19)
-atacTSSQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19)
+tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
 
 dir(td) 
 

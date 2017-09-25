@@ -48,7 +48,7 @@ TSSQC <-R6Class(
             if(is.null(private$paramlist[["bsgenome"]])){
                 genome <- seqinfo(.obtainConfigure("bsgenome"))
             }else{
-                genome <- private$paramlist[["bsgenome"]]
+                genome <- seqinfo(private$paramlist[["bsgenome"]])
             }
             readsbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
 
@@ -205,7 +205,7 @@ TSSQC <-R6Class(
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 #' library(BSgenome.Hsapiens.UCSC.hg19)
-#' atacTSSQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19)
+#' tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
 #' 
 #' dir(td) 
 #' 
