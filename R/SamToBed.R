@@ -181,8 +181,8 @@ SamToBed <- R6::R6Class(
 #' remove duplicates reads before generating BED file.
 #' @param atacProc \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}},
-#' \code{\link{atacBamToBed}}.
+#' \code{\link{atacBowtie2Mapping}} 
+#' \code{\link{bowtie2Mapping}}
 #' @param samInput \code{Character} scalar.
 #' SAM file input path.
 #' @param bedOutput \code{Character} scalar.
@@ -230,15 +230,26 @@ SamToBed <- R6::R6Class(
 #' samToBed(samInput = sam_path)
 #'
 #' @seealso
-#' \code{\link{atacSamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacPeakCalling}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-
+#' \code{\link{atacBowtie2Mapping}} 
+#' \code{\link{bowtie2Mapping}}
+#' \code{\link{atacFregLenDistr}} 
+#' \code{\link{atacExtractCutSite}}
+#' \code{\link{atacPeakCalling}} 
+#' \code{\link{atacBedUtils}}
+#' \code{\link{atacTSSQC}} 
+#' \code{\link{atacBedToBigWig}}
+#' 
+#' @examples 
+#' library(R.utils)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+#' samfile <- file.path(td,"Example.sam")
+#' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+#' samToBed(samInput = samfile) %>%
+#' getReportVal("report")
+#' 
 #' @rdname atacSamToBed
 #' @export
 atacSamToBed <- function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*

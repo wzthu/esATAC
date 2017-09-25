@@ -2,7 +2,7 @@ TSSQC <-R6Class(
     classname = "TSSQC",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProc, txdbKnownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
+        initialize = function(atacProc, txdbKnownGene = NULL, bsgenome = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
             super$initialize("TSSQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
@@ -36,7 +36,8 @@ TSSQC <-R6Class(
 
             private$paramlist[["updownstream"]] <- tssUpdownstream
             private$paramlist[["fregLenRange"]] <- fregLenRange
-
+            
+            private$paramlist[["bsgenome"]] <- bsgenome
 
             private$paramValidation()
         }
@@ -44,7 +45,11 @@ TSSQC <-R6Class(
     private = list(
         processing = function(){
 
-            genome <- seqinfo(.obtainConfigure("bsgenome"))
+            if(is.null(private$paramlist[["bsgenome"]])){
+                genome <- seqinfo(.obtainConfigure("bsgenome"))
+            }else{
+                genome <- private$paramlist[["bsgenome"]]
+            }
             readsbed <- unique(import(private$paramlist[["bedInput"]], genome = genome))
 
             readsbed<-readsbed[(width(readsbed)>=private$paramlist[["fregLenRange"]][1])&
@@ -186,19 +191,36 @@ TSSQC <-R6Class(
 #' @author Zheng Wei
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
+#' \code{\link{samToBed}} 
 #' \code{\link{atacBedUtils}}
+#' \code{\link{bedUtils}}
+#' 
+#' @examples 
+#' library(R.utils)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+#' bedfile <- file.path(td,"chr18.50000.bed")
+#' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+#' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' atacTSSQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19)
+#' 
+#' dir(td) 
+#' 
 
 #' @rdname atacTSSQC
 #' @export 
-atacTSSQC<-function(atacProc, txdbKnownGene = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
-    tssQC<-TSSQC$new(atacProc=atacProc, txdbKnownGene=txdbKnownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
+atacTSSQC<-function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+    tssQC<-TSSQC$new(atacProc=atacProc, txdbKnownGene=txdbKnownGene, bsgenome = bsgenome, reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
     tssQC$process()
     invisible(tssQC)
 }
 #' @rdname atacTSSQC
 #' @export 
-tssQC<-function(bedInput, txdbKnownGene = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
-    tssQC<-TSSQC$new(atacProc=NULL, txdbKnownGene=txdbKnownGene,reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
+tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+    tssQC<-TSSQC$new(atacProc=NULL, txdbKnownGene=txdbKnownGene, bsgenome = bsgenome, reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
     tssQC$process()
     invisible(tssQC)
 }

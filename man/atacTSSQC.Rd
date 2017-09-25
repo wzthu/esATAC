@@ -5,11 +5,12 @@
 \alias{tssQC}
 \title{Quality control for transcription start site(TSS) reads enrichment}
 \usage{
-atacTSSQC(atacProc, txdbKnownGene = NULL, reportPrefix = NULL,
-  bedInput = NULL, fregLenRange = c(0, 2000), tssUpdownstream = 1000)
+atacTSSQC(atacProc, txdbKnownGene = NULL, bsgenome = NULL,
+  reportPrefix = NULL, bedInput = NULL, fregLenRange = c(0, 2000),
+  tssUpdownstream = 1000)
 
-tssQC(bedInput, txdbKnownGene = NULL, reportPrefix = NULL,
-  fregLenRange = c(0, 2000), tssUpdownstream = 1000)
+tssQC(bedInput, txdbKnownGene = NULL, bsgenome = NULL,
+  reportPrefix = NULL, fregLenRange = c(0, 2000), tssUpdownstream = 1000)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
@@ -49,9 +50,26 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{tssQC} instead.
 }
+\examples{
+library(R.utils)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+bedfile <- file.path(td,"chr18.50000.bed")
+bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(BSgenome.Hsapiens.UCSC.hg19)
+atacTSSQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19)
+
+dir(td) 
+
+}
 \seealso{
 \code{\link{atacSamToBed}} 
+\code{\link{samToBed}} 
 \code{\link{atacBedUtils}}
+\code{\link{bedUtils}}
 }
 \author{
 Zheng Wei

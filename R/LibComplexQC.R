@@ -130,7 +130,8 @@ LibComplexQC <-R6Class(
 #' M_DISTINCT: number of distinct genomic locations to which some read maps uniquely.
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacBowtie2Mapping}}.
+#' \code{\link{atacBowtie2Mapping}} 
+#' \code{\link{bowtie2Mapping}}
 #' @param reportOutput \code{Character} scalar. 
 #' The report file path 
 #' @param samInput \code{Character} scalar. 
@@ -154,8 +155,8 @@ LibComplexQC <-R6Class(
 #' @return An invisible \code{\link{libComplexQC}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacBowtie2Mapping}} 
+#' \code{\link{bowtie2Mapping}}
 #' 
 #' @examples 
 #' library(R.utils)
@@ -166,6 +167,8 @@ LibComplexQC <-R6Class(
 #' samfile <- file.path(td,"Example.sam")
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' atacproc<-libComplexQC(samInput = samfile)
+#' 
+#' getReportVal(atacproc,"report")
 #' 
 #' @rdname atacLibComplexQC
 #' @export 

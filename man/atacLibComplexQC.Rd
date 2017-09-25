@@ -14,7 +14,8 @@ libComplexQC(samInput, reportOutput = NULL, singleEnd = FALSE,
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacBowtie2Mapping}}.}
+\code{\link{atacBowtie2Mapping}} 
+\code{\link{bowtie2Mapping}}}
 
 \item{reportOutput}{\code{Character} scalar. 
 The report file path}
@@ -66,10 +67,12 @@ samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 atacproc<-libComplexQC(samInput = samfile)
 
+getReportVal(atacproc,"report")
+
 }
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacBowtie2Mapping}} 
+\code{\link{bowtie2Mapping}}
 }
 \author{
 Zheng Wei

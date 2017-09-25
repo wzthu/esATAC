@@ -166,8 +166,10 @@ FregLenDistr <-R6Class(
 #' will be shown in another two plots.
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{samToBed}} 
+#' \code{\link{atacBedUtils}}
+#' \code{\link{bedUtils}}
 #' @param reportPrefix \code{Character} scalar. 
 #' The prefix of report files path. 
 #' @param bedInput \code{Character} scalar. 
@@ -185,7 +187,22 @@ FregLenDistr <-R6Class(
 #' @author Zheng Wei
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
+#' \code{\link{samToBed}} 
 #' \code{\link{atacBedUtils}}
+#' \code{\link{bedUtils}}
+#' 
+#' @examples 
+#' library(R.utils)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+#' bedfile <- file.path(td,"chr18.50000.bed")
+#' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+#' fregLenDistr(bedfile)
+#' 
+#' dir(td) 
+#' 
 
 #' @rdname atacFregLenDistr
 #' @export 
