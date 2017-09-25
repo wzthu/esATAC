@@ -58,6 +58,20 @@ This function using \link[clusterProfiler]{enrichGO} to do GO
 analysis but fixed some parameters. If atacProc is not NULL, it will read
 the gene ID from the output of \code{\link{atacPeakAnno}}.
 }
+\examples{
+
+library(clusterProfiler)
+data(geneList)
+geneId <- names(geneList)[1:100]
+goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
+
+
+}
+\references{
+Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He.
+clusterProfiler: an R package for comparing biological themes among gene
+clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287
+}
 \seealso{
 \code{\link{atacPeakAnno}}
 \link[clusterProfiler]{enrichGO} function enrichGO in package

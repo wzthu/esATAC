@@ -79,16 +79,7 @@ bowtie2 are invalid if they are already handled as explicit
 function arguments. See the output of
 \code{bowtie2_usage()} for details about available parameters.
 }
-\seealso{
-\code{\link{atacRemoveAdapter}} 
-\code{\link{removeAdapter}}
-\code{\link{bowtie2}}
-\code{\link{bowtie2_build}}
-\code{\link{bowtie2_usage}}
-\code{\link{atacSam2Bam}}
-\code{\link{atacSamToBed}}
-\code{\link{atacLibComplexQC}}
-
+\examples{
 td <- tempdir()
 setConfigure("tmpdir",td)
 
@@ -108,6 +99,16 @@ if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
        fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
     head(readLines(file.path(td, "result.sam")))
 }
+}
+\seealso{
+\code{\link{atacRemoveAdapter}} 
+\code{\link{removeAdapter}}
+\code{\link{bowtie2}}
+\code{\link{bowtie2_build}}
+\code{\link{bowtie2_usage}}
+\code{\link{atacSam2Bam}}
+\code{\link{atacSamToBed}}
+\code{\link{atacLibComplexQC}}
 }
 \author{
 Zheng Wei

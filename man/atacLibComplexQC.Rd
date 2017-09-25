@@ -56,6 +56,17 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{fregLenDistr} instead.
 }
+\examples{
+library(R.utils)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+samfile <- file.path(td,"Example.sam")
+bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+atacproc<-libComplexQC(samInput = samfile)
+
+}
 \seealso{
 \code{\link{atacSamToBed}} 
 \code{\link{atacBedUtils}}

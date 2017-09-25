@@ -7,7 +7,7 @@
 \usage{
 atacBamSort(atacProc = NULL, bamInput = NULL, bamOutput = NULL)
 
-bamsort(atacProc = NULL, bamInput = NULL, bamOutput = NULL)
+bamsort(bamInput = NULL, bamOutput = NULL)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
@@ -23,6 +23,13 @@ Output bam file path.}
 \value{
 An invisible \code{\link{ATACProc}} object scalar for
 downstream analysis.
+}
+\examples{
+
+library(Rsamtools)
+ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+bamsort(bamInput = ex1_file)
+
 }
 \seealso{
 \link[Rsamtools]{sortBam}

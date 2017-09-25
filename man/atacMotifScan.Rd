@@ -48,6 +48,20 @@ Search motif position in given genome regions according PWM matrix.
 \details{
 This function scan motif position in a given genome regions.
 }
+\examples{
+
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(R.utils)
+p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
+peak1_path <- as.vector(bunzip2(filename = p1bz,
+destname = file.path(getwd(), "Example_peak1.bed"),
+ext="bz2", FUN=bzfile, remove = FALSE))
+pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
+motifPWM = pwm)
+
+
+}
 \seealso{
 \code{\link{atacPeakCalling}}
 \code{\link{atacCutSiteCount}}

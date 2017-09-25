@@ -82,6 +82,11 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{bedUtils} instead.
 }
+\examples{
+
+
+
+}
 \seealso{
 \code{\link{atacSamToBed}} 
 \code{\link{atacBamToBed}}

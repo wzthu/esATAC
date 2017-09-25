@@ -156,7 +156,17 @@ LibComplexQC <-R6Class(
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBedUtils}}
-
+#' 
+#' @examples 
+#' library(R.utils)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+#' samfile <- file.path(td,"Example.sam")
+#' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+#' atacproc<-libComplexQC(samInput = samfile)
+#' 
 #' @rdname atacLibComplexQC
 #' @export 
 atacLibComplexQC<-function(atacProc,reportOutput=NULL,samInput=NULL,singleEnd = FALSE,subsampleSize=Inf){

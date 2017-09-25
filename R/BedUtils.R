@@ -165,7 +165,11 @@ BedUtils<-R6::R6Class(
 #' \code{\link{atacBamToBed}}
 #' \code{\link{atacBamToBed}}
 #' \code{\link{atacBamToBed}}
-
+#' 
+#' @examples 
+#' 
+#' 
+#' 
 #' @rdname atacBedUtils
 #' @export 
 atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,

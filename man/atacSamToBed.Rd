@@ -84,6 +84,15 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL}
 or you can use \code{samToBed} instead.
 }
+\examples{
+
+sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACFlow")
+sam_path <- as.vector(bunzip2(filename = sam_bz,
+destname = file.path(getwd(), "Example.sam"),
+ext="bz2", FUN=bzfile, remove = FALSE))
+samToBed(samInput = sam_path)
+
+}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBamToBed}}

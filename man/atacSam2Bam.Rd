@@ -32,6 +32,15 @@ This function convert a sam file into a bam file.
 The sam file wiil be automatically obtained from
 object(\code{atacProc}) or input by hand. bamOutput can be ignored.
 }
+\examples{
+
+sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACFlow")
+sam_path <- as.vector(bunzip2(filename = sam_bz,
+destname = file.path(getwd(), "Example.sam"),
+ext="bz2", FUN=bzfile, remove = FALSE))
+sam2bam(samInput = sam_path)
+
+}
 \seealso{
 \code{\link{atacBowtie2Mapping}}
 \code{\link{atacBam2Bed}}
