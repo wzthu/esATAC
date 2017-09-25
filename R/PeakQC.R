@@ -13,8 +13,10 @@ PeakQC <-R6Class(
             qcbedInput <- qcbedInput[1]
             if(qcbedInput == "DHS"){
                 private$paramlist[["qcbedInput"]]<-.obtainConfigure("DHS");
+                private$fixtag = "DHS"
             }else if(qcbedInput == "blacklist"){
                 private$paramlist[["qcbedInput"]]<-.obtainConfigure("blacklist");
+                private$fixtag = "blacklist"
             }else{
                 private$paramlist[["qcbedInput"]]<-qcbedInput;
             }
@@ -71,14 +73,25 @@ PeakQC <-R6Class(
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
             if(item == "report"){
-                return(data.frame(Item=names(qcval),Value=as.character(qcval)))
+                cqcval<-as.character(qcval)
+                cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
+                if(private$fixtag=="DHS"){
+                    return(data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
+                                      Value=cqcval))
+                }else if(private$fixtag=="blacklist"){
+                    return(data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval))
+                }else{
+                    return(data.frame(Item=names(qcval),Value=as.character(qcval)))
+                }
+                
             }else{
                 return(qcval[[item]])
             }
         },
         getReportItemsImp = function(){
             return(c("report","totalInput","qcbedInput","qcbedRate"))
-        }
+        },
+        fixtag="User file"
     )
 
 

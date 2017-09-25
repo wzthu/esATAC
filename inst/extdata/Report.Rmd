@@ -1,5 +1,5 @@
 ---
-title: "ATACFlow Report For %s"
+title: "ATACFlow Report"
 author: "Zheng Wei and Wei Zhang"
 date: "`r Sys.Date()`"
 output: 
@@ -224,15 +224,15 @@ grid.arrange(g1, g2, ncol=2)
 
 
 ## TSS enrichment
-
+The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enrichment around transcription starting site (TSS) are shown below.
 ```{r TSSenrich, eval=TRUE}
-
 library(ggplot2)
 load("Report.Rdata")
 df<-atacProcs$tssqc100$getReportVal("tss")
-ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
 df<-atacProcs$tssqc180_247$getReportVal("tss")
-ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+grid.arrange(g1, g2, ncol=2)
 ```
 
 # Peak statistics
@@ -240,19 +240,19 @@ ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("r
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$blacklistQC$getReportVal("report")
+knitr::kable(x = atacProcs$blacklistQC$getReportVal("report"))
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$DHSQC$getReportVal("report")
+knitr::kable(x = atacProcs$DHSQC$getReportVal("report"))
 ```
 
 ## Fraction of reads in peaks (FRiP)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$fripQC$getReportVal("report")
+knitr::kable(x = atacProcs$fripQC$getReportVal("report"))
 ```
 
 
