@@ -6,10 +6,10 @@
 \title{Quality control for library complexity}
 \usage{
 atacLibComplexQC(atacProc, reportOutput = NULL, samInput = NULL,
-  singleEnd = FALSE, subsample = TRUE, subsampleSize = 4 * 1e+07)
+  singleEnd = FALSE, subsampleSize = Inf)
 
 libComplexQC(samInput, reportOutput = NULL, singleEnd = FALSE,
-  subsample = TRUE, subsampleSize = 4 * 1e+07)
+  subsampleSize = Inf)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
@@ -25,12 +25,12 @@ The SAM file input path.}
 \item{singleEnd}{\code{Character} scalar. 
 Single end data if TRUE. Paired end data if FALSE.}
 
-\item{subsample}{\code{Logical} scalar.
-Down sample reads if TRUE, otherwise FALSE.}
-
 \item{subsampleSize}{\code{Integer} scalar.
 Down sample reads if the number is less than total number 
 when \code{subsample} is TRUE}
+
+\item{subsample}{\code{Logical} scalar.
+Down sample reads if TRUE, otherwise FALSE.}
 }
 \value{
 An invisible \code{\link{libComplexQC}} object scalar for downstream analysis.

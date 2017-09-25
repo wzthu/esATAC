@@ -208,21 +208,41 @@ Bowtie2Mapping <-R6Class(
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBedUtils}}
+#' 
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' ## Building a bowtie2 index
+#' refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
+#' full=TRUE)
+#' bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
+#' "--threads 4 --quiet",overwrite=TRUE)
+#' ## Alignments
+#' reads_1 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+#' "reads_1.fastq")
+#' reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+#' "reads_2.fastq")
+#' if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
+#'     (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+#'        samOutput = file.path(td, "result.sam"),
+#'        fastqInput1=reads_1,fastqInput2=reads_2,paramList="--threads 3"))
+#'     head(readLines(file.path(td, "result.sam")))
+#' }
 
 #' @rdname atacBowtie2Mapping
 #' @export 
-atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
+atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
+                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
     atacproc$process()
     invisible(atacproc)
 }
 
 #' @rdname atacBowtie2Mapping
 #' @export
-bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
+bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-Bowtie2Mapping$new(atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
+                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
     atacproc$process()
     invisible(atacproc)
 }
