@@ -158,7 +158,8 @@ Bowtie2Mapping <-R6Class(
 #' Use bowtie2 aligner to map reads to reference genome 
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacRemoveAdapter}}.
+#' \code{\link{atacRemoveAdapter}} 
+#' \code{\link{removeAdapter}}
 #' @param reportOutput \code{Character} scalar. 
 #' The prefix of report files path. 
 #' @param bt2Idx \code{Character} scalar. 
@@ -206,9 +207,15 @@ Bowtie2Mapping <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
-#' 
+#' \code{\link{atacRemoveAdapter}} 
+#' \code{\link{removeAdapter}}
+#' \code{\link{bowtie2}}
+#' \code{\link{bowtie2_build}}
+#' \code{\link{bowtie2_usage}}
+#' \code{\link{atacSam2Bam}}
+#' \code{\link{atacSamToBed}}
+#' \code{\link{atacLibComplexQC}}
+#' @examples 
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 

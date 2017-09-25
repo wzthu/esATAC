@@ -382,8 +382,10 @@ RemoveAdapter <-R6Class(
 #' Use AdapterRemoval to remove adapters
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' \code{\link{atacRenamer}} 
+#' \code{\link{renamer}}
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
 #' it contains sequence file paths.
 #' For paired-end sequencing, it can be file paths with #1 mates paired
@@ -437,8 +439,11 @@ RemoveAdapter <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacRenamer}} 
+#' \code{\link{renamer}}
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
+#' \code{\link{atacBowtie2Mapping}} 
 #' @examples 
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)

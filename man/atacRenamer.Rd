@@ -14,8 +14,8 @@ renamer(fastqInput1 = NULL, fastqInput2 = NULL, fastqOutput1 = NULL,
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
-\code{\link{atacBedUtils}}.}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}}
 
 \item{fastqOutput1}{\code{Character} scalar. 
 The output file path of renamed fastqInput1.}
@@ -78,6 +78,8 @@ dir(td)
 \seealso{
 \code{\link{atacUnzipAndMerge}} 
 \code{\link{unzipAndMerge}}
+\code{\link{atacQCReport}} 
+\code{\link{atacRemoveAdapter}}
 }
 \author{
 Zheng Wei

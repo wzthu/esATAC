@@ -190,9 +190,7 @@ UnzipAndMerge <-R6Class(
 #' @author Zheng Wei
 #' @seealso 
 #' \code{\link{atacRenamer}} 
-#' \code{\link{renamer}}
 #' \code{\link{atacQCReport}} 
-#' \code{\link{qcreport}}
 #' @examples 
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)

@@ -18,7 +18,8 @@ bowtie2Mapping(fastqInput1, fastqInput2 = NULL, samOutput = NULL,
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacRemoveAdapter}}.}
+\code{\link{atacRemoveAdapter}} 
+\code{\link{removeAdapter}}}
 
 \item{samOutput}{\code{Character} scalar. 
 A path to a SAM file
@@ -79,8 +80,14 @@ function arguments. See the output of
 \code{bowtie2_usage()} for details about available parameters.
 }
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacRemoveAdapter}} 
+\code{\link{removeAdapter}}
+\code{\link{bowtie2}}
+\code{\link{bowtie2_build}}
+\code{\link{bowtie2_usage}}
+\code{\link{atacSam2Bam}}
+\code{\link{atacSamToBed}}
+\code{\link{atacLibComplexQC}}
 
 td <- tempdir()
 setConfigure("tmpdir",td)

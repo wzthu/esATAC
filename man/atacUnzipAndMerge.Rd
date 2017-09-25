@@ -57,9 +57,7 @@ dir(td)
 }
 \seealso{
 \code{\link{atacRenamer}} 
-\code{\link{renamer}}
-\code{\link{atacQCReport}} 
-\code{\link{qcreport}}
+\code{\link{atacQCReport}}
 }
 \author{
 Zheng Wei

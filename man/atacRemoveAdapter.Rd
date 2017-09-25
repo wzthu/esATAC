@@ -18,8 +18,10 @@ removeAdapter(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
-\code{\link{atacBedUtils}}.}
+\code{\link{atacRenamer}} 
+\code{\link{renamer}}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}}
 
 \item{adapter1}{\code{Character}. It is an adapter sequence for file1. 
 For single end data, it is requied.}
@@ -108,8 +110,11 @@ dir(td)
 
 }
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacRenamer}} 
+\code{\link{renamer}}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}
+\code{\link{atacBowtie2Mapping}}
 }
 \author{
 Zheng Wei

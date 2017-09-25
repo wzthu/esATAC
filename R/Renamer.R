@@ -114,8 +114,8 @@ Renamer <-R6Class(
 #' Rename reads name in fastq with increasing integer  
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
 #' @param fastqInput1 \code{Character} scalar. For single-end sequencing,
 #' it contains sequence file paths.
 #' For paired-end sequencing, it can be file path with #1 mates paired
@@ -148,6 +148,8 @@ Renamer <-R6Class(
 #' @seealso 
 #' \code{\link{atacUnzipAndMerge}} 
 #' \code{\link{unzipAndMerge}}
+#' \code{\link{atacQCReport}} 
+#' \code{\link{atacRemoveAdapter}} 
 #' @examples 
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
