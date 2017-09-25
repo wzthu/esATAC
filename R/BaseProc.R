@@ -419,7 +419,7 @@ isSingleEnd = function(atacProc){
 #' @return \item{getReportVal}{Get report value of item}
 #' @export 
 getReportVal = function(atacProc,item){
-    return(atacProc$getReportVal(atacProc,item))
+    return(atacProc$getReportVal(item))
     
 }
 #' @rdname ATACProc
