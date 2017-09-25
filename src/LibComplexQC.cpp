@@ -33,8 +33,8 @@ LibComplexQC::~LibComplexQC(void)
 void LibComplexQC::calValSorted(){
 
     ifstream bedin(sorted_bed);
-    cout<<sorted_bed<<endl;
-    cout.flush();
+//    cout<<sorted_bed<<endl;
+//    cout.flush();
     string line;
 
 
@@ -56,8 +56,8 @@ void LibComplexQC::calValSorted(){
 
     int totalcounter=0;
     while(getline(bedin,line)){
-        cout<<line<<endl;
-        cout.flush();
+//        cout<<line<<endl;
+//        cout.flush();
         counter ++;
         stringstream ss(line);
         ss>>chr>>start>>end;

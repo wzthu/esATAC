@@ -1,5 +1,5 @@
 ---
-title: "ATACFlow Report For %s"
+title: "ATACFlow Report"
 author: "Zheng Wei and Wei Zhang"
 date: "`r Sys.Date()`"
 output: 
@@ -8,6 +8,7 @@ output:
         toc: true
         toc_float: true
         number_sections: true
+        fig_height: 3.5
 ---
 
 
@@ -29,9 +30,125 @@ filelist
 
 Summerized infomation on sequence files has been shown showed below. You can see details in later sections
 
-```{r cols.print=3, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-wholesummary
+```{r eval=TRUE, echo=FALSE,warning=FALSE}
+knitr::kable(x = wholesummary)
 ```
+
+A nucleosome free region (NFR) must be present.
+A mononucleosome peak must be present in the fragment length distribution. These are reads that span a single nucleosome, so they are longer than 147 bp but shorter than 147*2 bp. Good ATAC-seq datasets have reads that span nucleosomes (which allows for calling nucleosome positions in addition to open regions of chromatin).
+
+```{r eval=TRUE,echo=FALSE}
+library(ggplot2)
+readsCounts<-atacProcs$fregLenDistr$getReportVal("readsCounts")
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
+```
+
+> Annotation of items in table 
+
+***
+
+For single end sequencing data, ATACFlow will counts reads number. 
+
+For paired end sequencing data, ATACFlow will counts read pairs or fragment number.
+
+* __Sequence files type__
+is the type of sequencing data: single end data and paired end data.
+If paired end reads are stored in one file interleavedly rather than two files,
+"it is call "interleaved.
+
+* __Original total reads__
+is the sample's raw total reads (pairs) number. 
+
+* __Reads after adapter removing (ratio)__
+ is the reads (pairs) number after adapter removing and
+the percentage of retained reads in original total reads.
+The larger value shows the better quality.
+
+* __Total mapped reads (ratio)__	
+is the reads (pairs) number mapped to reference genome and
+the percentage of mapped reads in original total reads (alignment rate). 
+ENCODE recommend that the alignment rate, 
+or percentage of mapped reads, should be greater than 95%, 
+though values >80% may be acceptable.
+
+* __Unique locations mapped uniquely__ 	
+is the number of distinct uniquely mapping reads (i.e. after removing duplicates). 
+
+* __Non-Redundant Fraction (NRF)__ 
+is the value of: Unique locations mapped uniquely  / Total mapped reads.
+ENCODE recommend NRF>0.9 for ATAC-seq data.
+
+$NRF$ value range   |Complexity
+:------------------:|:---------:
+$NRF<0.7$              |Concerning
+$0.7\le NRF \le 0.9$|Acceptable
+$NRF>0.7$              |Ideal
+
+
+* __Locations with only 1 reads mapping uniquely__
+is the number of genomic locations where exactly one read maps uniquely.
+
+* __Locations with only 2 reads mapping uniquely__
+is the number of genomic locations where two reads map uniquely.
+
+
+* __PCR Bottlenecking Coefficients 1 (PBC1)__
+is the value of: Locations with only 1 reads mapping uniquely / 
+Unique locations mapped uniquely.
+ENCODE recommend that PBC1>0.9 for ATAC-seq data.
+
+
+$PBC1$ value range   |Bottlenecking level
+:-------------------:|:---------:
+$PBC1<0.7$               |Severe
+$0.7\le PBC1 \le 0.9$|Moderate
+$PBC1>0.7$               |None
+
+
+* __PCR Bottlenecking Coefficients 2 (PBC2)__
+is the value of: Locations with only 1 reads mapping uniquely /
+Locations with only 2 reads mapping uniquely.
+ENCODE recommend that PBC2>3 for ATAC-seq data.
+
+
+$PBC2$ value range  |Bottlenecking level
+:------------------:|:----------:
+$PBC2<1$                |Severe
+$1\le PBC2 \le 3$   |Moderate
+$PBC2>3$                |None
+
+
+* __Non-mitochondrial reads (ratio)__
+is the percentage of non-mitochondrial read in total mapped reads.
+(mitochondrial reads removed).The larger value shows the better quality.
+
+* __Unique mapped reads (ratio)__
+is the percentage of non-mitochondrial unique mapped read in total mapped reads
+(multi-mapped reads removed). The larger value shows the better quality.
+
+* __Duplicate removed reads (final for use)__
+is the percentage of non-mitochondrial, 
+unique mapped and non-duplicate reads in total mapped reads
+(duplicate reads removed). These reads are ready to use and storage at final.
+The larger value shows the better quality.
+
+
+* __Nucleosome free reads (<100bp)__
+is the nucleosome free reads reads shorter than 100bp for peak calling
+* __Total peaks__
+is the number of peak called by using nucleosome free reads (<100bp)
+* __Peaks overlaped with union DHS (ratio)__
+is the percentage of called peak overlaped with blacklist.
+The larger value shows the better quality.
+
+* __Peaks overlaped with blacklist (ratio)__
+is the percentage of called peak overlaped with blacklist.
+The smaller value shows the better quality.
+
+* __Fraction of reads in peaks (FRiP)__
+is the fraction of nucleosome free reads (<100bp) in peak.
+The larger value shows the better quality.
+
 # Sequence statistics
 ## FastQC
 
@@ -43,22 +160,20 @@ QC_path <- atacProcs$atacQC$getReportVal("pdf")
 
 ## Remove Adapter
 
-```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$removeAdapter$getReportVal("adapters")
-
-```
+The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$removeAdapter$getReportVal("settings")
+knitr::kable(atacProcs$removeAdapter$getReportVal("adapters"))
+
 ```
+
+The statistic of adapter removing are show below. 
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$removeAdapter$getReportVal("statistics")
+knitr::kable(atacProcs$removeAdapter$getReportVal("statistics"))
 ```
 
-```{r cols.print=6, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$removeAdapter$getReportVal("distribution")
-```
+For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
 
 # Reads alignment statistics
 
@@ -71,69 +186,53 @@ atacProcs$bowtie2Mapping$getReportVal("detail")
 ## Library complexity
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$libComplexQC$getReportVal("report")
+knitr::kable(x = atacProcs$libComplexQC$getReportVal("report"))
 ```
+The annotation you can see in section 1.
 
 ## Filtering statistics
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$sam2Bed$getReportVal("report")
+knitr::kable(x = filtstat)
 ```
 
 
-## Fregment size distribution QC
+## Fregment size distribution
 
 ```{r fegdist, eval=TRUE}
 library(ggplot2)
 load("Report.Rdata")
 readsCounts<-atacProcs$fregLenDistr$getReportVal("readsCounts")
-ggplot(readsCounts, aes(length))+geom_ribbon(aes(ymin=0, ymax=counts))
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 
 library(stats)
 strength<-Mod(fft(readsCounts$counts))/length(readsCounts$counts)
 periodx<-length(readsCounts$counts)/(1:(length(readsCounts$counts)-1))
 strength<-strength[2:length(strength)]
 
-          tp<-rep(0,length(strength))
-          if(length(periodx)>15&&sum(periodx>10&periodx<11)<=1){
-              tp[max(which(periodx>10))+1]<-1
-              tp[min(which(periodx<11))-1]<-1
-          }else{
-              tp[periodx>10&periodx<11]<-1
-          }
-          if(length(periodx)>220&&sum(periodx>100&periodx<200)<=1){
-              tp[max(which(periodx>100))+1]<-1
-              tp[min(which(periodx<200))-1]<-1
-          }else{
-              tp[periodx>100&periodx<200]<-2
-          }
-          if(length(periodx)>15){
-              rs1<-as.data.frame(cbind(periodx[periodx<20&periodx>2],strength[periodx<20&periodx>2],tp[periodx<20&periodx>2]))
-              colnames(rs1)<-c("period","strength","check")
-              checkdna=1
-              ggplot(rs1)+geom_ribbon(data=subset(rs1,period<=min(rs1$period[rs1$check==checkdna])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,period>=max(rs1$period[rs1$check==checkdna])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,check==checkdna),aes(x=period,ymin=0,ymax=strength),fill="red")
-              
-          }
-          if(length(periodx)>220){
-              rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],tp[periodx<400&periodx>2]))
-              colnames(rs2)<-c("period","strength","check")
-              checkhistone=2
-              ggplot(rs2)+geom_ribbon(data=subset(rs2,period<=min(rs2$period[rs2$check==checkhistone])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,period>=max(rs2$period[rs2$check==checkhistone])),aes(x=period,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,check==checkhistone),aes(x=period,ymin=0,ymax=strength),fill="red")
-                
-          }
+rs1<-as.data.frame(cbind(periodx[periodx<20&periodx>2],strength[periodx<20&periodx>2],0))
+rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],1))
+rs<-rbind(rs1,rs2)
+colnames(rs)<-c("period","strength","check")
+
+g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")
+
+g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
+library(gridExtra)
+grid.arrange(g1, g2, ncol=2)
 ```
 
 
-## TSS enrichment QC
-
+## TSS enrichment
+The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enrichment around transcription starting site (TSS) are shown below.
 ```{r TSSenrich, eval=TRUE}
-
 library(ggplot2)
 load("Report.Rdata")
 df<-atacProcs$tssqc100$getReportVal("tss")
-ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
 df<-atacProcs$tssqc180_247$getReportVal("tss")
-ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
+g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+grid.arrange(g1, g2, ncol=2)
 ```
 
 # Peak statistics
@@ -141,20 +240,21 @@ ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("r
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$blacklistQC$getReportVal("report")
+knitr::kable(x = atacProcs$blacklistQC$getReportVal("report"))
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$DHSQC$getReportVal("report")
+knitr::kable(x = atacProcs$DHSQC$getReportVal("report"))
 ```
 
 ## Fraction of reads in peaks (FRiP)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$fripQC$getReportVal("report")
+knitr::kable(x = atacProcs$fripQC$getReportVal("report"))
 ```
+
 
 
 ## Peak Annotation
@@ -197,3 +297,5 @@ abline(v = c(100, 100 + 19 + 1), lty = 2)
 ```
 
 All motif footprint figures are saved as pdf files.
+
+#File annotation

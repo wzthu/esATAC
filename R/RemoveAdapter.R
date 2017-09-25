@@ -257,10 +257,12 @@ RemoveAdapter <-R6Class(
                 tblist <- private$getTopic("\\[Adapter sequences\\]")
                 splitlist <- strsplit(tblist,": ")
                 if(private$singleEnd){
-                    return(list(adpater1=splitlist[[1]][2]))
+                    return(data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
                 }else{
-                    return(list(adapter1=splitlist[[1]][2],
-                                adapter2=splitlist[[2]][2]))
+                    return(data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
+                                      sequence=c(splitlist[[1]][2],splitlist[[2]][2])))
+                    #return(list(adapter1=splitlist[[1]][2],
+                    #            adapter2=splitlist[[2]][2]))
                 }
             }
             if(item == "adapters"){

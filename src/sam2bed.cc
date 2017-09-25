@@ -25,8 +25,8 @@ using std::getline;
 SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize,int down_sample,bool rmXS):
     MAX_BUFFER_LINE(memSize<128?memSize*12000000:150000000)// int or long should be considered
 {
-    cout<<MAX_BUFFER_LINE<<endl;
-    cout.flush();
+//    cout<<MAX_BUFFER_LINE<<endl;
+//    cout.flush();
     this -> ifilePath = ifilePath;
     this -> ofilePath = ofilePath;
     this -> reads_count = 0;
@@ -172,6 +172,7 @@ int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_fil
 #elif PLF_SYS_LINUX
         if(rmXS && regexec(&xsreg,otherFlag.c_str(),nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
             xsCounter ++;
+            cout << xsCounter;
             continue;
         }
 #endif
@@ -321,16 +322,17 @@ int SamToBed::sam2bed_merge(int pos_offset,int neg_offset,char ** chrList,int ch
         ss >> CIGAR;
         ss1 >> CIGAR1;
         getline(ss,otherFlag);
-        getline(ss,otherFlag1);
+        getline(ss1,otherFlag1);
 #ifdef PLF_SYS_WIN
-        if(rmXS && std::regex_match(otherFlag, xsre)
-               && std::regex_match(otherFlag1, xsre)){
+        if(rmXS && (std::regex_match(otherFlag, xsre)
+               || std::regex_match(otherFlag1, xsre))){
             xsCounter ++;
+
             continue;
         }
 #elif PLF_SYS_LINUX
-        if(rmXS && regexec(&xsreg,otherFlag.c_str(),nmatch,pm,REG_NOTBOL)!=REG_NOMATCH
-               && regexec(&xsreg,otherFlag1.c_str(),nmatch,pm,REG_NOTBOL)!=REG_NOMATCH){
+        if(rmXS && (regexec(&xsreg,otherFlag.c_str(),nmatch,pm,REG_NOTBOL)!=REG_NOMATCH
+               || regexec(&xsreg,otherFlag1.c_str(),nmatch,pm,REG_NOTBOL)!=REG_NOMATCH)){
             xsCounter ++;
             continue;
         }

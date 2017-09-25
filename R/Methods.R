@@ -1,3 +1,50 @@
+getPer<- function(per){
+    per <- as.numeric(per)*100
+    return(paste0(sprintf("%.1f",per),"%"))
+}
+getf<- function(per){
+    per <- as.numeric(per)
+    return(sprintf("%.2f",per))
+}
+getVM <- function(readSize){
+    readSize <- as.numeric(readSize)
+    return(c(readSize,readSize/1e6))
+}
+getVMR <- function(readSize,total){
+    readSize <- as.character(readSize)
+    total <- as.integer(total)
+    vm <- getVM(readSize)
+    return(c(vm, 100*vm[1]/total,total))
+}
+getVMShow <- function(readSize,detail = FALSE){
+    vm <- getVM(readSize)
+    if(detail){
+        return(sprintf("%.1fM (%d)",vm[2],vm[1]))
+    }else{
+        return(sprintf("%.1fM",vm[2]))
+    }
+    
+}
+getVMRShow <- function(readSize,total,detail = FALSE){
+    vmr <- getVMR(readSize,total)
+    total <- as.numeric(total)
+    if(detail){
+        return(sprintf("%.1fM (%.2f%s, %d / %d)",vmr[2],vmr[3],"%",vmr[1],vmr[4]))
+    }else{
+        return(sprintf("%.1fM (%.2f%s)",vmr[2],vmr[3],"%"))
+    }
+    
+}
+getRshow <- function(readSize,total,detail = FALSE){
+    vmr <- getVMR(readSize,total)
+    total <- as.numeric(total)
+    if(detail){
+        return(sprintf("%.2f, %d / %d",vmr[3]/100,vmr[1],vmr[4])) 
+    }else{
+        return(sprintf("%.2f",vmr[3]/100))
+    }
+   
+}
 #' @name atacPipe
 #' @title Pipeline for single replicate
 #' @description
@@ -69,13 +116,13 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     }
 
     if(interleave){
-        seqtype <- "paired end(interleave)"
+        seqtype <- "paired end (PE,interleave)"
         freg <- 2
     }else if(is.null(fastqInput2)){
-        seqtype <- "single end"
+        seqtype <- "single end (SE)"
         freg <- 1
     }else{
-        seqtype <- "paired end"
+        seqtype <- "paired end (PE)"
         freg <- 2
     }
     if(is.null(fastqInput2)){
@@ -84,31 +131,112 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filelist <- data.frame(`Mate1 files`=fastqInput1,
                           `Mate2 files`=fastqInput2)
     }
-    wholesummary = data.frame(Item=c("Sequence Type",
-                                      "Original total reads",
-                                      "Adapter removed reads for mapping",
-                                      "Locations mapped once / twice / total",
-                                      "Non-Redundant Fraction (NRF)",
-                                      "PCR Bottlenecking Coefficients 1 (PBC1)",
-                                      "PCR Bottlenecking Coefficients 2 (PBC2)",
-                                      "Chromosome mitochondria reads ratio",
-                                      "Total peaks",
-                                      "Fraction of reads in peaks(FRiP)",
-                                      "Peaks ratio overlaped with union DHS",
-                                      "Peaks ratio overlaped with blacklist"),
+   
+    wholesummary = data.frame(Item=c("Sequence Files Type",
+                                     "Original total reads",
+                                     "-- Reads after adapter removing (ratio)",
+                                     "-- -- Total mapped reads (ratio of original reads)",
+                                     "-- -- -- Unique locations mapped uniquely by reads",
+                                     "-- -- -- Non-Redundant Fraction (NRF)",
+                                     "-- -- -- Locations with only 1 reads mapping uniquely",
+                                     "-- -- -- Locations with only 2 reads mapping uniquely",
+                                     "-- -- -- PCR Bottlenecking Coefficients 1 (PBC1)",
+                                     "-- -- -- PCR Bottlenecking Coefficients 2 (PBC2)",
+                                     "-- -- -- Non-mitochondrial reads (ratio)",
+                                     "-- -- -- -- Unique mapped reads (ratio)",
+                                     "-- -- -- -- -- Duplicate removed reads (final for use)",
+                                     #"---- -- -- -- -- Transcription start site (TSS) enrichment",
+                                     "-- -- -- -- -- -- Nucleosome free reads (<100bp)",
+                                     "-- -- -- -- -- -- -- Total peaks",
+                                     "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
+                                     "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
+                                     "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
+
                               Value=c(seqtype,
-                                       removeAdapter$getReportVal("statisticslist")[[1]],
-                                       as.integer(removeAdapter$getReportVal("statisticslist")[["Number of retained reads"]])/freg,
-                                       sprintf("%s / %s / %s",libComplexQC$getReportVal("one"),libComplexQC$getReportVal("two"),libComplexQC$getReportVal("total")),
-                                       sprintf("%.2f",as.numeric(libComplexQC$getReportVal("NRF"))),
-                                       sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC1"))),
-                                       sprintf("%.2f",as.numeric(libComplexQC$getReportVal("PBC2"))),
-                                       sprintf("%.2f",as.numeric(sam2Bed$getReportVal("filted"))/as.numeric(sam2Bed$getReportVal("total"))),
-                                       sprintf("%d",as.numeric(fripQC$getReportVal("totalPeaks"))),
-                                       sprintf("%.2f",as.numeric(fripQC$getReportVal("FRiP"))),
-                                       sprintf("%.2f",as.numeric(DHSQC$getReportVal("qcbedRate"))),
-                                       sprintf("%.2f",as.numeric(blacklistQC$getReportVal("qcbedRate"))))
+                                      getVMShow(removeAdapter$getReportVal("statisticslist")[[1]]),
+                                      getVMRShow(as.integer(removeAdapter$getReportVal("statisticslist")[["Number of retained reads"]])/freg,
+                                                 removeAdapter$getReportVal("statisticslist")[[1]]),
+                                      getVMRShow(sam2Bed$getReportVal("total"),
+                                                 removeAdapter$getReportVal("statisticslist")[[1]]),
+                                      getVMShow(libComplexQC$getReportVal("total")),
+                                                 #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                      #getf(libComplexQC$getReportVal("NRF")),
+                                      getRshow(libComplexQC$getReportVal("total"),
+                                               sam2Bed$getReportVal("non-mitochondrial")),
+                                      getVMShow(libComplexQC$getReportVal("one")),
+                                                 #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                      getVMShow(libComplexQC$getReportVal("two")),
+                                                 #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                      #getf(libComplexQC$getReportVal("PBC1")),
+                                      getRshow(libComplexQC$getReportVal("one"),
+                                               libComplexQC$getReportVal("total")),
+                                      #getf(libComplexQC$getReportVal("PBC2")),
+                                      getRshow(libComplexQC$getReportVal("one"),
+                                               libComplexQC$getReportVal("two")),
+                                      getVMRShow(sam2Bed$getReportVal("non-mitochondrial"),
+                                                 sam2Bed$getReportVal("total")),
+                                      getVMRShow(sam2Bed$getReportVal("non-mitochondrial-multimap"),
+                                                 sam2Bed$getReportVal("total")),
+                                      getVMRShow(sam2Bed$getReportVal("save"),
+                                                 sam2Bed$getReportVal("total")),
+                                      #"",
+                                      getVMRShow(shortBed$getReportVal("save"),
+                                                 shortBed$getReportVal("total")),
+                                      sprintf("%d",as.numeric(fripQC$getReportVal("totalPeaks"))),
+                                      getPer(DHSQC$getReportVal("qcbedRate")),
+                                      getPer(blacklistQC$getReportVal("qcbedRate")),
+                                      getPer(fripQC$getReportVal("FRiP")))
+                                      ,
+                              `Reference`=c("SE / PE",
+                                            "",
+                                            ">99%",
+                                            ">95%",
+                                            "",
+                                            ">0.9",
+                                            "",
+                                            "",
+                                            ">0.9",
+                                            ">3",
+                                            ">70%",
+                                            ">60%",
+                                            ">25M, >60%",
+                                            #"",
+                                            "",
+                                            "",
+                                            "",
+                                            "",
+                                            ">0.3"
+                              )
+                              #`Annotation`=c()
     )
+    filtstat = data.frame(
+        Item=c("Original total reads",
+               "Reads after adapter removing (ratio)",
+               "Total mapped reads (ratio of original reads)",
+               "-- Non-mitochondrial reads (ratio)",
+               "-- -- Unique mapped reads (ratio)",
+               "-- -- -- Duplicate removed reads (ratio final for use)"
+               ),
+         Value=c(getVMShow(removeAdapter$getReportVal("statisticslist")[[1]],TRUE),
+                 getVMRShow(as.integer(removeAdapter$getReportVal("statisticslist")[["Number of retained reads"]])/freg,
+                            removeAdapter$getReportVal("statisticslist")[[1]],TRUE),
+                 getVMRShow(sam2Bed$getReportVal("total"),
+                            removeAdapter$getReportVal("statisticslist")[[1]],TRUE),
+                 getVMRShow(sam2Bed$getReportVal("non-mitochondrial"),
+                            sam2Bed$getReportVal("total"),TRUE),
+                 getVMRShow(sam2Bed$getReportVal("non-mitochondrial-multimap"),
+                            sam2Bed$getReportVal("total"),TRUE),
+                 getVMRShow(sam2Bed$getReportVal("save"),
+                            sam2Bed$getReportVal("total"),TRUE)
+         ),
+         `Reference`=c("",
+                       ">99%",
+                       ">95%",
+                       ">70%",
+                       ">60%",
+                       ">25M,>60%"
+                       )
+)
     atacProcs=list(unzipAndMerge = unzipAndMerge,
                    renamer = renamer,
                    removeAdapter = removeAdapter,
@@ -142,10 +270,10 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
         rmdfile<-system.file(package="ATACFlow", "extdata", "Report.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
-        rmdtext<-sprintf(rmdtext,filename)
+        #rmdtext<-sprintf(rmdtext,filename)
 
         workdir <- getwd()
-        save(filelist,wholesummary,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
+        save(filelist,wholesummary,filtstat,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
 
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))

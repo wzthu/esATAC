@@ -66,7 +66,12 @@ FRiPQC <-R6Class(
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
             if(item == "report"){
-                return(data.frame(Item=names(qcval),Value=as.character(qcval)))
+                cqcval<-as.character(qcval)
+                cqcval[4] <- sprintf("%.2f",as.numeric(cqcval[4]))
+                return(data.frame(Item=c("The number of reads in peak",
+                                         "The number of total reads",
+                                         "The number of total peaks",
+                                         "FRiP"),Value=cqcval))
             }else{
                 return(qcval[[item]])
             }

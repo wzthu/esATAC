@@ -124,13 +124,39 @@ SamToBed <- R6::R6Class(
         getReportValImp = function(item){
             qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
             if(item == "report"){
+                data.frame(
+                    Item = c("Total mapped reads",
+                        sprintf("Chromasome %s filted reads",paste(private$paramlist[["filterList"]],collapse = "/")),
+                        "Filted multimap reads",
+                        "Removed fragment size out of range",
+                        "Removed duplicate reads"
+                    ),
+                    Retain = c(qcval[["total"]],
+                              as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]])),
+                              as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])),
+                              as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]] - as.integer(qcval[["extlen"]]))),
+                              qcval[["save"]]
+                              
+                    ),
+                    Filted = c("/",
+                               qcval[["filted"]],
+                               qcval[["multimap"]],
+                               qcval[["unique"]],
+                               qcval[["extlen"]]
+                    )
+                    
+                )
                 return(data.frame(Item=names(qcval),Value=as.character(qcval)))
+            }else if(item == "non-mitochondrial")(
+                return(as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]])))
+            )else if(item == "non-mitochondrial-multimap"){
+                return(as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])))
             }else{
                 return(qcval[[item]])
             }
         },
         getReportItemsImp = function(){
-            return(c("report","total","save","filted","extlen","unique","multimap"))
+            return(c("report","total","save","filted","extlen","unique","multimap","non-mitochondrial","non-mitochondrial-multimap"))
         }
   )
 
