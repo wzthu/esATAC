@@ -86,6 +86,12 @@ BamToBed <- R6::R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
+#' @examples
+#'
+#' library(Rsamtools)
+#' ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+#' bam2bed(bamInput = ex1_file)
+#'
 #' @seealso
 #' \code{\link{atacBamSort}}
 #' \code{\link{atacSam2Bam}}
