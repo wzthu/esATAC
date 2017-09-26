@@ -21,6 +21,7 @@ LazyData: true
 Imports: 
     Rcpp (>= 0.12.11),
     R6,
+    knitr,
     Rbowtie,
     QuasR,
     rtracklayer,

@@ -250,7 +250,7 @@
 #' @importFrom BiocGenerics subset
 #' @importFrom rmarkdown render
 #' @importFrom knitr knit
-#' @importFrom markdown markdownToHTML
+# @importFrom markdown markdownToHTML
 #' @useDynLib ATACFlow
 
 #' @rdname configureValue
