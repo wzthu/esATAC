@@ -34,7 +34,6 @@ RMotifScan <- R6::R6Class(
 
             if(is.null(n.cores)){
                 private$paramlist[["n.cores"]] <- .obtainConfigure("threads")
-                print(private$paramlist[["n.cores"]])
             }else{
                 private$paramlist[["n.cores"]] <- n.cores
             }

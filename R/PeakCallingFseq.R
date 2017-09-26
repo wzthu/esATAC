@@ -140,25 +140,25 @@ PeakCallingFseq <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{samToBed}} 
+#' \code{\link{atacSamToBed}}
+#' \code{\link{samToBed}}
 #' \code{\link{atacBedUtils}}
 #' \code{\link{bedUtils}}
-#' 
-#' @examples 
+#'
+#' @examples
 #' library(R.utils)
 #' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
-#' 
+#'
 #' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr18.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
-#' 
+#'
 #' bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
 #' atacPeakCalling
-#' 
-#' dir(td) 
+#'
+#' dir(td)
 
 #' @rdname atacPeakCalling
 #' @export
