@@ -56,7 +56,7 @@ library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
-bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr18.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 blacklistfile <- system.file(package="ATACFlow", "extdata", "hg19.blacklist.bed")
