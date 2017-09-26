@@ -138,8 +138,6 @@ LibComplexQC <-R6Class(
 #' The SAM file input path.
 #' @param singleEnd \code{Character} scalar. 
 #' Single end data if TRUE. Paired end data if FALSE. 
-#' @param subsample \code{Logical} scalar.
-#' Down sample reads if TRUE, otherwise FALSE.
 #' @param subsampleSize \code{Integer} scalar.
 #' Down sample reads if the number is less than total number 
 #' when \code{subsample} is TRUE

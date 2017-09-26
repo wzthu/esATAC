@@ -134,6 +134,8 @@ Renamer <-R6Class(
 #' @param interleave \code{Character} scalar. 
 #' Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param threads \code{Integer} scalar. 
+#' The threads will be created in this process. default: 1
 #' @details The parameter related to input and output file path
 #' will be automatically 
 #' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 

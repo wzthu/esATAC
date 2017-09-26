@@ -130,6 +130,8 @@ BedUtils<-R6::R6Class(
 #' Merge paired end interleave reads.
 #' @param downSample \code{Integer} scalar
 #' Down sample reads if the number is less than total number
+#' @param reportOutput \code{Character} scalar.
+#' Report output file path.
 #' @param posOffset \code{Integer} scalar
 #' The offset that positive strand reads will shift. 
 #' @param negOffset \code{Integer} scalar

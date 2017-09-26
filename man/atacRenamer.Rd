@@ -39,6 +39,9 @@ it must be \code{NULL}.}
 \item{interleave}{\code{Character} scalar. 
 Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{threads}{\code{Integer} scalar. 
+The threads will be created in this process. default: 1}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.

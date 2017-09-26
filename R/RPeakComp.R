@@ -141,10 +141,10 @@ RPeakComp <- R6::R6Class(
 #' p2bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
 #' peak1_path <- as.vector(bunzip2(filename = p1bz,
 #' destname = file.path(getwd(), "Example_peak1.bed"),
-#' ext="bz2", FUN=bzfile, remove = FALSE))
+#' ext="bz2", FUN=bzfile, overwrite=TRUE , remove = FALSE))
 #' peak2_path <- as.vector(bunzip2(filename = p2bz,
 #' destname = file.path(getwd(), "Example_peak2.bed"),
-#' ext="bz2", FUN=bzfile, remove = FALSE))
+#' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 #' ## overlap peak
 #' peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
 #' operation = "overlap")

@@ -49,6 +49,9 @@ it must be \code{NULL}.}
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
 
+\item{threads}{\code{Integer} scalar. 
+The threads will be created in this process. default: 1}
+
 \item{paramList}{Additional arguments to be passed on to the binaries.
 See below for details.}
 }
@@ -84,6 +87,7 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 ## Building a bowtie2 index
+library("Rbowtie2")
 refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
 full=TRUE)
 bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),

@@ -34,8 +34,7 @@ The offset that positive strand reads will shift.}
 The offset that negative strand reads will shift.}
 
 \item{chrFilterList}{\code{Character} vector
-The chromatin(or regex of chromatin) will be retain/discard
-if \code{select} is TRUE/FALSE}
+The chromatin(or regex of chromatin) will be discard}
 
 \item{samInput}{\code{Character} scalar.
 SAM file input path.}
@@ -57,9 +56,6 @@ Save the fregment that are not in the range of minFregLen and MaxFregLen}
 
 \item{uniqueBed}{\code{Logical} scalar
 Remove duplicates reads in bed if TRUE. default: FALSE}
-
-\item{select}{\code{Logical} scalar
-The chromatin in \code{chrFilterList} will be retain if TRUE. default: FALSE}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
@@ -85,13 +81,6 @@ If you want to use this function independently,
 or you can use \code{samToBed} instead.
 }
 \examples{
-
-sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACFlow")
-sam_path <- as.vector(bunzip2(filename = sam_bz,
-destname = file.path(getwd(), "Example.sam"),
-ext="bz2", FUN=bzfile, remove = FALSE))
-samToBed(samInput = sam_path)
-
 library(R.utils)
 library(magrittr)
 td <- tempdir()

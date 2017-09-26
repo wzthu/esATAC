@@ -59,6 +59,9 @@ The minimum fregment size will be retained.}
 
 \item{maxFregLen}{\code{Integer} scalar
 The maximum fregment size will be retained.}
+
+\item{reportOutput}{\code{Character} scalar.
+Report output file path.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.

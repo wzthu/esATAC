@@ -29,9 +29,6 @@ Single end data if TRUE. Paired end data if FALSE.}
 \item{subsampleSize}{\code{Integer} scalar.
 Down sample reads if the number is less than total number 
 when \code{subsample} is TRUE}
-
-\item{subsample}{\code{Logical} scalar.
-Down sample reads if TRUE, otherwise FALSE.}
 }
 \value{
 An invisible \code{\link{libComplexQC}} object scalar for downstream analysis.

@@ -160,7 +160,7 @@ PeakCallingFseq <-R6Class(
 #' 
 #' dir(td) 
 
-#' @rdname atacFregLenDistr
+#' @rdname atacPeakCalling
 #' @export
 atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,
@@ -173,7 +173,7 @@ atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsC
     peakcalling$process();
     invisible(peakcalling)
 }
-#' @rdname atacFregLenDistr
+#' @rdname atacPeakCalling
 #' @export
 peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,

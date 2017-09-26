@@ -5,12 +5,27 @@
 \alias{fripQC}
 \title{Quality control for fraction of reads in peaks (FRiP)}
 \usage{
-atacFripQC(atacProcReads, atacProcPeak, reportOutput = NULL,
-  readsBedInput = NULL, peakBedInput = NULL)
+atacFripQC(atacProcReads, atacProcPeak, bsgenome = NULL,
+  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL)
 
-fripQC(readsBedInput, peakBedInput, reportOutput = NULL)
+fripQC(readsBedInput, peakBedInput, bsgenome = NULL, reportOutput = NULL)
 }
 \arguments{
+\item{atacProcReads}{\code{\link{ATACProc}} object scalar. 
+It has to be the return value of upstream process:
+\code{\link{atacSamToBed}} 
+\code{\link{samToBed}} 
+\code{\link{atacBedUtils}}
+\code{\link{bedUtils}}}
+
+\item{atacProcPeak}{\code{\link{ATACProc}} object scalar. 
+It has to be the return value of upstream process:
+\code{\link{atacPeakCalling}}, 
+\code{\link{peakCalling}}.}
+
+\item{bsgenome}{\code{BSGenome} object scalar.
+BSGenome object for specific species.}
+
 \item{reportOutput}{\code{Character} scalar. 
 The report file path}
 
@@ -19,11 +34,6 @@ Reads BED file for peak calling.}
 
 \item{peakBedInput}{\code{Character} scalar. 
 Peaks BED file}
-
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
-It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
-\code{\link{atacBedUtils}}.}
 }
 \value{
 An invisible \code{\link{fripQC}} object scalar for downstream analysis.
@@ -41,6 +51,23 @@ Otherwise, the generated values will be overwrited.
 If you want to use this function independently, 
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{fregLenDistr} instead.
+}
+\examples{
+library(R.utils)
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+bedfile <- file.path(td,"chr18.50000.bed")
+bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+
+readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) 
+peaksProc<- readsProc \%>\% atacPeakCalling
+library(BSgenome.Hsapiens.UCSC.hg19)
+atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
+
+dir(td) 
 }
 \seealso{
 \code{\link{atacSamToBed}} 
