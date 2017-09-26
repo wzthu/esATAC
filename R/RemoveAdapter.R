@@ -377,6 +377,8 @@ RemoveAdapter <-R6Class(
 #' @name atacRemoveAdapter
 #' @aliases atacRemoveAdapter
 #' @aliases removeAdapter
+#' @importFrom Rbowtie2 identify_adapters
+#' @importFrom Rbowtie2 remove_adapters
 #' @title Use AdapterRemoval to remove adapters
 #' @description 
 #' Use AdapterRemoval to remove adapters

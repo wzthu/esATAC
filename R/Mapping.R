@@ -153,6 +153,7 @@ Bowtie2Mapping <-R6Class(
 #' @name atacBowtie2Mapping
 #' @aliases atacBowtie2Mapping
 #' @aliases bowtie2Mapping
+#' @importFrom Rbowtie2 bowtie2
 #' @title Use bowtie2 aligner to map reads to reference genome 
 #' @description 
 #' Use bowtie2 aligner to map reads to reference genome 
@@ -220,6 +221,7 @@ Bowtie2Mapping <-R6Class(
 #' setConfigure("tmpdir",td)
 #' 
 #' ## Building a bowtie2 index
+#' library("Rbowtie2")
 #' refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
 #' full=TRUE)
 #' bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),

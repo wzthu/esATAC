@@ -23,6 +23,7 @@ Imports:
     R6,
     knitr,
     Rbowtie,
+    Rbowtie2,
     QuasR,
     rtracklayer,
     GenomicRanges,
