@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
-load("Report.Rdata")
+load("Report2.Rdata")
 ```
 
 # Summary Table
@@ -37,12 +37,21 @@ knitr::kable(x = wholesummary)
 A nucleosome free region (NFR) must be present.
 A mononucleosome peak must be present in the fragment length distribution. These are reads that span a single nucleosome, so they are longer than 147 bp but shorter than 147*2 bp. Good ATAC-seq datasets have reads that span nucleosomes (which allows for calling nucleosome positions in addition to open regions of chromatin).
 
+* Case
+
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-atacProcs$fregLenDistr$getReportVal("readsCounts")
+readsCounts<-caselist$atacProcs$fregLenDistr$getReportVal("readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
 ```
 
+* Control
+
+```{r eval=TRUE,echo=FALSE}
+library(ggplot2)
+readsCounts<-ctrllist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
+```
 
 
 # Sequence statistics
@@ -50,23 +59,41 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 Quality control for the sequence data
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
-QC_path <- atacProcs$atacQC$getReportVal("pdf")
+QC_path1 <- caselist$atacProcs$atacQC$getReportVal("pdf")
+QC_path2 <- ctrllist$atacProcs$atacQC$getReportVal("pdf")
 ```
-[Click to Visit Report](`r QC_path`)
+[Click to Visit Report for case](`r QC_path1`)
+[Click to Visit Report for control](`r QC_path2`)
 
 ## Remove Adapter
 
 The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
+* Adapter for case 
+
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(atacProcs$removeAdapter$getReportVal("adapters"))
+knitr::kable(caselist$atacProcs$removeAdapter$getReportVal("adapters"))
+
+```
+
+* Adapter for control
+
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+knitr::kable(ctrllist$atacProcs$removeAdapter$getReportVal("adapters"))
 
 ```
 
 The statistic of adapter removing are show below. 
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(atacProcs$removeAdapter$getReportVal("statistics"))
+
+casetb<-caselist$atacProcs$removeAdapter$getReportVal("statistics")
+ctrltb<-ctrllist$atacProcs$removeAdapter$getReportVal("statistics")
+cbind()
+knitr::kable(data.frame(Items=casetb[["Items"]],
+                        Case=casetb[["Value"]],
+                        Control=ctrltb[["Value"]]
+                        ))
 ```
 
 For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
@@ -75,6 +102,14 @@ For detail, you can visit [Website of AdapterRemoval on Github](https://github.c
 
 ## Bowtie2 alignment log
 
+* For case
+
+```{r eval=TRUE, echo=FALSE,warning=FALSE}
+atacProcs$bowtie2Mapping$getReportVal("detail")
+```
+
+* For control
+
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
 atacProcs$bowtie2Mapping$getReportVal("detail")
 ```
@@ -82,7 +117,14 @@ atacProcs$bowtie2Mapping$getReportVal("detail")
 ## Library complexity
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = atacProcs$libComplexQC$getReportVal("report"))
+
+casetb<-caselist$atacProcs$libComplexQC$getReportVal("report")
+ctrltb<-ctrllist$atacProcs$libComplexQC$getReportVal("report")
+knitr::kable(data.frame(Items=casetb[["Items"]],
+                        Case=casetb[["Value"]],
+                        Control=ctrltb[["Value"]],
+                        Reference=ctrltb[["Reference"]]
+                        ))
 ```
 The annotation you can see in section 1.
 
@@ -97,25 +139,33 @@ knitr::kable(x = filtstat)
 
 ```{r fegdist, eval=TRUE}
 library(ggplot2)
-load("Report.Rdata")
-readsCounts<-atacProcs$fregLenDistr$getReportVal("readsCounts")
-ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+load("Report2.Rdata")
 
-library(stats)
-strength<-Mod(fft(readsCounts$counts))/length(readsCounts$counts)
-periodx<-length(readsCounts$counts)/(1:(length(readsCounts$counts)-1))
-strength<-strength[2:length(strength)]
+getFsdG1G2 <- function(readsCounts){
+        ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+    
+    library(stats)
+    strength<-Mod(fft(readsCounts$counts))/length(readsCounts$counts)
+    periodx<-length(readsCounts$counts)/(1:(length(readsCounts$counts)-1))
+    strength<-strength[2:length(strength)]
+    
+    rs1<-as.data.frame(cbind(periodx[periodx<20&periodx>2],strength[periodx<20&periodx>2],0))
+    rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],1))
+    rs<-rbind(rs1,rs2)
+    colnames(rs)<-c("period","strength","check")
+    
+    g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")
+    
+    g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
+    return(c(g1,g2))
+}
+readsCounts1<-caselist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+readsCounts2<-ctrllist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+g112<-getFsdG1G2(readsCounts1)
+g212<-getFsdG1G2(readsCounts1)
 
-rs1<-as.data.frame(cbind(periodx[periodx<20&periodx>2],strength[periodx<20&periodx>2],0))
-rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],1))
-rs<-rbind(rs1,rs2)
-colnames(rs)<-c("period","strength","check")
-
-g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")
-
-g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
 library(gridExtra)
-grid.arrange(g1, g2, ncol=2)
+grid.arrange(g112[1], g212[1],g112[2], g212[2], ncol=2)
 ```
 
 
@@ -123,12 +173,18 @@ grid.arrange(g1, g2, ncol=2)
 The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enrichment around transcription starting site (TSS) are shown below.
 ```{r TSSenrich, eval=TRUE}
 library(ggplot2)
-load("Report.Rdata")
-df<-atacProcs$tssqc100$getReportVal("tss")
-g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
-df<-atacProcs$tssqc180_247$getReportVal("tss")
-g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
-grid.arrange(g1, g2, ncol=2)
+load("Report2.Rdata")
+df<-caselist$atacProcs$tssqc100$getReportVal("tss")
+g11<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+df<-caselist$atacProcs$tssqc180_247$getReportVal("tss")
+g12<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+
+df<-caselist$atacProcs$tssqc100$getReportVal("tss")
+g21<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+df<-caselist$atacProcs$tssqc180_247$getReportVal("tss")
+g22<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+grid.arrange(g11, g21, ncol=2)
+grid.arrange(g12, g22, ncol=2)
 ```
 
 # Peak statistics
@@ -136,19 +192,39 @@ grid.arrange(g1, g2, ncol=2)
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = atacProcs$blacklistQC$getReportVal("report"))
+casetb<-caselist$atacProcs$blacklistQC$getReportVal("report")
+ctrltb<-ctrllist$atacProcs$blacklistQC$getReportVal("report")
+knitr::kable(data.frame(Items=casetb[["Items"]],
+                        Case=casetb[["Value"]],
+                        Control=ctrltb[["Value"]],
+                        Reference=ctrltb[["Reference"]]
+                        ))
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = atacProcs$DHSQC$getReportVal("report"))
+
+casetb<-caselist$atacProcs$DHSQC$getReportVal("report")
+ctrltb<-ctrllist$atacProcs$DHSQC$getReportVal("report")
+knitr::kable(data.frame(Items=casetb[["Items"]],
+                        Case=casetb[["Value"]],
+                        Control=ctrltb[["Value"]],
+                        Reference=ctrltb[["Reference"]]
+                        ))
 ```
 
 ## Fraction of reads in peaks (FRiP)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = atacProcs$fripQC$getReportVal("report"))
+
+casetb<-caselist$atacProcs$fripQC$getReportVal("report")
+ctrltb<-ctrllist$atacProcs$fripQC$getReportVal("report")
+knitr::kable(data.frame(Items=casetb[["Items"]],
+                        Case=casetb[["Value"]],
+                        Control=ctrltb[["Value"]],
+                        Reference=ctrltb[["Reference"]]
+                        ))
 ```
 
 
@@ -156,9 +232,9 @@ knitr::kable(x = atacProcs$fripQC$getReportVal("report"))
 ## Peak Annotation
 
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
-library(ChIPseeker)
-peakanno <- atacProcs$Peakanno$getReportVal("annoOutput.rds")
-plotAnnoPie(x = peakanno)
+#library(ChIPseeker)
+#peakanno <- atacProcs$Peakanno$getReportVal("annoOutput.rds")
+#plotAnnoPie(x = peakanno)
 ```
 
 # Go analysis
@@ -166,41 +242,41 @@ plotAnnoPie(x = peakanno)
 Gene ontology analysis for all genes around peak regions.
 
 ```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
-go_path <- atacProcs$goAna$getReportVal("goOutput")
-go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
-go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data)
+#go_path <- atacProcs$goAna$getReportVal("goOutput")
+#go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+#go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+#knitr::kable(go_data)
+#[Click to Visit Go Analysis file](`r go_path`)
 ```
 
-[Click to Visit Go Analysis file](`r go_path`)
+
 
 # Footprint analysis
 
 The following figure is CTCF footprint.
 
 ```{r eval=TRUE, echo=FALSE, fig.height=7, fig.width=7, results = 'asis', warning=FALSE}
-footprint_data <- atacProcs$footprint$getReportVal("footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
-     xlab = "Relative Distance From Motif (bp)", 
-     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-axis(1, at = seq(1, 100, len = 3),
-     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
-     padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
-     labels = seq(0, 100, len = 3),
-     padj = -1.0, tck = -0.01)
-axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
-pdf.dir <- atacProcs$footprint$getReportVal("pdf.dir")
+#footprint_data <- atacProcs$footprint$getReportVal("footprint.data")
+#CTCF_data <- as.vector(footprint_data$CTCF)
+#plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
+#     xlab = "Relative Distance From Motif (bp)", 
+#     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+#axis(1, at = seq(1, 100, len = 3),
+#     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+#     padj = -1.0, tck = -0.01)
+#axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+#     labels = seq(0, 100, len = 3),
+#     padj = -1.0, tck = -0.01)
+#axis(2, padj = 1.0,tck = -0.02)
+#abline(v = c(100, 100 + 19 + 1), lty = 2)
+#pdf.dir <- atacProcs$footprint$getReportVal("pdf.dir")
+#[Click to Visit Footprint file](`r pdf.dir`)
 ```
 
 All motif footprint figures are saved as pdf files.
-[Click to Visit Footprint file](`r pdf.dir`)
 
 
 # Annotation of items in table 
-
 
 For single end sequencing data, ATACFlow will counts reads number. 
 
@@ -309,4 +385,5 @@ The larger value shows the better quality.
 ```{r sessionInfo}
 sessionInfo()
 ```
+
 
