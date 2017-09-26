@@ -2,7 +2,7 @@ PeakQC <-R6Class(
     classname = "PeakQC",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),bedInput = NULL,editable=FALSE){
+        initialize = function(atacProc, reportOutput=NULL,bsgenome = NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),bedInput = NULL,editable=FALSE){
             super$initialize("PeakQC",editable,list(arg1=atacProc))
             if(!is.null(atacProc)){
                 private$paramlist[["bedInput"]] <- atacProc$getParam("bedOutput");
@@ -33,12 +33,18 @@ PeakQC <-R6Class(
             }else{
                 private$paramlist[["reportOutput"]] <- reportOutput;
             }
+            
+            private$paramlist[["bsgenome"]] <- bsgenome
             private$paramValidation()
         }
     ),
     private = list(
         processing = function(){
-            genome <- seqinfo(.obtainConfigure("bsgenome"))
+            if(is.null(private$paramlist[["bsgenome"]])){
+                genome <- seqinfo(.obtainConfigure("bsgenome"))
+            }else{
+                genome <- seqinfo(private$paramlist[["bsgenome"]])
+            }
 
             inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
 
@@ -131,17 +137,31 @@ PeakQC <-R6Class(
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBedUtils}}
+#' 
+#' @examples 
+#' library(R.utils)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+#' bedfile <- file.path(td,"chr18.50000.bed")
+#' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+#' blacklistfile <- system.file(package="ATACFlow", "extdata", "hg19.blacklist.bed")
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
+#' atacPeakCalling %>% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19) 
+#' dir(td) 
 #' @rdname atacPeakQC
 #' @export 
-atacPeakQC<-function(atacProc, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), bedInput = NULL){
-    atacproc<-PeakQC$new(atacProc, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
+atacPeakQC<-function(atacProc, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), bedInput = NULL){
+    atacproc<-PeakQC$new(atacProc, bsgenome = bsgenome, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
     atacproc$process()
     invisible(atacproc)
 }
 #' @rdname atacPeakQC
 #' @export
-peakQC<-function(bedInput, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed")){
-    atacproc<-PeakQC$new(atacProc=NULL, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
+peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed")){
+    atacproc<-PeakQC$new(atacProc=NULL, bsgenome = bsgenome, reportOutput=reportOutput,qcbedInput = qcbedInput,bedInput = bedInput,editable=FALSE)
     atacproc$process()
     invisible(atacproc)
 }

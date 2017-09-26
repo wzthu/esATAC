@@ -5,11 +5,11 @@
 \alias{peakQC}
 \title{Quality control for peak overlap}
 \usage{
-atacPeakQC(atacProc, reportOutput = NULL, qcbedInput = c("DHS", "blacklist",
-  "path/to/bed"), bedInput = NULL)
+atacPeakQC(atacProc, bsgenome = NULL, reportOutput = NULL,
+  qcbedInput = c("DHS", "blacklist", "path/to/bed"), bedInput = NULL)
 
-peakQC(bedInput, reportOutput = NULL, qcbedInput = c("DHS", "blacklist",
-  "path/to/bed"))
+peakQC(bedInput, bsgenome = NULL, reportOutput = NULL,
+  qcbedInput = c("DHS", "blacklist", "path/to/bed"))
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
@@ -46,6 +46,20 @@ Otherwise, the generated values will be overwrited.
 If you want to use this function independently, 
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{peakQC} instead.
+}
+\examples{
+library(R.utils)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+bedfile <- file.path(td,"chr18.50000.bed")
+bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+blacklistfile <- system.file(package="ATACFlow", "extdata", "hg19.blacklist.bed")
+library(BSgenome.Hsapiens.UCSC.hg19)
+bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) \%>\%
+atacPeakCalling \%>\% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19) 
+dir(td) 
 }
 \seealso{
 \code{\link{atacSamToBed}} 
