@@ -1,7 +1,7 @@
 ADRM_DIR = adapterremoval
 BT2_DIR = bowtie2
 
-PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_LINUX  -DR_ENV_FLAG
+PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_LINUX  -DR_EVN_FLAG
 
 .PHONY: installbin all clean
 

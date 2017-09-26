@@ -170,6 +170,8 @@ TSSQC <-R6Class(
 #' \code{\link{atacBedUtils}}.
 #' @param txdbKnownGene \code{TxDb} object scalar. 
 #' TxDb object for specific species. 
+#' @param bsgenome \code{BSGenome} object scalar.
+#' BSGenome object for specific species.
 #' @param reportPrefix \code{Character} scalar. 
 #' The prefix of report files path. 
 #' @param bedInput \code{Character} scalar. 

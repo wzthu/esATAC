@@ -86,6 +86,7 @@ or you can use \code{bedUtils} instead.
 }
 \examples{
 library(R.utils)
+library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
@@ -93,7 +94,7 @@ sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 atacproc<-samToBed(samInput = samfile) \%>\% 
- atacBedUtils(maxFregLen = 100, chrFilterList = NULL) 
+atacBedUtils(maxFregLen = 100, chrFilterList = NULL) 
 
 
 

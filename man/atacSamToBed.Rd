@@ -93,6 +93,7 @@ ext="bz2", FUN=bzfile, remove = FALSE))
 samToBed(samInput = sam_path)
 
 library(R.utils)
+library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 

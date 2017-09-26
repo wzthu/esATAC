@@ -21,6 +21,9 @@ It has to be the return value of upstream process:
 \item{txdbKnownGene}{\code{TxDb} object scalar. 
 TxDb object for specific species.}
 
+\item{bsgenome}{\code{BSGenome} object scalar.
+BSGenome object for specific species.}
+
 \item{reportPrefix}{\code{Character} scalar. 
 The prefix of report files path.}
 

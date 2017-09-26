@@ -58,6 +58,7 @@ If you want to use this function independently,
 or you can use \code{renamer} instead.
 }
 \examples{
+library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 

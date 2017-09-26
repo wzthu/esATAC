@@ -52,8 +52,8 @@ install:
 
 
 clean:
-	rm -f AdapterRemoval
-	rm -f ../../inst/AdapterRemoval
+	rm -f AdapterRemoval.exe
+	rm -f ../../inst/AdapterRemoval.exe
 	rm -f *.o
 	
 

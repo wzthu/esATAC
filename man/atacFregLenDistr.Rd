@@ -120,6 +120,7 @@ fregLenDistr(bedfile)
 dir(td) 
 
 library(R.utils)
+library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 

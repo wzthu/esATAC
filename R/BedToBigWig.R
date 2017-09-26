@@ -83,6 +83,8 @@ BedToBigWig <- R6Class(
 #' \code{\link{atacBedUtils}}.
 #' @param bedInput \code{Character} scalar. 
 #' Bed file input path. 
+#' @param bsgenome \code{BSGenome} object scalar.
+#' BSGenome object for specific species.
 #' @param bwOutput \code{Character} scalar. 
 #' BigWig file output path.
 #' @param toWig \code{Logical} scalar.

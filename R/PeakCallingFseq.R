@@ -147,6 +147,7 @@ PeakCallingFseq <-R6Class(
 #' 
 #' @examples 
 #' library(R.utils)
+#' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 

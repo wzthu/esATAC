@@ -118,6 +118,8 @@ PeakQC <-R6Class(
 #' \code{\link{atacBedUtils}}.
 #' @param reportOutput \code{Character} scalar. 
 #' The report file path. 
+#' @param bsgenome \code{BSGenome} object scalar.
+#' BSGenome object for specific species.
 #' @param qcbedInput \code{Character} scalar. 
 #' It can be "DHS","blacklist" or 
 #' Other quality control BED file input path.
@@ -140,6 +142,7 @@ PeakQC <-R6Class(
 #' 
 #' @examples 
 #' library(R.utils)
+#' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 

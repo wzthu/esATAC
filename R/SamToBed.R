@@ -241,6 +241,7 @@ SamToBed <- R6::R6Class(
 #' 
 #' @examples 
 #' library(R.utils)
+#' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 

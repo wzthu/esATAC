@@ -92,6 +92,7 @@ function arguments. See the output of
 \code{adapterremoval_usage()} for details about available parameters.
 }
 \examples{
+library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 

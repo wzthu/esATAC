@@ -19,6 +19,9 @@ It has to be the return value of upstream process:
 \item{bedInput}{\code{Character} scalar. 
 Bed file input path.}
 
+\item{bsgenome}{\code{BSGenome} object scalar.
+BSGenome object for specific species.}
+
 \item{bwOutput}{\code{Character} scalar. 
 BigWig file output path.}
 

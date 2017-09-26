@@ -171,6 +171,7 @@ BedUtils<-R6::R6Class(
 #' 
 #' @examples 
 #' library(R.utils)
+#' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 
@@ -178,7 +179,7 @@ BedUtils<-R6::R6Class(
 #' samfile <- file.path(td,"Example.sam")
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' atacproc<-samToBed(samInput = samfile) %>% 
-#'  atacBedUtils(maxFregLen = 100, chrFilterList = NULL) 
+#' atacBedUtils(maxFregLen = 100, chrFilterList = NULL) 
 #' 
 #' 
 #' 

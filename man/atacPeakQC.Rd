@@ -17,6 +17,9 @@ It has to be the return value of upstream process:
 \code{\link{atacSamToBed}}, 
 \code{\link{atacBedUtils}}.}
 
+\item{bsgenome}{\code{BSGenome} object scalar.
+BSGenome object for specific species.}
+
 \item{reportOutput}{\code{Character} scalar. 
 The report file path.}
 
@@ -49,6 +52,7 @@ or you can use \code{peakQC} instead.
 }
 \examples{
 library(R.utils)
+library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 

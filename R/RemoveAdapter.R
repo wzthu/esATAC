@@ -445,6 +445,7 @@ RemoveAdapter <-R6Class(
 #' \code{\link{unzipAndMerge}}
 #' \code{\link{atacBowtie2Mapping}} 
 #' @examples 
+#' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 

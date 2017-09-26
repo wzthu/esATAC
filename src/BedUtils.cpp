@@ -242,7 +242,7 @@ void BedUtils::bedToBed(){
         for (int i = 0; i < totalCounter; ++i) {
             idx[i] = i;
 #ifdef R_EVN_FLAG
-            value[i]=unif_rand();
+            value[i]=(double)(R::runif(0,1));
 #else
             value[i] = rand()/(double)INT_MAX;
 #endif

@@ -151,6 +151,7 @@ Renamer <-R6Class(
 #' \code{\link{atacQCReport}} 
 #' \code{\link{atacRemoveAdapter}} 
 #' @examples 
+#' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
 #' 
