@@ -88,6 +88,7 @@ SamToBam <-R6::R6Class(
 #' downstream analysis.
 #' @author Wei Zhang
 #' @examples
+#'
 #' library(R.utils)
 #' sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACFlow")
 #' sam_path <- as.vector(bunzip2(filename = sam_bz,
