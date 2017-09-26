@@ -86,6 +86,16 @@ CutSitePre <- R6::R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream
 #' analysis.
 #' @author Wei Zhang
+#'
+#' @examples
+#'
+#' library(R.utils)
+#' fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACFlow")
+#' frag <- as.vector(bunzip2(filename = fra_path,
+#' destname = file.path(getwd(), "chr20.50000.bed"),
+#' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' extractcutsite(bedInput = frag, prefix = "ATAC")
+#'
 #' @seealso
 #' \code{\link{atacCutSiteCount}}
 
