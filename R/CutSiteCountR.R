@@ -121,11 +121,13 @@ CutSiteCountR <- R6::R6Class(
             if(item == "footprint.data"){
                 fp <- readRDS(private$paramlist[["footprint.data"]])
                 return(fp)
+            }else if(item == "pdf.dir"){
+                return(.obtainConfigure("tmpdir"))
             }
         },
 
         getReportItemsImp = function(){
-            return(c("footprint.data"))
+            return(c("footprint.data", "pdf.dir"))
         }
     ) # private end
 
