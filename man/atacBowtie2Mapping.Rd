@@ -7,17 +7,19 @@
 \usage{
 atacBowtie2Mapping(atacProc, samOutput = NULL, reportOutput = NULL,
   bt2Idx = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE,
+  interleave = FALSE, threads = NULL,
   paramList = "--no-discordant --no-unal --no-mixed -X 2000")
 
 bowtie2Mapping(fastqInput1, fastqInput2 = NULL, samOutput = NULL,
   reportOutput = NULL, bt2Idx = NULL, interleave = FALSE,
+  threads = NULL,
   paramList = "--no-discordant --no-unal --no-mixed -X 2000")
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacRemoveAdapter}}.}
+\code{\link{atacRemoveAdapter}} 
+\code{\link{removeAdapter}}}
 
 \item{samOutput}{\code{Character} scalar. 
 A path to a SAM file
@@ -46,6 +48,9 @@ it must be \code{NULL}.}
 
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{threads}{\code{Integer} scalar. 
+The threads will be created in this process. default: 1}
 
 \item{paramList}{Additional arguments to be passed on to the binaries.
 See below for details.}
@@ -77,9 +82,37 @@ bowtie2 are invalid if they are already handled as explicit
 function arguments. See the output of
 \code{bowtie2_usage()} for details about available parameters.
 }
+\examples{
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+## Building a bowtie2 index
+library("Rbowtie2")
+refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
+full=TRUE)
+bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
+"--threads 4 --quiet",overwrite=TRUE)
+## Alignments
+reads_1 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+"reads_1.fastq")
+reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+"reads_2.fastq")
+if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
+    (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+       samOutput = file.path(td, "result.sam"),
+       fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
+    head(readLines(file.path(td, "result.sam")))
+}
+}
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacRemoveAdapter}} 
+\code{\link{removeAdapter}}
+\code{\link{bowtie2}}
+\code{\link{bowtie2_build}}
+\code{\link{bowtie2_usage}}
+\code{\link{atacSam2Bam}}
+\code{\link{atacSamToBed}}
+\code{\link{atacLibComplexQC}}
 }
 \author{
 Zheng Wei

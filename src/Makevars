@@ -1,21 +1,11 @@
-ADRM_DIR = adapterremoval
-BT2_DIR = bowtie2
+PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_LINUX  -DR_EVN_FLAG
 
-PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_LINUX  -DR_ENV_FLAG
+.PHONY: all clean
 
-.PHONY: installbin all clean
-
-all: installbin $(SHLIB)
-
-installbin:
-	mkdir -p ../inst
-	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile))
-	(cd $(BT2_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile))
+all: $(SHLIB)
 
 clean:
 	rm -f *.so
 	rm -f *.o
-	(cd	$(ADRM_DIR) && ($(MAKE) clean -f Makefile))
-	(cd	$(BT2_DIR) && ($(MAKE) clean -f Makefile))
 
 

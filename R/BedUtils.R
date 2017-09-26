@@ -118,8 +118,10 @@ BedUtils<-R6::R6Class(
 #' remove duplicates reads in bed.
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBamToBed}}.
+#' \code{\link{atacBam2Bed}} 
+#' \code{\link{bam2bed}}
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{samToBed}}
 #' @param bedInput \code{Character} scalar. 
 #' Bed file input path. 
 #' @param bedOutput \code{Character} scalar. 
@@ -128,6 +130,8 @@ BedUtils<-R6::R6Class(
 #' Merge paired end interleave reads.
 #' @param downSample \code{Integer} scalar
 #' Down sample reads if the number is less than total number
+#' @param reportOutput \code{Character} scalar.
+#' Report output file path.
 #' @param posOffset \code{Integer} scalar
 #' The offset that positive strand reads will shift. 
 #' @param negOffset \code{Integer} scalar
@@ -156,16 +160,31 @@ BedUtils<-R6::R6Class(
 #' or you can use \code{bedUtils} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
+#' @seealso
+#' \code{\link{atacBam2Bed}} 
+#' \code{\link{bam2bed}}
 #' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacPeakCalling}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-#' \code{\link{atacBamToBed}}
-
+#' \code{\link{samToBed}}
+#' \code{\link{atacFregLenDistr}} 
+#' \code{\link{atacExtractCutSite}}
+#' \code{\link{atacPeakCalling}} 
+#' \code{\link{atacTSSQC}} 
+#' \code{\link{atacBedToBigWig}}
+#' 
+#' @examples 
+#' library(R.utils)
+#' library(magrittr)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+#' samfile <- file.path(td,"Example.sam")
+#' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+#' atacproc<-samToBed(samInput = samfile) %>% 
+#' atacBedUtils(maxFregLen = 100, chrFilterList = NULL) 
+#' 
+#' 
+#' 
 #' @rdname atacBedUtils
 #' @export 
 atacBedUtils <- function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,

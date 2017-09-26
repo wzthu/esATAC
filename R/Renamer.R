@@ -114,8 +114,8 @@ Renamer <-R6Class(
 #' Rename reads name in fastq with increasing integer  
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
 #' @param fastqInput1 \code{Character} scalar. For single-end sequencing,
 #' it contains sequence file paths.
 #' For paired-end sequencing, it can be file path with #1 mates paired
@@ -134,6 +134,8 @@ Renamer <-R6Class(
 #' @param interleave \code{Character} scalar. 
 #' Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param threads \code{Integer} scalar. 
+#' The threads will be created in this process. default: 1
 #' @details The parameter related to input and output file path
 #' will be automatically 
 #' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
@@ -146,8 +148,29 @@ Renamer <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
+#' \code{\link{atacQCReport}} 
+#' \code{\link{atacRemoveAdapter}} 
+#' @examples 
+#' library(magrittr)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' # Identify adapters
+#' prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+#' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+#' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+#' 
+#' reads_merged_1 <- file.path(td,"reads1.fastq")
+#' reads_merged_2 <- file.path(td,"reads2.fastq")
+#' atacproc <- 
+#' atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
+#' atacRenamer
+#' 
+#' dir(td) 
+#' 
+
 
 #' @rdname atacRenamer
 #' @export 

@@ -6,15 +6,16 @@
 \title{Quality control for library complexity}
 \usage{
 atacLibComplexQC(atacProc, reportOutput = NULL, samInput = NULL,
-  singleEnd = FALSE, subsample = TRUE, subsampleSize = 4 * 1e+07)
+  singleEnd = FALSE, subsampleSize = Inf)
 
 libComplexQC(samInput, reportOutput = NULL, singleEnd = FALSE,
-  subsample = TRUE, subsampleSize = 4 * 1e+07)
+  subsampleSize = Inf)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacBowtie2Mapping}}.}
+\code{\link{atacBowtie2Mapping}} 
+\code{\link{bowtie2Mapping}}}
 
 \item{reportOutput}{\code{Character} scalar. 
 The report file path}
@@ -24,9 +25,6 @@ The SAM file input path.}
 
 \item{singleEnd}{\code{Character} scalar. 
 Single end data if TRUE. Paired end data if FALSE.}
-
-\item{subsample}{\code{Logical} scalar.
-Down sample reads if TRUE, otherwise FALSE.}
 
 \item{subsampleSize}{\code{Integer} scalar.
 Down sample reads if the number is less than total number 
@@ -56,9 +54,22 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{fregLenDistr} instead.
 }
+\examples{
+library(R.utils)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+samfile <- file.path(td,"Example.sam")
+bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+atacproc<-libComplexQC(samInput = samfile)
+
+getReportVal(atacproc,"report")
+
+}
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacBowtie2Mapping}} 
+\code{\link{bowtie2Mapping}}
 }
 \author{
 Zheng Wei

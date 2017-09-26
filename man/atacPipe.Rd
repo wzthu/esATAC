@@ -2,7 +2,7 @@
 % Please edit documentation in R/Methods.R
 \name{atacPipe}
 \alias{atacPipe}
-\title{Unzip and merge fastq files}
+\title{Pipeline for single replicate}
 \usage{
 atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   adapter2 = NULL, interleave = FALSE, saveTmp = TRUE,
@@ -34,7 +34,9 @@ interleaved paired-end sequencing data.}
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-Unzip and merge fastq files that are in format of bzip, gzip or fastq
+The pipeline to process sequencing data into destination files including
+a HTML report file reads storage files (BED BAM)
+and various quality control report files.
 }
 \seealso{
 \code{\link{atacSamToBed}}

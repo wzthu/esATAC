@@ -377,13 +377,17 @@ RemoveAdapter <-R6Class(
 #' @name atacRemoveAdapter
 #' @aliases atacRemoveAdapter
 #' @aliases removeAdapter
+#' @importFrom Rbowtie2 identify_adapters
+#' @importFrom Rbowtie2 remove_adapters
 #' @title Use AdapterRemoval to remove adapters
 #' @description 
 #' Use AdapterRemoval to remove adapters
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' \code{\link{atacRenamer}} 
+#' \code{\link{renamer}}
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
 #' it contains sequence file paths.
 #' For paired-end sequencing, it can be file paths with #1 mates paired
@@ -437,8 +441,30 @@ RemoveAdapter <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacRenamer}} 
+#' \code{\link{renamer}}
+#' \code{\link{atacUnzipAndMerge}} 
+#' \code{\link{unzipAndMerge}}
+#' \code{\link{atacBowtie2Mapping}} 
+#' @examples 
+#' library(magrittr)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' # Identify adapters
+#' prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+#' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+#' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+#' 
+#' reads_merged_1 <- file.path(td,"reads1.fastq")
+#' reads_merged_2 <- file.path(td,"reads2.fastq")
+#' atacproc <- 
+#' atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
+#' atacRenamer %>% atacRemoveAdapter
+#' 
+#' dir(td) 
+#' 
+
 
 #' @rdname atacRemoveAdapter
 #' @export 

@@ -18,8 +18,8 @@ samToBed(samInput, reportOutput = NULL, merge = c("auto", "yes", "no"),
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}},
-\code{\link{atacBamToBed}}.}
+\code{\link{atacBowtie2Mapping}} 
+\code{\link{bowtie2Mapping}}}
 
 \item{reportOutput}{\code{Character} scalar
 report file path}
@@ -34,8 +34,7 @@ The offset that positive strand reads will shift.}
 The offset that negative strand reads will shift.}
 
 \item{chrFilterList}{\code{Character} vector
-The chromatin(or regex of chromatin) will be retain/discard
-if \code{select} is TRUE/FALSE}
+The chromatin(or regex of chromatin) will be discard}
 
 \item{samInput}{\code{Character} scalar.
 SAM file input path.}
@@ -57,9 +56,6 @@ Save the fregment that are not in the range of minFregLen and MaxFregLen}
 
 \item{uniqueBed}{\code{Logical} scalar
 Remove duplicates reads in bed if TRUE. default: FALSE}
-
-\item{select}{\code{Logical} scalar
-The chromatin in \code{chrFilterList} will be retain if TRUE. default: FALSE}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
@@ -84,15 +80,28 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL}
 or you can use \code{samToBed} instead.
 }
+\examples{
+library(R.utils)
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+samfile <- file.path(td,"Example.sam")
+bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+samToBed(samInput = samfile) \%>\%
+getReportVal("report")
+
+}
 \seealso{
-\code{\link{atacSamToBed}}
-\code{\link{atacBamToBed}}
-\code{\link{atacPeakCalling}}
-\code{\link{atacBamToBed}}
-\code{\link{atacBamToBed}}
-\code{\link{atacBamToBed}}
-\code{\link{atacBamToBed}}
-\code{\link{atacBamToBed}}
+\code{\link{atacBowtie2Mapping}} 
+\code{\link{bowtie2Mapping}}
+\code{\link{atacFregLenDistr}} 
+\code{\link{atacExtractCutSite}}
+\code{\link{atacPeakCalling}} 
+\code{\link{atacBedUtils}}
+\code{\link{atacTSSQC}} 
+\code{\link{atacBedToBigWig}}
 }
 \author{
 Zheng Wei

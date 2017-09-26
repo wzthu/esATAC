@@ -34,6 +34,13 @@ Note:bed file is 0-based.
 The bam file wiil be automatically obtained from
 object(\code{atacProc}) or input by hand. Output can be ignored.
 }
+\examples{
+
+library(Rsamtools)
+ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+bam2bed(bamInput = ex1_file)
+
+}
 \seealso{
 \code{\link{atacBamSort}}
 \code{\link{atacSam2Bam}}

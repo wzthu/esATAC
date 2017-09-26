@@ -1,4 +1,4 @@
-#ifdef R_ENV_FLAG
+#ifdef R_EVN_FLAG
 #include <Rcpp.h>
 using Rcpp::Rcout;
 using Rcpp::Rcerr;

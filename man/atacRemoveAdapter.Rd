@@ -18,8 +18,10 @@ removeAdapter(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
-\code{\link{atacBedUtils}}.}
+\code{\link{atacRenamer}} 
+\code{\link{renamer}}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}}
 
 \item{adapter1}{\code{Character}. It is an adapter sequence for file1. 
 For single end data, it is requied.}
@@ -89,9 +91,31 @@ paramList and findParamList are invalid if they are already handled as explicit
 function arguments. See the output of
 \code{adapterremoval_usage()} for details about available parameters.
 }
+\examples{
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+# Identify adapters
+prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+(reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+(reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+
+reads_merged_1 <- file.path(td,"reads1.fastq")
+reads_merged_2 <- file.path(td,"reads2.fastq")
+atacproc <- 
+atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) \%>\%
+atacRenamer \%>\% atacRemoveAdapter
+
+dir(td) 
+
+}
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacRenamer}} 
+\code{\link{renamer}}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}
+\code{\link{atacBowtie2Mapping}}
 }
 \author{
 Zheng Wei

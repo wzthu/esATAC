@@ -47,6 +47,7 @@ UnzipAndMerge <-R6Class(
                         private$checkFileExist(private$paramlist[["fastqInput2"]][i]);
                     }
                     if(!is.null(fastqOutput1)){
+                        #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
                         private$paramlist[["fastqOutput1"]]<-fastqOutput1
                         private$checkFileCreatable(private$paramlist[["fastqOutput1"]])
                     }else{
@@ -54,6 +55,7 @@ UnzipAndMerge <-R6Class(
                         private$paramlist[["fastqOutput1"]]<-private$removeCompressSuffix(private$paramlist[["fastqOutput1"]])
                     }
                     if(!is.null(fastqOutput2)){
+                        #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
                         private$paramlist[["fastqOutput2"]]<-fastqOutput2
                         private$checkFileCreatable(private$paramlist[["fastqOutput2"]])
                     }else{
@@ -187,9 +189,22 @@ UnzipAndMerge <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
-
+#' \code{\link{atacRenamer}} 
+#' \code{\link{atacQCReport}} 
+#' @examples 
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' # Identify adapters
+#' prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+#' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+#' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+#' 
+#' reads_merged_1 <- file.path(td,"reads1.fastq")
+#' reads_merged_2 <- file.path(td,"reads2.fastq")
+#' atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) 
+#' dir(td)
+#' 
 #' @rdname atacUnzipAndMerge
 #' @export 
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,

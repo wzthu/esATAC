@@ -2,7 +2,7 @@ FRiPQC <-R6Class(
     classname = "FRiPQC",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL,editable=FALSE){
+        initialize = function(atacProcReads,atacProcPeak,bsgenome = NULL,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL,editable=FALSE){
             super$initialize("FRiPQC",editable,list(arg1=atacProcReads,arg2=atacProcPeak))
             if(!is.null(atacProcReads)){
                 private$paramlist[["readsBedInput"]] <- atacProcReads$getParam("bedOutput");
@@ -30,14 +30,18 @@ FRiPQC <-R6Class(
             }else{
                 private$paramlist[["reportOutput"]] <- reportOutput;
             }
-
+            private$paramlist[["bsgenome"]] <- bsgenome
             private$paramValidation()
         }
     ),
     private = list(
         processing = function(){
             qcval=list();
-            genome <- Seqinfo(genome = .obtainConfigure("genome"))
+            if(is.null(private$paramlist[["bsgenome"]])){
+                genome <- seqinfo(.obtainConfigure("bsgenome"))
+            }else{
+                genome <- seqinfo(private$paramlist[["bsgenome"]])
+            }
             gr_a <- import(private$paramlist[["readsBedInput"]], genome = genome)
             gr_b <- import(private$paramlist[["peakBedInput"]], genome = genome)
             qcval[["peakReads"]]<-length(subsetByOverlaps(gr_a, gr_b, ignore.strand = TRUE))
@@ -90,10 +94,18 @@ FRiPQC <-R6Class(
 #' @title Quality control for fraction of reads in peaks (FRiP)  
 #' @description 
 #' Calculate the fraction of reads falling within peak regions  
-#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' @param atacProcReads \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
-#' \code{\link{atacBedUtils}}.
+#' \code{\link{atacSamToBed}} 
+#' \code{\link{samToBed}} 
+#' \code{\link{atacBedUtils}}
+#' \code{\link{bedUtils}}
+#' @param atacProcPeak \code{\link{ATACProc}} object scalar. 
+#' It has to be the return value of upstream process:
+#' \code{\link{atacPeakCalling}}, 
+#' \code{\link{peakCalling}}.
+#' @param bsgenome \code{BSGenome} object scalar.
+#' BSGenome object for specific species.
 #' @param reportOutput \code{Character} scalar. 
 #' The report file path 
 #' @param readsBedInput \code{Character} scalar. 
@@ -114,11 +126,26 @@ FRiPQC <-R6Class(
 #' @seealso 
 #' \code{\link{atacSamToBed}} 
 #' \code{\link{atacBedUtils}}
-
+#' @examples 
+#' library(R.utils)
+#' library(magrittr)
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr18.50000.bed.bz2")
+#' bedfile <- file.path(td,"chr18.50000.bed")
+#' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+#' 
+#' readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) 
+#' peaksProc<- readsProc %>% atacPeakCalling
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
+#' 
+#' dir(td) 
 #' @rdname atacFripQC
 #' @export 
-atacFripQC<-function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL){
-    fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,reportOutput=reportOutput,
+atacFripQC<-function(atacProcReads,atacProcPeak,bsgenome = NULL,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL){
+    fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,bsgenome=bsgenome,reportOutput=reportOutput,
                        readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
     fripQC$process()
     invisible(fripQC)
@@ -126,8 +153,8 @@ atacFripQC<-function(atacProcReads,atacProcPeak,reportOutput=NULL,readsBedInput=
 
 #' @rdname atacFripQC
 #' @export
-fripQC<-function(readsBedInput, peakBedInput, reportOutput=NULL){
-    fripQC<-FRiPQC$new(atacProcReads=NULL,atacProcPeak=NULL,reportOutput=reportOutput,
+fripQC<-function(readsBedInput, peakBedInput,bsgenome = NULL, reportOutput=NULL){
+    fripQC<-FRiPQC$new(atacProcReads=NULL,atacProcPeak=NULL,bsgenome=bsgenome,reportOutput=reportOutput,
                        readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)
     fripQC$process()
     invisible(fripQC)

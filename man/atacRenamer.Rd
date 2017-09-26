@@ -14,8 +14,8 @@ renamer(fastqInput1 = NULL, fastqInput2 = NULL, fastqOutput1 = NULL,
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar. 
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
-\code{\link{atacBedUtils}}.}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}}
 
 \item{fastqOutput1}{\code{Character} scalar. 
 The output file path of renamed fastqInput1.}
@@ -39,6 +39,9 @@ it must be \code{NULL}.}
 \item{interleave}{\code{Character} scalar. 
 Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{threads}{\code{Integer} scalar. 
+The threads will be created in this process. default: 1}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
@@ -57,9 +60,30 @@ If you want to use this function independently,
 \code{atacProc} should be set \code{NULL} 
 or you can use \code{renamer} instead.
 }
+\examples{
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+# Identify adapters
+prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+(reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+(reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+
+reads_merged_1 <- file.path(td,"reads1.fastq")
+reads_merged_2 <- file.path(td,"reads2.fastq")
+atacproc <- 
+atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) \%>\%
+atacRenamer
+
+dir(td) 
+
+}
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{atacBedUtils}}
+\code{\link{atacUnzipAndMerge}} 
+\code{\link{unzipAndMerge}}
+\code{\link{atacQCReport}} 
+\code{\link{atacRemoveAdapter}}
 }
 \author{
 Zheng Wei

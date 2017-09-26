@@ -1,44 +1,11 @@
-ADRM_DIR = adapterremoval
-BT2_DIR = bowtie2
+PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_WIN -DR_EVN_FLAG
 
-PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_WIN -DR_ENV_FLAG
+.PHONY: clean all
 
-.PHONY: clean installbin all
+all: $(SHLIB)
 
-all: installbin $(SHLIB)
 
-ifeq "$(WIN)" "64"
-
-installbin:
-	mkdir -p ../inst
-	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile.win))
-	(cd $(BT2_DIR) && ($(MAKE) CXX="$(CXX)" -f Makefile.win))
 
 clean:
 	rm -f *.dll
 	rm -f *.o
-	(cd	$(ADRM_DIR) && ($(MAKE) clean -f Makefile.win))
-	(cd	$(BT2_DIR) && ($(MAKE) clean -f Makefile.win))
-
-else
-
-installbin:
-	mkdir -p ../inst
-	(cd	$(ADRM_DIR) && ($(MAKE) CXX="$(CXX) -std=gnu++11" -f Makefile.win))
-	$(CXX) -c  bowtie2_32.cpp
-	$(CXX) bowtie2_32.o -o bowtie2-align-s
-	$(CXX) bowtie2_32.o -o bowtie2-build-s
-	cp bowtie2-build-s ../inst
-	cp bowtie2-align-s ../inst
-	
-clean:
-	rm -f *.dll
-	rm -f *.o
-	(cd	$(ADRM_DIR) && ($(MAKE) clean -f Makefile))
-	rm -f ../inst/bowtie2-build-s
-	rm -f ../inst/bowtie2-align-s
-	rm -f bowtie2-build-s
-	rm -f bowtie2-align-s
-	rm -f *.o
-
-endif

@@ -21,10 +21,10 @@ LazyData: true
 Imports: 
     Rcpp (>= 0.12.11),
     R6,
+    knitr,
     Rbowtie,
-    QuasR,
+    Rbowtie2,
     rtracklayer,
-    GenomicRanges,
     ggplot2,
     Biostrings,
     TFBSTools,
@@ -48,6 +48,9 @@ Imports:
     rmarkdown,
     tools,
     JASPAR2016
+Suggests:
+    BSgenome.Hsapiens.UCSC.hg19,
+    TxDb.Hsapiens.UCSC.hg19.knownGene
 LinkingTo: Rcpp
 SystemRequirements: C++11
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage

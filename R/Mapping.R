@@ -153,12 +153,14 @@ Bowtie2Mapping <-R6Class(
 #' @name atacBowtie2Mapping
 #' @aliases atacBowtie2Mapping
 #' @aliases bowtie2Mapping
+#' @importFrom Rbowtie2 bowtie2
 #' @title Use bowtie2 aligner to map reads to reference genome 
 #' @description 
 #' Use bowtie2 aligner to map reads to reference genome 
 #' @param atacProc \code{\link{ATACProc}} object scalar. 
 #' It has to be the return value of upstream process:
-#' \code{\link{atacRemoveAdapter}}.
+#' \code{\link{atacRemoveAdapter}} 
+#' \code{\link{removeAdapter}}
 #' @param reportOutput \code{Character} scalar. 
 #' The prefix of report files path. 
 #' @param bt2Idx \code{Character} scalar. 
@@ -183,6 +185,8 @@ Bowtie2Mapping <-R6Class(
 #' See below for details.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param threads \code{Integer} scalar. 
+#' The threads will be created in this process. default: 1
 #' @details The parameter related to input and output file path
 #' will be automatically 
 #' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
@@ -206,23 +210,50 @@ Bowtie2Mapping <-R6Class(
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacRemoveAdapter}} 
+#' \code{\link{removeAdapter}}
+#' \code{\link{bowtie2}}
+#' \code{\link{bowtie2_build}}
+#' \code{\link{bowtie2_usage}}
+#' \code{\link{atacSam2Bam}}
+#' \code{\link{atacSamToBed}}
+#' \code{\link{atacLibComplexQC}}
+#' @examples 
+#' td <- tempdir()
+#' setConfigure("tmpdir",td)
+#' 
+#' ## Building a bowtie2 index
+#' library("Rbowtie2")
+#' refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
+#' full=TRUE)
+#' bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
+#' "--threads 4 --quiet",overwrite=TRUE)
+#' ## Alignments
+#' reads_1 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+#' "reads_1.fastq")
+#' reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+#' "reads_2.fastq")
+#' if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
+#'     (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+#'        samOutput = file.path(td, "result.sam"),
+#'        fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
+#'     head(readLines(file.path(td, "result.sam")))
+#' }
 
 #' @rdname atacBowtie2Mapping
 #' @export 
-atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
+atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
+                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
     atacproc$process()
     invisible(atacproc)
 }
 
 #' @rdname atacBowtie2Mapping
 #' @export
-bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
+bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-Bowtie2Mapping$new(atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput)
+                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
     atacproc$process()
     invisible(atacproc)
 }
