@@ -91,59 +91,59 @@ FRiPQC <-R6Class(
 #' @name atacFripQC
 #' @aliases atacFripQC
 #' @aliases fripQC
-#' @title Quality control for fraction of reads in peaks (FRiP)  
-#' @description 
-#' Calculate the fraction of reads falling within peak regions  
-#' @param atacProcReads \code{\link{ATACProc}} object scalar. 
+#' @title Quality control for fraction of reads in peaks (FRiP)
+#' @description
+#' Calculate the fraction of reads falling within peak regions
+#' @param atacProcReads \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{samToBed}} 
+#' \code{\link{atacSamToBed}}
+#' \code{\link{samToBed}}
 #' \code{\link{atacBedUtils}}
 #' \code{\link{bedUtils}}
-#' @param atacProcPeak \code{\link{ATACProc}} object scalar. 
+#' @param atacProcPeak \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacPeakCalling}}, 
+#' \code{\link{atacPeakCalling}},
 #' \code{\link{peakCalling}}.
 #' @param bsgenome \code{BSGenome} object scalar.
 #' BSGenome object for specific species.
-#' @param reportOutput \code{Character} scalar. 
-#' The report file path 
-#' @param readsBedInput \code{Character} scalar. 
+#' @param reportOutput \code{Character} scalar.
+#' The report file path
+#' @param readsBedInput \code{Character} scalar.
 #' Reads BED file for peak calling.
-#' @param peakBedInput \code{Character} scalar. 
+#' @param peakBedInput \code{Character} scalar.
 #' Peaks BED file
 #' @details The parameter related to input and output file path
-#' will be automatically 
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-#' generated based on known parameters 
+#' will be automatically
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
-#' If you want to use this function independently, 
-#' \code{atacProc} should be set \code{NULL} 
+#' If you want to use this function independently,
+#' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{fregLenDistr} instead.
 #' @return An invisible \code{\link{fripQC}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacSamToBed}} 
+#' @seealso
+#' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
-#' @examples 
+#' @examples
 #' library(R.utils)
 #' library(magrittr)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
-#' 
+#'
 #' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr18.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
-#' 
-#' readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) 
+#'
+#' readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 #' peaksProc<- readsProc %>% atacPeakCalling
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
-#' 
-#' dir(td) 
+#'
+#' dir(td)
 #' @rdname atacFripQC
-#' @export 
+#' @export
 atacFripQC<-function(atacProcReads,atacProcPeak,bsgenome = NULL,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL){
     fripQC<-FRiPQC$new(atacProcReads=atacProcReads,atacProcPeak=atacProcPeak,bsgenome=bsgenome,reportOutput=reportOutput,
                        readsBedInput=readsBedInput,peakBedInput=peakBedInput,editable=FALSE)

@@ -36,7 +36,7 @@ TSSQC <-R6Class(
 
             private$paramlist[["updownstream"]] <- tssUpdownstream
             private$paramlist[["fregLenRange"]] <- fregLenRange
-            
+
             private$paramlist[["bsgenome"]] <- bsgenome
 
             private$paramValidation()
@@ -95,7 +95,7 @@ TSSQC <-R6Class(
             df<-data.frame(counts=totaldistr,pos=-private$paramlist[["updownstream"]]:private$paramlist[["updownstream"]])
             ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
             ggsave(private$paramlist[["tsspdfOutput"]])
-            
+
             write.table(df,file = private$paramlist[["tsstxtOutput"]],sep="\t",quote = FALSE,row.names = FALSE,col.names = TRUE)
 
 
@@ -126,7 +126,7 @@ TSSQC <-R6Class(
             qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
             print(qcval[["TSSRate"]])
             qcval<-as.matrix(qcval)
-            
+
             write.table(qcval,file = private$paramlist[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
 
         },
@@ -162,65 +162,65 @@ TSSQC <-R6Class(
 #' @aliases atacTSSQC
 #' @aliases tssQC
 #' @title Quality control for transcription start site(TSS) reads enrichment
-#' @description 
-#' These functions are used to generate the reads coverage plot around TSS.  
-#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' @description
+#' These functions are used to generate the reads coverage plot around TSS.
+#' @param atacProc \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacSamToBed}},
 #' \code{\link{atacBedUtils}}.
-#' @param txdbKnownGene \code{TxDb} object scalar. 
-#' TxDb object for specific species. 
+#' @param txdbKnownGene \code{TxDb} object scalar.
+#' TxDb object for specific species.
 #' @param bsgenome \code{BSGenome} object scalar.
 #' BSGenome object for specific species.
-#' @param reportPrefix \code{Character} scalar. 
-#' The prefix of report files path. 
-#' @param bedInput \code{Character} scalar. 
+#' @param reportPrefix \code{Character} scalar.
+#' The prefix of report files path.
+#' @param bedInput \code{Character} scalar.
 #' BED file input path.
-#' @param fregLenRange \code{Interger} vector of 2 element. 
+#' @param fregLenRange \code{Interger} vector of 2 element.
 #' The fregment length ranges.
 #' @param tssUpdownstream \code{Interger} scalar.
 #' The upstream and downstrem from TSS locations.
 #' @details The parameter related to input and output file path
-#' will be automatically 
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-#' generated based on known parameters 
+#' will be automatically
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
-#' If you want to use this function independently, 
-#' \code{atacProc} should be set \code{NULL} 
+#' If you want to use this function independently,
+#' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{tssQC} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{samToBed}} 
+#' @seealso
+#' \code{\link{atacSamToBed}}
+#' \code{\link{samToBed}}
 #' \code{\link{atacBedUtils}}
 #' \code{\link{bedUtils}}
-#' 
-#' @examples 
+#'
+#' @examples
 #' library(R.utils)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
-#' 
+#'
 #' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr18.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
-#' 
-#' dir(td) 
-#' 
+#'
+#' dir(td)
+#'
 
 #' @rdname atacTSSQC
-#' @export 
+#' @export
 atacTSSQC<-function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,bedInput = NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
     tssQC<-TSSQC$new(atacProc=atacProc, txdbKnownGene=txdbKnownGene, bsgenome = bsgenome, reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
     tssQC$process()
     invisible(tssQC)
 }
 #' @rdname atacTSSQC
-#' @export 
+#' @export
 tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
     tssQC<-TSSQC$new(atacProc=NULL, txdbKnownGene=txdbKnownGene, bsgenome = bsgenome, reportPrefix=reportPrefix,bedInput=bedInput,fregLenRange=fregLenRange,tssUpdownstream=tssUpdownstream,editable=FALSE)
     tssQC$process()

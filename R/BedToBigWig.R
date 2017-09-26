@@ -10,7 +10,7 @@ BedToBigWig <- R6Class(
             }else{
                 regexProcName<-"(BED|bed|Bed)"
             }
-            
+
             if(!is.null(bedInput)){
                 private$paramlist[["bedInput"]] <- bedInput;
             }
@@ -19,7 +19,7 @@ BedToBigWig <- R6Class(
             }else{
                 sfx<-".bw"
             }
-            
+
             if(is.null(bwOutput)){
                 if(!is.null(private$paramlist[["bedInput"]])){
                     prefix<-private$getBasenamePrefix(private$paramlist[["bedInput"]],regexProcName)
@@ -28,14 +28,14 @@ BedToBigWig <- R6Class(
             }else{
                 private$paramlist[["bwOutput"]] <- bwOutput;
             }
-            
+
             private$paramlist[["bsgenome"]] <- bsgenome
-            
+
             private$paramlist[["toWig"]] <- toWig
             private$paramValidation()
         }
     ),
-    
+
     private = list(
         processing = function(){
             if(is.null(private$paramlist[["bsgenome"]])){
@@ -52,7 +52,7 @@ BedToBigWig <- R6Class(
             }else{
                 export.bw(ans,private$paramlist[["bwOutput"]])
             }
-            
+
         },
         checkRequireParam = function(){
             if(is.null(private$paramlist[["bedInput"]])){
@@ -64,8 +64,8 @@ BedToBigWig <- R6Class(
             private$checkFileCreatable(private$paramlist[["bwOutput"]]);
         }
     )
-    
-    
+
+
 )
 
 
@@ -73,55 +73,55 @@ BedToBigWig <- R6Class(
 #' @aliases atacBedToBigWig
 #' @aliases bedToBigWig
 #' @title generate BigWig file from BED file
-#' @description 
-#' This function is used to generate BigWig file 
+#' @description
+#' This function is used to generate BigWig file
 #' from BED reads file.
 #' The BigWig file can be shown reads coverage on genome browser.
-#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' @param atacProc \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSamToBed}}, 
+#' \code{\link{atacSamToBed}},
 #' \code{\link{atacBedUtils}}.
-#' @param bedInput \code{Character} scalar. 
-#' Bed file input path. 
+#' @param bedInput \code{Character} scalar.
+#' Bed file input path.
 #' @param bsgenome \code{BSGenome} object scalar.
 #' BSGenome object for specific species.
-#' @param bwOutput \code{Character} scalar. 
+#' @param bwOutput \code{Character} scalar.
 #' BigWig file output path.
 #' @param toWig \code{Logical} scalar.
 #' Save as wig file instead of binary BigWig file
 #' @details The parameter related to input and output file path
-#' will be automatically 
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-#' generated based on known parameters 
+#' will be automatically
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
-#' If you want to use this function independently, 
-#' \code{atacProc} should be set \code{NULL} 
+#' If you want to use this function independently,
+#' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{bedToBigWig} instead.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacSamToBed}} 
-#' \code{\link{samToBed}} 
+#' @seealso
+#' \code{\link{atacSamToBed}}
+#' \code{\link{samToBed}}
 #' \code{\link{atacBedUtils}}
 #' \code{\link{bedUtils}}
-#' 
-#' @examples 
+#'
+#' @examples
 #' library(R.utils)
 #' td <- tempdir()
 #' setConfigure("tmpdir",td)
-#' 
+#'
 #' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr18.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
-#' 
+#'
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' bedToBigWig(bedfile, BSgenome.Hsapiens.UCSC.hg19)
-#' 
-#' dir(td) 
+#'
+#' dir(td)
 
 #' @rdname atacBedToBigWig
-#' @export 
+#' @export
 atacBedToBigWig <- function(atacProc, bedInput = NULL,bsgenome = NULL, bwOutput = NULL, toWig = FALSE){
     atacproc <- BedToBigWig$new(atacProc = atacProc, bedInput = bedInput, bsgenome = bsgenome, bwOutput = bwOutput, toWig = toWig)
     atacproc$process()
