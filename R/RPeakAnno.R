@@ -41,7 +41,7 @@ RPeakAnno <- R6::R6Class(
         annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
                                     paste0(prefix, ".", self$getProcName()))
         private$paramlist[["annoOutput.img"]] <- paste(annoOutput.dir,
-                                                       ".jpg", sep = "")
+                                                       ".pdf", sep = "")
         private$paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
                                                       ".df", sep = "")
         private$paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
@@ -52,11 +52,11 @@ RPeakAnno <- R6::R6Class(
         name_split <- head(name_split, -1)
         if(suffix == "df"){
           private$paramlist[["annoOutput.df"]] <- annoOutput
-          private$paramlist[["annoOutput.img"]] <- paste(name_split, "jpg", sep = ".")
+          private$paramlist[["annoOutput.img"]] <- paste(name_split, "pdf", sep = ".")
           private$paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
         }else{
           private$paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
-          private$paramlist[["annoOutput.img"]] <- paste(annoOutput, "jpg", sep = ".")
+          private$paramlist[["annoOutput.img"]] <- paste(annoOutput, "pdf", sep = ".")
           private$paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
         }
       }
@@ -88,7 +88,7 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]])
       saveRDS(peakAn, private$paramlist[["annoOutput.rds"]])
-      jpeg(file = private$paramlist[["annoOutput.img"]])
+      pdf(file = private$paramlist[["annoOutput.img"]])
       ChIPseeker::plotAnnoPie(x = peakAn)
       dev.off()
       tmp_file <- as.data.frame(peakAn)

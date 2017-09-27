@@ -23,7 +23,7 @@ getVMShow <- function(readSize,detail = FALSE){
     }else{
         return(sprintf("%.1fM",vm[2]))
     }
-    
+
 }
 getVMRShow <- function(readSize,total,detail = FALSE){
     vmr <- getVMR(readSize,total)
@@ -33,17 +33,17 @@ getVMRShow <- function(readSize,total,detail = FALSE){
     }else{
         return(sprintf("%.1fM (%.2f%s)",vmr[2],vmr[3],"%"))
     }
-    
+
 }
 getRshow <- function(readSize,total,detail = FALSE){
     vmr <- getVMR(readSize,total)
     total <- as.numeric(total)
     if(detail){
-        return(sprintf("%.2f, %d / %d",vmr[3]/100,vmr[1],vmr[4])) 
+        return(sprintf("%.2f, %d / %d",vmr[3]/100,vmr[1],vmr[4]))
     }else{
         return(sprintf("%.2f",vmr[3]/100))
     }
-   
+
 }
 
 
@@ -89,13 +89,17 @@ getSuffixlessFileName = function(filePath){
 #' @param adapter2 \code{Character}. It is an adapter sequence for file2.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param prefix For identifying files.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
 #' @export
-atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE ){
+
+atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
+                     interleave = FALSE, saveTmp = TRUE, createReport = TRUE, prefix = NULL){
+
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
@@ -129,12 +133,14 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".DHSQC")))
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
+
         Peakanno <- atacPeakAnno(atacProc = peakCalling, annoDb = "org.Hs.eg.db")
         goAna <- atacGOAnalysis(atacProc = Peakanno, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
-        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%")
-        cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = "ATAC")
-        footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan, strandLength = 100)
+        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%", prefix = prefix)
+        cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
+        footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
+                                      strandLength = 100, prefix = prefix)
     }
 
     if(interleave){
@@ -153,7 +159,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filelist <- data.frame(`Mate1 files`=fastqInput1,
                           `Mate2 files`=fastqInput2)
     }
-   
+
     wholesummary = data.frame(Item=c("Sequence Files Type",
                                      "Original total reads",
                                      "-- Reads after adapter removing (ratio)",
@@ -316,16 +322,16 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @name atacPipe2
 #' @title Pipeline for single replicate
 #' @description
-#' The pipeline to process case control study sequencing data 
+#' The pipeline to process case control study sequencing data
 #' into destination files including
 #' a HTML report file reads storage files (BED BAM)
 #' and various quality control report files.
-#' @param case \code{List} scalar. Input for case sample. \code{fastqInput1}, 
-#' the path of the mate 1 fastq file, is required. \code{fastqInput2}, 
+#' @param case \code{List} scalar. Input for case sample. \code{fastqInput1},
+#' the path of the mate 1 fastq file, is required. \code{fastqInput2},
 #' the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
 #' \code{adapter1} and \code{adapter2} are optional.
-#' @param control \code{List} scalar. Input for control sample. \code{fastqInput1}, 
-#' the path of the mate 1 fastq file, is required. \code{fastqInput2}, 
+#' @param control \code{List} scalar. Input for control sample. \code{fastqInput1},
+#' the path of the mate 1 fastq file, is required. \code{fastqInput2},
 #' the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
 #' \code{adapter1} and \code{adapter2} are optional.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
@@ -353,47 +359,83 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
                adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-               saveTmp = TRUE, createReport = FALSE)
+               saveTmp = TRUE, createReport = FALSE, prefix = "CASE_all_data")
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-               saveTmp = TRUE, createReport = FALSE)
-    
+               saveTmp = TRUE, createReport = FALSE, prefix = "CTRL_all_data")
+
+    bed.case <-caselist$atacProcs$sam2Bed$getParam("bedOutput")
+    bed.ctrl <-ctrllist$atacProcs$sam2Bed$getParam("bedOutput")
+
+    case.peak <- caselist$atacProcs$peakCalling$getParam("bedOutput")
+    ctrl.peak <- ctrllist$atacProcs$peakCalling$getParam("bedOutput")
+
+    peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak, operation = "diff")
+    diff.case <- peakCom$getParam("bedOutput")[1]
+    diff.ctrl <- peakCom$getParam("bedOutput")[2]
+
+    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+    # for case
+    Peakanno.case <- peakanno(peakInput = diff.case, annoDb = "org.Hs.eg.db")
+    goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
+    output_motifscan.case <- motifscan(peak = diff.case, motifPWM = pwm, min.score = "90%", prefix = "CASE_diff")
+    cs_output.case <- extractcutsite(bedInput = bed.case, prefix = "CASE_diff")
+    footprint.case <- atacCutSiteCount(atacProcCutSite = cs_output.case,
+                                       atacProcMotifScan = output_motifscan.case,
+                                       strandLength = 100, prefix = "CASE_diff")
+
+    # for ctrl
+    Peakanno.ctrl <- peakanno(peakInput = diff.ctrl, annoDb = "org.Hs.eg.db")
+    goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
+    output_motifscan.ctrl <- motifscan(peak = diff.ctrl, motifPWM = pwm, min.score = "90%", prefix = "CTRL_diff")
+    cs_output.ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL_diff")
+    footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_output.ctrl,
+                                       atacProcMotifScan = output_motifscan.ctrl,
+                                       strandLength = 100, prefix = "CTRL_diff")
+
+    comp_result <- list(
+        goAna.case = goAna.case,
+        footprint.case = footprint.case,
+        goAna.ctrl = goAna.ctrl,
+        footprint.ctrl = footprint.ctrl
+    )
+
     wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
                           Case = caselist[["wholesummary"]][["Value"]],
                           Control = ctrllist[["wholesummary"]][["Value"]],
                           Reference = ctrllist[["wholesummary"]][["Reference"]])
-    
+
     conclusion <- list(caselist = caselist,
                        ctrllist = ctrllist,
                        wholesummary = wholesummary
                 )
     casefilelist <- caselist[["filelist"]]
     ctrlfilelist <- ctrllist[["filelist"]]
-    
+
     filtstat <- data.frame(Item = caselist[["filtstat"]][["Item"]],
                            Case = caselist[["filtstat"]][["Value"]],
                            Control = ctrllist[["filtstat"]][["Value"]],
                            Reference = ctrllist[["filtstat"]][["Reference"]])
-    
+
     if(createReport){
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
-        
+
         rmdfile<-system.file(package="ATACFlow", "extdata", "Report2.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
-        
+
         workdir <- getwd()
-        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
-        
+        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,comp_result,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
+
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
     }
-    
+
     invisible(conclusion)
-    
+
 }
 

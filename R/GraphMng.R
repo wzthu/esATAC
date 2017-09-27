@@ -32,7 +32,7 @@ GraphMng <- R6Class(
             BedUtils,FRiPQC,
             BedUtils,CutSitePre,
             SamToBed,BedUtils,
-            PeakCallingFseq,PeakQC,
+            PeakCallingFseq, PeakQC,
             PeakCallingFseq, RMotifScan,
             PeakCallingFseq, RPeakAnno,
             PeakCallingFseq, RSNPs,
@@ -40,7 +40,10 @@ GraphMng <- R6Class(
             CutSitePre, CutSiteCountR,
             RMotifScan, CutSiteCountR,
             RPeakAnno, RGo,
-            RMotifScan,RSNPs
+            RMotifScan,RSNPs,
+            RPeakComp, RMotifScan,
+            RPeakComp, RPeakAnno,
+            RPeakComp, RSNPs
 
         )
         edges1<-sapply(edges1,function(x) x$classname)
