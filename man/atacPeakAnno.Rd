@@ -71,6 +71,17 @@ downstream analysis.
 This function annotates ATAC-seq peak by a given annotation database.
 For more information, please see \link[ChIPseeker]{annotatePeak}.
 }
+\examples{
+
+library(R.utils)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
+peak1_path <- as.vector(bunzip2(filename = p1bz,
+destname = file.path(getwd(), "Example_peak1.bed"),
+ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.knownGene)
+
+}
 \references{
 Guangchuang Yu, Li-Gen Wang, Qing-Yu He. ChIPseeker: an
 R/Bioconductor package for ChIP peak annotation, comparison and
@@ -82,12 +93,4 @@ visualization. Bioinformatics 2015, 31(14):2382-2383
 }
 \author{
 Wei Zhang
-
-library(R.utils)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
-peak1_path <- as.vector(bunzip2(filename = p1bz,
-destname = file.path(getwd(), "Example_peak1.bed"),
-ext="bz2", FUN=bzfile, ,overwrite=TRUE, remove = FALSE))
-peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.knownGene)
 }

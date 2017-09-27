@@ -11,18 +11,18 @@ atacBedToBigWig(atacProc, bedInput = NULL, bsgenome = NULL,
 bedToBigWig(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
+\code{\link{atacSamToBed}},
 \code{\link{atacBedUtils}}.}
 
-\item{bedInput}{\code{Character} scalar. 
+\item{bedInput}{\code{Character} scalar.
 Bed file input path.}
 
 \item{bsgenome}{\code{BSGenome} object scalar.
 BSGenome object for specific species.}
 
-\item{bwOutput}{\code{Character} scalar. 
+\item{bwOutput}{\code{Character} scalar.
 BigWig file output path.}
 
 \item{toWig}{\code{Logical} scalar.
@@ -32,19 +32,19 @@ Save as wig file instead of binary BigWig file}
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-This function is used to generate BigWig file 
+This function is used to generate BigWig file
 from BED reads file.
 The BigWig file can be shown reads coverage on genome browser.
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{bedToBigWig} instead.
 }
 \examples{
@@ -53,17 +53,17 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
-bedfile <- file.path(td,"chr18.50000.bed")
+bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
 library(BSgenome.Hsapiens.UCSC.hg19)
 bedToBigWig(bedfile, BSgenome.Hsapiens.UCSC.hg19)
 
-dir(td) 
+dir(td)
 }
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{samToBed}} 
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }

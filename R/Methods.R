@@ -294,23 +294,18 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @name atacPipe2
 #' @title Pipeline for single replicate
 #' @description
-#' The pipeline to process sequencing data into destination files including
+#' The pipeline to process case control study sequencing data 
+#' into destination files including
 #' a HTML report file reads storage files (BED BAM)
 #' and various quality control report files.
-#' @param fastqInput1 \code{Character} vector. For single-end sequencing,
-#' it contains sequence file paths.
-#' For paired-end sequencing, it can be file paths with #1 mates paired
-#' with file paths in fastqInput2
-#' And it can also be interleaved file paths when argument
-#' interleaved=\code{TRUE}
-#' @param fastqInput2 \code{Character} vector. It contains file paths with #2
-#' mates paired with file paths in fastqInput1
-#' For single-end sequencing files and interleaved paired-end sequencing
-#' files(argument interleaved=\code{TRUE}),
-#' it must be \code{NULL}.
-#' @param adapter1 \code{Character}. It is an adapter sequence for file1.
-#' For single end data, it is requied.
-#' @param adapter2 \code{Character}. It is an adapter sequence for file2.
+#' @param case \code{List} scalar. Input for case sample. \code{fastqInput1}, 
+#' the path of the mate 1 fastq file, is required. \code{fastqInput2}, 
+#' the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
+#' \code{adapter1} and \code{adapter2} are optional.
+#' @param control \code{List} scalar. Input for control sample. \code{fastqInput1}, 
+#' the path of the mate 1 fastq file, is required. \code{fastqInput2}, 
+#' the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
+#' \code{adapter1} and \code{adapter2} are optional.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
@@ -322,16 +317,16 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
-    if(case[["fastqInput1"]]=="paths/To/fastq1"){
+    if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
-    if(!interleave && case[["fastqInput2"]]=="paths/To/fastq2"){
+    if(!interleave && (case[["fastqInput2"]]=="paths/To/fastq2"|| is.null(case[["fastqInput2"]]))){
         stop("fastqInput2 for case can not be NULL")
     }
-    if(control[["fastqInput1"]]=="paths/To/fastq1"){
+    if(control[["fastqInput1"]]=="paths/To/fastq1"||is.null(control[["fastqInput1"]])){
         stop("fastqInput1 for control can not be NULL")
     }
-    if(!interleave && control[["fastqInput2"]]=="paths/To/fastq2"){
+    if(!interleave && (control[["fastqInput2"]]=="paths/To/fastq2"||is.null(control[["fastqInput2"]]))){
         stop("fastqInput2 for control can not be NULL")
     }
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
@@ -341,10 +336,10 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
                saveTmp = TRUE, createReport = FALSE)
     
-    wholesummary <- cbind(caselist[["wholesummary"]][["Item"]],
-                          caselist[["wholesummary"]][["Value"]],
-                          ctrllist[["wholesummary"]][["Value"]],
-                          ctrllist[["wholesummary"]][["Reference"]])
+    wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
+                          Case = caselist[["wholesummary"]][["Value"]],
+                          Control = ctrllist[["wholesummary"]][["Value"]],
+                          Reference = ctrllist[["wholesummary"]][["Reference"]])
     
     conclusion <- list(caselist = caselist,
                        ctrllist = ctrllist,
@@ -353,10 +348,10 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     casefilelist <- caselist[["filelist"]]
     ctrlfilelist <- ctrllist[["filelist"]]
     
-    filtstat <- cbind(caselist[["filtstat"]][["Item"]],
-                      caselist[["filtstat"]][["Value"]],
-                      ctrllist[["filtstat"]][["Value"]],
-                      ctrllist[["filtstat"]][["Reference"]])
+    filtstat <- data.frame(Item = caselist[["filtstat"]][["Item"]],
+                           Case = caselist[["filtstat"]][["Value"]],
+                           Control = ctrllist[["filtstat"]][["Value"]],
+                           Reference = ctrllist[["filtstat"]][["Reference"]])
     
     if(createReport){
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
@@ -370,7 +365,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
         
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"),useBytes = TRUE)
-        render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
+        render(file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))

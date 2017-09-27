@@ -24,8 +24,15 @@ load("Report2.Rdata")
 
 Sequence files below are set as inputs of the pipeline. 
 
+Case files:
+
 ```{r cols.print=3, eval=TRUE, echo=FALSE,warning=FALSE}
-filelist
+casefilelist
+```
+
+Control files:
+```{r cols.print=3, eval=TRUE, echo=FALSE,warning=FALSE}
+ctrlfilelist
 ```
 
 Summerized infomation on sequence files has been shown showed below. You can see details in later sections
@@ -62,7 +69,9 @@ Quality control for the sequence data
 QC_path1 <- caselist$atacProcs$atacQC$getReportVal("pdf")
 QC_path2 <- ctrllist$atacProcs$atacQC$getReportVal("pdf")
 ```
+
 [Click to Visit Report for case](`r QC_path1`)
+
 [Click to Visit Report for control](`r QC_path2`)
 
 ## Remove Adapter
@@ -90,7 +99,7 @@ The statistic of adapter removing are show below.
 casetb<-caselist$atacProcs$removeAdapter$getReportVal("statistics")
 ctrltb<-ctrllist$atacProcs$removeAdapter$getReportVal("statistics")
 cbind()
-knitr::kable(data.frame(Items=casetb[["Items"]],
+knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
                         ))
@@ -105,13 +114,13 @@ For detail, you can visit [Website of AdapterRemoval on Github](https://github.c
 * For case
 
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$bowtie2Mapping$getReportVal("detail")
+caselist$atacProcs$bowtie2Mapping$getReportVal("detail")
 ```
 
 * For control
 
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
-atacProcs$bowtie2Mapping$getReportVal("detail")
+ctrllist$atacProcs$bowtie2Mapping$getReportVal("detail")
 ```
 
 ## Library complexity
@@ -120,7 +129,7 @@ atacProcs$bowtie2Mapping$getReportVal("detail")
 
 casetb<-caselist$atacProcs$libComplexQC$getReportVal("report")
 ctrltb<-ctrllist$atacProcs$libComplexQC$getReportVal("report")
-knitr::kable(data.frame(Items=casetb[["Items"]],
+knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]],
                         Reference=ctrltb[["Reference"]]
@@ -139,12 +148,13 @@ knitr::kable(x = filtstat)
 
 ```{r fegdist, eval=TRUE}
 library(ggplot2)
+library(stats)
 load("Report2.Rdata")
 
 getFsdG1G2 <- function(readsCounts){
-        ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+       
     
-    library(stats)
+    
     strength<-Mod(fft(readsCounts$counts))/length(readsCounts$counts)
     periodx<-length(readsCounts$counts)/(1:(length(readsCounts$counts)-1))
     strength<-strength[2:length(strength)]
@@ -157,15 +167,18 @@ getFsdG1G2 <- function(readsCounts){
     g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")
     
     g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
-    return(c(g1,g2))
+    return(list(g1,g2))
 }
 readsCounts1<-caselist$atacProcs$fregLenDistr$getReportVal("readsCounts")
 readsCounts2<-ctrllist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+ggplot(readsCounts1[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+ggplot(readsCounts2[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 g112<-getFsdG1G2(readsCounts1)
-g212<-getFsdG1G2(readsCounts1)
+g212<-getFsdG1G2(readsCounts2)
 
 library(gridExtra)
-grid.arrange(g112[1], g212[1],g112[2], g212[2], ncol=2)
+grid.arrange(g112[[1]], g212[[1]],ncol=2)
+grid.arrange(g112[[2]], g212[[2]],ncol=2)
 ```
 
 
@@ -173,6 +186,7 @@ grid.arrange(g112[1], g212[1],g112[2], g212[2], ncol=2)
 The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enrichment around transcription starting site (TSS) are shown below.
 ```{r TSSenrich, eval=TRUE}
 library(ggplot2)
+library(gridExtra)
 load("Report2.Rdata")
 df<-caselist$atacProcs$tssqc100$getReportVal("tss")
 g11<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
@@ -194,10 +208,9 @@ grid.arrange(g12, g22, ncol=2)
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 casetb<-caselist$atacProcs$blacklistQC$getReportVal("report")
 ctrltb<-ctrllist$atacProcs$blacklistQC$getReportVal("report")
-knitr::kable(data.frame(Items=casetb[["Items"]],
+knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
-                        Control=ctrltb[["Value"]],
-                        Reference=ctrltb[["Reference"]]
+                        Control=ctrltb[["Value"]]
                         ))
 ```
 
@@ -207,10 +220,9 @@ knitr::kable(data.frame(Items=casetb[["Items"]],
 
 casetb<-caselist$atacProcs$DHSQC$getReportVal("report")
 ctrltb<-ctrllist$atacProcs$DHSQC$getReportVal("report")
-knitr::kable(data.frame(Items=casetb[["Items"]],
+knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
-                        Control=ctrltb[["Value"]],
-                        Reference=ctrltb[["Reference"]]
+                        Control=ctrltb[["Value"]]
                         ))
 ```
 
@@ -220,10 +232,9 @@ knitr::kable(data.frame(Items=casetb[["Items"]],
 
 casetb<-caselist$atacProcs$fripQC$getReportVal("report")
 ctrltb<-ctrllist$atacProcs$fripQC$getReportVal("report")
-knitr::kable(data.frame(Items=casetb[["Items"]],
+knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
-                        Control=ctrltb[["Value"]],
-                        Reference=ctrltb[["Reference"]]
+                        Control=ctrltb[["Value"]]
                         ))
 ```
 

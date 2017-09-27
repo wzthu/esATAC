@@ -152,7 +152,7 @@ PeakCallingFseq <-R6Class(
 #' setConfigure("tmpdir",td)
 #'
 #' bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
-#' bedfile <- file.path(td,"chr18.50000.bed")
+#' bedfile <- file.path(td,"chr20.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #'
 #' bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
