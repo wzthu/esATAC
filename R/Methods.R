@@ -45,6 +45,28 @@ getRshow <- function(readSize,total,detail = FALSE){
     }
    
 }
+
+
+getSuffix = function(filePath){
+    filename<-basename(filePath)
+    lst=strsplit(filename,"\\.")[[1]]
+    if(length(lst)==1){
+        return(NULL)
+    }else{
+        return(lst[length(lst)])
+    }
+}
+getSuffixlessFileName = function(filePath){
+    sfx=getSuffix(filePath)
+    if(is.null(sfx)){
+        return(basename(filePath))
+    }else {
+        return(strsplit(basename(filePath),paste0(".",sfx)))
+    }
+}
+
+
+
 #' @name atacPipe
 #' @title Pipeline for single replicate
 #' @description
@@ -73,7 +95,7 @@ getRshow <- function(readSize,total,detail = FALSE){
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
 #' @export
-atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
+atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,interleave = FALSE, saveTmp = TRUE, createReport = TRUE ){
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
@@ -92,20 +114,20 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     libComplexQC <- atacLibComplexQC(bowtie2Mapping)
     sam2Bed <-atacSamToBed(bowtie2Mapping,maxFregLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
-    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc100"),fregLenRange = c(0,100))
+    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".tssqc100")),fregLenRange = c(0,100))
 
     if(is.null(fastqInput2)&&!interleave){
         peakCalling <- atacPeakCalling(sam2Bed)
-        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
-        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".DHSQC")))
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
     }else{
-        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),"tssqc180_247"),fregLenRange = c(180,247))
+        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".tssqc180_247")),fregLenRange = c(180,247))
         fregLenDistr <- atacFregLenDistr(sam2Bed)
         shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
         peakCalling <- atacPeakCalling(shortBed)
-        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),"DHSQC"))
-        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),"blacklistQC"))
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".DHSQC")))
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
         Peakanno <- atacPeakAnno(atacProc = peakCalling, annoDb = "org.Hs.eg.db")
         goAna <- atacGOAnalysis(atacProc = Peakanno, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
