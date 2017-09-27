@@ -87,14 +87,14 @@ knitr::kable(caselist$atacProcs$removeAdapter$getReportVal("adapters"))
 
 * Adapter for control
 
-```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
 knitr::kable(ctrllist$atacProcs$removeAdapter$getReportVal("adapters"))
 
 ```
 
 The statistic of adapter removing are show below. 
 
-```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
 
 casetb<-caselist$atacProcs$removeAdapter$getReportVal("statistics")
 ctrltb<-ctrllist$atacProcs$removeAdapter$getReportVal("statistics")
@@ -257,41 +257,75 @@ plotAnnoPie(x = peakanno)
 
 # Go analysis
 
-Gene ontology analysis for all genes around peak regions.
+Gene ontology analysis for all genes around differential peak regions.
+
+## For case differential peak regions.
 
 ```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
-#go_path <- atacProcs$goAna$getReportVal("goOutput")
-#go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
-#go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-#knitr::kable(go_data)
-#[Click to Visit Go Analysis file](`r go_path`)
+go_path <- comp_result$goAna.case$getReportVal("goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+knitr::kable(go_data[1:20, ])
 ```
 
+[Click to Visit Case Differential Go Analysis file](`r go_path`)
+
+## For control differential peak regions.
+
+```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
+go_path <- comp_result$goAna.ctrl$getReportVal("goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+knitr::kable(go_data[1:20, ])
+```
+
+[Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
 
 
 # Footprint analysis
 
-The following figure is CTCF footprint.
 
-```{r eval=TRUE, echo=FALSE, fig.height=7, fig.width=7, results = 'asis', warning=FALSE}
-#footprint_data <- atacProcs$footprint$getReportVal("footprint.data")
-#CTCF_data <- as.vector(footprint_data$CTCF)
-#plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
-#     xlab = "Relative Distance From Motif (bp)", 
-#     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-#axis(1, at = seq(1, 100, len = 3),
-#     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
-#     padj = -1.0, tck = -0.01)
-#axis(1, at = 100 + 19 + seq(1, 100, len = 3),
-#     labels = seq(0, 100, len = 3),
-#     padj = -1.0, tck = -0.01)
-#axis(2, padj = 1.0,tck = -0.02)
-#abline(v = c(100, 100 + 19 + 1), lty = 2)
-#pdf.dir <- atacProcs$footprint$getReportVal("pdf.dir")
-#[Click to Visit Footprint file](`r pdf.dir`)
+```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE}
+par(mfrow=c(1,2))
+footprint_data <- comp_result$footprint.case$getReportVal("footprint.data")
+CTCF_data <- as.vector(footprint_data$CTCF)
+plot(CTCF_data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Case",
+    xlab = "Relative Distance From Motif (bp)",
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + 19 + 1), lty = 2)
+
+footprint_data <- comp_result$footprint.ctrl$getReportVal("footprint.data")
+CTCF_data <- as.vector(footprint_data$CTCF)
+plot(CTCF_data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Control",
+    xlab = "Relative Distance From Motif (bp)",
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + 19 + 1), lty = 2)
+
+pdf.dir <- comp_result$footprint.case$getReportVal("pdf.dir")
+pdf.dir <- comp_result$footprint.ctrl$getReportVal("pdf.dir")
 ```
 
 All motif footprint figures are saved as pdf files.
+
+[Click to Visit Case Differential Footprint file](`r pdf.dir`)
+
+[Click to Visit Ctrl Differential Footprint file](`r pdf.dir`)
 
 
 # Annotation of items in table 
