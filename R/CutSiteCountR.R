@@ -4,7 +4,7 @@ CutSiteCountR <- R6::R6Class(
     public = list(
         initialize = function(atacProcCutSite, atacProcMotifScan, csInput = NULL,
                               motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                              strandLength = NULL, FootPrint = TRUE, editable = FALSE){
+                              strandLength = NULL, FootPrint = TRUE, prefix = NULL, editable = FALSE){
             super$initialize("CutSiteCountR", editable, list(arg1 = atacProcCutSite, arg2 = atacProcMotifScan))
 
             # necessary parameters
@@ -21,15 +21,32 @@ CutSiteCountR <- R6::R6Class(
             private$paramlist[["chr"]] <- as.list(chr)
             private$paramlist[["strandLength"]] <- strandLength
             private$paramlist[["FootPrint"]] <- FootPrint
+            private$paramlist[["prefix"]] <- prefix
 
             if(is.null(matrixOutput)){
-                private$paramlist[["matrixfile.dir"]] <- paste(.obtainConfigure("tmpdir"),
-                                                               "/Footprint", sep = "")
+                private$paramlist[["matrixfile.dir"]] <- paste(
+                    .obtainConfigure("tmpdir"),
+                    "/Footprint_",
+                    private$paramlist[["prefix"]],
+                    sep = ""
+                )
+                private$paramlist[["footprint.data"]] <- paste(
+                    private$paramlist[["matrixfile.dir"]],
+                    "_data.rds",
+                    sep = ""
+                )
             }else{
                 private$paramlist[["matrixfile.dir"]] <- matrixOutput
+                private$paramlist[["footprint.data"]] <- paste(
+                    private$paramlist[["matrixfile.dir"]],
+                    "/Footprint_",
+                    private$paramlist[["prefix"]],
+                    "_data.rds",
+                    sep = ""
+                )
             }
             dir.create(private$paramlist[["matrixfile.dir"]])
-            private$paramlist[["footprint.data"]] <- paste(private$paramlist[["matrixfile.dir"]], "_data.rds")
+
 
             # parameter check
             private$paramValidation()
@@ -49,7 +66,10 @@ CutSiteCountR <- R6::R6Class(
                 motif_length <- private$paramlist[["motif_info"]][i,3]
                 matrixsave.dir <- file.path(private$paramlist[["matrixfile.dir"]], motif_name)
                 dir.create(matrixsave.dir)
-                footprint.path <- file.path(.obtainConfigure("tmpdir"), paste(motif_name, ".pdf", sep = ""))
+                footprint.path <- file.path(
+                    .obtainConfigure("tmpdir"),
+                    paste(private$paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
+                    )
                 # start!
                 private$writeLog(sprintf("Start Processing %s", motif_name))
                 private$writeLog(sprintf("Matrix Destination:%s", matrixsave.dir))
@@ -164,6 +184,7 @@ CutSiteCountR <- R6::R6Class(
 #' @param strandLength How many bp(base pair) do you want to count
 #' up/downstream of the motif. default:100.
 #' @param FootPrint TRUE or FALSE, plot footprint or not.
+#' @param prefix prefix for the pdf file.
 #' @details The parameter is simplified because of too many input file.
 #' parameter \code{atacProcCutSite} and \code{atacProcMotifScan} contains all
 #' input information so function \code{\link{atacCutSitePre}} and
@@ -209,9 +230,9 @@ CutSiteCountR <- R6::R6Class(
 #' @export
 atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                              motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                             strandLength = 100, FootPrint = TRUE){
+                             strandLength = 100, FootPrint = TRUE, prefix = "Motif"){
     tmp <- CutSiteCountR$new(atacProcCutSite, atacProcMotifScan, csInput,
-                             motif_info, chr, matrixOutput, strandLength, FootPrint)
+                             motif_info, chr, matrixOutput, strandLength, FootPrint, prefix)
     tmp$process()
     invisible(tmp)
 }
@@ -219,9 +240,10 @@ atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, c
 #' @rdname atacCutSiteCount
 #' @export
 cutsitecount <- function(csInput, motif_info, chr = c(1:22, "X", "Y"),
-                         matrixOutput = NULL, strandLength = 100, FootPrint = TRUE){
+                         matrixOutput = NULL, strandLength = 100,
+                         FootPrint = TRUE, prefix = "Motif"){
     tmp <- CutSiteCountR$new(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput,
-                             motif_info, chr, matrixOutput, strandLength, FootPrint)
+                             motif_info, chr, matrixOutput, strandLength, FootPrint, prefix)
     tmp$process()
     invisible(tmp)
 }

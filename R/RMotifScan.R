@@ -5,7 +5,8 @@ RMotifScan <- R6::R6Class(
     public = list(
         initialize = function(atacProc, peak = NULL, genome = NULL,
                               motifPWM = NULL, min.score = NULL,
-                              scanO.dir = NULL, n.cores = NULL, editable = FALSE){
+                              scanO.dir = NULL, n.cores = NULL,
+                              prefix = NULL, editable = FALSE){
             super$initialize("RMotifScan", editable, list(arg1 = atacProc))
 
             # necessary parameters
@@ -23,6 +24,7 @@ RMotifScan <- R6::R6Class(
             private$paramlist[["motifPWM"]] <- motifPWM
             private$paramlist[["motifPWM.len"]] <- lapply(X = private$paramlist[["motifPWM"]], FUN = ncol)
             private$paramlist[["min.score"]] <- min.score
+            private$paramlist[["prefix"]] <- prefix
 
             # unnecessary parameters
             if(is.null(scanO.dir)){
@@ -30,7 +32,12 @@ RMotifScan <- R6::R6Class(
             }else{
                 private$paramlist[["scanO.dir"]] <- scanO.dir
             }
-            private$paramlist[["rdsOutput"]] <- file.path(private$paramlist[["scanO.dir"]], "/RMotifScan.rds")
+            private$paramlist[["rdsOutput"]] <- paste(
+                private$paramlist[["scanO.dir"]],
+                "/", prefix, "_",
+                "RMotifScan.rds",
+                sep = ""
+                )
 
             if(is.null(n.cores)){
                 private$paramlist[["n.cores"]] <- .obtainConfigure("threads")
@@ -69,7 +76,9 @@ RMotifScan <- R6::R6Class(
                 output_data <- sort(x = output_data, ignore.strand = TRUE)
                 output_data <- as.data.frame(output_data)
                 output_data <- within(output_data, rm(width))
-                output_path <- file.path(private$paramlist[["scanO.dir"]], motif_name)
+                output_path <- paste(private$paramlist[["scanO.dir"]],
+                                     "/", private$paramlist[["prefix"]], "_",
+                                     motif_name, sep = "")
                 motif_len <- private$paramlist[["motifPWM.len"]][[motif_name]]
                 save_info[i, 1] <- motif_name
                 save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
@@ -126,6 +135,7 @@ RMotifScan <- R6::R6Class(
 #' the file name to save the motif position information in separate files.
 #' @param n.cores How many core to run this function.
 #' Default: from \code{\link{setConfigure}}.
+#' @param prefix prefix for Output file.
 #' @details This function scan motif position in a given genome regions.
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
@@ -154,9 +164,9 @@ RMotifScan <- R6::R6Class(
 #' @export
 atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = NULL){
+                          n.cores = NULL, prefix = "Motif"){
     tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
-                          scanO.dir, n.cores)
+                          scanO.dir, n.cores, prefix)
     tmp$process()
     invisible(tmp)
 }
@@ -165,9 +175,9 @@ atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
 #' @export
 motifscan <- function(peak, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                      n.cores = NULL){
+                      n.cores = NULL, prefix = "Motif"){
     tmp <- RMotifScan$new(atacProc = NULL, peak, genome, motifPWM, min.score,
-                          scanO.dir, n.cores)
+                          scanO.dir, n.cores, prefix)
     tmp$process()
     invisible(tmp)
 }
