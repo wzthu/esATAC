@@ -242,10 +242,17 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
 
 ## Peak Annotation
 
+* For case
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
-#library(ChIPseeker)
-#peakanno <- atacProcs$Peakanno$getReportVal("annoOutput.rds")
-#plotAnnoPie(x = peakanno)
+library(ChIPseeker)
+peakanno <- caselist$atacProcs$Peakanno$getReportVal("annoOutput.rds")
+plotAnnoPie(x = peakanno)
+```
+
+* For control
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+peakanno <- ctrllist$atacProcs$Peakanno$getReportVal("annoOutput.rds")
+plotAnnoPie(x = peakanno)
 ```
 
 # Go analysis
