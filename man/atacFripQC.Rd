@@ -11,28 +11,28 @@ atacFripQC(atacProcReads, atacProcPeak, bsgenome = NULL,
 fripQC(readsBedInput, peakBedInput, bsgenome = NULL, reportOutput = NULL)
 }
 \arguments{
-\item{atacProcReads}{\code{\link{ATACProc}} object scalar. 
+\item{atacProcReads}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}} 
-\code{\link{samToBed}} 
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}}
 
-\item{atacProcPeak}{\code{\link{ATACProc}} object scalar. 
+\item{atacProcPeak}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacPeakCalling}}, 
+\code{\link{atacPeakCalling}},
 \code{\link{peakCalling}}.}
 
 \item{bsgenome}{\code{BSGenome} object scalar.
 BSGenome object for specific species.}
 
-\item{reportOutput}{\code{Character} scalar. 
+\item{reportOutput}{\code{Character} scalar.
 The report file path}
 
-\item{readsBedInput}{\code{Character} scalar. 
+\item{readsBedInput}{\code{Character} scalar.
 Reads BED file for peak calling.}
 
-\item{peakBedInput}{\code{Character} scalar. 
+\item{peakBedInput}{\code{Character} scalar.
 Peaks BED file}
 }
 \value{
@@ -43,13 +43,13 @@ Calculate the fraction of reads falling within peak regions
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{fregLenDistr} instead.
 }
 \examples{
@@ -59,18 +59,18 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
-bedfile <- file.path(td,"chr18.50000.bed")
+bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
-readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) 
+readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 peaksProc<- readsProc \%>\% atacPeakCalling
 library(BSgenome.Hsapiens.UCSC.hg19)
 atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
 
-dir(td) 
+dir(td)
 }
 \seealso{
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
 \author{

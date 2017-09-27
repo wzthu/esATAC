@@ -12,42 +12,42 @@ peakQC(bedInput, bsgenome = NULL, reportOutput = NULL,
   qcbedInput = c("DHS", "blacklist", "path/to/bed"))
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
+\code{\link{atacSamToBed}},
 \code{\link{atacBedUtils}}.}
 
 \item{bsgenome}{\code{BSGenome} object scalar.
 BSGenome object for specific species.}
 
-\item{reportOutput}{\code{Character} scalar. 
+\item{reportOutput}{\code{Character} scalar.
 The report file path.}
 
-\item{qcbedInput}{\code{Character} scalar. 
-It can be "DHS","blacklist" or 
+\item{qcbedInput}{\code{Character} scalar.
+It can be "DHS","blacklist" or
 Other quality control BED file input path.}
 
-\item{bedInput}{\code{Character} scalar. 
+\item{bedInput}{\code{Character} scalar.
 BED file input path for quality control.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-These functions are used to generate fregment distribution plot.  
+These functions are used to generate fregment distribution plot.
 The fourier transform of fregment distribution will be calculated.
-Strength distribution around period at 10.4bp and 180bp 
+Strength distribution around period at 10.4bp and 180bp
 will be shown in another two plots.
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{peakQC} instead.
 }
 \examples{
@@ -57,16 +57,16 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
-bedfile <- file.path(td,"chr18.50000.bed")
+bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 blacklistfile <- system.file(package="ATACFlow", "extdata", "hg19.blacklist.bed")
 library(BSgenome.Hsapiens.UCSC.hg19)
 bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) \%>\%
-atacPeakCalling \%>\% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19) 
-dir(td) 
+atacPeakCalling \%>\% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19)
+dir(td)
 }
 \seealso{
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
 \author{

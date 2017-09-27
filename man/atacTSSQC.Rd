@@ -13,24 +13,24 @@ tssQC(bedInput, txdbKnownGene = NULL, bsgenome = NULL,
   reportPrefix = NULL, fregLenRange = c(0, 2000), tssUpdownstream = 1000)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}, 
+\code{\link{atacSamToBed}},
 \code{\link{atacBedUtils}}.}
 
-\item{txdbKnownGene}{\code{TxDb} object scalar. 
+\item{txdbKnownGene}{\code{TxDb} object scalar.
 TxDb object for specific species.}
 
 \item{bsgenome}{\code{BSGenome} object scalar.
 BSGenome object for specific species.}
 
-\item{reportPrefix}{\code{Character} scalar. 
+\item{reportPrefix}{\code{Character} scalar.
 The prefix of report files path.}
 
-\item{bedInput}{\code{Character} scalar. 
+\item{bedInput}{\code{Character} scalar.
 BED file input path.}
 
-\item{fregLenRange}{\code{Interger} vector of 2 element. 
+\item{fregLenRange}{\code{Interger} vector of 2 element.
 The fregment length ranges.}
 
 \item{tssUpdownstream}{\code{Interger} scalar.
@@ -44,13 +44,13 @@ These functions are used to generate the reads coverage plot around TSS.
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{tssQC} instead.
 }
 \examples{
@@ -59,18 +59,18 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
-bedfile <- file.path(td,"chr18.50000.bed")
+bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(BSgenome.Hsapiens.UCSC.hg19)
 tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
 
-dir(td) 
+dir(td)
 
 }
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{samToBed}} 
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }

@@ -10,37 +10,37 @@ atacFregLenDistr(atacProc, reportPrefix = NULL, bedInput = NULL)
 fregLenDistr(bedInput, reportPrefix = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSamToBed}} 
-\code{\link{samToBed}} 
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}}
 
-\item{reportPrefix}{\code{Character} scalar. 
+\item{reportPrefix}{\code{Character} scalar.
 The prefix of report files path.}
 
-\item{bedInput}{\code{Character} scalar. 
+\item{bedInput}{\code{Character} scalar.
 BED file input path.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-These functions are used to generate fregment distribution plot.  
+These functions are used to generate fregment distribution plot.
 The fourier transform of fregment distribution will be calculated.
-Strength distribution around period at 10.4bp and 180bp 
+Strength distribution around period at 10.4bp and 180bp
 will be shown in another two plots.
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{fregLenDistr} instead.
 }
 \examples{
@@ -49,16 +49,16 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
-bedfile <- file.path(td,"chr18.50000.bed")
+bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 fregLenDistr(bedfile)
 
-dir(td) 
+dir(td)
 
 }
 \seealso{
-\code{\link{atacSamToBed}} 
-\code{\link{samToBed}} 
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
