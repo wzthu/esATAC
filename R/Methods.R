@@ -134,8 +134,8 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
-        Peakanno <- atacPeakAnno(atacProc = peakCalling, annoDb = "org.Hs.eg.db")
-        goAna <- atacGOAnalysis(atacProc = Peakanno, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
+        Peakanno <- atacPeakAnno(atacProc = peakCalling)
+        goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%", prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
