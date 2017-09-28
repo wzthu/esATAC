@@ -233,7 +233,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                                             "",
                                             "",
                                             "",
-                                            ">0.3"
+                                            ""
                               )
                               #`Annotation`=c()
     )
