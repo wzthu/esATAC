@@ -376,8 +376,8 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
 
     pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
     # for case
-    Peakanno.case <- peakanno(peakInput = diff.case, annoDb = "org.Hs.eg.db")
-    goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
+    Peakanno.case <- peakanno(peakInput = diff.case)
+    goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
     output_motifscan.case <- motifscan(peak = diff.case, motifPWM = pwm, min.score = "90%", prefix = "CASE_diff")
     cs_output.case <- extractcutsite(bedInput = bed.case, prefix = "CASE_diff")
     footprint.case <- atacCutSiteCount(atacProcCutSite = cs_output.case,
@@ -385,8 +385,8 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
                                        strandLength = 100, prefix = "CASE_diff")
 
     # for ctrl
-    Peakanno.ctrl <- peakanno(peakInput = diff.ctrl, annoDb = "org.Hs.eg.db")
-    goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, OrgDb = "org.Hs.eg.db", ont = "BP", pvalueCutoff = 0.01)
+    Peakanno.ctrl <- peakanno(peakInput = diff.ctrl)
+    goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
     output_motifscan.ctrl <- motifscan(peak = diff.ctrl, motifPWM = pwm, min.score = "90%", prefix = "CTRL_diff")
     cs_output.ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL_diff")
     footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_output.ctrl,
