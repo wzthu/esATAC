@@ -1,7 +1,10 @@
 #include <iostream>
 #include <string>
+#include <Rcpp.h>
 #include <fstream>
+
 using namespace std;
+
 class ChrInfoDivi
 {
 private:
@@ -10,5 +13,5 @@ private:
 	string Outputname;  // output file name prefix
 public:
 	ChrInfoDivi(string readsIfile, string readsOpath, string Outputname);
-	int DoDivi();
+    Rcpp::StringVector DoDivi();
 };

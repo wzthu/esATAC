@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <vector>
 #include <stdlib.h>
+#include <Rcpp.h>
 #include "CutCountPre.h"
 #include "RcoutRcerr.h"
 using namespace std;
@@ -17,7 +18,7 @@ CutCountPre::CutCountPre(string readsIfile, string readsOpath)
 }
 
 
-int CutCountPre::EXCutCount()
+Rcpp::StringVector CutCountPre::EXCutCount()
 {
   // input bed file
   string ipath = this -> readsIfile;
@@ -27,18 +28,18 @@ int CutCountPre::EXCutCount()
   ifstream readsifile(ipath.c_str(), ios::in);
 
   // vector to save cut site
-  vector<int> cutsite;
+  std::vector<int> cutsite;
+  Rcpp::StringVector file_name;
 
   // parameters used in this program
   char line[100000] = {0};
   const char *sep = "\t ";
-  int cut_number = 0;
 
   // initialization
   if(!readsifile.getline(line, sizeof(line)))
   {
     cout << "ERROR: the input file is empty!" <<endl;
-    return 0;
+    return file_name;
   }
   string chr(strtok(line, sep));
   int start = atoi(strtok(NULL, sep)) + 1;
@@ -46,16 +47,15 @@ int CutCountPre::EXCutCount()
   string chr_flag;
   chr_flag = chr;
   string outputfile = opath + "_" + chr + ".cs";
+  file_name.push_back(outputfile);
   cutsite.push_back(start);
   cutsite.push_back(end);
-  cut_number++;
 
   while(readsifile.getline(line, sizeof(line)))
   {
     chr = strtok(line, sep);
     start = atoi(strtok(NULL, sep)) + 1;
     end = atoi(strtok(NULL, sep));
-    cut_number++;
     if(chr == chr_flag)
     {
       cutsite.push_back(start);
@@ -75,6 +75,7 @@ int CutCountPre::EXCutCount()
       //*********************************************************************
       chr_flag = chr;
       outputfile = opath + "_" + chr_flag + ".cs";
+      file_name.push_back(outputfile);
       cutsite.push_back(start);
       cutsite.push_back(end);
     }
@@ -90,9 +91,7 @@ int CutCountPre::EXCutCount()
   }
   readsofile.close();
   //****************************************************************************************
-
   readsifile.close();
-  cut_number = 2*cut_number;
 
-  return cut_number;
+  return file_name;
 }
