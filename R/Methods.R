@@ -190,7 +190,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                                                  #sam2Bed$getReportVal("non-mitochondrial-multimap")),
                                       #getf(libComplexQC$getReportVal("NRF")),
                                       getRshow(libComplexQC$getReportVal("total"),
-                                               sam2Bed$getReportVal("non-mitochondrial")),
+                                               libComplexQC$getReportVal("non-multimap")),
                                       getVMShow(libComplexQC$getReportVal("one")),
                                                  #sam2Bed$getReportVal("non-mitochondrial-multimap")),
                                       getVMShow(libComplexQC$getReportVal("two")),

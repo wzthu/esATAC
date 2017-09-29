@@ -230,7 +230,10 @@ though values >80% may be acceptable.
 is the number of distinct uniquely mapping reads (i.e. after removing duplicates). 
 
 * __Non-Redundant Fraction (NRF)__ 
-is the value of: Unique locations mapped uniquely  / Total mapped reads.
+is the value of: Unique locations mapped uniquely 
+(the number of positions in the genome that uniquely mappable reads map to) / 
+the total number of uniquely mappable reads.
+
 ENCODE recommend NRF>0.9 for ATAC-seq data.
 
 $NRF$ value range   |Complexity
