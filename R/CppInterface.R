@@ -1,6 +1,6 @@
 .renamer_call<-function(inputFile,outputFile,fileType="fq",interleave = FALSE){
-  argv<-list(inputFile=inputFile,outputFile=outputFile,fileType=fileType,interleave=interleave);
-  invisible(fastxrenamer(argv));
+    argv<-list(inputFile=inputFile,outputFile=outputFile,fileType=fileType,interleave=interleave);
+    invisible(fastxrenamer(argv));
 }
 
 .sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFregLen,maxFregLen,saveExtLen,downSample = 2e9)
@@ -38,22 +38,20 @@
 
 
 .chr_separate_call <- function(ReadsIfile, ReadsOpath, Name){
-  argv <- list(readsIfile = ReadsIfile, readsOpath = ReadsOpath, name = Name)
-  ChrDivi_wrapper(argv)
-  invisible(TRUE)
+    argv <- list(readsIfile = ReadsIfile, readsOpath = ReadsOpath, name = Name)
+    ChrDivi_wrapper(argv)
 }
 
 .CutSite_call <- function(InputFile, OutputFile){
-  argv <- list(readsIfile = InputFile, readsOpath = OutputFile)
-  print(argv)
-  invisible(CutCountPre_wrapper(argv))
+    argv <- list(readsIfile = InputFile, readsOpath = OutputFile)
+    CutCountPre_wrapper(argv)
 }
 
 
 .CutSiteCount <- function(readsfile, motiffile, matrixfile, motif_len, strand_len){
-  argv <- list(readsfile = readsfile, motiffile = motiffile, matrixfile = matrixfile,
-               motif_len = motif_len, strand_len = strand_len)
-  invisible(CutSiteCount_wrapper(argv))
+    argv <- list(readsfile = readsfile, motiffile = motiffile, matrixfile = matrixfile,
+                 motif_len = motif_len, strand_len = strand_len)
+    CutSiteCount_wrapper(argv)
 }
 
 

@@ -109,7 +109,7 @@ Rcpp::List R_sam2bed_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filterList)
                                        Rcpp::Named("extlen")=SB.getExtLenCOunter(),
                                        Rcpp::Named("unique")=SB.getUniqueCounter(),
                                        Rcpp::Named("multimap")=SB.getXsCounter());
-    
+
     return rs;
 
 
@@ -177,7 +177,7 @@ Rcpp::List R_sam2bed_merge_wrapper(Rcpp::List argvs,Rcpp::CharacterVector filter
                                        Rcpp::Named("extlen")=SB.getExtLenCOunter(),
                                        Rcpp::Named("unique")=SB.getUniqueCounter(),
                                        Rcpp::Named("multimap")=SB.getXsCounter());
-    
+
     return rs;
 
 }
@@ -246,14 +246,14 @@ Rcpp::List bedOprUtils(Rcpp::List argvs,Rcpp::CharacterVector filterList)
         }
         delete[] filters;
     }
-    
+
     Rcpp::List rs = Rcpp::List::create(Rcpp::Named("total")=bedUtils.getTotalCounter(),
                                        Rcpp::Named("save")=bedUtils.getSaveCounter(),
                                        Rcpp::Named("filted")=bedUtils.getFiltedCounter(),
                                        Rcpp::Named("extlen")=bedUtils.getExtLenCOunter(),
                                        Rcpp::Named("unique")=bedUtils.getUniqueCounter());
-                                     
-    
+
+
     return rs;
 }
 
@@ -299,7 +299,7 @@ Rcpp::List lib_complex_qc(Rcpp::List argvs)
 
 
 // [[Rcpp::export]]
-int ChrDivi_wrapper(Rcpp::List argvs)
+Rcpp::StringVector ChrDivi_wrapper(Rcpp::List argvs)
 {
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
@@ -307,18 +307,18 @@ int ChrDivi_wrapper(Rcpp::List argvs)
 
   // CHR_DIVIDE is the class name
   ChrInfoDivi CHR_DIVIDE(RIfile, ROfile, Oname);
-  return(CHR_DIVIDE.DoDivi());
+  return CHR_DIVIDE.DoDivi();
 }
 
 // [[Rcpp::export]]
-int CutCountPre_wrapper(Rcpp::List argvs)
+Rcpp::StringVector CutCountPre_wrapper(Rcpp::List argvs)
 {
   std::string RIfile = Rcpp::as<std::string>(argvs["readsIfile"]);
   std::string ROfile = Rcpp::as<std::string>(argvs["readsOpath"]);
 
   // CutCount is the class name
   CutCountPre CutCount(RIfile, ROfile);
-  return(CutCount.EXCutCount());
+  return CutCount.EXCutCount();
 }
 
 
@@ -333,6 +333,6 @@ int CutSiteCount_wrapper(Rcpp::List argvs)
 
   // CutSite is the class name
   CutSiteCount CutSite(readsfile, motiffile, matrixfile, motif_len, strand_len);
-  return(CutSite.DoCutSiteCount());
+  return CutSite.DoCutSiteCount();
 }
 

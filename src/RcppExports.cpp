@@ -75,7 +75,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // ChrDivi_wrapper
-int ChrDivi_wrapper(Rcpp::List argvs);
+Rcpp::StringVector ChrDivi_wrapper(Rcpp::List argvs);
 RcppExport SEXP _ATACFlow_ChrDivi_wrapper(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -86,7 +86,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // CutCountPre_wrapper
-int CutCountPre_wrapper(Rcpp::List argvs);
+Rcpp::StringVector CutCountPre_wrapper(Rcpp::List argvs);
 RcppExport SEXP _ATACFlow_CutCountPre_wrapper(SEXP argvsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

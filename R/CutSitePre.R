@@ -28,6 +28,8 @@ CutSitePre <- R6::R6Class(
             }else{
                 private$paramlist[["csfile.dir"]] <- paste0(csOutput_dir, "/", prefix, collapse = "")
             }
+            # may use inthe future
+            # private$paramlist[["csfile.rds"]] <- paste0(private$paramlist[["csfile.dir"]], ".rds", collapse = "")
             # parameter check
             private$paramValidation()
         } # initialization end
@@ -40,8 +42,9 @@ CutSitePre <- R6::R6Class(
             private$writeLog(paste0("processing file:"))
             private$writeLog(sprintf("source:%s", private$paramlist[["bedInput"]]))
             private$writeLog(sprintf("destination:%s", private$paramlist[["csfile.dir"]]))
-            Cut_Site_Number <- .CutSite_call(InputFile = private$paramlist[["bedInput"]], OutputFile = private$paramlist[["csfile.dir"]])
-            print(sprintf("Total Cut Site Number is: %d", Cut_Site_Number))
+            file_path_data <- .CutSite_call(InputFile = private$paramlist[["bedInput"]], OutputFile = private$paramlist[["csfile.dir"]])
+            # may use in the future
+            # saveRDS(object = file_path_data, file = private$paramlist[["csfile.rds"]])
         }, # processing end
 
         checkRequireParam = function(){
