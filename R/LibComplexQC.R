@@ -54,8 +54,10 @@ LibComplexQC <-R6Class(
             qcval[["samTotal"]] <- qcval0[["total"]]
             qcval[["chrM"]] <- qcval0[["filted"]]
             qcval[["multimap"]] <- qcval0[["multimap"]]
-            qcval[["NRF"]] <- as.numeric(qcval0[["total"]])/as.numeric(qcval0[["non-mitochondrial-multimap"]])
-            qcval[["non-multimap"]] <-qcval0[["non-mitochondrial-multimap"]]
+            qcval[["non-multimap"]] <-as.character(as.numeric(qcval0[["total"]])-as.numeric(qcval0[["multimap"]]))
+            qcval[["NRF"]] <- as.numeric(qcval[["total"]])/
+                (as.numeric(qcval[["non-multimap"]]))
+            
             print("test2")
             unlink(paste0(private$paramlist[["reportOutput"]],".tmp"))
             print(qcval)
@@ -97,6 +99,7 @@ LibComplexQC <-R6Class(
                         sprintf("%.2f",qcval[["PBC2"]])
                     ),
                     Reference = c("",
+                                  "",
                                   "",
                                   ">0.7",
                                   "",

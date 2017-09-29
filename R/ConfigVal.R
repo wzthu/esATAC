@@ -160,14 +160,16 @@
         curOrgDb = NULL,
         GetOrgDb = function(genome){
             if(genome == "hg19"||genome == "hg38"){
-                private$curOrgDb <- org.Hs.eg.db
-                return("org.Hs.eg.db")
+                private$curOrgDb <- "org.Hs.eg.db"
+                library("org.Hs.eg.db")
             }else if(genome == "mm10" || genome == "mm9"){
-                private$curOrgDb <- org.Mm.eg.db
-                return("org.Mm.eg.db")
+                private$curOrgDb <- "org.Mm.eg.db"
+                library("org.Mm.eg.db")
             }else {
                 stop(paste0("OrgDb Annotation package does not support for ",genome))
             }
+           
+            return(private$curOrgDb)
         }
 
     )
