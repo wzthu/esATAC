@@ -54,7 +54,8 @@ LibComplexQC <-R6Class(
             qcval[["samTotal"]] <- qcval0[["total"]]
             qcval[["chrM"]] <- qcval0[["filted"]]
             qcval[["multimap"]] <- qcval0[["multimap"]]
-            qcval[["NRF"]] <- as.numeric(qcval[["total"]])/as.numeric(qcval0[["total"]])
+            qcval[["NRF"]] <- as.numeric(qcval0[["total"]])/as.numeric(qcval0[["non-mitochondrial-multimap"]])
+            qcval[["non-multimap"]] <-qcval0[["non-mitochondrial-multimap"]]
             print("test2")
             unlink(paste0(private$paramlist[["reportOutput"]],".tmp"))
             print(qcval)
@@ -79,6 +80,7 @@ LibComplexQC <-R6Class(
                     Item = c(                                     
                         "Total mapped reads (ratio of original reads)",
                         "Unique locations mapped uniquely by reads",
+                        "Uniquely mappable reads",
                         "Non-Redundant Fraction (NRF)",
                         "Locations with only 1 reads mapping uniquely",
                         "Locations with only 2 reads mapping uniquely",
@@ -87,6 +89,7 @@ LibComplexQC <-R6Class(
                     Value = c(
                         getVMShow(qcval[["samTotal"]],TRUE),
                         getVMShow(qcval[["total"]],TRUE),
+                        getVMShow(qcval[["non-multimap"]],TRUE),
                         sprintf("%.2f",qcval[["NRF"]]),
                         getVMShow(qcval[["one"]],TRUE),
                         getVMShow(qcval[["two"]],TRUE),
@@ -109,7 +112,7 @@ LibComplexQC <-R6Class(
             }
         },
         getReportItemsImp = function(){
-            return(c("report","NRF","PBC1","PBC2","one","two","total","reads"))
+            return(c("report","NRF","PBC1","PBC2","one","two","total","reads","non-multimap"))
         }
     )
 
