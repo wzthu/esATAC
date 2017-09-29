@@ -1,0 +1,106 @@
+---
+title: "ATACFlow-Introduction"
+author: "Zheng Wei and Wei Zhang"
+date: "`r Sys.Date()`"
+output: html_document
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{An Introduction to ATACFlow}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+The ATACFlow package provides a pipeline for quantifying and 
+annotating ATAC-seq and DNase-seq Reads in R,
+which integrate the functionality of several R packages 
+(such as ) and external softwares 
+(e.g. [AdapterRemoval](https://github.com/MikkelSchubert/adapterremoval)[1], [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)[2], 
+through the Rowtie2 package and 
+[Fseq](http://fureylab.web.unc.edu/software/fseq)[3]). 
+Users can call the preset pipeline functions or 
+recombine the workflow with elements process of ATACFlow
+for sequence data (FASTQ, SAM, BAM, BED file) complete/partial processing 
+and analysing easily and flexiblely in a single R script.
+That will be easy to migrate, share and reproduce all 
+details such as parameters settings, intermediate result and so on.
+Besides, a quality control report file in HTML, 
+which is able to be viewed in web browser,
+will be created in preset pipelines.
+
+
+ATACFlow supports analysis of single end reads and
+paired-end reads of ATAC-seq and DNase-seq sequencing data.
+We have successfully apply the pipeline on 
+raw datasets (FASTQ files) from 
+GEO (SRR891268, SRR891269, SRR891270, SRR891271). 
+The related sequencing platform are Illumina GA II.
+All valid standard format intermediate result files
+(FASTQ, SAM, BAM, BED file) generated
+by other program (such as BAM BED files from ENCODE) 
+are also tested by the combination subpipeline are also tested by ATACFlow.
+
+
+This package is developed and maintained by members of 
+[Xiaowo Wang Lab](http://bioinfo.au.tsinghua.edu.cn/member/xwwang)
+
+MOE Key Laboratory of Bioinformatics and Bioinformatics Division, 
+
+TNLIST / Department of Automation, Tsinghua University
+
+contact:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
+
+## Preparation
+
+### Installation
+
+To install the latest version of ATACFlow, you will need to be using the
+latest version of R. ATACFlow is part of Bioconductor project, 
+so you can install ATACFlow and its dependencies like this:
+
+```{r install, eval=FALSE}
+source("http://www.bioconductor.org/biocLite.R")
+biocLite("ATACFlow")
+```
+
+### Loading
+
+Just like other R package, 
+you need to load ATACFlow like this each time before using the package.
+```{r loading}
+library(ATACFlow)
+```
+
+### Loading recommend package
+
+```{r loadingpkg}
+library(magrittr)
+```
+
+
+## ATACFlow Configuration
+
+
+
+
+
+## Preset Pipeline
+
+### case study
+
+
+### case control study
+
+
+
+## User-defined pipeline 
+
+### Preprocess
+
+## Description of Indivial ATACFlow Functions
+
+
+
