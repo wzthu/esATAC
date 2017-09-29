@@ -26,7 +26,11 @@ RPeakAnno <- R6::R6Class(
 
       private$paramlist[["level"]] <- level
       private$paramlist[["genomicAnnotationPriority"]] <- genomicAnnotationPriority
-      private$paramlist[["annoDb"]] <- annoDb
+      if(is.null(annoDb)){
+          private$paramlist[["annoDb"]] <- .obtainConfigure("annoDb")
+      }else{
+          private$paramlist[["annoDb"]] <- annoDb
+      }
       private$paramlist[["addFlankGeneInfo"]] <- addFlankGeneInfo
       private$paramlist[["flankDistance"]] <- flankDistance
       private$paramlist[["sameStrand"]] <- sameStrand

@@ -1,13 +1,13 @@
 .ConfigClass<-R6Class(classname = ".ConfigClass",
     public = list(
         initialize = function(){
-            private$validAttr=list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",bt2Idx="character",DHS="character",blacklist="character")
+            private$validAttr=list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character")
             private$validWriteAttr=list(threads="numeric",tmpdir="character",refdir="character",genome="character")
         },
         getAllConfigure = function(){
             print(private$configList)
         },
-        getConfigure = function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
+        getConfigure = function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
             private$isValidAttr(item);
             if(item=="tmpdir"||item=="refdir"){
                 return(normalizePath(private$configList[[item]]))
@@ -20,7 +20,7 @@
         }
     ),
     private = list(
-        configList=list(threads=detectCores(),tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL),
+        configList=list(threads=detectCores(),tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,annoDb=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL),
         validAttr=NULL,
         validWriteAttr=NULL,
         isValidAttr=function(item){
@@ -51,6 +51,8 @@
                     stop("'refdir' should be configured before 'genome'")
                 }
                 fileprefix<-file.path(private$configList[["refdir"]],val)
+                ##annoDb:orgdb
+                private$configList[["annoDb"]]<-private$GetOrgDb(val)
                 #genome fasta
                 fastaFilePath<-paste0(fileprefix,".fa")
                 fastaFilePathlock<-paste0(fileprefix,".fa.lock")
@@ -155,9 +157,16 @@
             }
             return(outFile)
         },
+        curOrgDb = NULL,
         GetOrgDb = function(genome){
-            if(genome == hg19||genome == hg38){
+            if(genome == "hg19"||genome == "hg38"){
+                private$curOrgDb <- org.Hs.eg.db
                 return("org.Hs.eg.db")
+            }else if(genome == "mm10" || genome == "mm9"){
+                private$curOrgDb <- org.Mm.eg.db
+                return("org.Mm.eg.db")
+            }else {
+                stop(paste0("OrgDb Annotation package does not support for ",genome))
             }
         }
 
@@ -260,7 +269,7 @@ getAllConfigure<-function(){
 }
 #' @rdname configureValue
 #' @export 
-getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
+getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
     return(.configObj$getConfigure(item));
 }
 
@@ -281,7 +290,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     setConfigure("genome",genome)
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","bt2Idx","DHS","blacklist")){
+.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
     val<-.configObj$getConfigure(item);
     if(is.null(val)){
         stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))

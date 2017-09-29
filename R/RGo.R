@@ -18,7 +18,12 @@ RGo <- R6::R6Class(
       }else{
         private$paramlist[["gene"]] <- gene
       }
-      private$paramlist[["OrgDb"]] <- OrgDb
+      if(is.null(private$paramlist[["OrgDb"]])){
+          private$paramlist[["OrgDb"]] <- .obtainConfigure("annoDb")
+      }else{
+          private$paramlist[["OrgDb"]] <- OrgDb
+      }
+      
 
       # unnecessary parameters
       if(is.null(goOutput)){
