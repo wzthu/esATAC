@@ -102,9 +102,6 @@ CutSiteCountR <- R6::R6Class(
                         print(echo_str)
                         next
                     }
-
-                    echo_str <- paste("in chr", chr[[i]], ", skip! ", sep = "")
-                    print(echo_str)
                     MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
                     .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
                                   motif_len = motif_length, strand_len = private$paramlist[["strandLength"]])
