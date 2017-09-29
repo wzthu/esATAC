@@ -80,7 +80,7 @@ LibComplexQC <-R6Class(
                     Item = c(                                     
                         "Total mapped reads (ratio of original reads)",
                         "Unique locations mapped uniquely by reads",
-                        "Non-multimap reads",
+                        "Uniquely mappable reads",
                         "Non-Redundant Fraction (NRF)",
                         "Locations with only 1 reads mapping uniquely",
                         "Locations with only 2 reads mapping uniquely",
