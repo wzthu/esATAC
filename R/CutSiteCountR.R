@@ -69,7 +69,7 @@ CutSiteCountR <- R6::R6Class(
                 footprint.path <- file.path(
                     .obtainConfigure("tmpdir"),
                     paste(private$paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
-                    )
+                )
                 # start!
                 private$writeLog(sprintf("Start Processing %s", motif_name))
                 private$writeLog(sprintf("Matrix Destination:%s", matrixsave.dir))
@@ -77,10 +77,11 @@ CutSiteCountR <- R6::R6Class(
                 tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
                 # using tmp dir to save temp data
                 dir.create(tmp_dir, FALSE, TRUE, "0700")
-                .chr_separate_call(ReadsIfile = motif_file,
-                                   ReadsOpath = tmp_dir,
-                                   Name = "/Motif")
+                motif_file_index <- .chr_separate_call(ReadsIfile = motif_file,
+                                                       ReadsOpath = tmp_dir,
+                                                       Name = "/Motif")
                 motif_tmp <- paste(tmp_dir, "/Motif", sep = "")
+                motif_file_index <- normalizePath(motif_file_index)
 
                 chr <- private$paramlist[["chr"]]
                 chr_len <- length(chr)
@@ -88,7 +89,22 @@ CutSiteCountR <- R6::R6Class(
                     echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
                     print(echo_str)
                     CutSiteInput <- paste0(private$paramlist[["csfile.dir"]], "_chr", chr[[i]], ".cs", collapse = "")
-                    MotifInput <- paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
+                    MotifInput <- normalizePath(
+                        paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
+                    )
+                    if(!file.exists(CutSiteInput)){
+                        echo_str <- paste("There is no cut site in chr", chr[[i]], ", skip!", sep = "")
+                        print(echo_str)
+                        next
+                    }
+                    if(!(MotifInput %in% motif_file_index)){
+                        echo_str <- paste("There is no motif occurance in chr", chr[[i]], ", skip!", sep = "")
+                        print(echo_str)
+                        next
+                    }
+
+                    echo_str <- paste("in chr", chr[[i]], ", skip! ", sep = "")
+                    print(echo_str)
                     MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
                     .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
                                   motif_len = motif_length, strand_len = private$paramlist[["strandLength"]])

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <vector>
 #include <stdlib.h>
+#include <Rcpp.h>
 #include "ChrDivi.h"
 #include "RcoutRcerr.h"
 using namespace std;
@@ -16,7 +17,7 @@ ChrInfoDivi::ChrInfoDivi(string readsIfile, string readsOpath, string Outputname
   this -> Outputname = Outputname;
 }
 
-int ChrInfoDivi::DoDivi()
+Rcpp::StringVector ChrInfoDivi::DoDivi()
 {
   // input bed file
   string ipath = this -> readsIfile;
@@ -27,6 +28,7 @@ int ChrInfoDivi::DoDivi()
 
   // vector to save string
   vector<string> content;
+  Rcpp::StringVector file_name;
 
   // parameters used in this program
   char line[100000] = {0};
@@ -36,13 +38,14 @@ int ChrInfoDivi::DoDivi()
   if(!readsifile.getline(line, sizeof(line)))
   {
     cout<<"ERROR: the input file is empty!"<<endl;
-    return 0;
+    return file_name;
   }
   string tmp_line = line;
   string chr(strtok(line, sep));
   string chr_flag;
   chr_flag = chr;
   string outputfile = opath + name + "_" + chr + ".bed";
+  file_name.push_back(outputfile);
   content.push_back(tmp_line);
 
   while(readsifile.getline(line, sizeof(line)))
@@ -67,6 +70,7 @@ int ChrInfoDivi::DoDivi()
       //*********************************************************************
       chr_flag = chr;
       outputfile = opath + name + "_" + chr + ".bed";
+      file_name.push_back(outputfile);
       content.push_back(tmp_line);
     }
   }
@@ -82,5 +86,5 @@ int ChrInfoDivi::DoDivi()
   //****************************************************************************************
 
   readsifile.close();
-  return 0;
+  return file_name;
 }
