@@ -21,7 +21,11 @@ CutSiteCountR <- R6::R6Class(
             private$paramlist[["chr"]] <- as.list(chr)
             private$paramlist[["strandLength"]] <- strandLength
             private$paramlist[["FootPrint"]] <- FootPrint
-            private$paramlist[["prefix"]] <- prefix
+            if(is.null(prefix)){
+                private$paramlist[["prefix"]] <- "cutsite"
+            }else{
+                private$paramlist[["prefix"]] <- prefix
+            }
 
             if(is.null(matrixOutput)){
                 private$paramlist[["matrixfile.dir"]] <- paste(
@@ -85,6 +89,7 @@ CutSiteCountR <- R6::R6Class(
 
                 chr <- private$paramlist[["chr"]]
                 chr_len <- length(chr)
+                data <- data.frame()  # save all matrix
                 for(i in seq(1:chr_len)){
                     echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
                     print(echo_str)
@@ -103,22 +108,23 @@ CutSiteCountR <- R6::R6Class(
                         next
                     }
                     MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
+                    # only two file exist, the program will run
                     .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
                                   motif_len = motif_length, strand_len = private$paramlist[["strandLength"]])
-                    if(i == 1){
-                        data <- try(read.table(MatrixOutput), silent = TRUE)
-                        if(inherits(data, "try-error")){
-                            data <- data.frame()
-                        }
-                    }else{
-                        temp <- try(read.table(MatrixOutput), silent = TRUE)
-                        if(inherits(temp, "try-error")){
-                            temp <- data.frame()
-                        }
-                        data <- rbind(data, temp)
+                    temp <- try(read.table(MatrixOutput), silent = TRUE)
+                    if(inherits(temp, "try-error")){
+                        temp <- data.frame()
                     }
+                    data <- rbind(data, temp)
+
+                    echo_str <- paste("Now, finishing chr", chr[[i]], "......", sep = "")
+                    print(echo_str)
+                    print(data)
                 }
                 if(private$paramlist[["FootPrint"]]){
+                    if(nrow(data) == 0){
+                        stop("Can not find any cut site in motif position.")
+                    }
                     fp <- apply(data, 2, sum)
                     footprint_data[[motif_name]] <- fp
                     pdf(file = footprint.path)
@@ -243,7 +249,7 @@ CutSiteCountR <- R6::R6Class(
 #' @export
 atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                              motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                             strandLength = 100, FootPrint = TRUE, prefix = "Motif"){
+                             strandLength = 100, FootPrint = TRUE, prefix = NULL){
     tmp <- CutSiteCountR$new(atacProcCutSite, atacProcMotifScan, csInput,
                              motif_info, chr, matrixOutput, strandLength, FootPrint, prefix)
     tmp$process()
@@ -254,7 +260,7 @@ atacCutSiteCount <- function(atacProcCutSite = NULL, atacProcMotifScan = NULL, c
 #' @export
 cutsitecount <- function(csInput, motif_info, chr = c(1:22, "X", "Y"),
                          matrixOutput = NULL, strandLength = 100,
-                         FootPrint = TRUE, prefix = "Motif"){
+                         FootPrint = TRUE, prefix = NULL){
     tmp <- CutSiteCountR$new(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput,
                              motif_info, chr, matrixOutput, strandLength, FootPrint, prefix)
     tmp$process()
