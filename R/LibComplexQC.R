@@ -54,9 +54,9 @@ LibComplexQC <-R6Class(
             qcval[["samTotal"]] <- qcval0[["total"]]
             qcval[["chrM"]] <- qcval0[["filted"]]
             qcval[["multimap"]] <- qcval0[["multimap"]]
-            qcval[["non-multimap"]] <-as.character(as.numeric(qcval0[["total"]])-as.numeric(qcval0[["multimap"]]))
+            qcval[["nonMultimap"]] <-as.character(as.numeric(qcval0[["total"]])-as.numeric(qcval0[["multimap"]]))
             qcval[["NRF"]] <- as.numeric(qcval[["total"]])/
-                (as.numeric(qcval[["non-multimap"]]))
+                (as.numeric(qcval[["nonMultimap"]]))
             
             print("test2")
             unlink(paste0(private$paramlist[["reportOutput"]],".tmp"))
@@ -91,7 +91,7 @@ LibComplexQC <-R6Class(
                     Value = c(
                         getVMShow(qcval[["samTotal"]],TRUE),
                         getVMShow(qcval[["total"]],TRUE),
-                        getVMShow(qcval[["non-multimap"]],TRUE),
+                        getVMShow(qcval[["nonMultimap"]],TRUE),
                         sprintf("%.2f",qcval[["NRF"]]),
                         getVMShow(qcval[["one"]],TRUE),
                         getVMShow(qcval[["two"]],TRUE),
@@ -115,7 +115,7 @@ LibComplexQC <-R6Class(
             }
         },
         getReportItemsImp = function(){
-            return(c("report","NRF","PBC1","PBC2","one","two","total","reads","non-multimap"))
+            return(c("report","NRF","PBC1","PBC2","one","two","total","reads","nonMultimap"))
         }
     )
 
