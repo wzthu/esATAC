@@ -24,8 +24,11 @@ RMotifScan <- R6::R6Class(
             private$paramlist[["motifPWM"]] <- motifPWM
             private$paramlist[["motifPWM.len"]] <- lapply(X = private$paramlist[["motifPWM"]], FUN = ncol)
             private$paramlist[["min.score"]] <- min.score
-            private$paramlist[["prefix"]] <- prefix
-
+            if(is.null(prefix)){
+                private$paramlist[["prefix"]] <- "motifscan"
+            }else{
+                private$paramlist[["prefix"]] <- prefix
+            }
             # unnecessary parameters
             if(is.null(scanO.dir)){
                 private$paramlist[["scanO.dir"]] <- dirname(private$paramlist[["peak"]])
@@ -34,10 +37,10 @@ RMotifScan <- R6::R6Class(
             }
             private$paramlist[["rdsOutput"]] <- paste(
                 private$paramlist[["scanO.dir"]],
-                "/", prefix, "_",
+                "/", private$paramlist[["prefix"]], "_",
                 "RMotifScan.rds",
                 sep = ""
-                )
+            )
 
             if(is.null(n.cores)){
                 private$paramlist[["n.cores"]] <- .obtainConfigure("threads")
@@ -164,7 +167,7 @@ RMotifScan <- R6::R6Class(
 #' @export
 atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = NULL, prefix = "Motif"){
+                          n.cores = NULL, prefix = NULL){
     tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
                           scanO.dir, n.cores, prefix)
     tmp$process()
@@ -175,7 +178,7 @@ atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
 #' @export
 motifscan <- function(peak, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                      n.cores = NULL, prefix = "Motif"){
+                      n.cores = NULL, prefix = NULL){
     tmp <- RMotifScan$new(atacProc = NULL, peak, genome, motifPWM, min.score,
                           scanO.dir, n.cores, prefix)
     tmp$process()
