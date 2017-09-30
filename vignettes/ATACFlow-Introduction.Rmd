@@ -14,34 +14,36 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-The ATACFlow package provides a pipeline for quantifying and 
-annotating ATAC-seq and DNase-seq Reads in R,
+The ATACFlow package provides a dataflow graphs organized pipeline 
+for quantifying and annotating ATAC-seq and DNase-seq Reads in R,
 which integrate the functionality of several R packages 
-(such as ) and external softwares 
+(such as Rsamtools, ChIPpeakAnno and so on) and external softwares 
 (e.g. [AdapterRemoval](https://github.com/MikkelSchubert/adapterremoval)[1], [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)[2], 
 through the Rowtie2 package and 
 [Fseq](http://fureylab.web.unc.edu/software/fseq)[3]). 
 Users can call the preset pipeline functions or 
-recombine the workflow with elements process of ATACFlow
+rebuild the workflow with elements process of ATACFlow
 for sequence data (FASTQ, SAM, BAM, BED file) complete/partial processing 
-and analysing easily and flexiblely in a single R script.
-That will be easy to migrate, share and reproduce all 
+and analysing easily and flexibly in a single R script.
+That will be convenient to migrate, share and reproduce all 
 details such as parameters settings, intermediate result and so on.
 Besides, a quality control report file in HTML, 
 which is able to be viewed in web browser,
 will be created in preset pipelines.
 
-
-ATACFlow supports analysis of single end reads and
-paired-end reads of ATAC-seq and DNase-seq sequencing data.
+ATACFlow can be easily installed on various operator system platforms
+(Windows, Linux, MacOs). All functions in package comsume up to 16G memery.
+Most function only consume less than 8G. So the package is available for 
+not only servers but also  most of PC.
+ATACFlow supports analysis of both single end reads and
+paired-end ATAC-seq and DNase-seq sequencing reads data.
 We have successfully apply the pipeline on 
-raw datasets (FASTQ files) from 
-GEO (SRR891268, SRR891269, SRR891270, SRR891271). 
-The related sequencing platform are Illumina GA II.
+raw datasets (FASTQ files) from GEO. 
+The related sequencing platform are Illumina.
 All valid standard format intermediate result files
 (FASTQ, SAM, BAM, BED file) generated
 by other program (such as BAM BED files from ENCODE) 
-are also tested by the combination subpipeline are also tested by ATACFlow.
+are also tested by rebuilt subpipeline.
 
 
 This package is developed and maintained by members of 
@@ -55,7 +57,7 @@ contact:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 
 ## Preparation
 
-### Installation
+### Package Installation
 
 To install the latest version of ATACFlow, you will need to be using the
 latest version of R. ATACFlow is part of Bioconductor project, 
@@ -70,15 +72,70 @@ biocLite("ATACFlow")
 
 Just like other R package, 
 you need to load ATACFlow like this each time before using the package.
+If you need to use fseq, 
+we recommed to set max memory size for java (8G, 8000M in the example).
+Or the rJava will use the default parameter for fseq.
+
 ```{r loading}
+options(java.parameters = "-Xmx8000m")
 library(ATACFlow)
 ```
 
 ### Loading recommend package
 
+The BSgenome package, TxDb known gene package and OrgDb annotation package
+for the 
+
 ```{r loadingpkg}
 library(magrittr)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(org.Hs.eg.db)
 ```
+
+
+### Configure other parameters
+
+These configurations are also optional. 
+"tmpdir" is the path to save all of the temporary data and
+the default result storage path. If it is configured,
+current work directory will be set as "tmpdir".
+"threads" is the maximum threads allowed to 
+be created for data processing.
+The default value is 1.
+
+```{r loadref, eval=FALSE}
+setConfigure("tmpdir","path/to/tmpdatafolder")
+setConfigure("threads",28)
+```
+
+### Reference Data Installation and Loading
+
+We strongly recommend to install referece data first before using the package
+although it is optional. 
+"refdir" is the folder that will save all of the reference data.
+"genome" is the genome name like hg19, hg38, mm10, mm9 and so on.
+The program will detect the elements that have not been installed and install them.
+Some resources need to be downloaded from internet. 
+So don't forget to connect internet during installation.
+Or the installation will be failed.
+If all of the refernce data was installed, 
+these two lines still need to be called 
+for configurating the reference data path and genome. 
+
+```{r loading, eval=FALSE}
+setConfigure("refdir","path/to/refdatafolder")
+setConfigure("genome","hg19")
+```
+
+The installation will consume several hours for data download,
+building bowtie2 index depending on computer performance and 
+network bandwidth. 
+
+If the reference data is not configured, 
+the related argument of functions has to be set manually during using. 
+
+
 
 
 ## ATACFlow Configuration
