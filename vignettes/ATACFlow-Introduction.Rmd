@@ -76,7 +76,7 @@ If you need to use fseq,
 we recommed to set max memory size for java (8G, 8000M in the example).
 Or the rJava will use the default parameter for fseq.
 
-```{r loading}
+```{r loading,eval=FALSE}
 options(java.parameters = "-Xmx8000m")
 library(ATACFlow)
 ```
@@ -84,7 +84,8 @@ library(ATACFlow)
 ### Loading recommend package
 
 The BSgenome package, TxDb known gene package and OrgDb annotation package
-for the 
+for some functions are requied. The users had better install and
+load the specific species related packages before using the packages.
 
 ```{r loadingpkg}
 library(magrittr)
@@ -124,7 +125,7 @@ If all of the refernce data was installed,
 these two lines still need to be called 
 for configurating the reference data path and genome. 
 
-```{r loading, eval=FALSE}
+```{r config, eval=FALSE}
 setConfigure("refdir","path/to/refdatafolder")
 setConfigure("genome","hg19")
 ```
