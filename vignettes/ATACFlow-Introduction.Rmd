@@ -76,18 +76,18 @@ If you need to use fseq,
 we recommed to set max memory size for java (8G, 8000M in the example).
 Or the rJava will use the default parameter for fseq.
 
-```{r loading,eval=FALSE}
+```{r loading,message=FALSE}
 options(java.parameters = "-Xmx8000m")
 library(ATACFlow)
 ```
 
-### Loading recommend package
+### Loading Recommend Package
 
 The BSgenome package, TxDb known gene package and OrgDb annotation package
 for some functions are requied. The users had better install and
 load the specific species related packages before using the packages.
 
-```{r loadingpkg}
+```{r loadingpkg,message=FALSE}
 library(magrittr)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -96,7 +96,7 @@ library(R.utils)
 ```
 
 
-### Configure other parameters
+### Configure Other Parameters
 
 These configurations are also optional. 
 "tmpdir" is the path to save all of the temporary data and
@@ -109,7 +109,7 @@ The default value is 1.
 
 ```{r loadref, eval=FALSE}
 setConfigure("tmpdir","path/to/tmpdatafolder")
-setConfigure("threads",28)
+setConfigure("threads",8)
 ```
 
 ### Reference Data Installation and Loading
@@ -141,27 +141,149 @@ the related argument of functions has to be set manually during using.
 
 ## Preset Pipeline
 
+Note: The users have to configure step by step in last section to call preset pipeline.
+All of the reference, temperary data storage path, max memery for rJava
+and threads allowd to be created will according to the configurations.
+
+
 ### case study
 
+For single-end case study, a fastq file of sequencing data and 
+its adpater are required. The preset pipeline can be
+called like this:
 
-### case control study
+```{r casesingle, eval=FALSE}
+bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
+bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
+atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
+```
 
+For paired-end case study, two fastq files of sequencing data are requied. 
+The preset pipeline can be called like this:
 
+```{r casepair, eval=FALSE}
+bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
+bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
+atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
+```
 
-## User-defined pipeline 
+[Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report.html)
+
+### Case-Control Study
+
+For case-Control study, paired-end sequencing data are supported only.
+Two fastq files of sequencing data for case and control each are requied.
+The preset pipeline can be called like this:
+
+```{r casecontrol, eval=FALSE}
+td <- tempdir()
+bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
+bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
+bedbzfile21 <- system.file(package="ATACFlow", "extdata", "chr21_1.fq.bz2")
+bedbzfile22 <- system.file(package="ATACFlow", "extdata", "chr21_2.fq.bz2")
+atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
+          control=list(fastqInput1 = bedbzfile21,fastqInput2 = bedbzfile22))
+```
+
+[Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report2.html)
+
+## Build User-defined pipeline or Use functions indivially
+
+All sub-processes are available for recombine new whole pipeline or
+subpipeline easily and flexibly. They are also able to be called indivially.
 
 ### Preprocess
 
+Users can use %>% to build a pipeline to obtain merged, renamed and
+adapter removed clean reads fastq file(s) that is ready for mapping.
+
+
+```{r Preprocess}
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+# Identify adapters
+prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+(reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+(reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+
+reads_merged_1 <- file.path(td,"reads1.fastq")
+reads_merged_2 <- file.path(td,"reads2.fastq")
+atacproc <- 
+atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
+atacRenamer %>% atacRemoveAdapter
+
+ 
+dir(td) 
+```
+
 ### Mapping
 
-### Filtering
+If the reference has not been configured, the bowtie2 index should be built first.
+Then bowtie2 mapping functions could used to map reads to reference genome.
 
-### Peak Calling
+```{r Mapping}
+td <- tempdir()
+setConfigure("tmpdir",td)
 
-### Analizing
+## Building a bowtie2 index
+library("Rbowtie2")
+refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
+full=TRUE)
+bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
+"--threads 4 --quiet",overwrite=TRUE)
+## Alignments
+reads_1 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+"reads_1.fastq")
+reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+"reads_2.fastq")
+if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
+    (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+       samOutput = file.path(td, "result.sam"),
+       fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
+    head(readLines(file.path(td, "result.sam")))
+}
+```
+### Convert SAM File to BED File
 
-## Description of Indivial ATACFlow Functions
+The mapping results are stored in a SAM file. 
+SamToBed functions can covert it into BED file.
+During coverting, the operation like sorting, shifting, filting chromosome and so on
+can also be setted to do in the meantime.
 
+```{r Convert}
+library(R.utils)
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+samfile <- file.path(td,"Example.sam")
+bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+samToBed(samInput = samfile) %>%
+getReportVal("report")
+```
+
+### Filtering reads and Calling
+
+Filter the nucleosome free reads(<100bp) for peak caling.
+
+```{r FiltCalling}
+library(R.utils)
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
+bedfile <- file.path(td,"chr20.50000.bed")
+bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+
+bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
+atacPeakCalling
+
+dir(td)
+```
 
 ### ATAC-seq Peak Annotation
 ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). Function "peakanno" use  function "annotatePeak" in package "ChIPseeker"" to annotate ATAC-seq peak, for more parameters and usage, [click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html).
@@ -195,6 +317,7 @@ peakanno <- subset(peakanno, select=c("chromatin", "start", "end",
                                       "GENENAME"))
 knitr::kable(peakanno[1:10, ])
 ```
+
 ### Go Analysis
 
 GO is ......(using clusterProfiler)
@@ -218,6 +341,10 @@ go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
 knitr::kable(go_data[1:10, ])
 ```
+
+## Query
+
+
 
 ## Reference
 

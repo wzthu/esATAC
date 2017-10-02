@@ -7,7 +7,7 @@
 {
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
                  sort = sortBed,unique = uniqueBed, minFregLen = minFregLen, maxFregLen = maxFregLen, saveExtLen = saveExtLen, memSize = 8 ,downSample = downSample,removeXS = TRUE)
-    print(argv)
+    #print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");
     }
@@ -17,7 +17,7 @@
 .sam2bed_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,downSample = 2e9){
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,
                  sort = sortBed,unique = uniqueBed, memSize = 8 ,downSample = downSample,removeXS = TRUE)
-    print(argv)
+    #print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");
     }
@@ -27,12 +27,12 @@
 .lib_complex_qc_call <- function(bedfile, sortedBed, max_reads){
 
     argv <- list(bedfile = bedfile ,sortedBed = sortedBed,max_reads = max_reads)
-    print(argv)
+    #print(argv)
     rs<-lib_complex_qc(argv)
     if(rs["PBC2"]<0){
         rs["PBC2"]=NA
     }
-    print(rs)
+    #print(rs)
     invisible(rs)
 }
 
@@ -66,7 +66,7 @@
                  sortBed=sortBed,uniqueBed=uniqueBed,
                  minFregLen=minFregLen,maxFregLen=maxFregLen,
                  filterList=filterList,select=select)
-    print(argv)
+    #print(argv)
     if(is.null(filterList)){
         filterList = c("NULL");
     }
