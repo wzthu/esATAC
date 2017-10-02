@@ -139,14 +139,6 @@ If the reference data is not configured,
 the related argument of functions has to be set manually during using. 
 
 
-
-
-## ATACFlow Configuration
-
-
-
-
-
 ## Preset Pipeline
 
 ### case study
@@ -160,11 +152,20 @@ the related argument of functions has to be set manually during using.
 
 ### Preprocess
 
+### Mapping
+
+### Filtering
+
+### Peak Calling
+
+### Analizing
+
 ## Description of Indivial ATACFlow Functions
 
 
 ### ATAC-seq Peak Annotation
 ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). Function "peakanno" use  function "annotatePeak" in package "ChIPseeker"" to annotate ATAC-seq peak, for more parameters and usage, [click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html).
+
 
 ```{r echo=TRUE, results='hide', message=FALSE}
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
@@ -217,3 +218,8 @@ go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
 knitr::kable(go_data[1:10, ])
 ```
+
+## Reference
+
+
+
