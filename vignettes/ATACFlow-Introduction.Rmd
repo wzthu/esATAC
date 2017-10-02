@@ -92,6 +92,7 @@ library(magrittr)
 library(BSgenome.Hsapiens.UCSC.hg19)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db)
+library(R.utils)
 ```
 
 
@@ -162,4 +163,36 @@ the related argument of functions has to be set manually during using.
 ## Description of Indivial ATACFlow Functions
 
 
+### ATAC-seq Peak Annotation
+ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). Function "peakanno" use  function "annotatePeak" in package "ChIPseeker"" to annotate ATAC-seq peak, for more parameters and usage, [click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html).
+
+```{r echo=TRUE, results='hide', message=FALSE}
+p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
+peak1_path <- as.vector(bunzip2(filename = p1bz,
+destname = file.path(getwd(), "Example_peak1.bed"),
+ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+AnnoInfo <- peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.knownGene, annoDb = "org.Hs.eg.db")
+```
+
+The output contains a pie chart in pdf format like below.
+```{r echo=FALSE, results='hide', message=FALSE}
+library(ChIPseeker)
+```
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+peakanno <- AnnoInfo$getReportVal("annoOutput.rds")
+plotAnnoPie(x = peakanno)
+```
+
+The function also generate a file contains annotation for all peaks like below.
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+peakanno <- as.data.frame(peakanno)
+colnames(peakanno)[1] <- "chromatin"
+peakanno <- subset(peakanno, select=c("chromatin", "start", "end", 
+                                      "annotation", "geneStart", "geneEnd", 
+                                      "geneId", "distanceToTSS", "SYMBOL", 
+                                      "GENENAME"))
+knitr::kable(peakanno[1:5, ])
+```
+
+### Go Analysis
 
