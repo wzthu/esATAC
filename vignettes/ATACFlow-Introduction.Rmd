@@ -138,14 +138,6 @@ If the reference data is not configured,
 the related argument of functions has to be set manually during using. 
 
 
-
-
-## ATACFlow Configuration
-
-
-
-
-
 ## Preset Pipeline
 
 ### case study
@@ -159,7 +151,18 @@ the related argument of functions has to be set manually during using.
 
 ### Preprocess
 
+### Mapping
+
+### Filtering
+
+### Peak Calling
+
+### Analizing
+
 ## Description of Indivial ATACFlow Functions
 
+
+
+## Reference
 
 
