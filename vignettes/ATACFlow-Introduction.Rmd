@@ -194,7 +194,6 @@ peakanno <- subset(peakanno, select=c("chromatin", "start", "end",
                                       "GENENAME"))
 knitr::kable(peakanno[1:10, ])
 ```
-
 ### Go Analysis
 
 GO is ......(using clusterProfiler)
@@ -218,29 +217,3 @@ go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
 knitr::kable(go_data[1:10, ])
 ```
-
-### Go Analysis
-
-GO is ......(using clusterProfiler)
-
-The function need gene Id as input. User could choose different GO(molecular function, biological process and cellular component) according to different parameter. 
-
-```{r echo=TRUE, results='hide', message=FALSE}
-## extract gene ID
-library(clusterProfiler)
-data(geneList)
-geneId <- names(geneList)[1:100]
-goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
-```
-
-The output file contains the GO term sorted by p-value, 
-Below is a part of the output.
-
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
-go_path <- goAna$getReportVal("goOutput")
-go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
-go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data[1:10, ])
-```
-
-
