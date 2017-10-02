@@ -6,7 +6,7 @@
 \usage{
 atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   adapter2 = NULL, interleave = FALSE, saveTmp = TRUE,
-  createReport = TRUE)
+  createReport = TRUE, prefix = NULL)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -29,6 +29,8 @@ For single end data, it is requied.}
 
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{prefix}{For identifying files.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.

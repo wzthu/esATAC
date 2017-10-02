@@ -11,7 +11,7 @@
 getAllConfigure()
 
 getConfigure(item = c("threads", "tmpdir", "refdir", "genome", "knownGene",
-  "bsgenome", "bt2Idx", "DHS", "blacklist"))
+  "bsgenome", "annoDb", "bt2Idx", "DHS", "blacklist"))
 
 setConfigure(item = c("threads", "tmpdir", "refdir", "genome"), val)
 }

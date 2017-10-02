@@ -1,20 +1,20 @@
 Package: ATACFlow
 Type: Package
-Title: Pipeline for Quantifying and Annotating ATAC-seq and DNase-seq Reads in R
+Title: ATAC-seq Data Quantifying and Annotating Workflow
 Version: 0.99.0
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
 Description: This package provides a framework and 
-        complete default pipeline for the quantification
+        complete preset pipeline for the quantification
         and analysis of ATAC-seq and DNase-seq Reads. 
         It covers a complete workflow
         starting from raw sequence reads, 
         over creation of alignments
         and quality control report, to the quantification of genomic
-        regions of interest. 
-        Users can buid their own pipeline easily. 
-Depends: R (>= 3.2.3), QuasR, Rsamtools, GenomicRanges
+        regions of interest. The package is managed by dataflow graph,
+        and users can also build their own pipeline easily and flexibly. 
+Depends: R (>= 3.4.1), QuasR, Rsamtools, GenomicRanges
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
@@ -50,7 +50,8 @@ Imports:
     JASPAR2016
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
-    TxDb.Hsapiens.UCSC.hg19.knownGene
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    org.Hs.eg.db
 LinkingTo: Rcpp
 SystemRequirements: C++11
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage

@@ -6,10 +6,10 @@
 \title{Search Motif Position in Given Regions}
 \usage{
 atacMotifScan(atacProc, peak = NULL, genome = NULL, motifPWM = NULL,
-  min.score = "85\%", scanO.dir = NULL, n.cores = NULL)
+  min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL)
 
 motifscan(peak, genome = NULL, motifPWM = NULL, min.score = "85\%",
-  scanO.dir = NULL, n.cores = NULL)
+  scanO.dir = NULL, n.cores = NULL, prefix = NULL)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
@@ -37,6 +37,8 @@ the file name to save the motif position information in separate files.}
 
 \item{n.cores}{How many core to run this function.
 Default: from \code{\link{setConfigure}}.}
+
+\item{prefix}{prefix for Output file.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for
