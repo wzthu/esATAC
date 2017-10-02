@@ -7,10 +7,12 @@
 \usage{
 atacCutSiteCount(atacProcCutSite = NULL, atacProcMotifScan = NULL,
   csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
-  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE)
+  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
+  prefix = NULL)
 
 cutsitecount(csInput, motif_info, chr = c(1:22, "X", "Y"),
-  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE)
+  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
+  prefix = NULL)
 }
 \arguments{
 \item{atacProcCutSite}{\code{\link{ATACProc}} object scalar.
@@ -41,6 +43,8 @@ Default:tmpdir/Footprint}
 up/downstream of the motif. default:100.}
 
 \item{FootPrint}{TRUE or FALSE, plot footprint or not.}
+
+\item{prefix}{prefix for the pdf file.}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar.

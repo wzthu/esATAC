@@ -11,13 +11,13 @@ atacPipe2(case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
   saveTmp = TRUE, createReport = TRUE)
 }
 \arguments{
-\item{case}{\code{List} scalar. Input for case sample. \code{fastqInput1}, 
-the path of the mate 1 fastq file, is required. \code{fastqInput2}, 
+\item{case}{\code{List} scalar. Input for case sample. \code{fastqInput1},
+the path of the mate 1 fastq file, is required. \code{fastqInput2},
 the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
 \code{adapter1} and \code{adapter2} are optional.}
 
-\item{control}{\code{List} scalar. Input for control sample. \code{fastqInput1}, 
-the path of the mate 1 fastq file, is required. \code{fastqInput2}, 
+\item{control}{\code{List} scalar. Input for control sample. \code{fastqInput1},
+the path of the mate 1 fastq file, is required. \code{fastqInput2},
 the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
 \code{adapter1} and \code{adapter2} are optional.}
 
@@ -28,7 +28,7 @@ interleaved paired-end sequencing data.}
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-The pipeline to process case control study sequencing data 
+The pipeline to process case control study sequencing data
 into destination files including
 a HTML report file reads storage files (BED BAM)
 and various quality control report files.
