@@ -183,7 +183,8 @@ peakanno <- AnnoInfo$getReportVal("annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
-The function also generate a file contains annotation for all peaks like below.
+The function also generate a file contains annotation for all peaks.
+Below is a part of the output.
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
 peakanno <- as.data.frame(peakanno)
 colnames(peakanno)[1] <- "chromatin"
@@ -191,8 +192,55 @@ peakanno <- subset(peakanno, select=c("chromatin", "start", "end",
                                       "annotation", "geneStart", "geneEnd", 
                                       "geneId", "distanceToTSS", "SYMBOL", 
                                       "GENENAME"))
-knitr::kable(peakanno[1:5, ])
+knitr::kable(peakanno[1:10, ])
 ```
 
 ### Go Analysis
+
+GO is ......(using clusterProfiler)
+
+The function need gene Id as input. User could choose different GO(molecular function, biological process and cellular component) according to different parameter. 
+
+```{r echo=TRUE, results='hide', message=FALSE}
+## extract gene ID
+library(clusterProfiler)
+data(geneList)
+geneId <- names(geneList)[1:100]
+goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
+```
+
+The output file contains the GO term sorted by p-value, 
+Below is a part of the output.
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+go_path <- goAna$getReportVal("goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+knitr::kable(go_data[1:10, ])
+```
+
+### Go Analysis
+
+GO is ......(using clusterProfiler)
+
+The function need gene Id as input. User could choose different GO(molecular function, biological process and cellular component) according to different parameter. 
+
+```{r echo=TRUE, results='hide', message=FALSE}
+## extract gene ID
+library(clusterProfiler)
+data(geneList)
+geneId <- names(geneList)[1:100]
+goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
+```
+
+The output file contains the GO term sorted by p-value, 
+Below is a part of the output.
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+go_path <- goAna$getReportVal("goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+knitr::kable(go_data[1:10, ])
+```
+
 
