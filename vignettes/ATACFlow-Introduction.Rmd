@@ -104,6 +104,7 @@ current work directory will be set as "tmpdir".
 be created for data processing.
 The default value is 1.
 
+
 ```{r loadref, eval=FALSE}
 setConfigure("tmpdir","path/to/tmpdatafolder")
 setConfigure("threads",28)
