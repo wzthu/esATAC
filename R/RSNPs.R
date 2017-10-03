@@ -115,7 +115,7 @@ RSNPs <- R6::R6Class(
 ) # class end
 
 
-#' @name atacMotifScan
+#' @name atacSNPAnno
 #' @aliases atacSNPAnno
 #' @aliases snpanno
 #' @title Find whether snps are in the given regions.

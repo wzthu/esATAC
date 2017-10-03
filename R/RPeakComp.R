@@ -127,7 +127,7 @@ RPeakComp <- R6::R6Class(
 #' Input peak file path. UCSC bed file is recommented. Other file should be
 #' able to import as \link[GenomicRanges]{GRanges} objects through
 #' \link[rtracklayer]{import}.
-#' @param annoOutput The output file path. If "operation" is "overlap", it
+#' @param bedOutput The output file path. If "operation" is "overlap", it
 #' should be a \code{Character} scalar. If "operation" is "diff", it should be
 #' a \code{vector} contains 2 file path(\code{Character}).
 #' @param operation "overlap" or "diff".

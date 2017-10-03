@@ -65,6 +65,8 @@ Rsortbam <- R6::R6Class(
 #' @aliases atacBamSort
 #' @aliases bamsort
 #' @title Sort bam file and rebuild bai index.
+#' @description
+#' Sort bamfile and build index.
 #' @param atacProc \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSam2Bam}}.

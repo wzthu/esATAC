@@ -17,13 +17,13 @@ cutsitecount(csInput, motif_info, chr = c(1:22, "X", "Y"),
 \arguments{
 \item{atacProcCutSite}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacCutSitePre}}.}
+\code{\link{atacExtractCutSite}}.}
 
 \item{atacProcMotifScan}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacMotifScan}}.}
 
-\item{csInput}{Your cut site information file(from atacCutSitePre function,
+\item{csInput}{Your cut site information file(from atacExtractCutSite function,
 separated by chromatin name and all cut site are sorted) path with prefix.
 e.g. "/your_cut_site_information_path/prefix"}
 
@@ -53,19 +53,19 @@ An invisible \code{\link{ATACProc}} object scalar.
 This function is used to count cut site number in given motif
 region and plot footprint. Multi-motif is supported.
 NOTE: The input parameter is a a little bit complex,
-\code{atacCutSitePre} and \code{atacMotifScan} is recommended to use which
+\code{atacExtractCutSite} and \code{atacMotifScan} is recommended to use which
 makes the entire procedure easier.
 }
 \details{
 The parameter is simplified because of too many input file.
 parameter \code{atacProcCutSite} and \code{atacProcMotifScan} contains all
-input information so function \code{\link{atacCutSitePre}} and
+input information so function \code{\link{atacExtractCutSite}} and
 \code{\link{atacMotifScan}} is recommended to use together. For instance,
 if you want footprint of 3 TFs (transcription factor) of human in
 chr1-22, X, Y, then you need 24 chromatin cut site files, 3 motif position
-files as well as 3 integers of the motif. Function \code{atacCutSitePre} and
+files as well as 3 integers of the motif. Function \code{atacExtractCutSite} and
 \code{atacMotifScan} will do all this, you just specify which motif you want.
-Therefore, \code{\link{atacCutSitePre}} and \code{\link{atacMotifScan}} is
+Therefore, \code{\link{atacExtractCutSite}} and \code{\link{atacMotifScan}} is
 recommended to use together.
 }
 \examples{
@@ -86,7 +86,7 @@ destname = file.path(getwd(), "Example_peak1.bed"),
 ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
 motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
-motifPWM = pwm)
+motifPWM = pwm, prefix = "test")
 
 ## plot footprint
 atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
@@ -94,7 +94,7 @@ atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
 
 }
 \seealso{
-\code{\link{atacCutSitePre}}
+\code{\link{atacExtractCutSite}}
 \code{\link{atacMotifScan}}
 }
 \author{

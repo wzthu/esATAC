@@ -29,11 +29,11 @@ Input peak file path. UCSC bed file is recommented. Other file should be
 able to import as \link[GenomicRanges]{GRanges} objects through
 \link[rtracklayer]{import}.}
 
-\item{operation}{"overlap" or "diff".}
-
-\item{annoOutput}{The output file path. If "operation" is "overlap", it
+\item{bedOutput}{The output file path. If "operation" is "overlap", it
 should be a \code{Character} scalar. If "operation" is "diff", it should be
 a \code{vector} contains 2 file path(\code{Character}).}
+
+\item{operation}{"overlap" or "diff".}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for

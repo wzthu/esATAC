@@ -13,7 +13,7 @@ extractcutsite(bedInput, csOutput.dir = NULL, prefix = NULL)
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSam2Bed}}.}
+\code{\link{atacSamToBed}}.}
 
 \item{bedInput}{\code{Character} scalar.
 Input bed file path, must be merged bed file(a line is a fragment). The
@@ -32,11 +32,11 @@ analysis.
 }
 \description{
 Extract cutting site from ATAC-seq fangment bed file
-(from \code{\link{atacSam2Bed}}).
+(from \code{\link{atacSamToBed}}).
 }
 \details{
 In ATAC-seq data, every line in merged bed file
-(from \code{\link{atacSam2Bed}}, the first 3 column is chr, start, end)
+(from \code{\link{atacSamToBed}}, the first 3 column is chr, start, end)
 means a DNA fragment, the cutting site is start+1 and end, this function
 extract and sort this information for the next step
 (\code{\link{atacCutSiteCount}}).

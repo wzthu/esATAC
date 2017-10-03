@@ -24,6 +24,9 @@ Output bam file path.}
 An invisible \code{\link{ATACProc}} object scalar for
 downstream analysis.
 }
+\description{
+Sort bamfile and build index.
+}
 \examples{
 
 library(Rsamtools)

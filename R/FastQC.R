@@ -91,7 +91,7 @@ FastQC <- R6::R6Class(
 #' It has to be the return value of upstream process:
 #' \code{\link{atacUnzipAndMerge}},
 #' \code{\link{atacRenamer}},
-#' \code{\link{SamToBam}}.
+#' \code{\link{atacSam2Bam}}.
 #' @param input_file \code{Character} scalar.
 #' Input file path. One or two(\code{vector}) fastq/a or a bam file path.
 #' @param output_file \code{Character} scalar.
@@ -105,7 +105,7 @@ FastQC <- R6::R6Class(
 #' @seealso
 #' \code{\link{atacUnzipAndMerge}},
 #' \code{\link{atacRenamer}},
-#' \code{\link{SamToBam}}.
+#' \code{\link{atacSam2Bam}}.
 
 
 #' @rdname atacQCReport

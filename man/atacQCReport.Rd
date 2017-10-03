@@ -14,7 +14,7 @@ qcreport(input_file, output_file = NULL)
 It has to be the return value of upstream process:
 \code{\link{atacUnzipAndMerge}},
 \code{\link{atacRenamer}},
-\code{\link{SamToBam}}.}
+\code{\link{atacSam2Bam}}.}
 
 \item{input_file}{\code{Character} scalar.
 Input file path. One or two(\code{vector}) fastq/a or a bam file path.}
@@ -37,7 +37,7 @@ function provide QC for ATAC-seq, such as GC content.
 \seealso{
 \code{\link{atacUnzipAndMerge}},
 \code{\link{atacRenamer}},
-\code{\link{SamToBam}}.
+\code{\link{atacSam2Bam}}.
 }
 \author{
 Wei Zhang

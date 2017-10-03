@@ -327,7 +327,7 @@ knitr::kable(peakanno[1:10, ])
 
 ### Go Analysis
 
-GO is ......(using clusterProfiler)
+GO analysis is performing enrichment analysis on gene sets.
 
 The function need gene Id as input. User could choose different GO(molecular function, biological process and cellular component) according to different parameter. 
 
@@ -347,6 +347,81 @@ go_path <- goAna$getReportVal("goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
 knitr::kable(go_data[1:10, ])
+```
+
+
+### Motif Scan
+
+The function search motif occurance in the given regios.
+Multi-motif is supported, and output file is named by your input list.
+
+The input motif PWM matrix is stored in a list like below.
+
+```{r eval=TRUE, echo=TRUE, warning=FALSE}
+pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+
+pwm
+```
+
+Using "motifscan" function to search motif in given genome regions.
+
+```{r echo=TRUE, results='hide', message=FALSE}
+motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
+motifPWM = pwm, prefix = "test")
+```
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+file <- readRDS(motif.data$getParam("rdsOutput"))
+motif_name <- file[1,1]
+motif_path <- file[1,2]
+motif.info <- read.table(file = motif_path, header = FALSE, col.names = c("chromatin", "start", "end", "strand", "score", "sequence"))
+```
+
+Every motif's position information will be saved at each files.
+Below is a part output of motif `r motif_name`.
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+knitr::kable(motif.info[1:10, ])
+```
+
+
+### Plot Footprint
+
+The interaction between TF and DNA would leave a "footprint" in motif position, but it is not evident in a single site, so intergrated footprint is necessary.
+In addition, we only count Tn5 cut site.
+This function is based on the motif scan.
+
+```{r echo=TRUE, results='hide', warning=FALSE, results='hide', message=FALSE}
+## extract cut site position from bed file
+fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACFlow")
+frag <- as.vector(bunzip2(filename = fra_path,
+destname = file.path(getwd(), "chr20.50000.bed"),
+ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
+```
+
+In the motif scan, we get a variable named "motif.data", is contains multi-motif information. In order to plot footprint of these motif in a single procedure, we will use the output of function motifscan, here is "motif.data".
+
+```{r eval=TRUE, echo=TRUE, warning=FALSE, results='hide', message=FALSE}
+fp <- atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data, prefix = "test")
+```
+
+The following is CTCF footprint using example data.
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
+footprint_data <- fp$getReportVal("footprint.data")
+CTCF_data <- as.vector(footprint_data$CTCF)
+plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
+     xlab = "Relative Distance From Motif (bp)", 
+     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+     padj = -1.0, tck = -0.01)
+axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+     labels = seq(0, 100, len = 3),
+     padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + 19 + 1), lty = 2)
 ```
 
 ## Query and Object Operations
