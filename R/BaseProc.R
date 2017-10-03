@@ -64,7 +64,7 @@ ATACProc <- R6Class(
     getParam = function(item){
       return(private$paramlist[[item]])
     },
-    getParamItems = function(item){
+    getParamItems = function(){
         return(names(private$paramlist))
     },
     setResultParam = function(item,val){
@@ -394,13 +394,13 @@ getProcName = function(atacProc){
 #' @return \item{getParam}{Get parameter value setted by process function}
 #' @export 
 getParam = function(atacProc,item){
-    return(atacProc$getParam())
+    return(atacProc$getParam(item))
 }
 #' @rdname ATACProc
 #' @return \item{getParamItems}{Get parameter name list}
 #' @export 
-getParamItems = function(atacProc,item){
-    return(atacProc$getParamItems(item))
+getParamItems = function(atacProc){
+    return(atacProc$getParamItems())
 }
 #' @rdname ATACProc
 #' @return \item{isReady}{Is the process ready}
