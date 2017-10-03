@@ -146,7 +146,7 @@ All of the reference, temperary data storage path, max memery for rJava
 and threads allowd to be created will according to the configurations.
 
 
-### case study
+### Case Study
 
 For single-end case study, a fastq file of sequencing data and 
 its adpater are required. The preset pipeline can be
@@ -191,7 +191,7 @@ A report of quaulity control and annalysis will be created.
 
 [Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report2.html)
 
-## Build User-defined pipeline or Use functions indivially
+## Build User-defined Pipeline or Use Functions Indivially
 
 All sub-processes are available for recombine new whole pipeline or
 subpipeline easily and flexibly. They are also able to be called indivially.
@@ -270,7 +270,7 @@ bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBed(samInput = samfile) 
 ```
 
-### Filtering reads and Calling
+### Filtering Reads and Calling
 
 Filter the nucleosome free reads(<100bp) for peak caling.
 
@@ -390,7 +390,7 @@ getParam(peakproc,"fragmentSize")
 ```
 
 
-### Report value
+### Report Value
 Similarly, it is also easy to query the report value calculated by the process with ATACProc objects
 ```{r getReport,message=FALSE}
 
@@ -412,7 +412,7 @@ getReportVal(samToBedProc,"report")
 
 ```
 
-### Clear the cache and redo process
+### Clear the Cache and Redo Process
 If the user call a process fuction that was called last time and finished, 
 the process function will not redo the process. So if users need to redo the process,
 they have to clear the cache like this:
