@@ -364,10 +364,10 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
                adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-               saveTmp = TRUE, createReport = FALSE, prefix = "CASE_all_data")
+                createReport = FALSE, prefix = "CASE_all_data") #saveTmp = TRUE,
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-               saveTmp = TRUE, createReport = FALSE, prefix = "CTRL_all_data")
+                createReport = FALSE, prefix = "CTRL_all_data") #saveTmp = TRUE,
 
     bed.case <-caselist$atacProcs$sam2Bed$getParam("bedOutput")
     bed.ctrl <-ctrllist$atacProcs$sam2Bed$getParam("bedOutput")
