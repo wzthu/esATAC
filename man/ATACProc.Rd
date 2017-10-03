@@ -34,7 +34,7 @@ getProcName(atacProc)
 
 getParam(atacProc, item)
 
-getParamItems(atacProc, item)
+getParamItems(atacProc)
 
 isReady(atacProc)
 

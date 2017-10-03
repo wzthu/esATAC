@@ -5,8 +5,8 @@
 \title{Pipeline for single replicate}
 \usage{
 atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
-  adapter2 = NULL, interleave = FALSE, saveTmp = TRUE,
-  createReport = TRUE, prefix = NULL)
+  adapter2 = NULL, interleave = FALSE, createReport = TRUE,
+  prefix = NULL)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -29,6 +29,8 @@ For single end data, it is requied.}
 
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{createReport}{\code{Logical}. If the HTML report file will be created.}
 
 \item{prefix}{For identifying files.}
 }

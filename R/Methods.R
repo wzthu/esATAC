@@ -89,6 +89,7 @@ getSuffixlessFileName = function(filePath){
 #' @param adapter2 \code{Character}. It is an adapter sequence for file2.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param createReport \code{Logical}. If the HTML report file will be created.
 #' @param prefix For identifying files.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
@@ -98,7 +99,7 @@ getSuffixlessFileName = function(filePath){
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE, saveTmp = TRUE, createReport = TRUE, prefix = NULL){
+                     interleave = FALSE,  createReport = TRUE, prefix = NULL){ #saveTmp = TRUE,
 
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
@@ -339,6 +340,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' \code{adapter1} and \code{adapter2} are optional.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param createReport \code{Logical}. If the HTML report file will be created.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -347,7 +349,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @export
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, saveTmp = TRUE, createReport = TRUE){
+                      interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE, 
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
