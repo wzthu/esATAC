@@ -422,7 +422,11 @@ clearProcCache(peakproc)
 process(peakproc)
 ```
 
+## Acknowledgement
 
+We would like to thank Huan Fang for package testing and valuable suggestions,
+
+and Kui Hua for prividing package testing on Macbook.
 
 ## Reference
 
