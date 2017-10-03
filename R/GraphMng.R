@@ -1,3 +1,4 @@
+#' @importFrom igraph neighbors 
 GraphMng <- R6Class(
   classname = "GraphMng",
 
@@ -137,8 +138,8 @@ GraphMng <- R6Class(
 
     },
     getNextProcs = function(procName){
-        private$getNextProcs1(procName)
-        private$getNextProcs2(procName)
+        self$getNextProcs1(procName)
+        self$getNextProcs2(procName)
     },
     getNextProcs1 = function(procName){
       v <- neighbors(graph = private$graphDep1,v = procName, mode = "out");
@@ -155,8 +156,8 @@ GraphMng <- R6Class(
         return(nextProc);
     },
     getPrevProcs = function(procName){
-        private$getPrevProcs1(procName)
-        private$getPrevProcs2(procName)
+        self$getPrevProcs1(procName)
+        self$getPrevProcs2(procName)
     },
     getPrevProcs1 = function(procName){
       v <- neighbors(graph = private$graphDep1,v = procName, mode = "in");

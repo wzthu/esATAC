@@ -74,7 +74,7 @@ Just like other R package,
 you need to load ATACFlow like this each time before using the package.
 If you need to use fseq, 
 we recommed to set max memory size for java (8G, 8000M in the example).
-Or the rJava will use the default parameter for fseq.
+Or rJava will use the default parameter for fseq.
 
 ```{r loading,message=FALSE}
 options(java.parameters = "-Xmx8000m")
@@ -84,7 +84,7 @@ library(ATACFlow)
 ### Loading Recommend Package
 
 The BSgenome package, TxDb known gene package and OrgDb annotation package
-for some functions are requied. The users had better install and
+for some functions are requied. We recommend to install and
 load the specific species related packages before using the packages.
 
 ```{r loadingpkg,message=FALSE}
@@ -167,6 +167,8 @@ bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
 atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
 ```
 
+A report of quaulity control and annalysis will be created.
+
 [Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report.html)
 
 ### Case-Control Study
@@ -185,12 +187,16 @@ atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
           control=list(fastqInput1 = bedbzfile21,fastqInput2 = bedbzfile22))
 ```
 
+A report of quaulity control and annalysis will be created.
+
 [Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report2.html)
 
 ## Build User-defined pipeline or Use functions indivially
 
 All sub-processes are available for recombine new whole pipeline or
 subpipeline easily and flexibly. They are also able to be called indivially.
+We just show some functions and their combinations from the package.
+For detail, the users can read the manual.
 
 ### Preprocess
 
@@ -261,8 +267,7 @@ setConfigure("tmpdir",td)
 sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
-samToBed(samInput = samfile) %>%
-getReportVal("report")
+samToBed(samInput = samfile) 
 ```
 
 ### Filtering reads and Calling
@@ -284,6 +289,8 @@ atacPeakCalling
 
 dir(td)
 ```
+
+
 
 ### ATAC-seq Peak Annotation
 ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). Function "peakanno" use  function "annotatePeak" in package "ChIPseeker"" to annotate ATAC-seq peak, for more parameters and usage, [click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html).
@@ -342,11 +349,88 @@ go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue"
 knitr::kable(go_data[1:10, ])
 ```
 
-## Query
+## Query and Object Operations
+
+### Workflow Map 
+
+ATACFlow is organized in data flow graph. Except for refering manual, 
+the user may print the map to know workflow order.
+
+```{r printmap}
+library(R.utils)
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
+bedfile <- file.path(td,"chr20.50000.bed")
+bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
+
+peakproc <-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
+atacPeakCalling 
+
+peakproc %>%  printMap
+
+```
+
+By printing the map, it is easy to know what valid processes are available to call next and 
+what preprocess has been done before. 
+
+
+### Parameters
+
+It is easy to query the parameters set for the process with ATACProc objects
+```{r getpara}
+#query all of available parameters
+getParamItems(peakproc)
+
+#query a parameter value
+getParam(peakproc,"fragmentSize")
+
+```
+
+
+### Report value
+Similarly, it is also easy to query the report value calculated by the process with ATACProc objects
+```{r getReport,message=FALSE}
+
+library(R.utils)
+library(magrittr)
+td <- tempdir()
+setConfigure("tmpdir",td)
+
+sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+samfile <- file.path(td,"Example.sam")
+bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
+samToBedProc<-samToBed(samInput = samfile)
+
+#query all of available parameters
+getReportItems(samToBedProc)
+
+#query a parameter value
+getReportVal(samToBedProc,"report")
+
+```
+
+### Clear the cache and redo process
+If the user call a process fuction that was called last time and finished, 
+the process function will not redo the process. So if users need to redo the process,
+they have to clear the cache like this:
+
+```{r clearcache,message=FALSE}
+clearProcCache(peakproc)
+process(peakproc)
+```
 
 
 
 ## Reference
+
+[1] Langmead, B., & Salzberg, S. L. (2012). Fast gapped-read alignment with Bowtie 2. Nature methods, 9(4), 357-359.
+
+[2] Schubert, Lindgreen, and Orlando (2016). AdapterRemoval v2: rapid adapter trimming, identification, and read merging. BMC Research Notes, 12;9(1):88.
+
+[3] Boyle, A. P., Guinney, J., Crawford, G. E., & Furey, T. S. (2008). F-Seq: a feature density estimator for high-throughput sequence tags. Bioinformatics, 24(21), 2537-2538.
 
 
 

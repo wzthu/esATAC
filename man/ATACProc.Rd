@@ -5,7 +5,7 @@
 \alias{printMap}
 \alias{printNextList}
 \alias{printPrevList}
-\alias{clearCache}
+\alias{clearProcCache}
 \alias{process}
 \alias{getNextProcList}
 \alias{getProcName}
@@ -24,7 +24,7 @@ printNextList(atacProc)
 
 printPrevList(atacProc)
 
-clearCache(atacProc)
+clearProcCache(atacProc)
 
 process(atacProc)
 
@@ -71,7 +71,7 @@ the function and result of functions
 
 \item{printPrevList}{Print the map to show available upstream process}
 
-\item{clearCache}{Clear cache of atacProc object}
+\item{clearProcCache}{Clear cache of atacProc object}
 
 \item{process}{Call this function to redo processing }
 

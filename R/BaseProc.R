@@ -34,7 +34,7 @@ ATACProc <- R6Class(
         }
         if(private$checkMD5Cache()){
             message(paste0("The process:`",private$procName,"` was finished. Nothing to do."))
-            message("If you need to redo, please call 'YourObject$clearCache()'")
+            message("If you need to redo, please call 'clearProcCache(YourObject)' or 'YourObject$clearCache()'")
             private$finish<-TRUE
             return(FALSE)
         }else{
@@ -291,7 +291,7 @@ ATACProc <- R6Class(
 #' @aliases printMap
 #' @aliases printNextList
 #' @aliases printPrevList
-#' @aliases clearCache
+#' @aliases clearProcCache
 #' @aliases process
 #' @aliases getNextProcList
 #' @aliases getProcName
@@ -334,7 +334,7 @@ ATACProc <- R6Class(
 printMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
     if(is.null(atacProc)){
         GraphMng$new()$printMap(display=display)
-    }else if(class(atacProc)=="character"){
+    }else if(is.character(atacProc)){
         GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
     }else{
         atacProc$printMap(preProc,nextProc,curProc,display=display)
@@ -345,7 +345,7 @@ printMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,displ
 #' @return \item{printNextList}{Print the map to show available downstream process}
 #' @export 
 printNextList<-function(atacProc){
-    if(class(atacProc)=="character"){
+    if(is.character(atacProc)){
         GraphMng$new()$getNextProcs(atacProc)
     }else{
         GraphMng$new()$getNextProcs(atacProc$getProcName())
@@ -356,7 +356,7 @@ printNextList<-function(atacProc){
 #' @return \item{printPrevList}{Print the map to show available upstream process}
 #' @export 
 printPrevList<-function(atacProc){
-    if(class(atacProc)=="character"){
+    if(is.character(atacProc)){
         GraphMng$new()$getPrevProcs(atacProc)
     }else{
         GraphMng$new()$getPrevProcs(atacProc$getProcName())
@@ -364,9 +364,9 @@ printPrevList<-function(atacProc){
     }
 }
 #' @rdname ATACProc
-#' @return \item{clearCache}{Clear cache of atacProc object}
+#' @return \item{clearProcCache}{Clear cache of atacProc object}
 #' @export 
-clearCache <- function(atacProc){
+clearProcCache <- function(atacProc){
     invisible(atacProc$clearCache())
 }
 #' @rdname ATACProc
