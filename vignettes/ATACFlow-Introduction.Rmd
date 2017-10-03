@@ -436,5 +436,9 @@ and Kui Hua for prividing package testing on Macbook.
 
 [3] Boyle, A. P., Guinney, J., Crawford, G. E., & Furey, T. S. (2008). F-Seq: a feature density estimator for high-throughput sequence tags. Bioinformatics, 24(21), 2537-2538.
 
+## Session Infomation
 
+```{r session}
+sessionInfo()
+```
 
