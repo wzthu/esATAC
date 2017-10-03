@@ -185,7 +185,7 @@ RPeakAnno <- R6::R6Class(
 #' @seealso
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacGOAnalysis}}
-
+#' @importFrom ChIPseeker annotatePeak
 #' @rdname atacPeakAnno
 #' @export
 atacPeakAnno <- function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),

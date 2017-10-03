@@ -261,6 +261,16 @@
 #' @importFrom BiocGenerics subset
 #' @importFrom rmarkdown render
 #' @importFrom knitr knit
+#' @import IRanges
+#' @import FunciSNP
+#' @import JASPAR2016
+#' @import Rbowtie
+#' @import S4Vectors
+#' @import TFBSTools
+#' @import clusterProfiler
+#' @import stringr
+#' @import tools
+#' @import Rsamtools
 # @importFrom markdown markdownToHTML
 #' @useDynLib ATACFlow
 

@@ -106,7 +106,7 @@ FastQC <- R6::R6Class(
 #' \code{\link{atacUnzipAndMerge}},
 #' \code{\link{atacRenamer}},
 #' \code{\link{atacSam2Bam}}.
-
+#' @importFrom QuasR qQCReport 
 
 #' @rdname atacQCReport
 #' @export
