@@ -152,7 +152,7 @@ RSNPs <- R6::R6Class(
 #' @seealso
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacMotifScan}}
-#' @import FunciSNP 
+
 #' @rdname atacSNPAnno
 #' @export
 atacSNPAnno <- function(atacProc = NULL, snp.info = NULL, region.info = NULL,

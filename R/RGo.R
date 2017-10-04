@@ -155,7 +155,7 @@ RGo <- R6::R6Class(
 #' \code{\link{atacPeakAnno}}
 #' \link[clusterProfiler]{enrichGO} function enrichGO in package
 #' "clusterProfiler"
-
+#' @importFrom clusterProfiler enrichGO
 #' @rdname atacGOAnalysis
 #' @export
 atacGOAnalysis <- function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
