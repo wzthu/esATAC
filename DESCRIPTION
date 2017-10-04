@@ -1,7 +1,7 @@
 Package: ATACFlow
 Type: Package
 Title: ATAC-seq Data Quantifying and Annotating Workflow
-Version: 0.99.2
+Version: 0.99.3
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
