@@ -75,7 +75,13 @@ PeakCallingFseq <-R6Class(
             peakfiles <- paste0(private$paramlist[["outTmpDir"]],"/",peakfiles)
             file.create(private$paramlist[["bedOutput"]])
             for(i in 1:length(peakfiles)){
-                file.append(private$paramlist[["bedOutput"]],peakfiles[i])
+              if(file.exists(peakfiles[i])&&file.info(peakfiles[i])$size>0){
+                df <- read.table(peakfiles[i], header = FALSE,sep = "\t")
+                df <- cbind(df,"*")
+                write.table(x=df,file = private$paramlist[["bedOutput"]],append = TRUE,
+                            quote = FALSE,sep = "\t",row.names = FALSE,col.names = FALSE)
+              }
+                #file.append(private$paramlist[["bedOutput"]],peakfiles[i])
             }
             #mergeFile(private$paramlist[["bedOutput"]],peakfiles)
             unlink(private$paramlist[["outTmpDir"]],recursive = TRUE,force = TRUE)
