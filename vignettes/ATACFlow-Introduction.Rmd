@@ -169,7 +169,7 @@ atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
 
 A report of quaulity control and annalysis will be created.
 
-[Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report.html)
+[Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
 
 ### Case-Control Study
 
@@ -189,7 +189,7 @@ atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
 
 A report of quaulity control and annalysis will be created.
 
-[Example report](http://bioinfo.au.tsinhua.edu.cn/member/zwei/example/Report2.html)
+[Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)
 
 ## Build User-defined Pipeline or Use Functions Indivially
 
