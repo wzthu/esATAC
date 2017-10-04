@@ -46,10 +46,10 @@ PeakQC <-R6Class(
                 genome <- seqinfo(private$paramlist[["bsgenome"]])
             }
 
-            inputbed <- import(private$paramlist[["bedInput"]], genome = genome)
+            inputbed <- import(con = private$paramlist[["bedInput"]], genome = genome,format = "bed")
 
 
-            qcbedInput<-import(private$paramlist[["qcbedInput"]], genome = genome)
+            qcbedInput<-import(con = private$paramlist[["qcbedInput"]], genome = genome,format = "bed")
 
 
 

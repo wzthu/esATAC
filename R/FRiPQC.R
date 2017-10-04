@@ -42,10 +42,10 @@ FRiPQC <-R6Class(
             }else{
                 genome <- seqinfo(private$paramlist[["bsgenome"]])
             }
-            gr_a <- import(private$paramlist[["readsBedInput"]], genome = genome)
-            gr_b <- import(private$paramlist[["peakBedInput"]], genome = genome)
+            gr_a <- rtracklayer::import(con = private$paramlist[["readsBedInput"]], genome = genome,format = "bed")
+            gr_b <- rtracklayer::import(con = private$paramlist[["peakBedInput"]], genome = genome,format = "bed")
             qcval[["peakReads"]]<-length(subsetByOverlaps(gr_a, gr_b, ignore.strand = TRUE))
-            qcval[["totalReads"]]<-R.utils::countLines(private$paramlist[["readsBedInput"]])
+            qcval[["totalReads"]]<-length(gr_a)
             qcval[["totalPeaks"]]<-length(gr_b)
             qcval[["FRiP"]]<-qcval[["peakReads"]]/qcval[["totalReads"]]
             #unlink(paste0(private$paramlist[["reportPrefix"]],".tmp"))
