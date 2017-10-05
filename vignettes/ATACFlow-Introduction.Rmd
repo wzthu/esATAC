@@ -63,22 +63,25 @@ To install the latest version of ATACFlow, you will need to be using the
 latest version of R. ATACFlow is part of Bioconductor project, 
 so you can install ATACFlow and its dependencies like this:
 
-```{r install, eval=FALSE}
 source("http://www.bioconductor.org/biocLite.R")
+
 biocLite("ATACFlow")
-```
+
 
 ### Loading
 
 Just like other R package, 
 you need to load ATACFlow like this each time before using the package.
+
+```{r loading0,message=FALSE}
+library(ATACFlow)
+```
 If you need to use fseq, 
 we recommed to set max memory size for java (8G, 8000M in the example).
 Or rJava will use the default parameter for fseq.
 
-```{r loading,message=FALSE}
+```{r loading1,message=FALSE}
 options(java.parameters = "-Xmx8000m")
-library(ATACFlow)
 ```
 
 ### Loading Recommend Package
@@ -107,8 +110,9 @@ be created for data processing.
 The default value is 1.
 
 
-```{r loadref, eval=FALSE}
-setConfigure("tmpdir","path/to/tmpdatafolder")
+```{r loadref, eval=TRUE}
+#uncomment and modify to run:
+#setConfigure("tmpdir","path/to/tmpdatafolder")
 setConfigure("threads",8)
 ```
 
@@ -126,9 +130,10 @@ If all of the refernce data was installed,
 these two lines still need to be called 
 for configurating the reference data path and genome. 
 
-```{r config, eval=FALSE}
-setConfigure("refdir","path/to/refdatafolder")
-setConfigure("genome","hg19")
+```{r config, eval=TRUE}
+#uncomment and modify to run:
+#setConfigure("refdir","path/to/refdatafolder")
+#setConfigure("genome","hg19")
 ```
 
 The installation will consume several hours for data download,
@@ -152,19 +157,21 @@ For single-end case study, a fastq file of sequencing data and
 its adpater are required. The preset pipeline can be
 called like this:
 
-```{r casesingle, eval=FALSE}
+```{r casesingle, eval=TRUE}
 bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
 bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
-atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
+#uncomment to run:
+#atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
 ```
 
 For paired-end case study, two fastq files of sequencing data are requied. 
 The preset pipeline can be called like this:
 
-```{r casepair, eval=FALSE}
+```{r casepair, eval=TRUE}
 bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
 bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
-atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
+#uncomment to run:
+#atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
 ```
 
 A report of quaulity control and annalysis will be created.
@@ -177,14 +184,15 @@ For case-Control study, paired-end sequencing data are supported only.
 Two fastq files of sequencing data for case and control each are requied.
 The preset pipeline can be called like this:
 
-```{r casecontrol, eval=FALSE}
+```{r casecontrol, eval=TRUE}
 td <- tempdir()
 bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
 bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
 bedbzfile21 <- system.file(package="ATACFlow", "extdata", "chr21_1.fq.bz2")
 bedbzfile22 <- system.file(package="ATACFlow", "extdata", "chr21_2.fq.bz2")
-atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
-          control=list(fastqInput1 = bedbzfile21,fastqInput2 = bedbzfile22))
+#uncomment to run: 
+#atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
+#          control=list(fastqInput1 = bedbzfile21,fastqInput2 = bedbzfile22))
 ```
 
 A report of quaulity control and annalysis will be created.
@@ -223,6 +231,13 @@ atacRenamer %>% atacRemoveAdapter
  
 dir(td) 
 ```
+If you want to modify the parameters of AdapterRemoval,
+you have to refer to Rbowtie2 package:
+
+```{r adrmhelp}
+library(Rbowtie2)
+adapterremoval_usage()
+```
 
 ### Mapping
 
@@ -250,6 +265,14 @@ if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
        fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
     head(readLines(file.path(td, "result.sam")))
 }
+```
+
+If you want to modify the parameters of bowtie2,
+you hava to refer to Rbowtie2 package:
+
+```{r bt2help}
+library(Rbowtie2)
+bowtie2_usage()
 ```
 ### Convert SAM File to BED File
 
@@ -296,7 +319,7 @@ dir(td)
 ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). Function "peakanno" use  function "annotatePeak" in package "ChIPseeker"" to annotate ATAC-seq peak, for more parameters and usage, [click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html).
 
 
-```{r eval=FALSE,echo=TRUE, results='hide', message=FALSE}
+```{r echo=TRUE, results='hide', message=FALSE}
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
 peak1_path <- as.vector(bunzip2(filename = p1bz,
 destname = file.path(getwd(), "Example_peak1.bed"),
@@ -305,17 +328,17 @@ AnnoInfo <- peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.know
 ```
 
 The output contains a pie chart in pdf format like below.
-```{r eval=FALSE,echo=FALSE, results='hide', message=FALSE}
+```{r echo=TRUE, results='hide', message=FALSE}
 library(ChIPseeker)
 ```
-```{r eval=FALSE, echo=FALSE, warning=FALSE}
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
 peakanno <- AnnoInfo$getReportVal("annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
 The function also generate a file contains annotation for all peaks.
 Below is a part of the output.
-```{r eval=FALSE, echo=FALSE, warning=FALSE}
+```{r eval=TRUE, echo=FALSE, warning=FALSE}
 peakanno <- as.data.frame(peakanno)
 colnames(peakanno)[1] <- "chromatin"
 peakanno <- subset(peakanno, select=c("chromatin", "start", "end", 
@@ -357,7 +380,7 @@ Multi-motif is supported, and output file is named by your input list.
 
 The input motif PWM matrix is stored in a list like below.
 
-```{r eval=FALSE, echo=TRUE, warning=FALSE}
+```{r eval=TRUE, echo=TRUE, warning=FALSE}
 pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
 
 pwm
@@ -370,17 +393,16 @@ motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
 motifPWM = pwm, prefix = "test")
 ```
 
+
+
+
 ```{r eval=FALSE, echo=FALSE, warning=FALSE}
 file <- readRDS(motif.data$getParam("rdsOutput"))
 motif_name <- file[1,1]
 motif_path <- file[1,2]
 motif.info <- read.table(file = motif_path, header = FALSE, col.names = c("chromatin", "start", "end", "strand", "score", "sequence"))
-```
 
-Every motif's position information will be saved at each files.
-Below is a part output of motif : motif_name.
 
-```{r eval=FALSE, echo=FALSE, warning=FALSE}
 knitr::kable(motif.info[1:10, ])
 ```
 
@@ -431,6 +453,7 @@ abline(v = c(100, 100 + 19 + 1), lty = 2)
 ATACFlow is organized in data flow graph. Except for refering manual, 
 the user may print the map to know workflow order.
 
+
 ```{r printmap}
 library(R.utils)
 library(magrittr)
@@ -454,11 +477,15 @@ what preprocess has been done before.
 
 ### Parameters
 
-It is easy to query the parameters set for the process with ATACProc objects
-```{r getpara}
+It is easy to query the parameters set for the process with ATACProc objects.
+You can query available parameters like this:
+```{r qpara}
 #query all of available parameters
 getParamItems(peakproc)
+```
 
+The value of a specific parameter can be obtain like this:
+```{r getpara}
 #query a parameter value
 getParam(peakproc,"fragmentSize")
 
@@ -478,10 +505,17 @@ sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBedProc<-samToBed(samInput = samfile)
+```
 
-#query all of available parameters
+When the ATACProc objects are obtained,
+you can query all of available report items.
+
+```{r getReport1,message=FALSE}
 getReportItems(samToBedProc)
+```
 
+The value of specific report item can be get like this:
+```{r getReport2,message=FALSE}
 #query a parameter value
 getReportVal(samToBedProc,"report")
 
