@@ -232,12 +232,12 @@ CutSiteCountR <- R6::R6Class(
 #' peak1_path <- as.vector(bunzip2(filename = p1bz,
 #' destname = file.path(getwd(), "Example_peak1.bed"),
 #' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
-#' #pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
-#' #motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
-#' #motifPWM = pwm, prefix = "test")
+#' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+#' # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
+#' # motifPWM = pwm, prefix = "test")
 #'
 #' ## plot footprint
-#' atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
+#' # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
 #'
 #'
 #' @seealso
