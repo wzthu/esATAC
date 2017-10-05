@@ -143,9 +143,9 @@ FRiPQC <-R6Class(
 #' readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 #' peaksProc<- readsProc %>% atacPeakCalling
 #' library(BSgenome.Hsapiens.UCSC.hg19)
-#' atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
+#' #atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
 #'
-#' dir(td)
+#' 
 #' @rdname atacFripQC
 #' @export
 atacFripQC<-function(atacProcReads,atacProcPeak,bsgenome = NULL,reportOutput=NULL,readsBedInput=NULL,peakBedInput=NULL){

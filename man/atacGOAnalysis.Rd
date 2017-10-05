@@ -63,7 +63,7 @@ the gene ID from the output of \code{\link{atacPeakAnno}}.
 library(clusterProfiler)
 data(geneList)
 geneId <- names(geneList)[1:100]
-goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
+#goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
 
 
 }

@@ -152,8 +152,8 @@ RMotifScan <- R6::R6Class(
 #' destname = file.path(getwd(), "Example_peak1.bed"),
 #' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 #' pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
-#' motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
-#' motifPWM = pwm, prefix = "test")
+#' #motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
+#' #motifPWM = pwm, prefix = "test")
 #'
 #'
 #' @seealso

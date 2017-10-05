@@ -145,7 +145,7 @@ RGo <- R6::R6Class(
 #' library(clusterProfiler)
 #' data(geneList)
 #' geneId <- names(geneList)[1:100]
-#' goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
+#' #goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
 #'
 #'
 #' @references Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He.
