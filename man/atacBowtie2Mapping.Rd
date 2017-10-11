@@ -88,14 +88,14 @@ setConfigure("tmpdir",td)
 
 ## Building a bowtie2 index
 library("Rbowtie2")
-refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
+refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
 full=TRUE)
 bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
 "--threads 4 --quiet",overwrite=TRUE)
 ## Alignments
-reads_1 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+reads_1 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
 "reads_1.fastq")
-reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+reads_2 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
 "reads_2.fastq")
 if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
     (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),

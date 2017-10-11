@@ -266,7 +266,7 @@
 #' @import tools
 #' @import Rsamtools
 # @importFrom markdown markdownToHTML
-#' @useDynLib ATACFlow
+#' @useDynLib ATACpipe
 
 #' @rdname configureValue
 #' @export 

@@ -48,7 +48,7 @@ library(R.utils)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
-bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 fregLenDistr(bedfile)

@@ -137,7 +137,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%", prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
@@ -301,7 +301,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
 
-        rmdfile<-system.file(package="ATACFlow", "extdata", "Report.Rmd")
+        rmdfile<-system.file(package="ATACpipe", "extdata", "Report.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 
@@ -379,7 +379,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     diff.case <- peakCom$getParam("bedOutput")[1]
     diff.ctrl <- peakCom$getParam("bedOutput")[2]
 
-    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
     # for case
     Peakanno.case <- peakanno(peakInput = diff.case)
     goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
@@ -426,7 +426,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
 
-        rmdfile<-system.file(package="ATACFlow", "extdata", "Report2.Rmd")
+        rmdfile<-system.file(package="ATACpipe", "extdata", "Report2.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 

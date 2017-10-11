@@ -44,7 +44,7 @@ extract and sort this information for the next step
 \examples{
 
 library(R.utils)
-fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACFlow")
+fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
 frag <- as.vector(bunzip2(filename = fra_path,
 destname = file.path(getwd(), "chr20.50000.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))

@@ -1,11 +1,11 @@
 ---
-title: "ATACFlow-Introduction"
+title: "ATACpipe-Introduction"
 author: "Zheng Wei and Wei Zhang"
 date: "`r Sys.Date()`"
 output: html_document
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{An Introduction to ATACFlow}
+  %\VignetteIndexEntry{An Introduction to ATACpipe}
 ---
 
 ```{r setup, include=FALSE}
@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-The ATACFlow package provides a dataflow graphs organized pipeline 
+The ATACpipe package provides a dataflow graphs organized pipeline 
 for quantifying and annotating ATAC-seq and DNase-seq Reads in R,
 which integrate the functionality of several R packages 
 (such as Rsamtools, ChIPpeakAnno and so on) and external softwares 
@@ -22,7 +22,7 @@ which integrate the functionality of several R packages
 through the Rowtie2 package and 
 [Fseq](http://fureylab.web.unc.edu/software/fseq)[3]). 
 Users can call the preset pipeline functions or 
-rebuild the workflow with elements process of ATACFlow
+rebuild the workflow with elements process of ATACpipe
 for sequence data (FASTQ, SAM, BAM, BED file) complete/partial processing 
 and analysing easily and flexibly in a single R script.
 That will be convenient to migrate, share and reproduce all 
@@ -31,11 +31,11 @@ Besides, a quality control report file in HTML,
 which is able to be viewed in web browser,
 will be created in preset pipelines.
 
-ATACFlow can be easily installed on various operator system platforms
+ATACpipe can be easily installed on various operator system platforms
 (Windows, Linux, MacOs). All functions in package comsume up to 16G memery.
 Most function only consume less than 8G. So the package is available for 
 not only servers but also  most of PC.
-ATACFlow supports analysis of both single end reads and
+ATACpipe supports analysis of both single end reads and
 paired-end ATAC-seq and DNase-seq sequencing reads data.
 We have successfully apply the pipeline on 
 raw datasets (FASTQ files) from GEO. 
@@ -59,22 +59,22 @@ contact:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 
 ### Package Installation
 
-To install the latest version of ATACFlow, you will need to be using the
-latest version of R. ATACFlow is part of Bioconductor project, 
-so you can install ATACFlow and its dependencies like this:
+To install the latest version of ATACpipe, you will need to be using the
+latest version of R. ATACpipe is part of Bioconductor project, 
+so you can install ATACpipe and its dependencies like this:
 
 source("http://www.bioconductor.org/biocLite.R")
 
-biocLite("ATACFlow")
+biocLite("ATACpipe")
 
 
 ### Loading
 
 Just like other R package, 
-you need to load ATACFlow like this each time before using the package.
+you need to load ATACpipe like this each time before using the package.
 
 ```{r loading0,message=FALSE}
-library(ATACFlow)
+library(ATACpipe)
 ```
 If you need to use fseq, 
 we recommed to set max memory size for java (8G, 8000M in the example).
@@ -158,8 +158,8 @@ its adpater are required. The preset pipeline can be
 called like this:
 
 ```{r casesingle, eval=TRUE}
-bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
-bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
+bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
+bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
 #uncomment to run:
 #atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
 ```
@@ -168,8 +168,8 @@ For paired-end case study, two fastq files of sequencing data are requied.
 The preset pipeline can be called like this:
 
 ```{r casepair, eval=TRUE}
-bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
-bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
+bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
+bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
 #uncomment to run:
 #atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
 ```
@@ -186,10 +186,10 @@ The preset pipeline can be called like this:
 
 ```{r casecontrol, eval=TRUE}
 td <- tempdir()
-bedbzfile11 <- system.file(package="ATACFlow", "extdata", "chr20_1.fq.bz2")
-bedbzfile12 <- system.file(package="ATACFlow", "extdata", "chr20_2.fq.bz2")
-bedbzfile21 <- system.file(package="ATACFlow", "extdata", "chr21_1.fq.bz2")
-bedbzfile22 <- system.file(package="ATACFlow", "extdata", "chr21_2.fq.bz2")
+bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
+bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
+bedbzfile21 <- system.file(package="ATACpipe", "extdata", "chr21_1.fq.bz2")
+bedbzfile22 <- system.file(package="ATACpipe", "extdata", "chr21_2.fq.bz2")
 #uncomment to run: 
 #atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
 #          control=list(fastqInput1 = bedbzfile21,fastqInput2 = bedbzfile22))
@@ -218,7 +218,7 @@ td <- tempdir()
 setConfigure("tmpdir",td)
 
 # Identify adapters
-prefix<-system.file(package="ATACFlow", "extdata", "uzmg")
+prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
 (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
 
@@ -250,14 +250,14 @@ setConfigure("tmpdir",td)
 
 ## Building a bowtie2 index
 library("Rbowtie2")
-refs <- dir(system.file(package="ATACFlow", "extdata", "bt2","refs"),
+refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
 full=TRUE)
 bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
 "--threads 4 --quiet",overwrite=TRUE)
 ## Alignments
-reads_1 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+reads_1 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
 "reads_1.fastq")
-reads_2 <- system.file(package="ATACFlow", "extdata", "bt2", "reads",
+reads_2 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
 "reads_2.fastq")
 if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
     (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
@@ -287,7 +287,7 @@ library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
-sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBed(samInput = samfile) 
@@ -303,7 +303,7 @@ library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
-bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
@@ -320,7 +320,7 @@ ATAC-seq peak locate at open chromatin regions. Annotating these peak could find
 
 
 ```{r echo=TRUE, results='hide', message=FALSE}
-p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACFlow")
+p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
 peak1_path <- as.vector(bunzip2(filename = p1bz,
 destname = file.path(getwd(), "Example_peak1.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
@@ -381,7 +381,7 @@ Multi-motif is supported, and output file is named by your input list.
 The input motif PWM matrix is stored in a list like below.
 
 ```{r eval=TRUE, echo=TRUE, warning=FALSE}
-pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACFlow"))
+pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 
 pwm
 ```
@@ -415,7 +415,7 @@ This function is based on the motif scan.
 
 ```{r eval=FALSE,echo=TRUE, results='hide', warning=FALSE, results='hide', message=FALSE}
 ## extract cut site position from bed file
-fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACFlow")
+fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
 frag <- as.vector(bunzip2(filename = fra_path,
 destname = file.path(getwd(), "chr20.50000.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
@@ -450,7 +450,7 @@ abline(v = c(100, 100 + 19 + 1), lty = 2)
 
 ### Workflow Map 
 
-ATACFlow is organized in data flow graph. Except for refering manual, 
+ATACpipe is organized in data flow graph. Except for refering manual, 
 the user may print the map to know workflow order.
 
 
@@ -460,7 +460,7 @@ library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
-bedbzfile <- system.file(package="ATACFlow", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
@@ -501,7 +501,7 @@ library(magrittr)
 td <- tempdir()
 setConfigure("tmpdir",td)
 
-sambzfile <- system.file(package="ATACFlow", "extdata", "Example.sam.bz2")
+sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBedProc<-samToBed(samInput = samfile)

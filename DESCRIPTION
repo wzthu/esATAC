@@ -1,4 +1,4 @@
-Package: ATACFlow
+Package: ATACpipe
 Type: Package
 Title: ATAC-seq Data Quantifying and Annotating Workflow
 Version: 0.99.6
