@@ -49,7 +49,7 @@ Suggests:
     org.Hs.eg.db
 LinkingTo: Rcpp
 SystemRequirements: C++11
-biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage
+biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
