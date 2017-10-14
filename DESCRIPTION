@@ -42,7 +42,9 @@ Imports:
     S4Vectors,
     IRanges,
     rmarkdown,
-    tools
+    tools,
+    VennDiagram,
+    grid
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
