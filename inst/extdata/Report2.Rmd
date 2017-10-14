@@ -238,22 +238,44 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
                         ))
 ```
 
-
-
 ## Peak Annotation
 
 * For case
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 library(ChIPseeker)
 peakanno <- caselist$atacProcs$Peakanno$getReportVal("annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
 * For control
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
+```{r eval=TRUE, echo=FALSE, warning=FALSE,, message=FALSE}
 peakanno <- ctrllist$atacProcs$Peakanno$getReportVal("annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
+
+# Case Control Peak Compare
+
+The following is the peak comparation result for case and control. 
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(VennDiagram)
+library(grid)
+PeakNumInCC <- comp_result$peakCom$getReportVal("venn.data")
+venn.plot <- draw.pairwise.venn(
+    area1 = PeakNumInCC[1] + PeakNumInCC[3],
+    area2 = PeakNumInCC[2] + PeakNumInCC[3],
+    cross.area = PeakNumInCC[3],
+    category = c("Case", "Control"),
+    fill = c("blue", "red")
+)
+```
+
+The total number in case is `r PeakNumInCC[4]`, specific in case is `r PeakNumInCC[1]`.
+
+The total number in control is `r PeakNumInCC[5]`, specific in control is `r PeakNumInCC[2]`.
+
+The overlap peak are merged to `r PeakNumInCC[3]` peaks.
+
 
 # Go analysis
 
@@ -261,7 +283,7 @@ Gene ontology analysis for all genes around differential peak regions.
 
 ## For case differential peak regions.
 
-```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
+```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 go_path <- comp_result$goAna.case$getReportVal("goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
@@ -272,7 +294,7 @@ knitr::kable(go_data[1:20, ])
 
 ## For control differential peak regions.
 
-```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
+```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 go_path <- comp_result$goAna.ctrl$getReportVal("goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
@@ -282,10 +304,36 @@ knitr::kable(go_data[1:20, ])
 [Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
 
 
+# Motif Enrichment Analysis
+This function takes case and control specific peaks as foreground respectively,
+overlap peaks as background.
+
+## motif enrich in case specific peak regions 
+
+```{r cols.print=3, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+motif_enrich.case <- comp_result$mout$getReportVal("rdsOutput.peak1")
+motif_enrich.case <- motif_enrich.case[, c(1, 3, 4)]
+colnames(motif_enrich.case) <- c("motif", "motif length", "p_value")
+motif_enrich.case <- motif_enrich.case[order(motif_enrich.case$p_value), ]
+rownames(motif_enrich.case) <- seq(nrow(motif_enrich.case))
+knitr::kable(motif_enrich.case)
+```
+
+## motif enrich in control specific peak regions
+
+```{r cols.print=3, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+motif_enrich.ctrl <- comp_result$mout$getReportVal("rdsOutput.peak2")
+motif_enrich.ctrl <- motif_enrich.ctrl[, c(1, 3, 4)]
+colnames(motif_enrich.ctrl) <- c("motif", "motif length", "p_value")
+motif_enrich.ctrl <- motif_enrich.ctrl[order(motif_enrich.ctrl$p_value), ]
+rownames(motif_enrich.ctrl) <- seq(nrow(motif_enrich.ctrl))
+knitr::kable(motif_enrich.ctrl)
+```
+
 # Footprint analysis
 
 
-```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE}
+```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE, message=FALSE}
 par(mfrow=c(1,2))
 footprint_data <- comp_result$footprint.case$getReportVal("footprint.data")
 CTCF_data <- as.vector(footprint_data$CTCF)
