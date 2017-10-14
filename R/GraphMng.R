@@ -44,7 +44,8 @@ GraphMng <- R6Class(
             RMotifScan,RSNPs,
             RPeakComp, RMotifScan,
             RPeakComp, RPeakAnno,
-            RPeakComp, RSNPs
+            RPeakComp, RSNPs,
+			RPeakComp, RMotifScanPair
 
         )
         edges1<-sapply(edges1,function(x) x$classname)

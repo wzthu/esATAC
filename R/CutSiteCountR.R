@@ -16,13 +16,14 @@ CutSiteCountR <- R6::R6Class(
             if(!is.null(atacProcMotifScan)){
                 private$paramlist[["motif_info"]] <- readRDS(atacProcMotifScan$getParam("rdsOutput"))
             }else{
-                private$paramlist[["motif_info"]] <- read.table(motif_info)
+                private$paramlist[["motif_info"]] <- readRDS(motif_info)
             }
             private$paramlist[["chr"]] <- as.list(chr)
             private$paramlist[["strandLength"]] <- strandLength
             private$paramlist[["FootPrint"]] <- FootPrint
             if(is.null(prefix)){
-                private$paramlist[["prefix"]] <- "cutsite"
+                private$paramlist[["prefix"]] <- "ATAC_CutSite"
+                warning("Please specify a prefix, otherwise your file will be overwrite!")
             }else{
                 private$paramlist[["prefix"]] <- prefix
             }
@@ -35,7 +36,8 @@ CutSiteCountR <- R6::R6Class(
                     sep = ""
                 )
                 private$paramlist[["footprint.data"]] <- paste(
-                    private$paramlist[["matrixfile.dir"]],
+                    private$paramlist[["matrixfile.dir"]], "/Footprint_",
+                    private$paramlist[["prefix"]],
                     "_data.rds",
                     sep = ""
                 )
@@ -71,7 +73,7 @@ CutSiteCountR <- R6::R6Class(
                 matrixsave.dir <- file.path(private$paramlist[["matrixfile.dir"]], motif_name)
                 dir.create(matrixsave.dir)
                 footprint.path <- file.path(
-                    .obtainConfigure("tmpdir"),
+                    private$paramlist[["matrixfile.dir"]],
                     paste(private$paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
                 )
                 # start!
@@ -119,11 +121,11 @@ CutSiteCountR <- R6::R6Class(
 
                     echo_str <- paste("Now, finishing chr", chr[[i]], "......", sep = "")
                     print(echo_str)
-                    print(data)
                 }
                 if(private$paramlist[["FootPrint"]]){
                     if(nrow(data) == 0){
-                        stop("Can not find any cut site in motif position.")
+                        print("Can not find any cut site in motif position.")
+                        next
                     }
                     fp <- apply(data, 2, sum)
                     footprint_data[[motif_name]] <- fp
@@ -161,7 +163,7 @@ CutSiteCountR <- R6::R6Class(
                 fp <- readRDS(private$paramlist[["footprint.data"]])
                 return(fp)
             }else if(item == "pdf.dir"){
-                return(.obtainConfigure("tmpdir"))
+                return(private$paramlist[["matrixfile.dir"]])
             }
         },
 

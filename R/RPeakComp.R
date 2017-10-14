@@ -2,8 +2,9 @@ RPeakComp <- R6::R6Class(
     classname = "RPeakComp",
     inherit = ATACProc,
     public = list(
-        initialize = function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-                              bedInput2 = NULL, bedOutput = NULL, operation = NULL,
+        initialize = function(atacProcPeak1 = NULL, atacProcPeak2 = NULL,
+                              bedInput1 = NULL, bedInput2 = NULL,
+                              bedOutput = NULL, olap.rate = NULL,
                               editable = FALSE){
             super$initialize("RPeakComp", editable, list(arg1 = atacProcPeak1, arg2 = atacProcPeak2))
 
@@ -18,33 +19,31 @@ RPeakComp <- R6::R6Class(
             }else{
                 private$paramlist[["bedInput2"]] <- bedInput2
             }
-            private$paramlist[["operation"]] <- operation
+            private$paramlist[["olap.rate"]] <- olap.rate
             regexProcName <- "(bed)"
-            prefix1 <- private$getBasenamePrefix(private$paramlist[["bedInput1"]], regexProcName)
-            prefix2 <- private$getBasenamePrefix(private$paramlist[["bedInput2"]], regexProcName)
+            private$paramlist[["prefix1"]] <- private$getBasenamePrefix(private$paramlist[["bedInput1"]], regexProcName)
+            private$paramlist[["prefix2"]] <- private$getBasenamePrefix(private$paramlist[["bedInput2"]], regexProcName)
+
+            venn_file <- paste("VennPlot_", private$paramlist[["prefix1"]], "_", private$paramlist[["prefix2"]], ".pdf", sep = "")
+            private$paramlist[["venn.plot"]] <- file.path(.obtainConfigure("tmpdir"), venn_file)
+
+            venn_data <- paste("VennData_", private$paramlist[["prefix1"]], "_", private$paramlist[["prefix2"]], ".rds", sep = "")
+            private$paramlist[["venn.data"]] <- file.path(.obtainConfigure("tmpdir"), venn_data)
 
             # unnecessary parameters
-            if(private$paramlist[["operation"]] == "overlap"){
-                if(is.null(bedOutput)){
-                    overlap_file <- paste("overlap_", prefix1, "_", prefix2, ".bed", sep = "")
-                    private$paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                                  overlap_file)
-                }else{
-                    private$paramlist[["bedOutput"]] <- bedOutput
+            if(is.null(bedOutput)){
+                bedInput1_specific <- paste(private$paramlist[["prefix1"]], "_specific.bed", sep = "")
+                bedInput1_specific_path <- file.path(.obtainConfigure("tmpdir"), bedInput1_specific)
+                bedInput2_specific <- paste(private$paramlist[["prefix2"]], "_specific.bed", sep = "")
+                bedInput2_specific_path <- file.path(.obtainConfigure("tmpdir"), bedInput2_specific)
+                overlap_file <- paste("overlap_", private$paramlist[["prefix1"]], "_", private$paramlist[["prefix2"]], ".bed", sep = "")
+                overlap_file_path <- file.path(.obtainConfigure("tmpdir"), overlap_file)
+                private$paramlist[["bedOutput"]] <- c(bedInput1_specific_path,
+                                                      bedInput2_specific_path,
+                                                      overlap_file_path)
+            }else{
+                private$paramlist[["bedOutput"]] <- bedOutput
                 }
-            }else if(private$paramlist[["operation"]] == "diff"){
-                if(is.null(bedOutput)){
-                    diff_1.name <- paste("diff_", prefix1, ".bed", sep = "")
-                    diff_1.path <- file.path(.obtainConfigure("tmpdir"), diff_1.name)
-                    diff_2.name <- paste("diff_", prefix2, ".bed", sep = "")
-                    diff_2.path <- file.path(.obtainConfigure("tmpdir"), diff_2.name)
-                    private$paramlist[["bedOutput"]] <- c(diff_1.path, diff_2.path)
-                }else{
-                    private$paramlist[["bedOutput"]] <- bedOutput
-                }
-            }
-
-
             # parameter check
             private$paramValidation()
 
@@ -56,32 +55,56 @@ RPeakComp <- R6::R6Class(
     private = list(
         processing = function(){
             private$writeLog(paste0("processing file:"))
-            private$writeLog(sprintf("source:%s", private$paramlist[["bedInput1"]]))
-            private$writeLog(sprintf("source:%s", private$paramlist[["bedInput2"]]))
-            private$writeLog(sprintf("destination:%s", private$paramlist[["bedOutput"]]))
+            private$writeLog(sprintf("bed1 source:%s", private$paramlist[["bedInput1"]]))
+            private$writeLog(sprintf("bed2 source:%s", private$paramlist[["bedInput2"]]))
+            private$writeLog(sprintf("bed1 specific peak:%s", private$paramlist[["bedOutput"]][1]))
+            private$writeLog(sprintf("bed2 specific peak:%s", private$paramlist[["bedOutput"]][2]))
+            private$writeLog(sprintf("overlap peak:%s", private$paramlist[["bedOutput"]][3]))
 
-            bed1 <- rtracklayer::import(con = private$paramlist[["bedInput1"]], format = "bed")
-            bed2 <- rtracklayer::import(con = private$paramlist[["bedInput2"]], format = "bed")
-            if(private$paramlist[["operation"]] == "overlap"){
-                output_data <- GenomicRanges::intersect(bed1, bed2, ignore.strand = TRUE)
-                rtracklayer::export(object = output_data,
-                                    con = private$paramlist[["bedOutput"]],
-                                    format = "bed")
-            }else{
-                overlaps <- GenomicRanges::findOverlaps(query = bed1, subject = bed2,
-                                                        ignore.strand = TRUE)
-                bed1_index <- seq(length(bed1))
-                bed2_index <- seq(length(bed2))
-                bed1_output <- bed1[setdiff(bed1_index, S4Vectors::queryHits(overlaps))]
-                bed2_output <- bed2[setdiff(bed2_index, S4Vectors::subjectHits(overlaps))]
-                rtracklayer::export(object = bed1_output,
-                                    con = private$paramlist[["bedOutput"]][1],
-                                    format = "bed")
-                rtracklayer::export(object = bed2_output,
-                                    con = private$paramlist[["bedOutput"]][2],
-                                    format = "bed")
-            }
+            gr_a <- rtracklayer::import(con = private$paramlist[["bedInput1"]], format = "bed")
+            gr_b <- rtracklayer::import(con = private$paramlist[["bedInput2"]],  format = "bed")
+            o <- GenomicAlignments::findOverlaps(query = gr_a, subject = gr_b, ignore.strand = T)
+            o_1 <-  gr_a[S4Vectors::queryHits(o)]
+            o_2 <- gr_b[S4Vectors::subjectHits(o)]
 
+            peak_intersect <- IRanges::pintersect(o_1, o_2)
+            keep <- (IRanges::width(peak_intersect)/pmin(IRanges::width(o_1),IRanges::width(o_2)) >= private$paramlist[["olap.rate"]])
+
+            overlap_peak <- IRanges::union(o_1[keep], o_2[keep])
+            a_diff <- IRanges::setdiff(gr_a, o_1[keep])
+            b_diff <- IRanges::setdiff(gr_b, o_2[keep])
+
+            rtracklayer::export(object = a_diff, con = private$paramlist[["bedOutput"]][1], format = "bed")
+            rtracklayer::export(object = b_diff, con = private$paramlist[["bedOutput"]][2], format = "bed")
+            rtracklayer::export(object = overlap_peak, con = private$paramlist[["bedOutput"]][3], format = "bed")
+
+            num_a <- length(a_diff)
+            num_b <- length(b_diff)
+            num_olap <- length(overlap_peak)
+            num_gr_a <- length(gr_a)
+            num_gr_b <- length(gr_b)
+            saveRDS(object = c(num_a, num_b, num_olap, num_gr_a, num_gr_b), file = private$paramlist[["venn.data"]])
+
+            venn.plot <- VennDiagram::draw.pairwise.venn(
+                area1 = num_a + num_olap,
+                area2 = num_b + num_olap,
+                cross.area = num_olap,
+                category = c(private$paramlist[["prefix1"]], private$paramlist[["prefix2"]]),
+                fill = c("blue", "red"),
+                cex = 3,
+                cat.cex = 2,
+                cat.dist = 0.01,
+                cat.just = list(c(-1, -1), c(1, 1)),
+                ext.pos = 30,
+                ext.dist = -0.05,
+                ext.length = 0.85,
+                ext.line.lwd = 2,
+                ext.line.lty = "dashed"
+            )
+            grid::grid.newpage()
+            pdf(file = private$paramlist[["venn.plot"]])
+            grid::grid.draw(venn.plot)
+            dev.off()
         }, # processing end
 
         checkRequireParam = function(){
@@ -91,15 +114,25 @@ RPeakComp <- R6::R6Class(
             if(is.null(private$paramlist[["bedInput2"]])){
                 stop("Parameter bedInput2 is requied!")
             }
-            if(is.null(private$paramlist[["operation"]])){
-                stop("Parameter operation is requied!")
-                stopifnot(private$paramlist[["operation"]] %in% c("overlap", "diff"))
-            }
         }, # checkRequireParam end
 
         checkAllPath = function(){
             private$checkFileExist(private$paramlist[["bedInput1"]])
             private$checkFileExist(private$paramlist[["bedInput2"]])
+            private$checkPathExist(private$paramlist[["bedOutput"]][1])
+            private$checkPathExist(private$paramlist[["bedOutput"]][2])
+            private$checkPathExist(private$paramlist[["bedOutput"]][3])
+        }, # checkAllPath end
+
+        getReportValImp = function(item){
+            if(item == "venn.data"){
+                fp <- readRDS(private$paramlist[["venn.data"]])
+            }
+            return(fp)
+        },
+
+        getReportItemsImp = function(){
+            return(c("venn.data"))
         }
 
     ) # private end
@@ -127,13 +160,18 @@ RPeakComp <- R6::R6Class(
 #' Input peak file path. UCSC bed file is recommented. Other file should be
 #' able to import as \link[GenomicRanges]{GRanges} objects through
 #' \link[rtracklayer]{import}.
-#' @param bedOutput The output file path. If "operation" is "overlap", it
-#' should be a \code{Character} scalar. If "operation" is "diff", it should be
-#' a \code{vector} contains 2 file path(\code{Character}).
-#' @param operation "overlap" or "diff".
+#' @param bedOutput The output file path. File name order: bedInput1 specific
+#' peaks, bedInput2 specific peaks, overlap peaks.
+#' @param olap.rate Overlap rate, if the overlap region between 2 peak is more
+#' than this rate of the short peak, these two peak are considered to be
+#' overlap and will be merged to a bigger peak. Default: 0.2. NOTICE: multi-peak will be
+#' merged together!
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
+#' @importFrom VennDiagram draw.pairwise.venn
+#' @importFrom grid grid.draw
+#' @importFrom grid grid.newpage
 #' @examples
 #'
 #' library(R.utils)
@@ -158,18 +196,19 @@ RPeakComp <- R6::R6Class(
 #' @rdname atacpeakComp
 #' @export
 atacpeakComp <- function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-                         bedInput2 = NULL, bedOutput = NULL, operation = NULL){
+                         bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2){
     tmp <- RPeakComp$new(atacProcPeak1, atacProcPeak2, bedInput1,
-                         bedInput2, bedOutput, operation)
+                         bedInput2, bedOutput, olap.rate)
     tmp$process()
     invisible(tmp)
 }
 
 #' @rdname atacpeakComp
 #' @export
-peakcomp <- function(bedInput1, bedInput2, bedOutput = NULL, operation = NULL){
+peakcomp <- function(bedInput1 = NULL, bedInput2 = NULL,
+                     bedOutput = NULL, olap.rate = 0.2){
     tmp <- RPeakComp$new(atacProcPeak1 = NULL, atacProcPeak2 = NULL, bedInput1,
-                         bedInput2, bedOutput, operation)
+                         bedInput2, bedOutput, olap.rate)
     tmp$process()
     invisible(tmp)
 }
