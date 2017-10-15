@@ -1,4 +1,3 @@
-# find the middle interval of peak, input: GRanges
 mid_interval <- function(x, inerval = 100){
     x_mid <- as.integer((start(x) + end(x)) / 2)
     start(x) <- x_mid - inerval
@@ -102,20 +101,35 @@ RMotifScanPair <- R6::R6Class(
             ctrl_peak.num <- length(ctrl_mid.peak)
             backg_peak.num <- length(backg_mid.peak)
 
+            # running
             cl <- makeCluster(private$paramlist[["n.cores"]])
-            sitesetList <- parLapply(cl = cl,
-                                     X = private$paramlist[["motifPWM"]],
-                                     fun = Biostrings::matchPWM,
-                                     subject = private$paramlist[["genome"]],
-                                     min.score = private$paramlist[["min.score"]],
-                                     with.score = TRUE)
+            sitesetList <- list()
+            n_motif <- length(private$paramlist[["motifPWM"]])
+            k <- 10
+            motif_in_group <- split(private$paramlist[["motifPWM"]],
+                                    rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
+            n_group <- length(motif_in_group)
+            for(i in seq(n_group)){
+                thisGroup.motif <- motif_in_group[[i]]
+                thisGroup.motifname <- names(thisGroup.motif)
+                thisGroup.motifinfo <- paste(thisGroup.motifname, collapse = ",")
+                thisGroup.motifinfo <- paste("Now, processing the following motif: ",
+                                             thisGroup.motifinfo, sep = "")
+                print(thisGroup.motifinfo)
+                sitesetList_in_group <- parLapply(cl = cl,
+                                                  X = thisGroup.motif,
+                                                  fun = Biostrings::matchPWM,
+                                                  subject = private$paramlist[["genome"]],
+                                                  min.score = private$paramlist[["min.score"]],
+                                                  with.score = TRUE)
+                sitesetList <- append(sitesetList, sitesetList_in_group)
+            }
             stopCluster(cl)
 
             n_motif <- length(sitesetList)
             case_save_info <- data.frame()
             ctrl_save_info <- data.frame()
             backg_save_info <- data.frame()
-
 
             for(i in seq(n_motif)){
                 # processing motif scan
@@ -242,10 +256,55 @@ RMotifScanPair <- R6::R6Class(
 #' @title Search Motif Position in Given Regions
 #' @description
 #' Search motif position in given genome regions according PWM matrix.
+#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' It has to be the return value of upstream process:
+#' \code{\link{atacpeakComp}}.
+#' @param peak1 peak file path.
+#' @param peak2 peak file path.
+#' @param background background peak file path.
+#' @param genome A DNAString object.
+#' @param motifPWM \code{list} scalar. Default: from \code{\link{setConfigure}}.
+#' Every element in the \code{list} contains a motif PWM matrix.
+#' e.g. pwm <- list("CTCF" = CTCF_PWMmatrix)
+#' @param min.score The minimum score for counting a match. Can be given as a
+#' character string containing a percentage (e.g. "85%") of the highest
+#' possible score or as a single number.
+#' @param scanO.dir \code{Character} scalar.
+#' the output file directory. This function will use the index in motifPWM as
+#' the file name to save the motif position information in separate files.
+#' @param n.cores How many core to run this function.
+#' Default: from \code{\link{setConfigure}}.
+#' @param prefix prefix for Output file.
 #' @details This function scan motif position in a given genome regions.
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
+#'
+#' @examples
+#'
+#' \dontrun{
+#' # library(R.utils)
+#' # library(BSgenome.Hsapiens.UCSC.hg19)
+#' # p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
+#' # p2bz <- system.file("extdata", "Example_peak2.bed.bz2", package="ATACpipe")
+#' # peak1_path <- as.vector(bunzip2(filename = p1bz,
+#' # destname = file.path(getwd(), "Example_peak1.bed"),
+#' # ext="bz2", FUN=bzfile, overwrite=TRUE , remove = FALSE))
+#' # peak2_path <- as.vector(bunzip2(filename = p2bz,
+#' # destname = file.path(getwd(), "Example_peak2.bed"),
+#' # ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' # peakcom.output <- peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
+#' # olap.rate = 0.1)
+#'
+#' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+#' # output <- atacMotifScanPair(atacProc = peakcom.output,
+#' # genome = BSgenome.Hsapiens.UCSC.hg19,
+#' # motifPWM = pwm)
+#'}
+#'
+#' @seealso
+#' \code{\link{atacpeakComp}}
+
 
 #' @rdname atacMotifScanPair
 #' @export
@@ -258,7 +317,7 @@ atacMotifScanPair <- function(atacProc, peak1 = NULL, peak2 = NULL, background =
     invisible(tmp)
 }
 
-#' @rdname motifscanpair
+#' @rdname atacMotifScanPair
 #' @export
 motifscanpair <- function(peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
