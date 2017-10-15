@@ -18,19 +18,38 @@ Depends: R (>= 3.4.1), QuasR, Rsamtools, GenomicRanges
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.11), R6, knitr, Rbowtie2, rtracklayer, ggplot2,
-        Biostrings, ChIPseeker, clusterProfiler, igraph, rJava,
-        DiagrammeR, magrittr, digest, BSgenome, AnnotationDbi,
-        GenomicFeatures, R.utils, GenomeInfoDb, BiocGenerics,
-        S4Vectors, IRanges, rmarkdown, tools, VennDiagram, grid
-Suggests: BSgenome.Hsapiens.UCSC.hg19,
-        TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db
+Imports: 
+    Rcpp (>= 0.12.11),
+    R6,
+    knitr,
+    Rbowtie2,
+    rtracklayer,
+    ggplot2,
+    Biostrings,
+    ChIPseeker,
+    clusterProfiler,
+    igraph, 
+    rJava,
+    DiagrammeR,
+    magrittr,
+    digest,
+    BSgenome,
+    AnnotationDbi,
+    GenomicFeatures,
+    R.utils,
+    GenomeInfoDb,
+    BiocGenerics,
+    S4Vectors,
+    IRanges,
+    rmarkdown,
+    tools
+Suggests:
+    BSgenome.Hsapiens.UCSC.hg19,
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    org.Hs.eg.db
 LinkingTo: Rcpp
 SystemRequirements: C++11
-biocViews: Sequencing, DNASeq, QualityControl, Alignment,
-        Preprocessing, Coverage, ATACSeq, DNaseSeq
+biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing, Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
-NeedsCompilation: yes
-Packaged: 2017-10-15 11:02:55 UTC; Zwei

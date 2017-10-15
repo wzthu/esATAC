@@ -6,10 +6,9 @@
 \title{Find the overlap or differential peaks between two samples.}
 \usage{
 atacpeakComp(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-  bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2)
+  bedInput2 = NULL, bedOutput = NULL, operation = NULL)
 
-peakcomp(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
-  olap.rate = 0.2)
+peakcomp(bedInput1, bedInput2, bedOutput = NULL, operation = NULL)
 }
 \arguments{
 \item{atacProcPeak1}{\code{\link{ATACProc}} object scalar.
@@ -30,13 +29,11 @@ Input peak file path. UCSC bed file is recommented. Other file should be
 able to import as \link[GenomicRanges]{GRanges} objects through
 \link[rtracklayer]{import}.}
 
-\item{bedOutput}{The output file path. File name order: bedInput1 specific
-peaks, bedInput2 specific peaks, overlap peaks.}
+\item{bedOutput}{The output file path. If "operation" is "overlap", it
+should be a \code{Character} scalar. If "operation" is "diff", it should be
+a \code{vector} contains 2 file path(\code{Character}).}
 
-\item{olap.rate}{Overlap rate, if the overlap region between 2 peak is more
-than this rate of the short peak, these two peak are considered to be
-overlap and will be merged to a bigger peak. Default: 0.2. NOTICE: multi-peak will be
-merged together!}
+\item{operation}{"overlap" or "diff".}
 }
 \value{
 An invisible \code{\link{ATACProc}} object scalar for
@@ -50,15 +47,19 @@ according to the parameter "operation".
 
 library(R.utils)
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
-p2bz <- system.file("extdata", "Example_peak2.bed.bz2", package="ATACpipe")
+p2bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
 peak1_path <- as.vector(bunzip2(filename = p1bz,
 destname = file.path(getwd(), "Example_peak1.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE , remove = FALSE))
 peak2_path <- as.vector(bunzip2(filename = p2bz,
 destname = file.path(getwd(), "Example_peak2.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-output <- peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
-olap.rate = 0.1)
+## overlap peak
+peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
+operation = "overlap")
+## differential peak
+peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
+operation = "diff")
 
 }
 \seealso{

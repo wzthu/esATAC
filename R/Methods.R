@@ -135,9 +135,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
+        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%", prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
@@ -349,7 +349,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @export
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE,
+                      interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE, 
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -375,39 +375,33 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     case.peak <- caselist$atacProcs$peakCalling$getParam("bedOutput")
     ctrl.peak <- ctrllist$atacProcs$peakCalling$getParam("bedOutput")
 
-    peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak)
-    case_specific.peak <- peakCom$getParam("bedOutput")[1]
-    ctrl_specific.peak <- peakCom$getParam("bedOutput")[2]
-    overlap.peak <- peakCom$getParam("bedOutput")[3]
+    peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak, operation = "diff")
+    diff.case <- peakCom$getParam("bedOutput")[1]
+    diff.ctrl <- peakCom$getParam("bedOutput")[2]
 
+    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
     # for case
-    Peakanno.case <- peakanno(peakInput = case_specific.peak)
+    Peakanno.case <- peakanno(peakInput = diff.case)
     goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
+    output_motifscan.case <- motifscan(peak = diff.case, motifPWM = pwm, min.score = "90%", prefix = "CASE_diff")
+    cs_output.case <- extractcutsite(bedInput = bed.case, prefix = "CASE_diff")
+    footprint.case <- atacCutSiteCount(atacProcCutSite = cs_output.case,
+                                       atacProcMotifScan = output_motifscan.case,
+                                       strandLength = 100, prefix = "CASE_diff")
 
     # for ctrl
-    Peakanno.ctrl <- peakanno(peakInput = ctrl_specific.peak)
+    Peakanno.ctrl <- peakanno(peakInput = diff.ctrl)
     goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
-
-    # case ctrl motif analysis
-    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
-    mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = "90%")
-    cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
-    cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL")
-
-    footprint.case <- atacCutSiteCount(atacProcCutSite = cs_case,
-                                       motif_info = mout$getParam("rdsOutput.peak1"),
-                                       strandLength = 100, prefix = "Case")
-
-    footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_ctrl,
-                                       motif_info = mout$getParam("rdsOutput.peak2"),
-                                       strandLength = 100, prefix = "Ctrl")
+    output_motifscan.ctrl <- motifscan(peak = diff.ctrl, motifPWM = pwm, min.score = "90%", prefix = "CTRL_diff")
+    cs_output.ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL_diff")
+    footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_output.ctrl,
+                                       atacProcMotifScan = output_motifscan.ctrl,
+                                       strandLength = 100, prefix = "CTRL_diff")
 
     comp_result <- list(
-        peakCom = peakCom,
         goAna.case = goAna.case,
-        goAna.ctrl = goAna.ctrl,
-        mout = mout,
         footprint.case = footprint.case,
+        goAna.ctrl = goAna.ctrl,
         footprint.ctrl = footprint.ctrl
     )
 

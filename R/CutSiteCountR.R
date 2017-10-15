@@ -16,14 +16,13 @@ CutSiteCountR <- R6::R6Class(
             if(!is.null(atacProcMotifScan)){
                 private$paramlist[["motif_info"]] <- readRDS(atacProcMotifScan$getParam("rdsOutput"))
             }else{
-                private$paramlist[["motif_info"]] <- readRDS(motif_info)
+                private$paramlist[["motif_info"]] <- read.table(motif_info)
             }
             private$paramlist[["chr"]] <- as.list(chr)
             private$paramlist[["strandLength"]] <- strandLength
             private$paramlist[["FootPrint"]] <- FootPrint
             if(is.null(prefix)){
-                private$paramlist[["prefix"]] <- "ATAC_CutSite"
-                warning("Please specify a prefix, otherwise your file will be overwrite!")
+                private$paramlist[["prefix"]] <- "cutsite"
             }else{
                 private$paramlist[["prefix"]] <- prefix
             }
@@ -36,8 +35,7 @@ CutSiteCountR <- R6::R6Class(
                     sep = ""
                 )
                 private$paramlist[["footprint.data"]] <- paste(
-                    private$paramlist[["matrixfile.dir"]], "/Footprint_",
-                    private$paramlist[["prefix"]],
+                    private$paramlist[["matrixfile.dir"]],
                     "_data.rds",
                     sep = ""
                 )
@@ -73,7 +71,7 @@ CutSiteCountR <- R6::R6Class(
                 matrixsave.dir <- file.path(private$paramlist[["matrixfile.dir"]], motif_name)
                 dir.create(matrixsave.dir)
                 footprint.path <- file.path(
-                    private$paramlist[["matrixfile.dir"]],
+                    .obtainConfigure("tmpdir"),
                     paste(private$paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
                 )
                 # start!
@@ -121,11 +119,11 @@ CutSiteCountR <- R6::R6Class(
 
                     echo_str <- paste("Now, finishing chr", chr[[i]], "......", sep = "")
                     print(echo_str)
+                    print(data)
                 }
                 if(private$paramlist[["FootPrint"]]){
                     if(nrow(data) == 0){
-                        print("Can not find any cut site in motif position.")
-                        next
+                        stop("Can not find any cut site in motif position.")
                     }
                     fp <- apply(data, 2, sum)
                     footprint_data[[motif_name]] <- fp
@@ -163,7 +161,7 @@ CutSiteCountR <- R6::R6Class(
                 fp <- readRDS(private$paramlist[["footprint.data"]])
                 return(fp)
             }else if(item == "pdf.dir"){
-                return(private$paramlist[["matrixfile.dir"]])
+                return(.obtainConfigure("tmpdir"))
             }
         },
 
@@ -220,28 +218,27 @@ CutSiteCountR <- R6::R6Class(
 #' @author Wei Zhang
 #' @examples
 #'
-#' \dontrun{
-#' # library(R.utils)
-#' # library(BSgenome.Hsapiens.UCSC.hg19)
+#' library(R.utils)
+#' library(BSgenome.Hsapiens.UCSC.hg19)
 #' ## processing bed file
-#' # fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
-#' # frag <- as.vector(bunzip2(filename = fra_path,
-#' # destname = file.path(getwd(), "chr20.50000.bed"),
-#' # ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-#' # cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
+#' fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
+#' frag <- as.vector(bunzip2(filename = fra_path,
+#' destname = file.path(getwd(), "chr20.50000.bed"),
+#' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
 #'
 #' ## find motif position
-#' # p1bz <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
-#' # peak1_path <- as.vector(bunzip2(filename = p1bz,
-#' # destname = file.path(getwd(), "chr20_sample_peak.bed"),
-#' # ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
+#' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
+#' peak1_path <- as.vector(bunzip2(filename = p1bz,
+#' destname = file.path(getwd(), "Example_peak1.bed"),
+#' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 #' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 #' # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
 #' # motifPWM = pwm, prefix = "test")
 #'
 #' ## plot footprint
 #' # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
-#' }
+#'
 #'
 #' @seealso
 #' \code{\link{atacExtractCutSite}}
