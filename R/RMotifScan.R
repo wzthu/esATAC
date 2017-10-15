@@ -61,29 +61,14 @@ RMotifScan <- R6::R6Class(
             private$writeLog(sprintf("Output destination:%s", private$paramlist[["scanO.dir"]]))
             # running
             cl <- makeCluster(private$paramlist[["n.cores"]])
-            sitesetList <- list()
-            n_motif <- length(private$paramlist[["motifPWM"]])
-            k <- 10
-            motif_in_group <- split(private$paramlist[["motifPWM"]],
-                         rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
-            n_group <- length(motif_in_group)
-            for(i in seq(n_group)){
-                thisGroup.motif <- motif_in_group[[i]]
-                thisGroup.motifname <- names(thisGroup.motif)
-                thisGroup.motifinfo <- paste(thisGroup.motifname, collapse = ",")
-                thisGroup.motifinfo <- paste("Now, processing the following motif: ",
-                                             thisGroup.motifinfo, sep = "")
-                print(thisGroup.motifinfo)
-                sitesetList_in_group <- parLapply(cl = cl,
-                                                  X = thisGroup.motif,
-                                                  fun = Biostrings::matchPWM,
-                                                  subject = private$paramlist[["genome"]],
-                                                  min.score = private$paramlist[["min.score"]],
-                                                  with.score = TRUE)
-                sitesetList <- append(sitesetList, sitesetList_in_group)
-            }
+            sitesetList <- parLapply(cl = cl,
+                                     X = private$paramlist[["motifPWM"]],
+                                     fun = Biostrings::matchPWM,
+                                     subject = private$paramlist[["genome"]],
+                                     min.score = private$paramlist[["min.score"]],
+                                     with.score = TRUE)
             stopCluster(cl)
-
+            n_motif <- length(sitesetList)
             peak <- rtracklayer::import(private$paramlist[["peak"]])
             save_info <- data.frame()
             for(i in seq(n_motif)){
@@ -160,17 +145,16 @@ RMotifScan <- R6::R6Class(
 #' @author Wei Zhang
 #' @examples
 #'
-#' \dontrun{
-#' # library(BSgenome.Hsapiens.UCSC.hg19)
-#' # library(R.utils)
-#' # p1bz <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
-#' # peak1_path <- as.vector(bunzip2(filename = p1bz,
-#' # destname = file.path(getwd(), "chr20_sample_peak.bed"),
-#' # ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
-#' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
-#' # motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
-#' # motifPWM = pwm, prefix = "test")
-#' }
+#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' library(R.utils)
+#' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
+#' peak1_path <- as.vector(bunzip2(filename = p1bz,
+#' destname = file.path(getwd(), "Example_peak1.bed"),
+#' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
+#' pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+#' #motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
+#' #motifPWM = pwm, prefix = "test")
+#'
 #'
 #' @seealso
 #' \code{\link{atacPeakCalling}}
@@ -183,7 +167,7 @@ RMotifScan <- R6::R6Class(
 #' @export
 atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = parallel::detectCores()/2, prefix = NULL){
+                          n.cores = NULL, prefix = NULL){
     tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
                           scanO.dir, n.cores, prefix)
     tmp$process()
@@ -194,7 +178,7 @@ atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
 #' @export
 motifscan <- function(peak, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                      n.cores = parallel::detectCores()/2, prefix = NULL){
+                      n.cores = NULL, prefix = NULL){
     tmp <- RMotifScan$new(atacProc = NULL, peak, genome, motifPWM, min.score,
                           scanO.dir, n.cores, prefix)
     tmp$process()
