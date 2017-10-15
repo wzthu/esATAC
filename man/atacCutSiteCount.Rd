@@ -70,27 +70,28 @@ recommended to use together.
 }
 \examples{
 
-library(R.utils)
-library(BSgenome.Hsapiens.UCSC.hg19)
+\dontrun{
+# library(R.utils)
+# library(BSgenome.Hsapiens.UCSC.hg19)
 ## processing bed file
-fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
-frag <- as.vector(bunzip2(filename = fra_path,
-destname = file.path(getwd(), "chr20.50000.bed"),
-ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
+# fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
+# frag <- as.vector(bunzip2(filename = fra_path,
+# destname = file.path(getwd(), "chr20.50000.bed"),
+# ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+# cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
 
 ## find motif position
-p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
-peak1_path <- as.vector(bunzip2(filename = p1bz,
-destname = file.path(getwd(), "Example_peak1.bed"),
-ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
+# p1bz <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
+# peak1_path <- as.vector(bunzip2(filename = p1bz,
+# destname = file.path(getwd(), "chr20_sample_peak.bed"),
+# ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
 # motifPWM = pwm, prefix = "test")
 
 ## plot footprint
 # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
-
+}
 
 }
 \seealso{

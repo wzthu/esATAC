@@ -1,4 +1,3 @@
-#' @importFrom Rbowtie2 bowtie2_build
 .ConfigClass<-R6Class(classname = ".ConfigClass",
     public = list(
         initialize = function(){
