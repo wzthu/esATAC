@@ -101,7 +101,6 @@ RPeakComp <- R6::R6Class(
                 ext.line.lwd = 2,
                 ext.line.lty = "dashed"
             )
-            grid::grid.newpage()
             pdf(file = private$paramlist[["venn.plot"]])
             grid::grid.draw(venn.plot)
             dev.off()
@@ -176,19 +175,15 @@ RPeakComp <- R6::R6Class(
 #'
 #' library(R.utils)
 #' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
-#' p2bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
+#' p2bz <- system.file("extdata", "Example_peak2.bed.bz2", package="ATACpipe")
 #' peak1_path <- as.vector(bunzip2(filename = p1bz,
 #' destname = file.path(getwd(), "Example_peak1.bed"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE , remove = FALSE))
 #' peak2_path <- as.vector(bunzip2(filename = p2bz,
 #' destname = file.path(getwd(), "Example_peak2.bed"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-#' ## overlap peak
-#' peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
-#' operation = "overlap")
-#' ## differential peak
-#' peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
-#' operation = "diff")
+#' output <- peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
+#' olap.rate = 0.1)
 #'
 #' @seealso
 #' \code{\link{atacPeakCalling}}
