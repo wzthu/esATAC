@@ -45,6 +45,42 @@ All valid standard format intermediate result files
 by other program (such as BAM BED files from ENCODE) 
 are also tested by rebuilt subpipeline.
 
+### Flowchart and overview
+
+If you do not know where to start with ATAC-seq or DNase-seq data,
+you can print flowchart like this:
+
+```{r flowchart,message=FALSE,warning=FALSE}
+library(ATACpipe)
+printMap()
+```
+
+Following the flowchart, related functions could be found in mannual.
+
+
+
+The workflow start with "UnzipAndMerge" function atacUnzipAndMerge. 
+It unzips and merges the replicates into one FASTQ file(two for paired end file). Names of reads will be renamed as numbers: 1,2,3,... by calling
+"Renamer" function atacRenamer. 
+The file will be smaller for futher analysis. 
+Adapter of reads may be found and removed by "RemoveAdapter" function 
+atacRemoveAdapter. 
+Then reads are ready for mapping to reference genome.
+"Bowtie2Mapping" mapping function atacBowtie2Mapping can do this job. "SamToBam", "Rsortbam","BamToBed","SamToBed" and "BedUtils" provide
+general processing methods for SAM file including coverting format into 
+BAM or BED file, sorting according to chromosome/start site/end site,
+reads conditional filtering, reads shifting and so on. 
+The ready-use reads in BED file may call peak by "PeakCallingFseq" 
+function atacPeakCallingFseq.
+The pipeline also provide quality control elements (e.g. "FastQC", 
+"LibComplexQC", "TSSQC") and some general genome function analysis elements
+(e.g. "RMotifScan","RPeakAnno"). For more detail, you can see the mannual
+or the examples in following sections.
+
+
+
+
+### Contact
 
 This package is developed and maintained by members of 
 [Xiaowo Wang Lab](http://bioinfo.au.tsinghua.edu.cn/member/xwwang)
@@ -53,7 +89,7 @@ MOE Key Laboratory of Bioinformatics and Bioinformatics Division,
 
 TNLIST / Department of Automation, Tsinghua University
 
-contact:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
+email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 
 ## Preparation
 
