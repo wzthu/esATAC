@@ -15,7 +15,7 @@ Description: This package provides a framework and
         regions of interest. The package is managed by dataflow graph,
         and users can also build their own pipeline easily and flexibly. 
 Depends: R (>= 3.4.1), QuasR, Rsamtools, GenomicRanges
-License: GPL (>= 3)
+License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports: 
