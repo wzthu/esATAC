@@ -1,3 +1,85 @@
+setClass(Class = "SamToBam",
+         contains = "ATACProc"
+)
+
+
+setMethod(
+    f = "initialize",
+    signature = "SamToBam",
+    definition = function(.Object,atacProc, ..., samInput = NULL, bamOutput = NULL, editable = FALSE){
+        .Object <- init(.Object,"SamToBam",editable,list(arg1=atacProc))
+        # necessary parameters
+        if((!is.null(atacProc)) ){
+            .Object@paramlist[["samInput"]] <- getParam(atacProc, "samOutput")
+            regexProcName <- sprintf("(sam|%s)", getProcName(atacProc))
+        }else if(is.null(atacProc)){ # input
+            .Object@paramlist[["samInput"]] <- samInput
+            regexProcName <- "(sam)"
+        }
+        # unnecessary parameters
+        if(is.null(bamOutput)){
+            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["samInput"]], regexProcName)
+            .Object@paramlist[["name_tmp"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                         paste0(prefix, ".", getProcName(.Object)))
+            .Object@paramlist[["bamOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                          paste0(prefix, ".", getProcName(.Object), ".bam"))
+            .Object@paramlist[["baiOutput"]] <- file.path(.obtainConfigure("tmpdir"),
+                                                          paste0(prefix, ".", getProcName(.Object), ".bam.bai"))
+        }else{
+            name_split <- unlist(base::strsplit(x = bamOutput, split = ".", fixed = TRUE))
+            suffix <- tail(name_split, 1)
+            if(suffix == "bam"){
+                .Object@paramlist[["name_tmp"]] <- paste0(name_split[-length(name_split)], collapse = ".")
+                .Object@paramlist[["bamOutput"]] <- bamInput
+                .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
+            }else{
+                .Object@paramlist[["name_tmp"]] <- bamInput
+                .Object@paramlist[["bamOutput"]] <- paste0(.Object@paramlist[["name_tmp"]], ".bam", collapse = "")
+                .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
+            }
+
+        }
+        paramValidation(.Object)
+        .Object
+
+    }
+)
+
+
+
+
+setMethod(
+    f = "processing",
+    signature = "SamToBam",
+    definition = function(.Object,...){
+        .Object <- writeLog(.Object,paste0("processing file:"))
+        .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["samInput"]]))
+        .Object <- writeLog(.Object,sprintf("Bam destination:%s",.Object@paramlist[["bamOutput"]]))
+        .Object <- writeLog(.Object,sprintf("Bai destination:%s",.Object@paramlist[["baiOutput"]]))
+        Rsamtools::asBam(file = .Object@paramlist[["samInput"]], destination = .Object@paramlist[["name_tmp"]])
+        .Object
+    }
+)
+
+setMethod(
+    f = "checkRequireParam",
+    signature = "SamToBam",
+    definition = function(.Object,...){
+        if(is.null(.Object@paramlist[["samInput"]])){
+            stop("Parameter samInput is required!")
+        }
+    }
+)
+
+setMethod(
+    f = "checkAllPath",
+    signature = "SamToBam",
+    definition = function(.Object,...){
+        checkFileExist(.Object,.Object@paramlist[["samInput"]])
+        checkPathExist(.Object,.Object@paramlist[["bamOutput"]])
+    }
+)
+
 SamToBam <-R6::R6Class(
     classname = "SamToBam",
     inherit = ATACProc,
@@ -102,17 +184,31 @@ SamToBam <-R6::R6Class(
 #' \code{\link{atacBamSort}}
 
 #' @rdname atacSam2Bam
-#' @export
-atacSam2Bam <- function(atacProc = NULL, samInput = NULL, bamOutput = NULL){
-    tmp <- SamToBam$new(atacProc, samInput, bamOutput)
-    tmp$process()
-    invisible(tmp)
-}
-
+#' @exportMethod atacSam2Bam
+setGeneric("atacSam2Bam",function(atacProc = NULL,
+                                  samInput = NULL, bamOutput = NULL) standardGeneric("atacSam2Bam"))
+setMethod(
+    f = "atacSam2Bam",
+    signature = "ATACProc",
+    definition = function(atacProc = NULL,
+                          samInput = NULL, bamOutput = NULL){
+        atacproc <- new(
+            "SamToBam",
+            atacProc = atacProc,
+            samInput = samInput,
+            bamOutput = bamOutput)
+        atacproc <- process(atacproc)
+        invisible(atacproc)
+    }
+)
 #' @rdname atacSam2Bam
 #' @export
 sam2bam <- function(samInput, bamOutput = NULL){
-    tmp <- SamToBam$new(atacProc = NULL, samInput, bamOutput)
-    tmp$process()
-    invisible(tmp)
+    atacproc <- new(
+        "SamToBam",
+        atacProc = NULL,
+        samInput = samInput,
+        bamOutput = bamOutput)
+    atacproc <- process(atacproc)
+    invisible(atacproc)
 }

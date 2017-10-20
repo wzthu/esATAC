@@ -1,3 +1,84 @@
+setClass(Class = "CutSitePre",
+         contains = "ATACProc"
+)
+
+
+setMethod(
+    f = "initialize",
+    signature = "CutSitePre",
+    definition = function(.Object, atacProc, ..., bedInput = NULL, csOutput.dir = NULL,
+                          prefix = NULL, editable = FALSE){
+        .Object <- init(.Object, "CutSitePre", editable, list(arg1 = atacProc))
+
+        if(!is.null(atacProc)){
+            .Object@paramlist[["bedInput"]] <- getParam(atacProc, "bedOutput")
+            regexProcName <- sprintf("(bed|%s)", getProcName(atacProc))
+        }else{
+            .Object@paramlist[["bedInput"]] <- bedInput
+            regexProcName <- "(bed)"
+        }
+
+        if(is.null(csOutput.dir)){
+            dir_name <- getBasenamePrefix(.Object, .Object@paramlist[["bedInput"]], regexProcName)
+            csOutput_dir <- file.path(.obtainConfigure("tmpdir"),
+                                      dir_name)
+            dir.create(csOutput_dir)
+        }else{
+            csOutput_dir <- csOutput.dir
+        }
+
+        if(is.null(prefix)){
+            .Object@paramlist[["csfile.dir"]] <- paste(csOutput_dir, "/", "Cutsite", sep = "")
+        }else{
+            .Object@paramlist[["csfile.dir"]] <- paste(csOutput_dir, "/", prefix, sep = "")
+        }
+
+        # may use inthe future
+        # .Object@paramlist[["csfile.rds"]] <- paste(.Object@paramlist[["csfile.dir"]], ".rds", sep = "")
+
+        paramValidation(.Object)
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "processing",
+    signature = "CutSitePre",
+    definition = function(.Object,...){
+        .Object <- writeLog(.Object, paste0("processing file:"))
+        .Object <- writeLog(.Object, sprintf("source:%s", .Object@paramlist[["bedInput"]]))
+        .Object <- writeLog(.Object, sprintf("destination:%s", .Object@paramlist[["csfile.dir"]]))
+        file_path_data <- .CutSite_call(InputFile = .Object@paramlist[["bedInput"]], OutputFile = .Object@paramlist[["csfile.dir"]])
+        # may use in the future
+        # saveRDS(object = file_path_data, file = .Object@paramlist[["csfile.rds"]])
+        .Object
+    }
+
+)
+
+
+setMethod(
+    f = "checkRequireParam",
+    signature = "CutSitePre",
+    definition = function(.Object,...){
+        if(is.null(.Object@paramlist[["bedInput"]])){
+            stop("Parameter bedInput is required!")
+        }
+    }
+)
+
+
+setMethod(
+    f = "checkAllPath",
+    signature = "CutSitePre",
+    definition = function(.Object,...){
+        checkFileExist(.Object, .Object@paramlist[["bedInput"]])
+        checkPathExist(.Object, .Object@paramlist[["csfile.dir"]])
+    }
+)
+
+
 CutSitePre <- R6::R6Class(
     classname = "CutSitePre",
     inherit = ATACProc,
@@ -102,19 +183,28 @@ CutSitePre <- R6::R6Class(
 #' @seealso
 #' \code{\link{atacCutSiteCount}}
 
+
 #' @rdname atacExtractCutSite
-#' @export
-atacExtractCutSite <- function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL){
-    tmp <- CutSitePre$new(atacProc, bedInput, csOutput.dir, prefix)
-    tmp$process()
-    invisible(tmp)
-}
+#' @exportMethod atacExtractCutSite
+setGeneric("atacExtractCutSite",
+           function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL) standardGeneric("atacExtractCutSite"))
+
+setMethod(
+    f = "atacExtractCutSite",
+    signature = "ATACProc",
+    definition = function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL){
+        atacproc <- new("CutSitePre", atacProc = atacProc, bedInput = bedInput, csOutput.dir = csOutput.dir, prefix = prefix)
+        atacproc <- process(atacproc)
+        invisible(atacproc)
+    }
+)
+
 
 #' @rdname atacExtractCutSite
 #' @export
 extractcutsite <- function(bedInput, csOutput.dir = NULL, prefix = NULL){
-    tmp <- CutSitePre$new(atacProc = NULL, bedInput, csOutput.dir, prefix)
-    tmp$process()
-    invisible(tmp)
+    atacproc <- new("CutSitePre", atacProc = NULL, bedInput = bedInput, csOutput.dir = csOutput.dir, prefix = prefix)
+    atacproc <- process(atacproc)
+    invisible(atacproc)
 }
 
