@@ -53,8 +53,42 @@ Suggests:
     org.Hs.eg.db
 LinkingTo: Rcpp
 SystemRequirements: C++11
+Collate: 
+    BaseProc.R
+    BamToBed.R
+    BedToBigWig.R
+    BedUtils.R
+    ConfigVal.R
+    CppInterface.R
+    CutSiteCountR.R
+    CutSitePre.R
+    FRiPQC.R
+    FastQC.R
+    FregLenDistribute.R
+    GraphMng.R
+    JavaExports.R
+    JavaInterface.R
+    LibComplexQC.R
+    Mapping.R
+    Methods.R
+    PeakCallingFseq.R
+    PeakQC.R
+    RGo.R
+    RMotifScan.R
+    RPeakAnno.R
+    RPeakComp.R
+    RSNPs.R
+    RcppExports.R
+    RemoveAdapter.R
+    Renamer.R
+    Rsortbam.R
+    SamToBam.R
+    SamToBed.R
+    TSSQC.R
+    UnzipAndMerge.R
+    onLoad.R
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
