@@ -322,7 +322,7 @@ setMethod(
             fastqOutput2 = fastqOutput2,
             fastqInput1 = fastqInput1,
             fastqInput2 = fastqInput2)
-        atacproc <- process(atacproc, atacProc)
+        atacproc <- process(atacproc)
         invisible(atacproc)
     }
 )
@@ -334,13 +334,14 @@ renamer <- function(fastqInput1=NULL,
                     fastqOutput2=NULL,
                     interleave = FALSE,
                     threads = NULL){
-    atacproc <- Renamer$new(atacProc = NULL,
-                            fastqOutput1 = fastqOutput1,
-                            fastqOutput2 = fastqOutput2,
-                            fastqInput1 = fastqInput1,
-                            fastqInput2 = fastqInput2,
-                            threads = NULL)
-    atacproc$process()
+    atacproc <- new(
+        "Renamer",
+        atacProc = NULL,
+        fastqOutput1 = fastqOutput1,
+        fastqOutput2 = fastqOutput2,
+        fastqInput1 = fastqInput1,
+        fastqInput2 = fastqInput2)
+    atacproc <- process(atacproc)
     invisible(atacproc)
 }
 
