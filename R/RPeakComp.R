@@ -277,7 +277,7 @@ RPeakComp <- R6::R6Class(
 #' @rdname atacpeakComp
 #' @exportMethod atacpeakComp
 setGeneric("atacpeakComp",function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-                                  bedInput2 = NULL, bedOutput = NULL, operation = NULL) standardGeneric("atacRenamer"))
+                                  bedInput2 = NULL, bedOutput = NULL, operation = NULL) standardGeneric("atacpeakComp"))
 setMethod(
     f = "atacpeakComp",
     signature = "ATACProc",
