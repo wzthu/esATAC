@@ -1,3 +1,161 @@
+setClass(Class = "RPeakAnno",
+         contains = "ATACProc"
+)
+
+
+setMethod(
+    f = "initialize",
+    signature = "RPeakAnno",
+    definition = function(.Object, atacProc, ..., peakInput = NULL, tssRegion = NULL, TxDb = NULL, level = NULL,
+                          genomicAnnotationPriority = NULL, annoDb = NULL, addFlankGeneInfo = NULL,
+                          flankDistance = NULL, sameStrand = NULL, ignoreOverlap = NULL, ignoreUpstream = NULL,
+                          ignoreDownstream = NULL, overlap = NULL, annoOutput = NULL, editable = FALSE){
+        .Object <- init(.Object, "RPeakAnno", editable, list(arg1 = atacProc))
+
+        if(!is.null(atacProc)){ # class from PeakCallingFseq
+            .Object@paramlist[["peakInput"]] <- getParam(atacProc, "bedOutput")
+            regexProcName <- sprintf("(bed|%s)", getProcName(atacProc))
+        }else{
+            .Object@paramlist[["peakInput"]] <- peakInput
+            regexProcName <- "(bed|%s)"
+        }
+        .Object@paramlist[["tssRegion"]] <- tssRegion
+        if(!is.null(TxDb)){
+            .Object@paramlist[["TxDb"]] <- TxDb
+        }else{
+            .Object@paramlist[["TxDb"]] <- .obtainConfigure("knownGene")
+        }
+
+        .Object@paramlist[["level"]] <- level
+        .Object@paramlist[["genomicAnnotationPriority"]] <- genomicAnnotationPriority
+        if(is.null(annoDb)){
+            .Object@paramlist[["annoDb"]] <- .obtainConfigure("annoDb")
+        }else{
+            .Object@paramlist[["annoDb"]] <- annoDb
+        }
+        .Object@paramlist[["addFlankGeneInfo"]] <- addFlankGeneInfo
+        .Object@paramlist[["flankDistance"]] <- flankDistance
+        .Object@paramlist[["sameStrand"]] <- sameStrand
+        .Object@paramlist[["ignoreOverlap"]] <- ignoreOverlap
+        .Object@paramlist[["ignoreUpstream"]] <- ignoreUpstream
+        .Object@paramlist[["ignoreDownstream"]] <- ignoreDownstream
+        .Object@paramlist[["overlap"]] <- overlap
+
+        # unnecessary parameters
+        if(is.null(annoOutput)){
+            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["peakInput"]], regexProcName)
+            annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
+                                        paste0(prefix, ".", getProcName(.Object)))
+            .Object@paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
+                                                           ".pdf", sep = "")
+            .Object@paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
+                                                          ".df", sep = "")
+            .Object@paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
+                                                           ".rds", sep = "")
+        }else{
+            name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
+            suffix <- tail(name_split, 1)
+            name_split <- head(name_split, -1)
+            if(suffix == "df"){
+                .Object@paramlist[["annoOutput.df"]] <- annoOutput
+                .Object@paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
+                .Object@paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
+            }else{
+                .Object@paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
+                .Object@paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
+                .Object@paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
+            }
+        }
+
+        paramValidation(.Object)
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "processing",
+    signature = "RPeakAnno",
+    definition = function(.Object,...){
+        .Object <- writeLog(.Object,paste0("processing file:"))
+        .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["peakInput"]]))
+        .Object <- writeLog(.Object,sprintf("dataframe destination:%s",.Object@paramlist[["annoOutput.df"]]))
+        .Object <- writeLog(.Object,sprintf("Image destination:%s",.Object@paramlist[["annoOutput.pdf"]]))
+
+        peakGRange <- rtracklayer::import(con = .Object@paramlist[["peakInput"]], format = "bed")
+        peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
+                                           tssRegion = .Object@paramlist[["tssRegion"]],
+                                           TxDb = .Object@paramlist[["TxDb"]],
+                                           level = .Object@paramlist[["level"]],
+                                           genomicAnnotationPriority = .Object@paramlist[["genomicAnnotationPriority"]],
+                                           annoDb = .Object@paramlist[["annoDb"]],
+                                           addFlankGeneInfo = .Object@paramlist[["addFlankGeneInfo"]],
+                                           flankDistance = .Object@paramlist[["flankDistance"]],
+                                           sameStrand = .Object@paramlist[["sameStrand"]],
+                                           ignoreOverlap = .Object@paramlist[["ignoreOverlap"]],
+                                           ignoreUpstream = .Object@paramlist[["ignoreUpstream"]],
+                                           ignoreDownstream = .Object@paramlist[["ignoreDownstream"]],
+                                           overlap = .Object@paramlist[["overlap"]])
+        saveRDS(peakAn, .Object@paramlist[["annoOutput.rds"]])
+        pdf(file = .Object@paramlist[["annoOutput.pdf"]])
+        print(.Object@paramlist[["annoOutput.pdf"]])
+        ChIPseeker::plotAnnoPie(x = peakAn)
+        dev.off()
+        tmp_file <- as.data.frame(peakAn)
+        colnames(tmp_file)[1] <- "chromatin"
+        write.table(x = tmp_file, file = .Object@paramlist[["annoOutput.df"]],
+                    quote = FALSE, row.names = FALSE, sep = "\t",
+                    col.names = TRUE, append = FALSE)
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "checkRequireParam",
+    signature = "RPeakAnno",
+    definition = function(.Object,...){
+        if(is.null(.Object@paramlist[["peakInput"]])){
+            stop("peakInput is required.")
+        }
+    }
+)
+
+
+setMethod(
+    f = "checkAllPath",
+    signature = "RPeakAnno",
+    definition = function(.Object,...){
+        checkFileExist(.Object,.Object@paramlist[["peakInput"]])
+        checkPathExist(.Object,.Object@paramlist[["annoOutput.df"]])
+        checkPathExist(.Object,.Object@paramlist[["annoOutput.pdf"]])
+        checkPathExist(.Object,.Object@paramlist[["annoOutput.rds"]])
+    }
+)
+
+
+setMethod(
+    f = "getReportValImp",
+    signature = "RGo",
+    definition = function(.Object, item){
+        if(item == "annoOutput.rds"){
+            peakAnno <- readRDS(.Object@paramlist[["annoOutput.rds"]])
+            return(peakAnno)
+        }
+    }
+)
+
+
+setMethod(
+    f = "getReportItemsImp",
+    signature = "RGo",
+    definition = function(.Object){
+        return(c("annoOutput.rds"))
+    }
+)
+
+
+
 RPeakAnno <- R6::R6Class(
   classname = "RPeakAnno",
   inherit = ATACProc,
@@ -44,7 +202,7 @@ RPeakAnno <- R6::R6Class(
         prefix <- private$getBasenamePrefix(private$paramlist[["peakInput"]], regexProcName)
         annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
                                     paste0(prefix, ".", self$getProcName()))
-        private$paramlist[["annoOutput.img"]] <- paste(annoOutput.dir,
+        private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
                                                        ".pdf", sep = "")
         private$paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
                                                       ".df", sep = "")
@@ -56,11 +214,11 @@ RPeakAnno <- R6::R6Class(
         name_split <- head(name_split, -1)
         if(suffix == "df"){
           private$paramlist[["annoOutput.df"]] <- annoOutput
-          private$paramlist[["annoOutput.img"]] <- paste(name_split, "pdf", sep = ".")
+          private$paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
           private$paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
         }else{
           private$paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
-          private$paramlist[["annoOutput.img"]] <- paste(annoOutput, "pdf", sep = ".")
+          private$paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
           private$paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
         }
       }
@@ -76,7 +234,7 @@ RPeakAnno <- R6::R6Class(
       private$writeLog(paste0("processing file:"))
       private$writeLog(sprintf("source:%s", private$paramlist[["peakInput"]]))
       private$writeLog(sprintf("dataframe destination:%s", private$paramlist[["annoOutput.df"]]))
-      private$writeLog(sprintf("Image destination:%s", private$paramlist[["annoOutput.img"]]))
+      private$writeLog(sprintf("Image destination:%s", private$paramlist[["annoOutput.pdf"]]))
       peakGRange <- rtracklayer::import(con = private$paramlist[["peakInput"]], format = "bed")
       peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
                                          tssRegion = private$paramlist[["tssRegion"]],
@@ -92,7 +250,7 @@ RPeakAnno <- R6::R6Class(
                                          ignoreDownstream = private$paramlist[["ignoreDownstream"]],
                                          overlap = private$paramlist[["overlap"]])
       saveRDS(peakAn, private$paramlist[["annoOutput.rds"]])
-      pdf(file = private$paramlist[["annoOutput.img"]])
+      pdf(file = private$paramlist[["annoOutput.pdf"]])
       ChIPseeker::plotAnnoPie(x = peakAn)
       dev.off()
       tmp_file <- as.data.frame(peakAn)
@@ -111,7 +269,7 @@ RPeakAnno <- R6::R6Class(
     checkAllPath = function(){
       private$checkFileExist(private$paramlist[["peakInput"]])
       private$checkPathExist(private$paramlist[["annoOutput.df"]])
-      private$checkPathExist(private$paramlist[["annoOutput.img"]])
+      private$checkPathExist(private$paramlist[["annoOutput.pdf"]])
       private$checkPathExist(private$paramlist[["annoOutput.rds"]])
     }, # checkAllPath end
 
@@ -133,6 +291,7 @@ RPeakAnno <- R6::R6Class(
 #' @name atacPeakAnno
 #' @aliases atacPeakAnno
 #' @aliases peakanno
+#' @importFrom ChIPseeker plotAnnoPie
 #' @title Annotate ATAC-seq Peak
 #' @description
 #' This function annotates ATAC-seq peak by a given annotation database.
@@ -187,24 +346,51 @@ RPeakAnno <- R6::R6Class(
 #' \code{\link{atacGOAnalysis}}
 #' @importFrom ChIPseeker annotatePeak
 #' @rdname atacPeakAnno
-#' @export
-atacPeakAnno <- function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
-                         TxDb = NULL, level = "transcript",
-                         genomicAnnotationPriority = c("Promoter", "5UTR",
-                                                       "3UTR", "Exon", "Intron",
-                                                       "Downstream", "Intergenic"),
-                         annoDb = NULL, addFlankGeneInfo = FALSE,
-                         flankDistance = 5000, sameStrand = FALSE,
-                         ignoreOverlap = FALSE, ignoreUpstream = FALSE,
-                         ignoreDownstream = FALSE, overlap = "TSS",
-                         annoOutput = NULL){
-  tmp <- RPeakAnno$new(atacProc, peakInput, tssRegion, TxDb, level,
-                       genomicAnnotationPriority, annoDb, addFlankGeneInfo,
-                       flankDistance, sameStrand, ignoreOverlap, ignoreUpstream,
-                       ignoreDownstream, overlap, annoOutput)
-  tmp$process()
-  invisible(tmp)
-}
+#' @exportMethod atacPeakAnno
+setGeneric("atacPeakAnno",function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
+                                  TxDb = NULL, level = "transcript",
+                                  genomicAnnotationPriority = c("Promoter", "5UTR",
+                                                                "3UTR", "Exon", "Intron",
+                                                                "Downstream", "Intergenic"),
+                                  annoDb = NULL, addFlankGeneInfo = FALSE,
+                                  flankDistance = 5000, sameStrand = FALSE,
+                                  ignoreOverlap = FALSE, ignoreUpstream = FALSE,
+                                  ignoreDownstream = FALSE, overlap = "TSS",
+                                  annoOutput = NULL) standardGeneric("atacPeakAnno"))
+setMethod(
+    f = "atacPeakAnno",
+    signature = "ATACProc",
+    definition = function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
+                          TxDb = NULL, level = "transcript",
+                          genomicAnnotationPriority = c("Promoter", "5UTR",
+                                                        "3UTR", "Exon", "Intron",
+                                                        "Downstream", "Intergenic"),
+                          annoDb = NULL, addFlankGeneInfo = FALSE,
+                          flankDistance = 5000, sameStrand = FALSE,
+                          ignoreOverlap = FALSE, ignoreUpstream = FALSE,
+                          ignoreDownstream = FALSE, overlap = "TSS",
+                          annoOutput = NULL){
+        atacproc <- new(
+            "RPeakAnno",
+            atacProc = atacProc,
+            peakInput = peakInput,
+            tssRegion = tssRegion,
+            TxDb = TxDb,
+            level = level,
+            genomicAnnotationPriority = genomicAnnotationPriority,
+            annoDb = annoDb,
+            addFlankGeneInfo = addFlankGeneInfo,
+            flankDistance = flankDistance,
+            sameStrand = sameStrand,
+            ignoreOverlap = ignoreOverlap,
+            ignoreUpstream = ignoreUpstream,
+            ignoreDownstream = ignoreDownstream,
+            overlap = overlap,
+            annoOutput = annoOutput)
+        atacproc <- process(atacproc)
+        invisible(atacproc)
+    }
+)
 
 #' @rdname atacPeakAnno
 #' @export
@@ -218,10 +404,23 @@ peakanno <- function(peakInput, tssRegion = c(-1000, 1000),
                      ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                      ignoreDownstream = FALSE, overlap = "TSS",
                      annoOutput = NULL){
-  tmp <- RPeakAnno$new(atacProc = NULL, peakInput, tssRegion, TxDb, level,
-                       genomicAnnotationPriority, annoDb, addFlankGeneInfo,
-                       flankDistance, sameStrand, ignoreOverlap, ignoreUpstream,
-                       ignoreDownstream, overlap, annoOutput)
-  tmp$process()
-  invisible(tmp)
+    atacproc <- new(
+        "RPeakAnno",
+        atacProc = NULL,
+        peakInput = peakInput,
+        tssRegion = tssRegion,
+        TxDb = TxDb,
+        level = level,
+        genomicAnnotationPriority = genomicAnnotationPriority,
+        annoDb = annoDb,
+        addFlankGeneInfo = addFlankGeneInfo,
+        flankDistance = flankDistance,
+        sameStrand = sameStrand,
+        ignoreOverlap = ignoreOverlap,
+        ignoreUpstream = ignoreUpstream,
+        ignoreDownstream = ignoreDownstream,
+        overlap = overlap,
+        annoOutput = annoOutput)
+    atacproc <- process(atacproc)
+    invisible(atacproc)
 }
