@@ -411,7 +411,7 @@ Bowtie2Mapping <-R6Class(
 #' reads_2 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
 #' "reads_2.fastq")
 #' if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
-#'     (atacBowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+#'     (bowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
 #'        samOutput = file.path(td, "result.sam"),
 #'        fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
 #'     head(readLines(file.path(td, "result.sam")))
@@ -421,12 +421,7 @@ Bowtie2Mapping <-R6Class(
 #' @exportMethod atacBowtie2Mapping
 setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000") standardGeneric("atacBowtie2Mapping")) 
 
-atacBowtie2Mapping <- function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
-    atacproc<-Bowtie2Mapping$new(atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                 fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
-    atacproc$process()
-    invisible(atacproc)
-}
+
 setMethod(
     f = "atacBowtie2Mapping",
     signature = "ATACProc",
