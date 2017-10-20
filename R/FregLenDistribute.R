@@ -387,7 +387,7 @@ FregLenDistr <-R6Class(
 
 #' @rdname atacFregLenDistr
 #' @exportMethod atacFregLenDistr
-setGeneric("atacFregLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL) standardGeneric("atacRenamer"))
+setGeneric("atacFregLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL) standardGeneric("atacFregLenDistr"))
 setMethod(
     f = "atacFregLenDistr",
     signature = "ATACProc",
