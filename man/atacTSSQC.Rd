@@ -56,7 +56,7 @@ or you can use \code{tssQC} instead.
 \examples{
 library(R.utils)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
@@ -68,12 +68,13 @@ tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,freg
 dir(td)
 
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
-\author{
-Zheng Wei
-}
+

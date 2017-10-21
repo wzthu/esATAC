@@ -51,9 +51,10 @@ ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 extractcutsite(bedInput = frag, prefix = "ATAC")
 
 }
-\seealso{
-\code{\link{atacCutSiteCount}}
-}
 \author{
 Wei Zhang
 }
+\seealso{
+\code{\link{atacCutSiteCount}}
+}
+

@@ -397,7 +397,7 @@ Bowtie2Mapping <-R6Class(
 #' \code{\link{atacLibComplexQC}}
 #' @examples 
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #' 
 #' ## Building a bowtie2 index
 #' library("Rbowtie2")

@@ -201,6 +201,8 @@ setMethod(f = "isSingleEnd",
               return(.Object@singleEnd)
           })
 
+#' @rdname ATACProc
+#' @exportMethod  getReportVal
 setGeneric(name = "getReportVal",
            def = function(.Object,item,...){
                standardGeneric("getReportVal")
@@ -792,6 +794,7 @@ ATACProc <- R6Class(
 #' @aliases isSingleEnd
 #' @aliases getReportVal
 #' @aliases getReportItems
+#' @aliases getReportVal0
 #' @title Methods for ATACProc objects
 #' @description 
 #' You can call ATACProc objects operation methods below to 

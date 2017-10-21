@@ -18,7 +18,7 @@ samToBed(samInput, reportOutput = NULL, merge = c("auto", "yes", "no"),
 \arguments{
 \item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacBowtie2Mapping}} 
+\code{\link{atacBowtie2Mapping}}
 \code{\link{bowtie2Mapping}}}
 
 \item{reportOutput}{\code{Character} scalar
@@ -84,25 +84,25 @@ or you can use \code{samToBed} instead.
 library(R.utils)
 library(magrittr)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
-samToBed(samInput = samfile) \%>\%
-getReportVal("report")
+samToBed(samInput = samfile)
 
-}
-\seealso{
-\code{\link{atacBowtie2Mapping}} 
-\code{\link{bowtie2Mapping}}
-\code{\link{atacFregLenDistr}} 
-\code{\link{atacExtractCutSite}}
-\code{\link{atacPeakCalling}} 
-\code{\link{atacBedUtils}}
-\code{\link{atacTSSQC}} 
-\code{\link{atacBedToBigWig}}
 }
 \author{
 Zheng Wei
 }
+\seealso{
+\code{\link{atacBowtie2Mapping}}
+\code{\link{bowtie2Mapping}}
+\code{\link{atacFregLenDistr}}
+\code{\link{atacExtractCutSite}}
+\code{\link{atacPeakCalling}}
+\code{\link{atacBedUtils}}
+\code{\link{atacTSSQC}}
+\code{\link{atacBedToBigWig}}
+}
+

@@ -42,10 +42,11 @@ The pipeline to process sequencing data into destination files including
 a HTML report file reads storage files (BED BAM)
 and various quality control report files.
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
-\author{
-Zheng Wei
-}
+

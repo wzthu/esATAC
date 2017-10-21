@@ -56,7 +56,7 @@ or you can use \code{fregLenDistr} instead.
 library(R.utils)
 library(magrittr)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
@@ -69,10 +69,11 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 
 
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
-\author{
-Zheng Wei
-}
+

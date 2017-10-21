@@ -46,7 +46,7 @@ or you can use \code{fregLenDistr} instead.
 \examples{
 library(R.utils)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
@@ -56,12 +56,13 @@ fregLenDistr(bedfile)
 dir(td)
 
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
-\author{
-Zheng Wei
-}
+
