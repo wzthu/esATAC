@@ -301,7 +301,7 @@ BedUtils<-R6::R6Class(
 #' library(R.utils)
 #' library(magrittr)
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 #' samfile <- file.path(td,"Example.sam")

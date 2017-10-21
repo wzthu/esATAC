@@ -282,7 +282,7 @@ Renamer <-R6Class(
 #' @examples 
 #' library(magrittr)
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #' 
 #' # Identify adapters
 #' prefix<-system.file(package="ATACpipe", "extdata", "uzmg")

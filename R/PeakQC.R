@@ -285,7 +285,7 @@ PeakQC <-R6Class(
 #' library(R.utils)
 #' library(magrittr)
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")

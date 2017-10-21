@@ -382,7 +382,7 @@ setMethod(
 
 setGeneric(
     name = "getTopic",
-    def = function(.Object,...){
+    def = function(.Object,topic,...){
         standardGeneric("getTopic")
     }
 )
@@ -390,7 +390,7 @@ setGeneric(
 setMethod(
     f = "getTopic",
     signature = "RemoveAdapter",
-    definition = function(.Object, ...){
+    definition = function(.Object, topic,...){
         setLine<-readLines(paste0(.Object@paramlist[["reportPrefix"]],".settings"))
         itemstarts<-grep("\\]$",setLine)
         
@@ -866,7 +866,7 @@ RemoveAdapter <-R6Class(
 #' @examples 
 #' library(magrittr)
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #' 
 #' # Identify adapters
 #' prefix<-system.file(package="ATACpipe", "extdata", "uzmg")

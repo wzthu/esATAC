@@ -62,9 +62,10 @@ peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
 operation = "diff")
 
 }
-\seealso{
-\code{\link{atacPeakCalling}}
-}
 \author{
 Wei Zhang
 }
+\seealso{
+\code{\link{atacPeakCalling}}
+}
+

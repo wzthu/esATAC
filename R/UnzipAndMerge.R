@@ -409,7 +409,7 @@ UnzipAndMerge <-R6Class(
 #' \code{\link{atacQCReport}} 
 #' @examples 
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #' 
 #' # Identify adapters
 #' prefix<-system.file(package="ATACpipe", "extdata", "uzmg")

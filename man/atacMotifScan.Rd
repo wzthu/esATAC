@@ -64,12 +64,13 @@ pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 
 
 }
+\author{
+Wei Zhang
+}
 \seealso{
 \code{\link{atacPeakCalling}}
 \code{\link{atacCutSiteCount}}
 \link[Biostrings]{matchPWM}
 \link[IRanges]{subsetByOverlaps}
 }
-\author{
-Wei Zhang
-}
+

@@ -4,7 +4,6 @@
 \alias{configureValue}
 \alias{getAllConfigure}
 \alias{getConfigure}
-\alias{getConfigure}
 \alias{setConfigure}
 \title{Global parameters configure}
 \usage{
@@ -45,10 +44,11 @@ and getable. While the others are readable only.
 You should consider to configure these parameters
 before starting the workflow
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacSamToBed}} 
 \code{\link{atacBedUtils}}
 }
-\author{
-Zheng Wei
-}
+

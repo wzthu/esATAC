@@ -94,7 +94,7 @@ function arguments. See the output of
 \examples{
 library(magrittr)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
 prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
@@ -110,6 +110,9 @@ atacRenamer \%>\% atacRemoveAdapter
 dir(td) 
 
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacRenamer}} 
 \code{\link{renamer}}
@@ -117,6 +120,4 @@ dir(td)
 \code{\link{unzipAndMerge}}
 \code{\link{atacBowtie2Mapping}}
 }
-\author{
-Zheng Wei
-}
+

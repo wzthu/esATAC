@@ -42,7 +42,7 @@ Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \examples{
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
 prefix<-system.file(package="ATACpipe", "extdata", "uzmg")

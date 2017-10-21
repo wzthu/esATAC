@@ -34,11 +34,27 @@ Generate quality control plots from fastq/fasta/bam of ATAC-seq data.
 Every highthroughput sequencing need quality control analysis, this
 function provide QC for ATAC-seq, such as GC content.
 }
+\examples{
+
+library(R.utils)
+fra_path <- system.file("extdata", "chr20_1.fq.bz2", package="ATACpipe")
+fq1 <- as.vector(bunzip2(filename = fra_path,
+destname = file.path(getwd(), "chr20_1.fq"),
+ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+fra_path <- system.file("extdata", "chr20_2.fq.bz2", package="ATACpipe")
+fq2 <- as.vector(bunzip2(filename = fra_path,
+destname = file.path(getwd(), "chr20_2.fq"),
+ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+qcreport(input_file = c(fq1, fq2))
+
+
+}
+\author{
+Wei Zhang
+}
 \seealso{
 \code{\link{atacUnzipAndMerge}},
 \code{\link{atacRenamer}},
 \code{\link{atacSam2Bam}}.
 }
-\author{
-Wei Zhang
-}
+

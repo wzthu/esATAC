@@ -16,17 +16,17 @@ bedUtils(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,
   uniqueBed = FALSE, minFregLen = 0, maxFregLen = 2e+09)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacBam2Bed}} 
+\code{\link{atacBam2Bed}}
 \code{\link{bam2bed}}
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{samToBed}}}
 
-\item{bedInput}{\code{Character} scalar. 
+\item{bedInput}{\code{Character} scalar.
 Bed file input path.}
 
-\item{bedOutput}{\code{Character} scalar. 
+\item{bedOutput}{\code{Character} scalar.
 Bed file output path.}
 
 \item{mergePair}{\code{Logical} scalar
@@ -42,7 +42,7 @@ The offset that positive strand reads will shift.}
 The offset that negative strand reads will shift.}
 
 \item{chrFilterList}{\code{Character} vector
-The chromatin(or regex of chromatin) will be retain/discard 
+The chromatin(or regex of chromatin) will be retain/discard
 if \code{select} is TRUE/FALSE}
 
 \item{select}{\code{Logical} scalar
@@ -67,7 +67,7 @@ Report output file path.}
 An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 }
 \description{
-This function is used to 
+This function is used to
 merge interleave paired end reads in bed,
 downsample bed reads,
 shift bed reads,
@@ -78,41 +78,42 @@ remove duplicates reads in bed.
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{bedUtils} instead.
 }
 \examples{
 library(R.utils)
 library(magrittr)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
-atacproc<-samToBed(samInput = samfile) \%>\% 
-atacBedUtils(maxFregLen = 100, chrFilterList = NULL) 
+atacproc<-samToBed(samInput = samfile) \%>\%
+atacBedUtils(maxFregLen = 100, chrFilterList = NULL)
 
 
 
-}
-\seealso{
-\code{\link{atacBam2Bed}} 
-\code{\link{bam2bed}}
-\code{\link{atacSamToBed}} 
-\code{\link{samToBed}}
-\code{\link{atacFregLenDistr}} 
-\code{\link{atacExtractCutSite}}
-\code{\link{atacPeakCalling}} 
-\code{\link{atacTSSQC}} 
-\code{\link{atacBedToBigWig}}
 }
 \author{
 Zheng Wei
 }
+\seealso{
+\code{\link{atacBam2Bed}}
+\code{\link{bam2bed}}
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
+\code{\link{atacFregLenDistr}}
+\code{\link{atacExtractCutSite}}
+\code{\link{atacPeakCalling}}
+\code{\link{atacTSSQC}}
+\code{\link{atacBedToBigWig}}
+}
+

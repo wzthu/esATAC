@@ -63,7 +63,7 @@ or you can use \code{renamer} instead.
 \examples{
 library(magrittr)
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
 prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
@@ -79,12 +79,13 @@ atacRenamer
 dir(td) 
 
 }
+\author{
+Zheng Wei
+}
 \seealso{
 \code{\link{atacUnzipAndMerge}} 
 \code{\link{unzipAndMerge}}
 \code{\link{atacQCReport}} 
 \code{\link{atacRemoveAdapter}}
 }
-\author{
-Zheng Wei
-}
+
