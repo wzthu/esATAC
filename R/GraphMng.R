@@ -129,11 +129,11 @@ setMethod(f = "checkRelation2",
               return(are.connected(graphMngObj@private$graphDep2,resultProcName,procName))
           })
 
-setGeneric(name = "printMap",
+setGeneric(name = "graphPrintMap",
            def = function(graphMngObj,...,procName=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
-               standardGeneric("printMap")
+               standardGeneric("graphPrintMap")
            })
-setMethod(f = "printMap",
+setMethod(f = "graphPrintMap",
           signature = "GraphMng",
           definition = function(graphMngObj,...,procName=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
               if(is.null(procName)){
