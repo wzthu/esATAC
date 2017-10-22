@@ -4,6 +4,7 @@
 \name{atacPeakCalling}
 \alias{atacPeakCalling}
 \alias{atacPeakCalling,ATACProc-method}
+\alias{atacPeakCalling}
 \alias{peakCalling}
 \title{Use F-seq to call peak}
 \usage{
@@ -94,13 +95,12 @@ atacPeakCalling
 
 dir(td)
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
-
+\author{
+Zheng Wei
+}

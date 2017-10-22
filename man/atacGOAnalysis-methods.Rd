@@ -4,6 +4,7 @@
 \name{atacGOAnalysis}
 \alias{atacGOAnalysis}
 \alias{atacGOAnalysis,ATACProc-method}
+\alias{atacGOAnalysis}
 \alias{goanalysis}
 \title{Gene Ontology Analysis}
 \usage{
@@ -47,7 +48,7 @@ It has to be the return value of upstream process:
 
 \item{readable}{whether mapping gene ID to gene Name.}
 
-\item{pool}{If ont=’ALL�<U+FFFD>, whether pool 3 GO sub-ontologies.}
+\item{pool}{If ont=’ALL’, whether pool 3 GO sub-ontologies.}
 
 \item{goOutput}{\code{Character} scalar.
 Output file path. Defult:in the same folder as your input file with the
@@ -74,9 +75,6 @@ geneId <- names(geneList)[1:100]
 
 
 }
-\author{
-Wei Zhang
-}
 \references{
 Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He.
 clusterProfiler: an R package for comparing biological themes among gene
@@ -87,4 +85,6 @@ clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287
 \link[clusterProfiler]{enrichGO} function enrichGO in package
 "clusterProfiler"
 }
-
+\author{
+Wei Zhang
+}

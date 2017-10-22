@@ -4,6 +4,7 @@
 \name{atacFripQC}
 \alias{atacFripQC}
 \alias{atacFripQC,ATACProc-method}
+\alias{atacFripQC}
 \alias{fripQC}
 \title{Quality control for fraction of reads in peaks (FRiP)}
 \usage{
@@ -73,11 +74,10 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
-
+\author{
+Zheng Wei
+}

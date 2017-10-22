@@ -4,6 +4,7 @@
 \name{atacSNPAnno}
 \alias{atacSNPAnno}
 \alias{atacSNPAnno,ATACProc-method}
+\alias{atacSNPAnno}
 \alias{snpanno}
 \title{Find whether snps are in the given regions.}
 \usage{
@@ -53,11 +54,10 @@ snps <- system.file("extdata", "snp_info", package="ATACpipe")
 #snpanno(snp.info = snps, region.info = peak1_path)
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacPeakCalling}}
 \code{\link{atacMotifScan}}
 }
-
+\author{
+Wei Zhang
+}

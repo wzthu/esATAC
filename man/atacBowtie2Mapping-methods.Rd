@@ -4,6 +4,7 @@
 \name{atacBowtie2Mapping}
 \alias{atacBowtie2Mapping}
 \alias{atacBowtie2Mapping,ATACProc-method}
+\alias{atacBowtie2Mapping}
 \alias{bowtie2Mapping}
 \title{Use bowtie2 aligner to map reads to reference genome}
 \usage{
@@ -111,9 +112,6 @@ if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
     head(readLines(file.path(td, "result.sam")))
 }
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacRemoveAdapter}}
 \code{\link{removeAdapter}}
@@ -124,4 +122,6 @@ Zheng Wei
 \code{\link{atacSamToBed}}
 \code{\link{atacLibComplexQC}}
 }
-
+\author{
+Zheng Wei
+}

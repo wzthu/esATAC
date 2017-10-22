@@ -4,6 +4,7 @@
 \name{atacQCReport}
 \alias{atacQCReport}
 \alias{atacQCReport,ATACProc-method}
+\alias{atacQCReport}
 \alias{qcreport}
 \title{Quality control for ATAC-seq data.}
 \usage{
@@ -54,12 +55,11 @@ qcreport(input_file = c(fq1, fq2))
 
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacUnzipAndMerge}},
 \code{\link{atacRenamer}},
 \code{\link{atacSam2Bam}}.
 }
-
+\author{
+Wei Zhang
+}

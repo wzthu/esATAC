@@ -4,6 +4,7 @@
 \name{atacTSSQC}
 \alias{atacTSSQC}
 \alias{atacTSSQC,ATACProc-method}
+\alias{atacTSSQC}
 \alias{tssQC}
 \title{Quality control for transcription start site(TSS) reads enrichment}
 \usage{
@@ -74,13 +75,12 @@ tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,freg
 dir(td)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
-
+\author{
+Zheng Wei
+}

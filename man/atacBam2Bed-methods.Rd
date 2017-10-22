@@ -4,6 +4,7 @@
 \name{atacBam2Bed}
 \alias{atacBam2Bed}
 \alias{atacBam2Bed,ATACProc-method}
+\alias{atacBam2Bed}
 \alias{bam2bed}
 \title{Convert bam format to bed format.}
 \usage{
@@ -46,13 +47,12 @@ ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 bam2bed(bamInput = ex1_file)
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacBamSort}}
 \code{\link{atacSam2Bam}}
 \link[rtracklayer]{import}
 \link[rtracklayer]{export}
 }
-
+\author{
+Wei Zhang
+}

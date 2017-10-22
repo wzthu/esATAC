@@ -4,6 +4,7 @@
 \name{atacSamToBed}
 \alias{atacSamToBed}
 \alias{atacSamToBed,ATACProc-method}
+\alias{atacSamToBed}
 \alias{samToBed}
 \title{Convert SAM file to BED file}
 \usage{
@@ -99,9 +100,6 @@ samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBed(samInput = samfile)
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacBowtie2Mapping}}
 \code{\link{bowtie2Mapping}}
@@ -112,4 +110,6 @@ Zheng Wei
 \code{\link{atacTSSQC}}
 \code{\link{atacBedToBigWig}}
 }
-
+\author{
+Zheng Wei
+}

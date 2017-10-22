@@ -4,6 +4,7 @@
 \name{atacSam2Bam}
 \alias{atacSam2Bam}
 \alias{atacSam2Bam,ATACProc-method}
+\alias{atacSam2Bam}
 \alias{sam2bam}
 \title{Convert sam format to bam format.}
 \usage{
@@ -47,12 +48,11 @@ ext="bz2", FUN=bzfile, remove = FALSE))
 sam2bam(samInput = sam_path)
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacBowtie2Mapping}}
 \code{\link{atacBam2Bed}}
 \code{\link{atacBamSort}}
 }
-
+\author{
+Wei Zhang
+}

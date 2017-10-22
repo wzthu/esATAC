@@ -4,6 +4,7 @@
 \name{atacBamSort}
 \alias{atacBamSort}
 \alias{atacBamSort,ATACProc-method}
+\alias{atacBamSort}
 \alias{bamsort}
 \title{Sort bam file and rebuild bai index.}
 \usage{
@@ -39,13 +40,12 @@ ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 bamsort(bamInput = ex1_file)
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \link[Rsamtools]{sortBam}
 \link[Rsamtools]{indexBam}
 \code{\link{atacSam2Bam}}
 \code{\link{atacBam2Bed}}
 }
-
+\author{
+Wei Zhang
+}

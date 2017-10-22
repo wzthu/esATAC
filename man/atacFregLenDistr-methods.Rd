@@ -4,6 +4,7 @@
 \name{atacFregLenDistr}
 \alias{atacFregLenDistr}
 \alias{atacFregLenDistr,ATACProc-method}
+\alias{atacFregLenDistr}
 \alias{fregLenDistr}
 \title{Quality control for fregment length distribution}
 \usage{
@@ -61,13 +62,12 @@ fregLenDistr(bedfile)
 dir(td)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
-
+\author{
+Zheng Wei
+}
