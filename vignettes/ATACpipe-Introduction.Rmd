@@ -201,7 +201,6 @@ called like this:
 
 ```{r casesingle, eval=TRUE}
 bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
-bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
 #uncomment to run:
 #atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
 ```

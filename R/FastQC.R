@@ -127,11 +127,11 @@ setMethod(
 #' @examples
 #'
 #' library(R.utils)
-#' fra_path <- system.file("extdata", "chr20_1.fq.bz2", package="ATACpipe")
+#' fra_path <- system.file("extdata", "chr20_1.2.fq.bz2", package="ATACpipe")
 #' fq1 <- as.vector(bunzip2(filename = fra_path,
 #' destname = file.path(getwd(), "chr20_1.fq"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-#' fra_path <- system.file("extdata", "chr20_2.fq.bz2", package="ATACpipe")
+#' fra_path <- system.file("extdata", "chr20_2.2.fq.bz2", package="ATACpipe")
 #' fq2 <- as.vector(bunzip2(filename = fra_path,
 #' destname = file.path(getwd(), "chr20_2.fq"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
