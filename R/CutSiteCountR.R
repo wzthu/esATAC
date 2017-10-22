@@ -179,7 +179,7 @@ setMethod(
     signature = "CutSiteCountR",
     definition = function(.Object, item){
         if(item == "footprint.data"){
-            fp <- readRDS(private$paramlist[["footprint.data"]])
+            fp <- readRDS(.Object@paramlist[["footprint.data"]])
             return(fp)
         }else if(item == "pdf.dir"){
             return(.obtainConfigure("tmpdir"))

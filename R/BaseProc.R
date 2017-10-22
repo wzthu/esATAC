@@ -3,7 +3,6 @@
 #' @aliases printMap
 #' @aliases clearProcCache
 #' @aliases process
-#' @aliases getNextProcList
 #' @aliases getProcName
 #' @aliases getParam
 #' @aliases getParamItems
