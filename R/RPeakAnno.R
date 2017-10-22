@@ -136,8 +136,8 @@ setMethod(
 
 setMethod(
     f = "getReportValImp",
-    signature = "RGo",
-    definition = function(.Object, item){
+    signature = "RPeakAnno",
+    definition = function(.Object, item, ...){
         if(item == "annoOutput.rds"){
             peakAnno <- readRDS(.Object@paramlist[["annoOutput.rds"]])
             return(peakAnno)
@@ -148,8 +148,8 @@ setMethod(
 
 setMethod(
     f = "getReportItemsImp",
-    signature = "RGo",
-    definition = function(.Object){
+    signature = "RPeakAnno",
+    definition = function(.Object, ...){
         return(c("annoOutput.rds"))
     }
 )
