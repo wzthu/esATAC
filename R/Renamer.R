@@ -123,11 +123,11 @@ singleCall<-function(number,.Object){
     }
 }
 
-
+#' @name atacRenamer
 #' @title Rename reads name in fastq
 #' @description
 #' Rename reads name in fastq with increasing integer
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacUnzipAndMerge}}
 #' \code{\link{unzipAndMerge}}
@@ -153,14 +153,14 @@ singleCall<-function(number,.Object){
 #' The threads will be created in this process. default: 1
 #' @details The parameter related to input and output file path
 #' will be automatically
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 #' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
 #' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{renamer} instead.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacUnzipAndMerge}}

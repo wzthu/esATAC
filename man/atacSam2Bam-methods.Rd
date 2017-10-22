@@ -15,7 +15,7 @@ atacSam2Bam(atacProc = NULL, samInput = NULL, bamOutput = NULL)
 sam2bam(samInput, bamOutput = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacBowtie2Mapping}}.}
 
@@ -27,7 +27,7 @@ Bam file output path. If ignored, bed file will be put in the same path as
 the sam file.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for
+An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{

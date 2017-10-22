@@ -121,10 +121,10 @@ setMethod(
 #' @description
 #' This function compares two peak file and report overlap or differential peaks
 #' according to the parameter "operation".
-#' @param atacProcPeak1 \code{\link{ATACProc}} object scalar.
+#' @param atacProcPeak1 \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}}.
-#' @param atacProcPeak2 \code{\link{ATACProc}} object scalar.
+#' @param atacProcPeak2 \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}}.
 #' @param bedInput1 \code{Character} scalar.
@@ -139,7 +139,7 @@ setMethod(
 #' should be a \code{Character} scalar. If "operation" is "diff", it should be
 #' a \code{vector} contains 2 file path(\code{Character}).
 #' @param operation "overlap" or "diff".
-#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
 #' @examples

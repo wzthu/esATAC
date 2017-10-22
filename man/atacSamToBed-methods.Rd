@@ -24,7 +24,7 @@ samToBed(samInput, reportOutput = NULL, merge = c("auto", "yes", "no"),
   saveExtLen = FALSE, uniqueBed = TRUE)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacBowtie2Mapping}}
 \code{\link{bowtie2Mapping}}}
@@ -66,7 +66,7 @@ Save the fregment that are not in the range of minFregLen and MaxFregLen}
 Remove duplicates reads in bed if TRUE. default: FALSE}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 This function is used to convert SAM file to BED file and
@@ -80,7 +80,7 @@ remove duplicates reads before generating BED file.
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.

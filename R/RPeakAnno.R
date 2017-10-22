@@ -161,7 +161,7 @@ setMethod(
 #' @description
 #' This function annotates ATAC-seq peak by a given annotation database.
 #' For more information, please see \link[ChIPseeker]{annotatePeak}.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}}.
 #' @param peakInput \code{Character} scalar.
@@ -188,7 +188,7 @@ setMethod(
 #' region or not.
 #' @param annoOutput \code{Character} scalar.
 #' the output file path.
-#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
 #'

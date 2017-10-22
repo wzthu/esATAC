@@ -175,7 +175,7 @@ setMethod(
     }
 )
 
-
+#' @name atacBowtie2Mapping
 #' @importFrom Rbowtie2 bowtie2
 #' @title Use bowtie2 aligner to map reads to reference genome
 #' @description

@@ -6,15 +6,24 @@
 \alias{atacPrintMap}
 \alias{atacPrintMap,ATACProc-method}
 \alias{clearProcCache}
+\alias{clearProcCache,ATACProc-method}
 \alias{getParam}
+\alias{getParam,ATACProc-method}
 \alias{getParamItems}
+\alias{getParamItems,ATACProc-method}
 \alias{getProcName}
+\alias{getProcName,ATACProc-method}
 \alias{getReportItems}
+\alias{getReportItems,ATACProc-method}
 \alias{getReportVal}
+\alias{getReportVal,ATACProc-method}
 \alias{isReady}
+\alias{isReady,ATACProc-method}
 \alias{isSingleEnd}
+\alias{isSingleEnd,ATACProc-method}
 \alias{printMap}
 \alias{process}
+\alias{process,ATACProc-method}
 \title{Methods for ATACProc objects}
 \usage{
 \S4method{atacPrintMap}{ATACProc}(atacProc, preProc = FALSE,
@@ -23,27 +32,25 @@
 printMap(atacProc = NULL, preProc = FALSE, nextProc = TRUE,
   curProc = TRUE, display = TRUE)
 
-process(.Object, ...)
+\S4method{process}{ATACProc}(.Object, ...)
 
-getProcName(.Object, ...)
+\S4method{getProcName}{ATACProc}(.Object, ...)
 
-getParam(.Object, item, ...)
+\S4method{getParam}{ATACProc}(.Object, item, ...)
 
-getParamItems(.Object, ...)
+\S4method{getParamItems}{ATACProc}(.Object, ...)
 
-isReady(.Object, ...)
+\S4method{isReady}{ATACProc}(.Object, ...)
 
-clearProcCache(.Object, ...)
+\S4method{clearProcCache}{ATACProc}(.Object, ...)
 
-isSingleEnd(.Object, ...)
+\S4method{isSingleEnd}{ATACProc}(.Object, ...)
 
-getReportVal(.Object, item, ...)
+\S4method{getReportVal}{ATACProc}(.Object, item, ...)
 
-getReportItems(.Object, ...)
+\S4method{getReportItems}{ATACProc}(.Object, ...)
 }
 \arguments{
-\item{atacProc}{ATACProc object return by functions or Character scalar.}
-
 \item{preProc}{\code{Logitcal} scalar.
 show the available upstream processes if TRUE}
 
@@ -51,13 +58,17 @@ show the available upstream processes if TRUE}
 show the available downstream processes if TRUE}
 
 \item{curProc}{\code{Logitcal} scalar.
-show the current process of parameter \code{atacProc} if TRUE}
+show the current process of parameter \code{.Object} if TRUE}
 
 \item{display}{\code{Logitcal} scalar.
 Save to pdf file if FALSE.}
 
-\item{item}{\code{Characters} scalar
+\item{.Object, atacProc}{ATACProc object return by functions or Character scalar.}
+
+\item{...}{ignored
 The parameters name}
+
+\item{item}{\code{Characters} scalar}
 }
 \value{
 The value return by object methods.

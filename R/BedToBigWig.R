@@ -85,7 +85,7 @@ setMethod(
 )
 
 
-
+#' @name atacBedToBigWig
 #' @title generate BigWig file from BED file
 #' @description
 #' This function is used to generate BigWig file

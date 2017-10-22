@@ -132,7 +132,7 @@ setMethod(
 #' @description
 #' Find snps(user providing) in given regions.
 #' This function do not consider strand.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacMotifScan}}.
@@ -147,7 +147,7 @@ setMethod(
 #' Input region info path. The first 3 column must be chr, position, end.
 #' @param annoOutput \code{Character} scalar.
 #' Output path.
-#' @return An invisible \code{\link{ATACProc}} object scalar.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar.
 #' @author Wei Zhang
 #' @examples
 #'

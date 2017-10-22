@@ -16,7 +16,7 @@ atacSNPAnno(atacProc = NULL, snp.info = NULL, region.info = NULL,
 snpanno(snp.info, region.info = NULL, annoOutput = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakCalling}}
 \code{\link{atacMotifScan}}.
@@ -36,7 +36,7 @@ Input region info path. The first 3 column must be chr, position, end.}
 Output path.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar.
+An invisible \code{\link{ATACProc-class}} object scalar.
 }
 \description{
 Find snps(user providing) in given regions.

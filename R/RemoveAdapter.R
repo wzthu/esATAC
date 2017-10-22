@@ -416,7 +416,7 @@ listToFrame <- function(a){
 
 
 
-
+#' @name atacRemoveAdapter
 #' @title Use AdapterRemoval to remove adapters
 #' @description
 #' Use AdapterRemoval to remove adapters
