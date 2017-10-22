@@ -1,7 +1,7 @@
 #' @name ATACProc
 #' @aliases atacPrintMap
 #' @aliases printMap
-#' @aliases clearCache
+#' @aliases clearProcCache
 #' @aliases process
 #' @aliases getNextProcList
 #' @aliases getProcName
@@ -176,7 +176,7 @@ setMethod(f = "process",
               }
               if(checkMD5Cache(.Object)){
                   message(paste0("The process:`",.Object@procName,"` was finished. Nothing to do."))
-                  message("If you need to redo, please call 'clearProcCache(YourObject)' or 'YourObject$clearCache()'")
+                  message("If you need to redo, please call 'clearProcCache(YourObject)'")
                   .Object@finish<-TRUE
               }else{
                   .Object <- writeLog(.Object,as.character(Sys.time()))
@@ -270,13 +270,13 @@ setMethod(f = "isReady",
           })
 
 #' @rdname ATACProc
-#' @return \item{clearCache}{Clear cache of atacProc object}
-#' @exportMethod clearCache
-setGeneric(name = "clearCache",
+#' @return \item{clearProcCache}{Clear cache of atacProc object}
+#' @exportMethod clearProcCache
+setGeneric(name = "clearProcCache",
            def = function(.Object,...){
-               standardGeneric("clearCache")
+               standardGeneric("clearProcCache")
            })
-setMethod(f = "clearCache",
+setMethod(f = "clearProcCache",
           signature = "ATACProc",
           definition = function(.Object,...){
               if(!unlink(getParamMD5Path(.Object))){
