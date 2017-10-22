@@ -26,8 +26,8 @@
 #' @param item \code{Characters} scalar
 #' The parameters name
 #' @return the function and result of functions
-#' @name ATACProc
-#' @rdname ATACProc
+#' @name ATACProc-class
+#' @rdname ATACProc-class
 #' @exportClass ATACProc
 setClass(Class = "ATACProc",
          slots = list(
@@ -116,7 +116,7 @@ setGeneric(
     }
 )
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @aliases atacPrintMap
 setMethod(
     f = "atacPrintMap",
@@ -133,7 +133,7 @@ setMethod(
     }
 )
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @export
 printMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
     if(is.null(atacProc)){
@@ -151,7 +151,7 @@ printMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,displ
 
 
 #' @return \item{process}{Call this function to redo processing }
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @aliases process
 setGeneric(name = "process",
            def = function(.Object,...){
@@ -181,7 +181,7 @@ setMethod(f = "process",
               .Object
           })
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{getNextProcList}{Get list of available downstream process}
 #' @export
 
@@ -190,7 +190,7 @@ getNextProcList<- function(procName){
           }
 
 #' @return \item{getProcName}{get atacProc Characher name}
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @aliases getProcName
 setGeneric(name = "getProcName",
            def = function(.Object,...){
@@ -201,7 +201,7 @@ setMethod(f = "getProcName",
           definition = function(.Object,...){
               return(.Object@procName)
           })
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{getParam}{Get parameter value setted by process function}
 #' @aliases  getParam
 setGeneric(name = "getParam",
@@ -213,7 +213,7 @@ setMethod(f = "getParam",
           definition = function(.Object,item,...){
               return(.Object@paramlist[[item]])
           })
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{getParamItems}{Get parameter name list}
 #' @aliases  getParamItems
 setGeneric(name = "getParamItems",
@@ -239,7 +239,7 @@ setMethod(f = "setResultParam",
               .Object@paramlist[[item]]<-val
               .Object})
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{isReady}{Is the process ready}
 #' @aliases  isReady
 setGeneric(name = "isReady",
@@ -258,7 +258,7 @@ setMethod(f = "isReady",
               }
           })
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{clearProcCache}{Clear cache of atacProc object}
 #' @aliases  clearProcCache
 setGeneric(name = "clearProcCache",
@@ -280,7 +280,7 @@ setMethod(f = "clearProcCache",
               .Object@finish<-FALSE
               .Object
           })
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{isSingleEnd}{Single end data if TRUE else FALSE}
 #' @aliases  isSingleEnd
 setGeneric(name = "isSingleEnd",
@@ -293,7 +293,7 @@ setMethod(f = "isSingleEnd",
               return(.Object@singleEnd)
           })
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{getReportVal}{Get report value of item}
 #' @aliases   getReportVal
 setGeneric(name = "getReportVal",
@@ -314,9 +314,9 @@ setMethod(f = "getReportVal",
               }
           })
 
-#' @rdname ATACProc
+#' @rdname ATACProc-class
 #' @return \item{getReportItems}{Get all items that can be reported}
-#' @aliases   getReportItems
+#' @aliases getReportItems
 setGeneric(name = "getReportItems",
            def = function(.Object,...){
                standardGeneric("getReportItems")
