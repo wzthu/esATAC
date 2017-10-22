@@ -96,7 +96,7 @@ getSuffixlessFileName = function(filePath){
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
-#' @examples 
+#' @examples
 #' \dontrun{
 #' td<-tempdir()
 #' options(atacConf=setConfigure("threads",4))
@@ -164,7 +164,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
         pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
-        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%", prefix = prefix)
+        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "85%", prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
                                       strandLength = 100, prefix = prefix)
@@ -205,7 +205,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                                          "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
                                          "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
                                          "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
-                                  
+
                                   Value=c(seqtype,
                                           getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
                                           getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
@@ -515,10 +515,10 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
 #' }
 #' @export
-#' 
+#'
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE, 
+                      interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -537,42 +537,6 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
                 createReport = FALSE, prefix = "CTRL_all_data") #saveTmp = TRUE,
-
-    bed.case <-getParam(caselist$atacProcs$sam2Bed,"bedOutput")
-    bed.ctrl <-getParam(ctrllist$atacProcs$sam2Bed,"bedOutput")
-
-    case.peak <- getParam(caselist$atacProcs$peakCalling,"bedOutput")
-    ctrl.peak <- getParam(ctrllist$atacProcs$peakCalling,"bedOutput")
-
-    peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak, operation = "diff")
-    diff.case <- getParam(peakCom,"bedOutput")[1]
-    diff.ctrl <- getParam(peakCom,"bedOutput")[2]
-
-    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
-    # for case
-    Peakanno.case <- peakanno(peakInput = diff.case)
-    goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
-    output_motifscan.case <- motifscan(peak = diff.case, motifPWM = pwm, min.score = "90%", prefix = "CASE_diff")
-    cs_output.case <- extractcutsite(bedInput = bed.case, prefix = "CASE_diff")
-    footprint.case <- atacCutSiteCount(atacProcCutSite = cs_output.case,
-                                       atacProcMotifScan = output_motifscan.case,
-                                       strandLength = 100, prefix = "CASE_diff")
-
-    # for ctrl
-    Peakanno.ctrl <- peakanno(peakInput = diff.ctrl)
-    goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
-    output_motifscan.ctrl <- motifscan(peak = diff.ctrl, motifPWM = pwm, min.score = "90%", prefix = "CTRL_diff")
-    cs_output.ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL_diff")
-    footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_output.ctrl,
-                                       atacProcMotifScan = output_motifscan.ctrl,
-                                       strandLength = 100, prefix = "CTRL_diff")
-
-    comp_result <- list(
-        goAna.case = goAna.case,
-        footprint.case = footprint.case,
-        goAna.ctrl = goAna.ctrl,
-        footprint.ctrl = footprint.ctrl
-    )
 
     wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
                           Case = caselist[["wholesummary"]][["Value"]],
@@ -600,7 +564,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #rmdtext<-sprintf(rmdtext,filename)
 
         workdir <- getwd()
-        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,comp_result,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
+        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
 
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"))
