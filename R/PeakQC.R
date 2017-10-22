@@ -137,7 +137,7 @@ setMethod(
 
 
 
-
+#' @name atacPeakQC
 #' @title Quality control for peak overlap
 #' @description
 #' These functions are used to generate fregment distribution plot.

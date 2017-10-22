@@ -134,7 +134,7 @@ setMethod(
 #' @title Search Motif Position in Given Regions
 #' @description
 #' Search motif position in given genome regions according PWM matrix.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}}.
 #' @param peak \code{Character} scalar.
@@ -155,7 +155,7 @@ setMethod(
 #' Default: from \code{\link{setConfigure}}.
 #' @param prefix prefix for Output file.
 #' @details This function scan motif position in a given genome regions.
-#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
 #' @examples

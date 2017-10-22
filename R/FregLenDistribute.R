@@ -174,7 +174,7 @@ setMethod(
     }
 )
 
-
+#' @name atacFregLenDistr
 #' @title Quality control for fregment length distribution
 #' @description
 #' These functions are used to generate fregment distribution plot.

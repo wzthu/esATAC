@@ -125,7 +125,7 @@ setMethod(
     }
 )
 
-
+#' @name atacFripQC
 #' @title Quality control for fraction of reads in peaks (FRiP)
 #' @description
 #' Calculate the fraction of reads falling within peak regions

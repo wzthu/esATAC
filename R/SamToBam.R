@@ -85,7 +85,7 @@ setMethod(
 #' @title Convert sam format to bam format.
 #' @description
 #' This function convert a sam file into a bam file.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacBowtie2Mapping}}.
 #' @param samInput \code{Character} scalar.
@@ -95,7 +95,7 @@ setMethod(
 #' the sam file.
 #' @details The sam file wiil be automatically obtained from
 #' object(\code{atacProc}) or input by hand. bamOutput can be ignored.
-#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
 #' @examples

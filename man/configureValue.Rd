@@ -49,7 +49,7 @@ getAllConfigure()
 
 getConfigure("threads")
 
-options(atacConf=setConfigure("tmpdir",td))
+options(atacConf=setConfigure("tmpdir",tempdir()))
 
 }
 \author{

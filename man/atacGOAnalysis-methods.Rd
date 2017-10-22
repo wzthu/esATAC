@@ -22,7 +22,7 @@ goanalysis(gene, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
   qvalueCutoff = 0.2, readable = FALSE, pool = FALSE, goOutput = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakAnno}}.}
 
@@ -54,7 +54,7 @@ Output file path. Defult:in the same folder as your input file with the
 suffix "df".}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar.
+An invisible \code{\link{ATACProc-class}} object scalar.
 }
 \description{
 Ranking functional groups based on a set of genes. For more information,

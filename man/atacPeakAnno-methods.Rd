@@ -31,7 +31,7 @@ peakanno(peakInput, tssRegion = c(-1000, 1000), TxDb = NULL,
   overlap = "TSS", annoOutput = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakCalling}}.}
 
@@ -74,7 +74,7 @@ region or not.}
 the output file path.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for
+An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{

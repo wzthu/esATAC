@@ -132,7 +132,7 @@ setMethod(
 #' @description
 #' Ranking functional groups based on a set of genes. For more information,
 #' please see \link[clusterProfiler]{enrichGO}.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakAnno}}.
 #' @param gene A vector of entrez gene id.
@@ -154,7 +154,7 @@ setMethod(
 #' @details This function using \link[clusterProfiler]{enrichGO} to do GO
 #' analysis but fixed some parameters. If atacProc is not NULL, it will read
 #' the gene ID from the output of \code{\link{atacPeakAnno}}.
-#' @return An invisible \code{\link{ATACProc}} object scalar.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar.
 #' @author Wei Zhang
 #' @examples
 #'

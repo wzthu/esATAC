@@ -117,7 +117,7 @@ setMethod(
     }
 )
 
-
+#' @name  atacBedUtils
 #' @title process bed file with limit memory
 #' @description
 #' This function is used to

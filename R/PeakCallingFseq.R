@@ -120,7 +120,7 @@ setMethod(
     }
 )
 
-
+#' @name atacPeakCalling
 #' @title Use F-seq to call peak
 #' @description
 #' Use F-seq to call peak

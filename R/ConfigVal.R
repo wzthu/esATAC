@@ -192,10 +192,10 @@ setMethod(f = "GetOrgDb",
           definition = function(.Object,genome,...){
               if(genome == "hg19"||genome == "hg38"){
                   .Object@curOrgDb <- "org.Hs.eg.db"
-                  require("org.Hs.eg.db",character.only=TRUE)
+                  base::require("org.Hs.eg.db",character.only=TRUE)
               }else if(genome == "mm10" || genome == "mm9"){
                   .Object@curOrgDb <- "org.Mm.eg.db"
-                  require("org.Mm.eg.db",character.only=TRUE)
+                  base::require("org.Mm.eg.db",character.only=TRUE)
               }else {
                   stop(paste0("OrgDb Annotation package does not support for ",genome))
               }
@@ -242,7 +242,7 @@ setMethod(f = "GetOrgDb",
 #' 
 #' getConfigure("threads")
 #' 
-#' options(atacConf=setConfigure("tmpdir",td))
+#' options(atacConf=setConfigure("tmpdir",tempdir()))
 #' 
 #' @importFrom Rcpp  evalCpp
 #' @importFrom igraph  graph

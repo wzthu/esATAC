@@ -144,7 +144,7 @@ setMethod(
     }
 )
 
-
+#' @name atacLibComplexQC
 #' @title Quality control for library complexity
 #' @description
 #' The function calculate the nonredundant fraction of reads (NRF).

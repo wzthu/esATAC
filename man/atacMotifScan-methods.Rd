@@ -18,7 +18,7 @@ motifscan(peak, genome = NULL, motifPWM = NULL, min.score = "85\%",
   scanO.dir = NULL, n.cores = NULL, prefix = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakCalling}}.}
 
@@ -47,7 +47,7 @@ Default: from \code{\link{setConfigure}}.}
 \item{prefix}{prefix for Output file.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for
+An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{

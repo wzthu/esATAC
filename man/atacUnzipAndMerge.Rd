@@ -35,7 +35,7 @@ path for fastqInput2.}
 interleaved paired-end sequencing data.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 Unzip and merge fastq files that are in format of bzip, gzip or fastq

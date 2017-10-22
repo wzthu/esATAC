@@ -13,16 +13,17 @@
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
 
-#' @param atacProc ATACProc object return by functions or Character scalar.
+#' @param .Object,atacProc ATACProc object return by functions or Character scalar.
 #' @param preProc \code{Logitcal} scalar.
 #' show the available upstream processes if TRUE
 #' @param nextProc \code{Logitcal} scalar.
 #' show the available downstream processes if TRUE
 #' @param curProc \code{Logitcal} scalar.
-#' show the current process of parameter \code{atacProc} if TRUE
+#' show the current process of parameter \code{.Object} if TRUE
 #' @param display \code{Logitcal} scalar.
 #' Save to pdf file if FALSE.
 #' @param item \code{Characters} scalar
+#' @param ... ignored
 #' The parameters name
 #' @return the function and result of functions
 #'

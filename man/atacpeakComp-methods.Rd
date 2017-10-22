@@ -17,11 +17,11 @@ atacpeakComp(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
 peakcomp(bedInput1, bedInput2, bedOutput = NULL, operation = NULL)
 }
 \arguments{
-\item{atacProcPeak1}{\code{\link{ATACProc}} object scalar.
+\item{atacProcPeak1}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakCalling}}.}
 
-\item{atacProcPeak2}{\code{\link{ATACProc}} object scalar.
+\item{atacProcPeak2}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakCalling}}.}
 
@@ -42,7 +42,7 @@ a \code{vector} contains 2 file path(\code{Character}).}
 \item{operation}{"overlap" or "diff".}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for
+An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{
