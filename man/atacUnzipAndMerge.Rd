@@ -51,7 +51,7 @@ prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
 
 reads_merged_1 <- file.path(td,"reads1.fastq")
 reads_merged_2 <- file.path(td,"reads2.fastq")
-atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) 
+atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 dir(td)
 
 }
@@ -59,7 +59,7 @@ dir(td)
 Zheng Wei
 }
 \seealso{
-\code{\link{atacRenamer}} 
+\code{\link{atacRenamer}}
 \code{\link{atacQCReport}}
 }
 
