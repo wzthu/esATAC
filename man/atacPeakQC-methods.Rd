@@ -4,6 +4,7 @@
 \name{atacPeakQC}
 \alias{atacPeakQC}
 \alias{atacPeakQC,ATACProc-method}
+\alias{atacPeakQC}
 \alias{peakQC}
 \title{Quality control for peak overlap}
 \usage{
@@ -71,11 +72,10 @@ bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) \%>\%
 atacPeakCalling \%>\% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19)
 dir(td)
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
-
+\author{
+Zheng Wei
+}

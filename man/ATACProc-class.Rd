@@ -3,27 +3,27 @@
 \docType{class}
 \name{ATACProc-class}
 \alias{ATACProc-class}
-\alias{atacPrintMap}
 \alias{atacPrintMap,ATACProc-method}
-\alias{clearProcCache}
-\alias{clearProcCache,ATACProc-method}
-\alias{getParam}
-\alias{getParam,ATACProc-method}
-\alias{getParamItems}
-\alias{getParamItems,ATACProc-method}
-\alias{getProcName}
-\alias{getProcName,ATACProc-method}
-\alias{getReportItems}
-\alias{getReportItems,ATACProc-method}
-\alias{getReportVal}
-\alias{getReportVal,ATACProc-method}
-\alias{isReady}
-\alias{isReady,ATACProc-method}
-\alias{isSingleEnd}
-\alias{isSingleEnd,ATACProc-method}
+\alias{atacPrintMap}
 \alias{printMap}
-\alias{process}
 \alias{process,ATACProc-method}
+\alias{process}
+\alias{getProcName,ATACProc-method}
+\alias{getProcName}
+\alias{getParam,ATACProc-method}
+\alias{getParam}
+\alias{getParamItems,ATACProc-method}
+\alias{getParamItems}
+\alias{isReady,ATACProc-method}
+\alias{isReady}
+\alias{clearProcCache,ATACProc-method}
+\alias{clearProcCache}
+\alias{isSingleEnd,ATACProc-method}
+\alias{isSingleEnd}
+\alias{getReportVal,ATACProc-method}
+\alias{getReportVal}
+\alias{getReportItems,ATACProc-method}
+\alias{getReportItems}
 \title{Methods for ATACProc objects}
 \usage{
 \S4method{atacPrintMap}{ATACProc}(atacProc, preProc = FALSE,
@@ -137,11 +137,10 @@ clearProcCache(atacproc)
 process(atacproc)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
-
+\author{
+Zheng Wei
+}

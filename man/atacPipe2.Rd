@@ -55,10 +55,9 @@ ctrl <- c(
 atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 }
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacPipe}}
 }
-
+\author{
+Zheng Wei
+}

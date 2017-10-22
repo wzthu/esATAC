@@ -4,6 +4,7 @@
 \name{atacBedToBigWig}
 \alias{atacBedToBigWig}
 \alias{atacBedToBigWig,ATACProc-method}
+\alias{atacBedToBigWig}
 \alias{bedToBigWig}
 \title{generate BigWig file from BED file}
 \usage{
@@ -66,13 +67,12 @@ bedToBigWig(bedfile, BSgenome.Hsapiens.UCSC.hg19)
 
 dir(td)
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
 \code{\link{atacBedUtils}}
 \code{\link{bedUtils}}
 }
-
+\author{
+Zheng Wei
+}

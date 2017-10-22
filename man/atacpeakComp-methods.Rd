@@ -4,6 +4,7 @@
 \name{atacpeakComp}
 \alias{atacpeakComp}
 \alias{atacpeakComp,ATACProc-method}
+\alias{atacpeakComp}
 \alias{peakcomp}
 \title{Find the overlap or differential peaks between two samples.}
 \usage{
@@ -68,10 +69,9 @@ peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
 operation = "diff")
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacPeakCalling}}
 }
-
+\author{
+Wei Zhang
+}

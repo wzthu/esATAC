@@ -4,6 +4,7 @@
 \name{atacPeakAnno}
 \alias{atacPeakAnno}
 \alias{atacPeakAnno,ATACProc-method}
+\alias{atacPeakAnno}
 \alias{peakanno}
 \title{Annotate ATAC-seq Peak}
 \usage{
@@ -93,9 +94,6 @@ ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 #annoDb = 'org.Hs.eg.db')
 
 }
-\author{
-Wei Zhang
-}
 \references{
 Guangchuang Yu, Li-Gen Wang, Qing-Yu He. ChIPseeker: an
 R/Bioconductor package for ChIP peak annotation, comparison and
@@ -105,4 +103,6 @@ visualization. Bioinformatics 2015, 31(14):2382-2383
 \code{\link{atacPeakCalling}}
 \code{\link{atacGOAnalysis}}
 }
-
+\author{
+Wei Zhang
+}

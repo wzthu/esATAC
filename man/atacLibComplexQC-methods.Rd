@@ -4,6 +4,7 @@
 \name{atacLibComplexQC}
 \alias{atacLibComplexQC}
 \alias{atacLibComplexQC,ATACProc-method}
+\alias{atacLibComplexQC}
 \alias{libComplexQC}
 \title{Quality control for library complexity}
 \usage{
@@ -70,11 +71,10 @@ bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 atacproc<-libComplexQC(samInput = samfile)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacBowtie2Mapping}}
 \code{\link{bowtie2Mapping}}
 }
-
+\author{
+Zheng Wei
+}

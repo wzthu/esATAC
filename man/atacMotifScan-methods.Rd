@@ -4,6 +4,7 @@
 \name{atacMotifScan}
 \alias{atacMotifScan}
 \alias{atacMotifScan,ATACProc-method}
+\alias{atacMotifScan}
 \alias{motifscan}
 \title{Search Motif Position in Given Regions}
 \usage{
@@ -70,13 +71,12 @@ pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacPeakCalling}}
 \code{\link{atacCutSiteCount}}
 \link[Biostrings]{matchPWM}
 \link[IRanges]{subsetByOverlaps}
 }
-
+\author{
+Wei Zhang
+}

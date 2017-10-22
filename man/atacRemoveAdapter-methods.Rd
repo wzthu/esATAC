@@ -4,6 +4,7 @@
 \name{atacRemoveAdapter}
 \alias{atacRemoveAdapter}
 \alias{atacRemoveAdapter,ATACProc-method}
+\alias{atacRemoveAdapter}
 \alias{removeAdapter}
 \title{Use AdapterRemoval to remove adapters}
 \usage{
@@ -116,9 +117,6 @@ atacRenamer \%>\% atacRemoveAdapter
 
 dir(td)
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacRenamer}}
 \code{\link{renamer}}
@@ -126,4 +124,6 @@ Zheng Wei
 \code{\link{unzipAndMerge}}
 \code{\link{atacBowtie2Mapping}}
 }
-
+\author{
+Zheng Wei
+}

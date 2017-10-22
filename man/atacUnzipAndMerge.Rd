@@ -55,11 +55,10 @@ atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 dir(td)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacRenamer}}
 \code{\link{atacQCReport}}
 }
-
+\author{
+Zheng Wei
+}

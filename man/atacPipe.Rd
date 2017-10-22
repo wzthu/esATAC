@@ -69,11 +69,10 @@ options(atacConf=setConfigure("tmpdir",file.path(td,"paired")))
 atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
 }
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
-
+\author{
+Zheng Wei
+}

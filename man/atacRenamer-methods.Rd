@@ -4,6 +4,7 @@
 \name{atacRenamer}
 \alias{atacRenamer}
 \alias{atacRenamer,ATACProc-method}
+\alias{atacRenamer}
 \alias{renamer}
 \title{Rename reads name in fastq}
 \usage{
@@ -85,13 +86,12 @@ atacRenamer
 dir(td)
 
 }
-\author{
-Zheng Wei
-}
 \seealso{
 \code{\link{atacUnzipAndMerge}}
 \code{\link{unzipAndMerge}}
 \code{\link{atacQCReport}}
 \code{\link{atacRemoveAdapter}}
 }
-
+\author{
+Zheng Wei
+}

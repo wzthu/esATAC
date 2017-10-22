@@ -4,6 +4,7 @@
 \name{atacCutSiteCount}
 \alias{atacCutSiteCount}
 \alias{atacCutSiteCount,ATACProc-method}
+\alias{atacCutSiteCount}
 \alias{cutsitecount}
 \title{Count cut site number in given motif region.}
 \usage{
@@ -100,11 +101,10 @@ ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 
 
 }
-\author{
-Wei Zhang
-}
 \seealso{
 \code{\link{atacExtractCutSite}}
 \code{\link{atacMotifScan}}
 }
-
+\author{
+Wei Zhang
+}
