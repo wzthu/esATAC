@@ -103,7 +103,7 @@ setMethod(
     f = "getReportValImp",
     signature = "BedUtils",
     definition = function(.Object, item){
-        qcval <- as.list(read.table(file= private$paramlist[["reportOutput"]],header=TRUE))
+        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
         return(qcval[[item]])
     }
 )
