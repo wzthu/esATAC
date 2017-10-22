@@ -73,11 +73,8 @@ setMethod(
     }
 )
 
-#' @name atacBam2Bed
-#' @aliases atacBam2Bed
-#' @aliases bam2bed
+
 #' @title Convert bam format to bed format.
-#' @importFrom rtracklayer export
 #' @description
 #' This function convert a bam file into a bed file.
 #' Note:bed file is 0-based.
@@ -95,23 +92,25 @@ setMethod(
 #' @return An invisible \code{\link{ATACProc}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
-#' @seealso
-#' \code{\link{atacBamSort}}
-#' \code{\link{atacSam2Bam}}
-#' \link[rtracklayer]{import}
-#' \link[rtracklayer]{export}
 #' @examples
 #'
 #' library(Rsamtools)
 #' ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
 #' bam2bed(bamInput = ex1_file)
 #'
-
-
-#' @rdname atacBam2Bed
-#' @exportMethod atacBam2Bed
+#' @seealso
+#' \code{\link{atacBamSort}}
+#' \code{\link{atacSam2Bam}}
+#' \link[rtracklayer]{import}
+#' \link[rtracklayer]{export}
+#' @importFrom rtracklayer export
+#' @export
+#' @docType methods
+#' @rdname atacBam2Bed-methods
 setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL) standardGeneric("atacBam2Bed"))
 
+#' @rdname atacBam2Bed-methods
+#' @aliases atacBam2Bed
 setMethod(
     f = "atacBam2Bed",
     signature = "ATACProc",
@@ -122,7 +121,7 @@ setMethod(
     }
 )
 
-#' @rdname atacBam2Bed
+#' @rdname atacBam2Bed-methods
 #' @export
 bam2bed <- function(bamInput, bedOutput = NULL){
     atacproc <- new("BamToBed", atacProc = NULL, bamInput = bamInput, bedOutput = bedOutput)

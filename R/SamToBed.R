@@ -192,11 +192,8 @@ setMethod(
 
 
 
-
-#' @name atacSamToBed
-#' @aliases atacSamToBed
-#' @aliases samToBed
 #' @title Convert SAM file to BED file
+#' @name atacSamToBed
 #' @description
 #' This function is used to convert SAM file to BED file and
 #' merge interleave paired end reads,
@@ -265,11 +262,15 @@ setMethod(
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' samToBed(samInput = samfile)
 #'
-#' @rdname atacSamToBed
-#' @exportMethod atacSamToBed
+#' @export
+#' @docType methods
+#' @rdname atacSamToBed-methods
 setGeneric("atacSamToBed",function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                                   samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
                                   saveExtLen = FALSE,uniqueBed = TRUE) standardGeneric("atacSamToBed"))
+
+#' @rdname atacSamToBed-methods
+#' @aliases atacSamToBed
 setMethod(
     f = "atacSamToBed",
     signature = "ATACProc",
@@ -296,7 +297,7 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacSamToBed
+#' @rdname atacSamToBed-methods
 #' @export
 samToBed <- function(samInput, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                          bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,

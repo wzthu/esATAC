@@ -144,9 +144,7 @@ setMethod(
     }
 )
 
-#' @name atacLibComplexQC
-#' @aliases atacLibComplexQC
-#' @aliases libComplexQC
+
 #' @title Quality control for library complexity
 #' @description
 #' The function calculate the nonredundant fraction of reads (NRF).
@@ -196,10 +194,14 @@ setMethod(
 #' atacproc<-libComplexQC(samInput = samfile)
 #'
 #'
-#' @rdname atacLibComplexQC
-#' @exportMethod atacLibComplexQC
+#' @export
+#' @docType methods
+#' @rdname atacLibComplexQC-methods
 setGeneric("atacLibComplexQC",function(atacProc,reportOutput=NULL,samInput=NULL,
                                   singleEnd = FALSE,subsampleSize=Inf) standardGeneric("atacLibComplexQC"))
+
+#' @rdname atacLibComplexQC-methods
+#' @aliases atacLibComplexQC
 setMethod(
     f = "atacLibComplexQC",
     signature = "ATACProc",
@@ -216,7 +218,7 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacLibComplexQC
+#' @rdname atacLibComplexQC-methods
 #' @export
 libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsampleSize=Inf){
     atacproc <- new(

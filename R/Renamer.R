@@ -124,9 +124,6 @@ singleCall<-function(number,.Object){
 }
 
 
-#' @name atacRenamer
-#' @aliases atacRenamer
-#' @aliases renamer
 #' @title Rename reads name in fastq
 #' @description
 #' Rename reads name in fastq with increasing integer
@@ -190,13 +187,17 @@ singleCall<-function(number,.Object){
 #'
 
 
-#' @rdname atacRenamer
-#' @exportMethod atacRenamer
+#' @export
+#' @docType methods
+#' @rdname atacRenamer-methods
 setGeneric("atacRenamer",function(atacProc,fastqOutput1=NULL,
                                   fastqOutput2=NULL,
                                   fastqInput1=NULL,
                                   fastqInput2=NULL,
                                   interleave = FALSE) standardGeneric("atacRenamer"))
+
+#' @rdname atacRenamer-methods
+#' @aliases atacRenamer
 setMethod(
     f = "atacRenamer",
     signature = "ATACProc",
@@ -217,7 +218,7 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacRenamer
+#' @rdname atacRenamer-methods
 #' @export
 renamer <- function(fastqInput1=NULL,
                     fastqInput2=NULL,

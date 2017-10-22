@@ -131,13 +131,6 @@ setMethod(
 
 
 
-
-#' @name atacMotifScan
-#' @aliases atacMotifScan
-#' @aliases motifscan
-#' @importFrom rtracklayer import
-#' @importFrom IRanges subsetByOverlaps
-#' @importFrom R.utils getAbsolutePath
 #' @title Search Motif Position in Given Regions
 #' @description
 #' Search motif position in given genome regions according PWM matrix.
@@ -183,14 +176,21 @@ setMethod(
 #' \code{\link{atacCutSiteCount}}
 #' \link[Biostrings]{matchPWM}
 #' \link[IRanges]{subsetByOverlaps}
-#'
+#' @importFrom rtracklayer import
+#' @importFrom IRanges subsetByOverlaps
+#' @importFrom R.utils getAbsolutePath
 
-#' @rdname atacMotifScan
-#' @exportMethod atacMotifScan
+#' @export
+#' @docType methods
+#' @rdname atacMotifScan-methods
 setGeneric("atacMotifScan",
            function(atacProc, peak = NULL, genome = NULL,
                     motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
                     n.cores = NULL, prefix = NULL) standardGeneric("atacMotifScan"))
+
+
+#' @rdname atacMotifScan-methods
+#' @aliases atacMotifScan
 setMethod(
     f = "atacMotifScan",
     signature = "ATACProc",
@@ -217,7 +217,7 @@ setMethod(
     }
 )
 
-#' @rdname atacMotifScan
+#' @rdname atacMotifScan-methods
 #' @export
 motifscan <- function(peak,
                       genome = NULL,
