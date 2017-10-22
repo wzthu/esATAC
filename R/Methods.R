@@ -103,8 +103,14 @@ getSuffixlessFileName = function(filePath){
 #' dir.create(file.path(td,"ref"))
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
-#' bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
-#' bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
+#' bedbzfile11 <- c(
+#'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
+#'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2")
+#' )
+#' bedbzfile12 <- c(
+#'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz"),
+#'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+#' )
 #' # for single end
 #' dir.create(file.path(td,"single"))
 #' options(atacConf=setConfigure("tmpdir",file.path(td,"single")))
