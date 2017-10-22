@@ -1,15 +1,18 @@
 ---
 title: "ATACpipe-Introduction"
 author: "Zheng Wei and Wei Zhang"
-date: "`r Sys.Date()`"
+date: "`r BiocStyle::doc_date()`"
 output: html_document
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteIndexEntry{An Introduction to ATACpipe}
+  %\VignetteEncoding{UTF-8}
+output:
+  BiocStyle::html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
 ## Introduction
@@ -132,6 +135,7 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db)
 library(R.utils)
+library(magrittr)
 ```
 
 
@@ -223,7 +227,6 @@ Two fastq files of sequencing data for case and control each are requied.
 The preset pipeline can be called like this:
 
 ```{r casecontrol, eval=TRUE}
-td <- tempdir()
 bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
 bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
 bedbzfile21 <- system.file(package="ATACpipe", "extdata", "chr21_1.fq.bz2")
@@ -250,11 +253,7 @@ Users can use %>% to build a pipeline to obtain merged, renamed and
 adapter removed clean reads fastq file(s) that is ready for mapping.
 
 
-```{r Preprocess}
-library(magrittr)
-td <- tempdir()
-setConfigure("tmpdir",td)
-
+```{r Preprocess, warning = FALSE, results = 'hide', message = FALSE}
 # Identify adapters
 prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
 (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
@@ -265,9 +264,6 @@ reads_merged_2 <- file.path(td,"reads2.fastq")
 atacproc <- 
 atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
 atacRenamer %>% atacRemoveAdapter
-
- 
-dir(td) 
 ```
 If you want to modify the parameters of AdapterRemoval,
 you have to refer to Rbowtie2 package:
@@ -282,10 +278,7 @@ adapterremoval_usage()
 If the reference has not been configured, the bowtie2 index should be built first.
 Then bowtie2 mapping functions could used to map reads to reference genome.
 
-```{r Mapping}
-td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
-
+```{r Mapping, warning = FALSE, results = 'hide', message = FALSE}
 ## Building a bowtie2 index
 library("Rbowtie2")
 refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
@@ -319,12 +312,7 @@ SamToBed functions can covert it into BED file.
 During coverting, the operation like sorting, shifting, filting chromosome and so on
 can also be setted to do in the meantime.
 
-```{r Convert}
-library(R.utils)
-library(magrittr)
-td <- tempdir()
-setConfigure("tmpdir",td)
-
+```{r Convert, warning = FALSE, results = 'hide', message = FALSE}
 sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
@@ -335,12 +323,7 @@ samToBed(samInput = samfile)
 
 Filter the nucleosome free reads(<100bp) for peak caling.
 
-```{r FiltCalling}
-library(R.utils)
-library(magrittr)
-td <- tempdir()
-setConfigure("tmpdir",td)
-
+```{r FiltCalling, warning = FALSE, results = 'hide', message = FALSE}
 bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
@@ -348,7 +331,6 @@ bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
 atacPeakCalling
 
-dir(td)
 ```
 
 
@@ -487,8 +469,9 @@ In the motif scan, we get a variable named "motif.data", is contains multi-motif
 fp <- atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
 ```
 
-The following is CTCF footprint using example data. Note: we only using a small part of the chromatin 20 
-as example.
+The following is CTCF footprint using example data. 
+
+Note: we only using a small part of the chromatin 20 as example.
 
 ![](CTCF_footprint.png)
 
@@ -500,12 +483,7 @@ ATACpipe is organized in data flow graph. Except for refering manual,
 the user may print the map to know workflow order.
 
 
-```{r printmap}
-library(R.utils)
-library(magrittr)
-td <- tempdir()
-setConfigure("tmpdir",td)
-
+```{r printmap, warning=FALSE, message=FALSE}
 bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
@@ -525,13 +503,13 @@ what preprocess has been done before.
 
 It is easy to query the parameters set for the process with ATACProc objects.
 You can query available parameters like this:
-```{r qpara}
+```{r qpara, warning=FALSE, message=FALSE}
 #query all of available parameters
 getParamItems(peakproc)
 ```
 
 The value of a specific parameter can be obtain like this:
-```{r getpara}
+```{r getpara, warning=FALSE, message=FALSE}
 #query a parameter value
 getParam(peakproc,"fragmentSize")
 
@@ -540,13 +518,7 @@ getParam(peakproc,"fragmentSize")
 
 ### Report Value
 Similarly, it is also easy to query the report value calculated by the process with ATACProc objects
-```{r getReport,message=FALSE}
-
-library(R.utils)
-library(magrittr)
-td <- tempdir()
-setConfigure("tmpdir",td)
-
+```{r getReport, warning=FALSE, results='hide', message=FALSE}
 sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
@@ -572,7 +544,7 @@ If the user call a process fuction that was called last time and finished,
 the process function will not redo the process. So if users need to redo the process,
 they have to clear the cache like this:
 
-```{r clearcache,message=FALSE}
+```{r clearcache, warning=FALSE, results='hide', message=FALSE}
 clearProcCache(peakproc)
 process(peakproc)
 ```
@@ -590,6 +562,12 @@ and Kui Hua for prividing package testing on Macbook.
 [2] Schubert, Lindgreen, and Orlando (2016). AdapterRemoval v2: rapid adapter trimming, identification, and read merging. BMC Research Notes, 12;9(1):88.
 
 [3] Boyle, A. P., Guinney, J., Crawford, G. E., & Furey, T. S. (2008). F-Seq: a feature density estimator for high-throughput sequence tags. Bioinformatics, 24(21), 2537-2538.
+
+[4] Yu G, Wang L and He Q (2015). “ChIPseeker: an R/Bioconductor package for ChIP peak annotation, comparison and visualization.” Bioinformatics, 31(14), pp. 2382-2383. doi: 10.1093/bioinformatics/btv145.
+
+[5] Yu G, Wang L, Han Y and He Q (2012). “clusterProfiler: an R package for comparing biological themes among gene clusters.” OMICS: A Journal of Integrative Biology, 16(5), pp. 284-287. doi: 10.1089/omi.2011.0118.
+
+[6] Pagès H, Aboyoun P, Gentleman R and DebRoy S (2017). Biostrings: String objects representing biological sequences, and matching algorithms. R package version 2.44.2.
 
 ## Session Infomation
 
