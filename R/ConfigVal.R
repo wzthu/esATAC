@@ -19,33 +19,6 @@ setMethod(f = "initialize",
           })
 
 
-
-setGeneric(name = "getConfigure0",
-           def = function(.Object,item,...){
-               standardGeneric("getConfigure0")
-           })
-setMethod(f = "getConfigure0",
-          signature = ".ConfigClass",
-          definition = function(.Object,item,...){
-              isValidAttr(.Object,item);
-              if(item=="tmpdir"||item=="refdir"){
-                  return(normalizePath(.Object@configList[[item]]))
-              }
-              return(.Object@configList[[item]]);
-          })
-
-setGeneric(name = "setConfigure0",
-           def = function(.Object,item,val,...){
-               standardGeneric("setConfigure0")
-           })
-setMethod(f = "setConfigure0",
-          signature = ".ConfigClass",
-          definition = function(.Object,item,val,...){
-              isValidVal(.Object,item,val);
-              .Object@configList[[item]]<-val;
-              .Object
-          })
-
 setGeneric(name = "isValidAttr",
            def = function(.Object,item,...){
                standardGeneric("isValidAttr")
@@ -95,7 +68,7 @@ setMethod(f = "isValidVal",
                   }
                   fileprefix<-file.path(.Object@configList[["refdir"]],val)
                   ##annoDb:orgdb
-                  .Object@configList[["annoDb"]]<-.Object@GetOrgDb(val)
+                  .Object@configList[["annoDb"]]<-GetOrgDb(.Object,val)
                   #genome fasta
                   fastaFilePath<-paste0(fileprefix,".fa")
                   fastaFilePathlock<-paste0(fileprefix,".fa.lock")
@@ -170,6 +143,7 @@ setMethod(f = "isValidVal",
                   
                   
               }
+              .Object
           })
 
 
@@ -543,7 +517,7 @@ setConfigure<- function(item = c("threads","tmpdir","refdir","genome"),val){
         .configObj <- new(".ConfigClass")
     }
     if(!is.null(val)){
-        isValidVal(.configObj,item,val);
+        .configObj<-isValidVal(.configObj,item,val);
         .configObj@configList[[item]]<-val
         .configObj
     }else{

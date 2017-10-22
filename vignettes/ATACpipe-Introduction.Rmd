@@ -147,9 +147,11 @@ The default value is 1.
 
 
 ```{r loadref, eval=TRUE}
-#uncomment and modify to run:
-#setConfigure("tmpdir","path/to/tmpdatafolder")
-setConfigure("threads",8)
+# we use temp directiory here 
+# change it to your directiory because the intermediate file may be huge
+td<-tempdir()
+options(atacConf=setConfigure("tmpdir",td))
+options(atacConf=setConfigure("threads",8))
 ```
 
 ### Reference Data Installation and Loading
@@ -168,8 +170,8 @@ for configurating the reference data path and genome.
 
 ```{r config, eval=TRUE}
 #uncomment and modify to run:
-#setConfigure("refdir","path/to/refdatafolder")
-#setConfigure("genome","hg19")
+#options(atacConf=setConfigure("refdir","path/to/refdatafolder"))
+#options(atacConf=setConfigure("genome","hg19"))
 ```
 
 The installation will consume several hours for data download,

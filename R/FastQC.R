@@ -10,14 +10,14 @@ setMethod(
         .Object <- init(.Object,"FastQC",editable,list(arg1=atacProc))
 
         if((!is.null(atacProc)) && (class(atacProc)[1] == "UnzipAndMerge")){ # atacproc from UnzipAndMerge
-            if(is.null(atacProc$getParam("fastqOutput2"))){ # single end
+            if(is.null(getParam(atacProc,"fastqOutput2"))){ # single end
                 .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
             }else{ # paired end
                 .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
                                                   as.vector(unlist(getParam(atacProc, "fastqOutput2"))))
             }
         }else if((!is.null(atacProc)) && (class(atacProc)[1] == "Renamer")){ # atacproc from renamer
-            if(is.null(atacProc$getParam("fastqOutput2"))){ # single end
+            if(is.null(getParam(atacProc,"fastqOutput2"))){ # single end
                 .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
             }else{ # paired end
                 .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
