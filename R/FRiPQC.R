@@ -126,10 +126,6 @@ setMethod(
 )
 
 
-
-#' @name atacFripQC
-#' @aliases atacFripQC
-#' @aliases fripQC
 #' @title Quality control for fraction of reads in peaks (FRiP)
 #' @description
 #' Calculate the fraction of reads falling within peak regions
@@ -181,11 +177,15 @@ setMethod(
 #' #atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
 #'
 #'
-#' @rdname atacFripQC
-#' @exportMethod atacFripQC
+#' @export
+#' @docType methods
+#' @rdname atacFripQC-methods
 setGeneric("atacFripQC",function(atacProcReads,atacProcPeak,bsgenome = NULL,
                                   reportOutput=NULL,readsBedInput=NULL,
                                   peakBedInput=NULL) standardGeneric("atacFripQC"))
+
+#' @rdname atacFripQC-methods
+#' @aliases atacFripQC
 setMethod(
     f = "atacFripQC",
     signature = "ATACProc",
@@ -204,7 +204,9 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacFripQC
+
+
+#' @rdname atacFripQC-methods
 #' @export
 fripQC<-function(readsBedInput, peakBedInput,bsgenome = NULL, reportOutput=NULL){
     atacproc <- new(

@@ -72,9 +72,6 @@ setMethod(
 )
 
 
-#' @name atacBamSort
-#' @aliases atacBamSort
-#' @aliases bamsort
 #' @title Sort bam file and rebuild bai index.
 #' @description
 #' Sort bamfile and build index.
@@ -100,10 +97,14 @@ setMethod(
 #' \code{\link{atacSam2Bam}}
 #' \code{\link{atacBam2Bed}}
 
-#' @rdname atacBamSort
-#' @exportMethod atacBamSort
+#' @export
+#' @docType methods
+#' @rdname atacBamSort-methods
 setGeneric("atacBamSort",function(atacProc = NULL,
                                   bamInput = NULL, bamOutput = NULL) standardGeneric("atacBamSort"))
+
+#' @rdname atacBamSort-methods
+#' @aliases atacBamSort
 setMethod(
     f = "atacBamSort",
     signature = "ATACProc",
@@ -119,7 +120,7 @@ setMethod(
     }
 )
 
-#' @rdname atacBamSort
+#' @rdname atacBamSort-methods
 #' @export
 bamsort <- function(bamInput = NULL, bamOutput = NULL){
     atacproc <- new(

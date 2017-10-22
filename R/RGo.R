@@ -128,9 +128,6 @@ setMethod(
 )
 
 
-#' @name atacGOAnalysis
-#' @aliases atacGOAnalysis
-#' @aliases goanalysis
 #' @title Gene Ontology Analysis
 #' @description
 #' Ranking functional groups based on a set of genes. For more information,
@@ -175,11 +172,14 @@ setMethod(
 #' \link[clusterProfiler]{enrichGO} function enrichGO in package
 #' "clusterProfiler"
 #' @importFrom clusterProfiler enrichGO
-#' @rdname atacGOAnalysis
-#' @exportMethod atacGOAnalysis
+#' @export
+#' @docType methods
+#' @rdname atacGOAnalysis-methods
 setGeneric("atacGOAnalysis",function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                                      pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
                                      readable = FALSE, pool = FALSE, goOutput = NULL) standardGeneric("atacGOAnalysis"))
+#' @rdname atacGOAnalysis-methods
+#' @aliases atacGOAnalysis
 setMethod(
     f = "atacGOAnalysis",
     signature = "ATACProc",
@@ -205,7 +205,7 @@ setMethod(
     }
 )
 
-#' @rdname atacGOAnalysis
+#' @rdname atacGOAnalysis-methods
 #' @export
 goanalysis <- function(gene, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                        pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,

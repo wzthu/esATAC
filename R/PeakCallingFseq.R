@@ -19,7 +19,7 @@ setMethod(
         }else{
             regexProcName<-"(BED|bed|Bed)"
         }
-        
+
         if(!is.null(bedInput)){
             .Object@paramlist[["bedInput"]] <- bedInput;
             .Object@paramlist[["bedFileList"]] <- basename(bedInput)
@@ -35,7 +35,7 @@ setMethod(
             #.Object@paramlist[["bedOutput"]] <-paste(.Object@paramlist[["bedInput"]],".peak.bed",sep="");
         }
         .Object@paramlist[["outTmpDir"]] <- paste0(.Object@paramlist[["bedOutput"]],".tmp");
-        
+
         .Object@paramlist[["background"]] <- background;
         .Object@paramlist[["genomicReadsCount"]] <- genomicReadsCount;
         .Object@paramlist[["fragmentSize"]] <- fragmentSize;
@@ -46,8 +46,8 @@ setMethod(
         .Object@paramlist[["threshold"]] <- threshold;
         .Object@paramlist[["verbose"]] <- verbose;
         .Object@paramlist[["wgThresholdSet"]] <- wgThresholdSet;
-        
-        
+
+
         paramValidation(.Object)
         .Object
     }
@@ -71,7 +71,7 @@ setMethod(
                    threshold=.Object@paramlist[["threshold"]],
                    verbose=.Object@paramlist[["verbose"]],
                    wgThresholdSet=.Object@paramlist[["wgThresholdSet"]]);
-        
+
         filename<-list.files(.Object@paramlist[["outTmpDir"]])
         for(i in 1:length(filename)){
             filename[i]<-strsplit(filename[i],split="\\.")[[1]][1]
@@ -91,8 +91,8 @@ setMethod(
         }
         #mergeFile(.Object@paramlist[["bedOutput"]],peakfiles)
         unlink(.Object@paramlist[["outTmpDir"]],recursive = TRUE,force = TRUE)
-      
-        
+
+
         .Object
     }
 )
@@ -120,9 +120,7 @@ setMethod(
     }
 )
 
-#' @name atacPeakCalling
-#' @aliases atacPeakCalling
-#' @aliases peakCalling
+
 #' @title Use F-seq to call peak
 #' @description
 #' Use F-seq to call peak
@@ -184,15 +182,17 @@ setMethod(
 #'
 #' dir(td)
 
-#' @rdname atacPeakCalling
-#' @exportMethod atacPeakCalling
+#' @export
+#' @docType methods
+#' @rdname atacPeakCalling-methods
 setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                                          fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                                          ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                                          wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                                         wgThresholdSet=NULL) standardGeneric("atacPeakCalling")) 
+                                         wgThresholdSet=NULL) standardGeneric("atacPeakCalling"))
 
-
+#' @rdname atacPeakCalling-methods
+#' @aliases atacPeakCalling
 setMethod(
     f = "atacPeakCalling",
     signature = "ATACProc",
@@ -209,7 +209,7 @@ setMethod(
     }
 )
 
-#' @rdname atacPeakCalling
+#' @rdname atacPeakCalling-methods
 #' @export
 peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,

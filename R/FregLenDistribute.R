@@ -175,9 +175,6 @@ setMethod(
 )
 
 
-#' @name atacFregLenDistr
-#' @aliases atacFregLenDistr
-#' @aliases fregLenDistr
 #' @title Quality control for fregment length distribution
 #' @description
 #' These functions are used to generate fregment distribution plot.
@@ -224,9 +221,13 @@ setMethod(
 #' dir(td)
 #'
 
-#' @rdname atacFregLenDistr
-#' @exportMethod atacFregLenDistr
+#' @export
+#' @docType methods
+#' @rdname atacFregLenDistr-methods
 setGeneric("atacFregLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL) standardGeneric("atacFregLenDistr"))
+
+#' @rdname atacFregLenDistr-methods
+#' @aliases atacFregLenDistr
 setMethod(
     f = "atacFregLenDistr",
     signature = "ATACProc",
@@ -243,7 +244,7 @@ setMethod(
 
 
 
-#' @rdname atacFregLenDistr
+#' @rdname atacFregLenDistr-methods
 #' @export
 fregLenDistr<-function(bedInput, reportPrefix=NULL){
     atacproc <- new(

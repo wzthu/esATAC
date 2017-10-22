@@ -155,10 +155,8 @@ setMethod(
 )
 
 
-#' @name atacPeakAnno
-#' @aliases atacPeakAnno
-#' @aliases peakanno
-#' @importFrom ChIPseeker plotAnnoPie
+
+
 #' @title Annotate ATAC-seq Peak
 #' @description
 #' This function annotates ATAC-seq peak by a given annotation database.
@@ -212,8 +210,12 @@ setMethod(
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacGOAnalysis}}
 #' @importFrom ChIPseeker annotatePeak
-#' @rdname atacPeakAnno
-#' @exportMethod atacPeakAnno
+#' @importFrom ChIPseeker plotAnnoPie
+
+
+#' @export
+#' @docType methods
+#' @rdname atacPeakAnno-methods
 setGeneric("atacPeakAnno",function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
                                   TxDb = NULL, level = "transcript",
                                   genomicAnnotationPriority = c("Promoter", "5UTR",
@@ -224,6 +226,10 @@ setGeneric("atacPeakAnno",function(atacProc, peakInput = NULL, tssRegion = c(-10
                                   ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                                   ignoreDownstream = FALSE, overlap = "TSS",
                                   annoOutput = NULL) standardGeneric("atacPeakAnno"))
+
+
+#' @rdname atacPeakAnno-methods
+#' @aliases atacPeakAnno
 setMethod(
     f = "atacPeakAnno",
     signature = "ATACProc",
@@ -259,7 +265,7 @@ setMethod(
     }
 )
 
-#' @rdname atacPeakAnno
+#' @rdname atacPeakAnno-methods
 #' @export
 peakanno <- function(peakInput, tssRegion = c(-1000, 1000),
                      TxDb = NULL, level = "transcript",

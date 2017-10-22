@@ -5,9 +5,9 @@ setClass(Class = "Bowtie2Mapping",
 setMethod(
     f = "initialize",
     signature = "Bowtie2Mapping",
-    definition = function(.Object,atacProc,..., samOutput=NULL, bt2Idx=NULL, 
-                          fastqInput1=NULL, fastqInput2=NULL, 
-                          interleave = FALSE, 
+    definition = function(.Object,atacProc,..., samOutput=NULL, bt2Idx=NULL,
+                          fastqInput1=NULL, fastqInput2=NULL,
+                          interleave = FALSE,
                           paramList="--no-discordant --no-unal --no-mixed -X 2000",
                           reportOutput = NULL, threads = NULL, editable=FALSE){
         .Object <- init(.Object,"Bowtie2Mapping",editable,list(arg1=atacProc))
@@ -25,15 +25,15 @@ setMethod(
                 .Object@singleEnd<-FALSE
             }
         }
-        
+
         if(!is.null(fastqInput1)){
             .Object@paramlist[["fastqInput1"]] <- fastqInput1;
         }
         if(!is.null(fastqInput2)){
             .Object@paramlist[["fastqInput2"]] <- fastqInput2;
         }
-        
-        
+
+
         if(is.null(samOutput)){
             if(!is.null(.Object@paramlist[["fastqInput1"]])){
                 prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
@@ -42,14 +42,14 @@ setMethod(
         }else{
             .Object@paramlist[["samOutput"]] <- samOutput;
         }
-        
+
         if(is.null(bt2Idx)){
             .Object@paramlist[["bt2Idx"]]=.obtainConfigure("bt2Idx")
         }else{
             .Object@paramlist[["bt2Idx"]]<-bt2Idx
         }
-        
-        
+
+
         if(!is.null(paramList)){
             paramList<-trimws(as.character(paramList))
             paramList<-paste(paramList,collapse = " ")
@@ -60,7 +60,7 @@ setMethod(
                 .Object@paramlist[["paramList"]]<-paramList
             }
         }
-        
+
         if(is.null(reportOutput)){
             if(!is.null(.Object@paramlist[["fastqInput1"]])){
                 prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
@@ -88,7 +88,7 @@ setMethod(
         }else if(.obtainConfigure("threads")>1){
             paramList<-paste(c("-p",as.character(.obtainConfigure("threads")),.Object@paramlist[["paramList"]]),collapse = " ")
         }
-        
+
         .Object<-writeLog(.Object,"start mapping with parameters:")
         .Object<-writeLog(.Object,paste0("bowtie2 index:",.Object@paramlist[["bt2Idx"]]))
         .Object<-writeLog(.Object,paste0("samOutput:",.Object@paramlist[["samOutput"]]))
@@ -112,11 +112,11 @@ setMethod(
                         interleaved = .Object@paramlist[["interleave"]],
                         overwrite=TRUE)
         }
-        
+
         writeLines(text = rs,con = .Object@paramlist[["reportOutput"]])
-        
-        
-        
+
+
+
         .Object
     }
 )
@@ -157,7 +157,7 @@ setMethod(
             return(as.integer(s[[1]][1]))
         }
         if(item == "maprate"){
-            s<-strsplit(txt[length(txt)],"% ") 
+            s<-strsplit(txt[length(txt)],"% ")
             return(as.numeric(s[[1]][1])/100)
         }
         if(item == "detail"){
@@ -175,24 +175,22 @@ setMethod(
     }
 )
 
-#' @name atacBowtie2Mapping
-#' @aliases atacBowtie2Mapping
-#' @aliases bowtie2Mapping
+
 #' @importFrom Rbowtie2 bowtie2
-#' @title Use bowtie2 aligner to map reads to reference genome 
-#' @description 
-#' Use bowtie2 aligner to map reads to reference genome 
-#' @param atacProc \code{\link{ATACProc}} object scalar. 
+#' @title Use bowtie2 aligner to map reads to reference genome
+#' @description
+#' Use bowtie2 aligner to map reads to reference genome
+#' @param atacProc \code{\link{ATACProc}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacRemoveAdapter}} 
+#' \code{\link{atacRemoveAdapter}}
 #' \code{\link{removeAdapter}}
-#' @param reportOutput \code{Character} scalar. 
-#' The prefix of report files path. 
-#' @param bt2Idx \code{Character} scalar. 
+#' @param reportOutput \code{Character} scalar.
+#' The prefix of report files path.
+#' @param bt2Idx \code{Character} scalar.
 #' bowtie2 index files
 #' prefix: 'dir/basename'
 #' (minus trailing '.*.bt2' of 'dir/basename.*.bt2').
-#' @param samOutput \code{Character} scalar. 
+#' @param samOutput \code{Character} scalar.
 #' A path to a SAM file
 #' used for the alignment output.
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
@@ -210,16 +208,16 @@ setMethod(
 #' See below for details.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
-#' @param threads \code{Integer} scalar. 
+#' @param threads \code{Integer} scalar.
 #' The threads will be created in this process. default: 1
 #' @details The parameter related to input and output file path
-#' will be automatically 
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-#' generated based on known parameters 
+#' will be automatically
+#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
-#' If you want to use this function independently, 
-#' \code{atacProc} should be set \code{NULL} 
+#' If you want to use this function independently,
+#' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{fregLenDistr} instead.
 #’ All additional arguments in paramList are interpreted as
 #' additional parameters to be passed on to
@@ -234,8 +232,8 @@ setMethod(
 #' \code{bowtie2_usage()} for details about available parameters.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacRemoveAdapter}} 
+#' @seealso
+#' \code{\link{atacRemoveAdapter}}
 #' \code{\link{removeAdapter}}
 #' \code{\link{bowtie2}}
 #' \code{\link{bowtie2_build}}
@@ -243,10 +241,10 @@ setMethod(
 #' \code{\link{atacSam2Bam}}
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacLibComplexQC}}
-#' @examples 
+#' @examples
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
-#' 
+#'
 #' ## Building a bowtie2 index
 #' library("Rbowtie2")
 #' refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
@@ -265,11 +263,14 @@ setMethod(
 #'     head(readLines(file.path(td, "result.sam")))
 #' }
 
-#' @rdname atacBowtie2Mapping
-#' @exportMethod atacBowtie2Mapping
-setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000") standardGeneric("atacBowtie2Mapping")) 
+#' @export
+#' @docType methods
+#' @rdname atacBowtie2Mapping-methods
+setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000") standardGeneric("atacBowtie2Mapping"))
 
 
+#' @rdname atacBowtie2Mapping-methods
+#' @aliases atacBowtie2Mapping
 setMethod(
     f = "atacBowtie2Mapping",
     signature = "ATACProc",
@@ -280,7 +281,7 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacBowtie2Mapping
+#' @rdname atacBowtie2Mapping-methods
 #' @export
 bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
     atacproc<-new("Bowtie2Mapping",atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
