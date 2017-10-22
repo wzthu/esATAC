@@ -151,6 +151,7 @@ setGeneric(
 
 #' @rdname ATACProc-class
 #' @aliases atacPrintMap
+#' @export
 setMethod(
     f = "atacPrintMap",
     signature = "ATACProc",
@@ -186,6 +187,7 @@ printMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,displ
 #' @return \item{process}{Call this function to redo processing }
 #' @rdname ATACProc-class
 #' @aliases process
+#' @export
 setGeneric(name = "process",
            def = function(.Object,...){
                standardGeneric("process")
@@ -218,6 +220,7 @@ setMethod(f = "process",
 #' @return \item{getProcName}{get atacProc Characher name}
 #' @rdname ATACProc-class
 #' @aliases getProcName
+#' @export
 setGeneric(name = "getProcName",
            def = function(.Object,...){
                standardGeneric("getProcName")
@@ -230,6 +233,7 @@ setMethod(f = "getProcName",
 #' @rdname ATACProc-class
 #' @return \item{getParam}{Get parameter value setted by process function}
 #' @aliases  getParam
+#' @export
 setGeneric(name = "getParam",
            def = function(.Object,item,...){
                standardGeneric("getParam")
@@ -242,6 +246,7 @@ setMethod(f = "getParam",
 #' @rdname ATACProc-class
 #' @return \item{getParamItems}{Get parameter name list}
 #' @aliases  getParamItems
+#' @export
 setGeneric(name = "getParamItems",
            def = function(.Object,...){
                standardGeneric("getParamItems")
@@ -268,6 +273,7 @@ setMethod(f = "setResultParam",
 #' @rdname ATACProc-class
 #' @return \item{isReady}{Is the process ready}
 #' @aliases  isReady
+#' @export
 setGeneric(name = "isReady",
            def = function(.Object,...){
                standardGeneric("isReady")
@@ -287,6 +293,7 @@ setMethod(f = "isReady",
 #' @rdname ATACProc-class
 #' @return \item{clearProcCache}{Clear cache of atacProc object}
 #' @aliases  clearProcCache
+#' @export
 setGeneric(name = "clearProcCache",
            def = function(.Object,...){
                standardGeneric("clearProcCache")
@@ -309,6 +316,7 @@ setMethod(f = "clearProcCache",
 #' @rdname ATACProc-class
 #' @return \item{isSingleEnd}{Single end data if TRUE else FALSE}
 #' @aliases  isSingleEnd
+#' @export
 setGeneric(name = "isSingleEnd",
            def = function(.Object,...){
                standardGeneric("isSingleEnd")
@@ -322,6 +330,7 @@ setMethod(f = "isSingleEnd",
 #' @rdname ATACProc-class
 #' @return \item{getReportVal}{Get report value of item}
 #' @aliases   getReportVal
+#' @export
 setGeneric(name = "getReportVal",
            def = function(.Object,item,...){
                standardGeneric("getReportVal")
@@ -343,6 +352,7 @@ setMethod(f = "getReportVal",
 #' @rdname ATACProc-class
 #' @return \item{getReportItems}{Get all items that can be reported}
 #' @aliases getReportItems
+#' @export
 setGeneric(name = "getReportItems",
            def = function(.Object,...){
                standardGeneric("getReportItems")
