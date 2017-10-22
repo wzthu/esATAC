@@ -27,7 +27,7 @@ interleaved paired-end sequencing data.}
 \item{createReport}{\code{Logical}. If the HTML report file will be created.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 The pipeline to process case control study sequencing data
@@ -35,10 +35,30 @@ into destination files including
 a HTML report file reads storage files (BED BAM)
 and various quality control report files.
 }
-\seealso{
-\code{\link{atacSamToBed}}
-\code{\link{atacBedUtils}}
+\examples{
+\dontrun{
+td<-tempdir()
+options(atacConf=setConfigure("threads",4))
+dir.create(file.path(td,"ref"))
+# change the refdir to your installed refdir path
+# or it will be time comsuming to build bowtie2 index
+options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+options(atacConf=setConfigure("genome","hg19"))
+case <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+)
+ctrl <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
+    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+)
+atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
+}
 }
 \author{
 Zheng Wei
 }
+\seealso{
+\code{\link{atacPipe}}
+}
+

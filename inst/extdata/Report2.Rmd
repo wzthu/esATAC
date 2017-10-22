@@ -48,7 +48,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-caselist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+readsCounts<-getReportVal(caselist$atacProcs$fregLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
 ```
 
@@ -56,7 +56,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-ctrllist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+readsCounts<-getReportVal(ctrllist$atacProcs$fregLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
 ```
 
@@ -66,8 +66,8 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 Quality control for the sequence data
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
-QC_path1 <- caselist$atacProcs$atacQC$getReportVal("pdf")
-QC_path2 <- ctrllist$atacProcs$atacQC$getReportVal("pdf")
+QC_path1 <- getReportVal(caselist$atacProcs$atacQC,"pdf")
+QC_path2 <- getReportVal(ctrllist$atacProcs$atacQC,"pdf")
 ```
 
 [Click to Visit Report for case](`r QC_path1`)
@@ -81,14 +81,14 @@ The adapter sequence are shown below. For paired end reads, if adapters were not
 * Adapter for case 
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(caselist$atacProcs$removeAdapter$getReportVal("adapters"))
+knitr::kable(getReportVal(caselist$atacProcs$removeAdapter,"adapters"))
 
 ```
 
 * Adapter for control
 
 ```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(ctrllist$atacProcs$removeAdapter$getReportVal("adapters"))
+knitr::kable(getReportVal(ctrllist$atacProcs$removeAdapter,"adapters"))
 
 ```
 
@@ -96,8 +96,8 @@ The statistic of adapter removing are show below.
 
 ```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
 
-casetb<-caselist$atacProcs$removeAdapter$getReportVal("statistics")
-ctrltb<-ctrllist$atacProcs$removeAdapter$getReportVal("statistics")
+casetb<-getReportVal(caselist$atacProcs$removeAdapter,"statistics")
+ctrltb<-getReportVal(ctrllist$atacProcs$removeAdapter,"statistics")
 cbind()
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
@@ -114,21 +114,21 @@ For detail, you can visit [Website of AdapterRemoval on Github](https://github.c
 * For case
 
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
-caselist$atacProcs$bowtie2Mapping$getReportVal("detail")
+getReportVal(caselist$atacProcs$bowtie2Mapping,"detail")
 ```
 
 * For control
 
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
-ctrllist$atacProcs$bowtie2Mapping$getReportVal("detail")
+getReportVal(ctrllist$atacProcs$bowtie2Mapping,"detail")
 ```
 
 ## Library complexity
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 
-casetb<-caselist$atacProcs$libComplexQC$getReportVal("report")
-ctrltb<-ctrllist$atacProcs$libComplexQC$getReportVal("report")
+casetb<-getReportVal(caselist$atacProcs$libComplexQC,"report")
+ctrltb<-getReportVal(ctrllist$atacProcs$libComplexQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]],
@@ -169,8 +169,8 @@ getFsdG1G2 <- function(readsCounts){
     g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
     return(list(g1,g2))
 }
-readsCounts1<-caselist$atacProcs$fregLenDistr$getReportVal("readsCounts")
-readsCounts2<-ctrllist$atacProcs$fregLenDistr$getReportVal("readsCounts")
+readsCounts1<-getReportVal(caselist$atacProcs$fregLenDistr,"readsCounts")
+readsCounts2<-getReportVal(ctrllist$atacProcs$fregLenDistr,"readsCounts")
 ggplot(readsCounts1[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 ggplot(readsCounts2[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 g112<-getFsdG1G2(readsCounts1)
@@ -188,14 +188,14 @@ The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enri
 library(ggplot2)
 library(gridExtra)
 load("Report2.Rdata")
-df<-caselist$atacProcs$tssqc100$getReportVal("tss")
+df<-getReportVal(caselist$atacProcs$tssqc100,"tss")
 g11<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
-df<-caselist$atacProcs$tssqc180_247$getReportVal("tss")
+df<-getReportVal(caselist$atacProcs$tssqc180_247,"tss")
 g12<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
 
-df<-caselist$atacProcs$tssqc100$getReportVal("tss")
+df<-getReportVal(caselist$atacProcs$tssqc100,"tss")
 g21<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
-df<-caselist$atacProcs$tssqc180_247$getReportVal("tss")
+df<-getReportVal(caselist$atacProcs$tssqc180_247,"tss")
 g22<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
 grid.arrange(g11, g21, ncol=2)
 grid.arrange(g12, g22, ncol=2)
@@ -206,8 +206,8 @@ grid.arrange(g12, g22, ncol=2)
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-casetb<-caselist$atacProcs$blacklistQC$getReportVal("report")
-ctrltb<-ctrllist$atacProcs$blacklistQC$getReportVal("report")
+casetb<-getReportVal(caselist$atacProcs$blacklistQC,"report")
+ctrltb<-getReportVal(ctrllist$atacProcs$blacklistQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
@@ -218,8 +218,8 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 
-casetb<-caselist$atacProcs$DHSQC$getReportVal("report")
-ctrltb<-ctrllist$atacProcs$DHSQC$getReportVal("report")
+casetb<-getReportVal(caselist$atacProcs$DHSQC,"report")
+ctrltb<-getReportVal(ctrllist$atacProcs$DHSQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
@@ -230,102 +230,13 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 
-casetb<-caselist$atacProcs$fripQC$getReportVal("report")
-ctrltb<-ctrllist$atacProcs$fripQC$getReportVal("report")
+casetb<-getReportVal(caselist$atacProcs$fripQC,"report")
+ctrltb<-getReportVal(ctrllist$atacProcs$fripQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
                         ))
 ```
-
-
-
-## Peak Annotation
-
-* For case
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
-library(ChIPseeker)
-peakanno <- caselist$atacProcs$Peakanno$getReportVal("annoOutput.rds")
-plotAnnoPie(x = peakanno)
-```
-
-* For control
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
-peakanno <- ctrllist$atacProcs$Peakanno$getReportVal("annoOutput.rds")
-plotAnnoPie(x = peakanno)
-```
-
-# Go analysis
-
-Gene ontology analysis for all genes around differential peak regions.
-
-## For case differential peak regions.
-
-```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
-go_path <- comp_result$goAna.case$getReportVal("goOutput")
-go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
-go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data[1:20, ])
-```
-
-[Click to Visit Case Differential Go Analysis file](`r go_path`)
-
-## For control differential peak regions.
-
-```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
-go_path <- comp_result$goAna.ctrl$getReportVal("goOutput")
-go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
-go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data[1:20, ])
-```
-
-[Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
-
-
-# Footprint analysis
-
-
-```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE}
-par(mfrow=c(1,2))
-footprint_data <- comp_result$footprint.case$getReportVal("footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
-    xlab = "Relative Distance From Motif (bp)",
-    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-axis(1, at = seq(1, 100, len = 3),
-    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
-    padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
-    labels = seq(0, 100, len = 3),
-    padj = -1.0, tck = -0.01)
-axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
-
-footprint_data <- comp_result$footprint.ctrl$getReportVal("footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Control",
-    xlab = "Relative Distance From Motif (bp)",
-    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-axis(1, at = seq(1, 100, len = 3),
-    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
-    padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
-    labels = seq(0, 100, len = 3),
-    padj = -1.0, tck = -0.01)
-axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
-
-pdf.dir <- comp_result$footprint.case$getReportVal("pdf.dir")
-pdf.dir <- comp_result$footprint.ctrl$getReportVal("pdf.dir")
-```
-
-All motif footprint figures are saved as pdf files.
-
-[Click to Visit Case Differential Footprint file](`r pdf.dir`)
-
-[Click to Visit Ctrl Differential Footprint file](`r pdf.dir`)
 
 
 # Annotation of items in table 

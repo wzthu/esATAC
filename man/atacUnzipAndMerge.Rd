@@ -35,14 +35,14 @@ path for fastqInput2.}
 interleaved paired-end sequencing data.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \examples{
 td <- tempdir()
-setConfigure("tmpdir",td)
+options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
 prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
@@ -51,14 +51,15 @@ prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
 
 reads_merged_1 <- file.path(td,"reads1.fastq")
 reads_merged_2 <- file.path(td,"reads2.fastq")
-atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) 
+atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 dir(td)
 
-}
-\seealso{
-\code{\link{atacRenamer}} 
-\code{\link{atacQCReport}}
 }
 \author{
 Zheng Wei
 }
+\seealso{
+\code{\link{atacRenamer}}
+\code{\link{atacQCReport}}
+}
+

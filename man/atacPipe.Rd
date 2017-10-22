@@ -35,17 +35,45 @@ interleaved paired-end sequencing data.}
 \item{prefix}{For identifying files.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 The pipeline to process sequencing data into destination files including
 a HTML report file reads storage files (BED BAM)
 and various quality control report files.
 }
-\seealso{
-\code{\link{atacSamToBed}}
-\code{\link{atacBedUtils}}
+\examples{
+\dontrun{
+td<-tempdir()
+options(atacConf=setConfigure("threads",4))
+dir.create(file.path(td,"ref"))
+# change the refdir to your installed refdir path
+# or it will be time comsuming to build bowtie2 index
+options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+options(atacConf=setConfigure("genome","hg19"))
+bedbzfile11 <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2")
+)
+bedbzfile12 <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz"),
+    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+)
+# for single end
+dir.create(file.path(td,"single"))
+options(atacConf=setConfigure("tmpdir",file.path(td,"single")))
+atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
+# for paired end
+dir.create(file.path(td,"paired"))
+options(atacConf=setConfigure("tmpdir",file.path(td,"paired")))
+atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
+}
 }
 \author{
 Zheng Wei
 }
+\seealso{
+\code{\link{atacSamToBed}}
+\code{\link{atacBedUtils}}
+}
+

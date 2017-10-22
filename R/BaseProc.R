@@ -1,430 +1,644 @@
-ATACProc <- R6Class(
-  classname = "ATACProc",
-  public = list(
-    fileType = list(fq="fq",fastq="fq",fa="fa",fasta="fa"),
-    initialize = function(procName,editable,atacProcs){
-      private$timeStamp <- format(Sys.time(),"[%H%M%S]")
-      private$graphMng<-GraphMng$new()
-      private$procName<-procName
-      private$editable<-editable
-      if(private$editable){
-        private$finish <- TRUE;
-      }
-      argSize <- length(atacProcs)
-      if(argSize>=1&&!is.null(atacProcs[[1]])){
-        if(!atacProcs[[1]]$isReady()){
-          stop(paste(atacProcs[[1]]$getProcName(),"is not ready"))
-        }
-        if(!private$graphMng$checkRelation1(atacProcs[[1]]$getProcName(),procName)){
-          stop(paste(atacProcs[[1]]$getProcName(),"is not valid input"))
-        }
-        private$singleEnd<-atacProcs[[1]]$isSingleEnd()
-      }else if(argSize>=2&&!is.null(atacProcs[[2]])){
-          if(!atacProcs[[2]]$isReady()){
-              stop(paste(atacProcs[[2]]$getProcName(),"is not ready"))
-          }
-          if(!private$graphMng$checkRelation2(atacProcs[[2]]$getProcName(),procName)){
-              stop(paste(atacProcs[[2]]$getProcName(),"is not valid input"))
-          }
-      }
-    },
-    process = function(){
-        if(private$editable){
-            stop("The \"processing\" method can not be call in editable result object");
-        }
-        if(private$checkMD5Cache()){
-            message(paste0("The process:`",private$procName,"` was finished. Nothing to do."))
-            message("If you need to redo, please call 'clearProcCache(YourObject)' or 'YourObject$clearCache()'")
-            private$finish<-TRUE
-            return(FALSE)
-        }else{
-            private$writeLog(as.character(Sys.time()))
-            if(private$singleEnd){
-                private$writeLog(paste0("start processing(single end data): ", private$procName))
-            }else{
-                private$writeLog(paste0("start processing(paired end data): ", private$procName))
-            }
-            #private$paramlistbk<-private$paramlist
-            private$processing()
-            private$setFinish()
-            return(TRUE)
-        }
-    },
-    
-
-    getNextProcList = function(){
-      return(private$graphMng$getNextList())
-    },
-    getProcName = function(){
-      return(private$procName)
-    },
-    printMap = function(preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
-      private$graphMng$printMap(procName=private$procName,preProc=preProc,nextProc=nextProc,curProc=curProc,display=display)
-    },
-    getParam = function(item){
-      return(private$paramlist[[item]])
-    },
-    getParamItems = function(){
-        return(names(private$paramlist))
-    },
-    setResultParam = function(item,val){
-      if(!private$editable){
-        stop("This object can not be edited");
-      }
-      private$paramlist[[item]]<-val
-    },
-    isReady = function(){
-      if(private$editable){
-        return(TRUE);
-      }else if(private$finish){
-        return(TRUE);
-      }else{
-        return(FALSE);
-      }
-
-    },
-    clearCache = function(){
-        if(!unlink(private$getParamMD5Path())){
-            message("Chache has been cleared")
-        }else{
-            message("Chache does not exist. Nothing has been done.")
-        }
-        rslist<-grep("(o|O)utput",names(private$paramlist))
-        for(i in 1:length(rslist)){
-            unlink(private$paramlist[[rslist[i]]])
-        }
-        private$finish<-FALSE
-    },
-    isSingleEnd = function(){
-        return(private$singleEnd)
-    },
-    getReportVal = function(item){
-        if(private$finish){
-            if(sum(item == private$getReportItemsImp())>0){
-                return(private$getReportValImp(item))
-            }else{
-                stop(paste0(item," is not an item of report value.")) 
-            }
-        }else{
-            stop("Unfinished process is not available for report value.")
-        }
-        
-    },
-    getReportItems = function(){
-        if(private$finish){
-            return(private$getReportItemsImp())
-        }else{
-            stop("Unfinished process is not available for report items.")
-        }
-    }
-  ),
-  private = list(
-    paramlist = list(),
-    paramlistbk = list(),
-    reportVal = list(),
-    procName = "",
-    completObj = TRUE,
-    editable = FALSE,
-    finish = FALSE,
-    graphMng = NULL,
-    singleEnd = FALSE,
-    logRecord= NULL,
-    timeStamp="",
-    timeStampPattern="(\\[\\d\\d\\d\\d\\d\\d\\])*",
-    getAutoPath = function(originPath,regexProcName,suffix){
-        if(!is.null(originPath)){
-            prefix<-private$getBasenamePrefix(originPath,regexProcName)
-            return(file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",self$getProcName(),suffix)))
-        }else{
-            return(NULL)
-        }
-    },
-    paramValidation = function(){
-        if(!private$checkMD5Cache()){
-            private$checkAllPath()
-        }
-        if(!private$editable){
-            private$checkRequireParam();
-        }
-    },
-    checkRequireParam = function(){
-      stop("checkRequireParam function has not been implemented")
-    },
-    checkAllPath = function(){
-      stop("checkAllPath function has not been implemented")
-    },
-    checkFileExist = function(filePath){
-      if(!is.null(filePath)){
-        if(!file.exists(filePath)){
-          stop(paste("error, file does not exist:",filePath))
-        }
-      }
-    },
-    checkPathExist = function(filePath){
-      if(!is.null(filePath)){
-        if(!dir.exists(dirname(filePath))){
-          stop(paste("error, path does not exist:",filePath))
-        }
-      }
-    },
-    checkFileCreatable = function(filePath){
-        if(!is.null(filePath)){
-            if(file.exists(filePath)){
-                private$writeLog(paste("file exist:",filePath,". It may be overwrited in processing"));
-            }else if(!file.create(filePath)){
-                stop(paste("cannot create file '",filePath,"', No such file or directory or permission denied"));
-            }else{
-                unlink(filePath)
-            }
-        }
-    },
-    checkParam = function(paramlist,paramPattern){
-        rs<-grepl(paramPattern, paramlist)
-        if(sum(rs)>0){
-            banp=paste(paramlist[rs], collapse = "'/'")
-            stop(sprintf("Parameter(s) '%s' are not acceptable in paramList. it should be set as fix parameter.",banp))
-        }
-
-    },
-    getSuffix = function(filePath){
-        filename<-basename(filePath)
-        lst=strsplit(filename,"\\.")[[1]]
-        if(length(lst)==1){
-            return(NULL)
-        }else{
-            return(lst[length(lst)])
-        }
-    },
-    getSuflessFileName = function(filePath){
-        sfx=private$getSuffix(filePath)
-        if(is.null(sfx)){
-            return(filePath)
-        }else {
-            return(strsplit(filePath,paste0(".",sfx)))
-        }
-    },
-    getParamMD5Path = function(){
-        paramstr=c(private$procName)
-        for(n in sort(names(private$paramlist))){
-            paramstr<-c(paramstr,n)
-            paramstr<-c(paramstr,private$paramlist[[n]])
-        }
-        rslist<-grep("((o|O)utput)|((i|I)nput)",names(private$paramlist))
-        flag = FALSE
-        for(i in 1:length(rslist)){
-            filelist<-private$paramlist[[rslist[i]]]
-            for(j in 1:length(filelist)){
-                if(!is.character(filelist[j])){
-                    flag = TRUE
-                    break
-                }
-                fileinfo<-file.info(filelist[j])
-                if(is.na(fileinfo$isdir)){
-                    paramstr<-c(paramstr,runif(1))
-                    flag = TRUE
-                    break
-                }
-                if(!fileinfo$isdir){
-                    paramstr<-c(paramstr,fileinfo$size)
-                }
-            }
-            if(flag){
-                break
-            }
-        }
-        md5code<-substr(digest(object = paramstr,algo = "md5"),1,8)
-        curtmpdir<-.obtainConfigure("tmpdir")
-        md5filepath<-file.path(curtmpdir,paste(private$procName,md5code,"log",sep = "."))
-        return(md5filepath)
-    },
-    setFinish = function(){
-        private$finish<-TRUE
-        private$writeLog(as.character(Sys.time()))
-        private$writeLog("processing finished")
-        logFilePath<-private$getParamMD5Path()
-        write.table(private$logRecord,logFilePath,quote = FALSE,row.names = FALSE,col.names = FALSE)
-    },
-    checkMD5Cache = function(){
-        if(file.exists(private$getParamMD5Path())){
-            return(TRUE)
-        }else{
-            return(FALSE)
-        }
-    },
-    getBasenamePrefix = function(filepath,words){
-        return(basename(gsub(paste0("[.]",words,".*"),"",filepath)))
-    },
-    getPathPrefix = function(filepath,words){
-        return(gsub(paste0("[.]",words,".*"),"",filepath))
-    },
-    writeLog = function(msg,isWarnning=FALSE,appendLog=TRUE){
-        if(isWarnning){
-            warning(msg)
-            msg<-paste0("Warning:",msg)
-        }else{
-            message(msg)
-        }
-        if(appendLog){
-            private$logRecord<-c(private$logRecord,msg)
-        }else{
-            private$logRecord<-msg
-        }
-
-    },
-    processing = function(){
-        stop("processing function has not been implemented")
-    },
-    getReportValImp = function(item){
-        return(private$reportVal[[item]])
-    },
-    getReportItemsImp = function(){
-        return(names(private$reportVal))
-    }
-    
-
-
-
-  )
-
-)
-#' @name ATACProc
-#' @aliases printMap
-#' @aliases printNextList
-#' @aliases printPrevList
-#' @aliases clearProcCache
-#' @aliases process
-#' @aliases getNextProcList
-#' @aliases getProcName
-#' @aliases getParam
-#' @aliases getParamItems
-#' @aliases isReady
-#' @aliases isSingleEnd
-#' @aliases getReportVal
-#' @aliases getReportItems
 #' @title Methods for ATACProc objects
-#' @description 
-#' You can call ATACProc objects operation methods below to 
-#' obtain information in objects. Or, you call also call
-#' "atacProc$method(parameters)" to do the same things.
-#' @details 
-#' ATACProc is a R6ClassGenerator for generating ATACProc R6 objects. 
-#' All ATACProc objects generated by its subclasses R6ClassGenerator.
-#' You can only use the ATACProc objects returned by any functions 
-#' rather than use ATACProc R6ClassGenerator to generate yourself.
+#' @description
+#' You can call ATACProc objects operation methods below to
+#' obtain information in objects.
+#' @details
+#' ATACProc is a S4 class for generating ATACProc S4 objects.
+#' All ATACProc objects generated by its subclasses.
+#' You can only use the ATACProc objects returned by any functions
+#' rather than use ATACProc S4 class to generate object yourself.
 #' @return The value return by object methods.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacSamToBed}} 
+#' @seealso
+#' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
 
-#' @param atacProc ATACProc object return by functions or Character scalar.
-#' @param preProc \code{Logitcal} scalar. 
+#' @param .Object,atacProc ATACProc object return by functions or Character scalar.
+#' @param preProc \code{Logitcal} scalar.
 #' show the available upstream processes if TRUE
 #' @param nextProc \code{Logitcal} scalar.
 #' show the available downstream processes if TRUE
 #' @param curProc \code{Logitcal} scalar.
-#' show the current process of parameter \code{atacProc} if TRUE
+#' show the current process of parameter \code{.Object} if TRUE
 #' @param display \code{Logitcal} scalar.
 #' Save to pdf file if FALSE.
 #' @param item \code{Characters} scalar
+#' @param ... ignored
 #' The parameters name
-#' @return the function and result of functions 
-#' @rdname ATACProc
-#' @export 
+#' @return the function and result of functions
+#'
+#' @examples
+#' library(magrittr)
+#' td <- tempdir()
+#' options(atacConf=setConfigure("tmpdir",td))
+#'
+#' # Identify adapters
+#' prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
+#' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
+#' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
+#'
+#' reads_merged_1 <- file.path(td,"reads1.fastq")
+#' reads_merged_2 <- file.path(td,"reads2.fastq")
+#' atacproc <-
+#' atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
+#' atacRenamer %>% atacRemoveAdapter
+#'
+#' subclassname<-getProcName(atacproc)
+#'
+#' printMap(subclassname)
+#'
+#' (pitems<-getParamItems(atacproc))
+#' getParam(atacproc,pitems[1])
+#'
+#'
+#' isReady(atacproc)
+#' isSingleEnd(atacproc)
+#' (ritems<-getReportItems(atacproc))
+#' getReportVal(atacproc,ritems[1])
+#'
+#' clearProcCache(atacproc)
+#'
+#' process(atacproc)
+#'
+#' @name ATACProc-class
+#' @rdname ATACProc-class
+#' @exportClass ATACProc
+setClass(Class = "ATACProc",
+         slots = list(
+             fileType="list",
+             paramlist = "list",
+             paramlistbk = "list",
+             reportVal = "list",
+             procName = "character",
+             completObj = "logical",
+             editable = "logical",
+             finish = "logical",
+             singleEnd = "logical",
+             logRecord= "character",
+             timeStamp="character",
+             timeStampPattern="character"
+         ))
+setMethod(f = "initialize",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              stop("Generate ATACProc object directly is not allowed!")
+              .Object
+          })
+
+setGeneric(name = "initbase",
+           def = function(.Object,...){
+               standardGeneric("initbase")
+           })
+setMethod(f = "initbase",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              .Object@fileType <- list(fq="fq",fastq="fq",fa="fa",fasta="fa")
+              .Object@paramlist <- list()
+              .Object@paramlistbk <- list()
+              .Object@reportVal <- list()
+              .Object@procName <- ""
+              .Object@completObj <- TRUE
+              .Object@editable <- FALSE
+              .Object@finish <- FALSE
+              .Object@singleEnd <- FALSE
+              .Object@logRecord <- "Generated by ATACpipe."
+              .Object@timeStamp <- ""
+              .Object@timeStampPattern <- "(\\[\\d\\d\\d\\d\\d\\d\\])*"
+              .Object
+          })
+
+setGeneric(name = "init",
+           def = function(.Object,procName,editable,atacProcs,...){
+               standardGeneric("init")
+           })
+setMethod(
+    f = "init",
+    signature = "ATACProc",
+    definition = function(.Object,procName,editable,atacProcs,...){
+        .Object<-initbase(.Object)
+        .Object@timeStamp <- format(Sys.time(),"[%H%M%S]")
+        .Object@procName<-procName
+        .Object@editable<-editable
+        if(.Object@editable){
+            .Object@finish <- TRUE;
+        }
+        argSize <- length(atacProcs)
+        if(argSize>=1&&!is.null(atacProcs[[1]])){
+            if(!isReady(atacProcs[[1]])){
+                stop(paste(getProcName(atacProcs[[1]]),"is not ready"))
+            }
+            if(!checkRelation1(graphMng,getProcName(atacProcs[[1]]),procName)){
+                stop(paste(getProcName(atacProcs[[1]]),"is not valid input"))
+            }
+            .Object@singleEnd<-isSingleEnd(atacProcs[[1]])
+        }else if(argSize>=2&&!is.null(atacProcs[[2]])){
+            if(!isReady(atacProcs[[2]])){
+                stop(paste(getProcName(atacProcs[[2]]),"is not ready"))
+            }
+            if(!checkRelation2(graphMng,getProcName(atacProcs[[2]]),procName)){
+                stop(paste(getProcName(atacProcs[[2]]),"is not valid input"))
+            }
+        }
+        .Object
+    }
+)
+
+setGeneric(
+    name = "atacPrintMap",
+    def = function(atacProc,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
+        standardGeneric("atacPrintMap")
+    }
+)
+
+#' @rdname ATACProc-class
+#' @aliases atacPrintMap
+#' @export
+setMethod(
+    f = "atacPrintMap",
+    signature = "ATACProc",
+    definition = function(atacProc,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
+        graphPrintMap(
+            graphMng,
+            procName =class(atacProc),
+            preProc=preProc,
+            nextProc=nextProc,
+            curProc=curProc,
+            display = display)
+
+    }
+)
+
+#' @rdname ATACProc-class
+#' @export
 printMap <-function(atacProc=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
     if(is.null(atacProc)){
-        GraphMng$new()$printMap(display=display)
+        graphPrintMap(graphMng,display = display)
     }else if(is.character(atacProc)){
-        GraphMng$new()$printMap(atacProc,preProc,nextProc,curProc,display=display)
-    }else{
-        atacProc$printMap(preProc,nextProc,curProc,display=display)
-        invisible(atacProc)
+        graphPrintMap(
+            graphMng,
+            procName =atacProc,
+            preProc=preProc,
+            nextProc=nextProc,
+            curProc=curProc,
+            display = display)
     }
 }
-#' @rdname ATACProc
-#' @return \item{printNextList}{Print the map to show available downstream process}
-#' @export 
-printNextList<-function(atacProc){
-    if(is.character(atacProc)){
-        GraphMng$new()$getNextProcs(atacProc)
-    }else{
-        GraphMng$new()$getNextProcs(atacProc$getProcName())
-        invisible(atacProc)
-    }
-}
-#' @rdname ATACProc
-#' @return \item{printPrevList}{Print the map to show available upstream process}
-#' @export 
-printPrevList<-function(atacProc){
-    if(is.character(atacProc)){
-        GraphMng$new()$getPrevProcs(atacProc)
-    }else{
-        GraphMng$new()$getPrevProcs(atacProc$getProcName())
-        invisible(atacProc)
-    }
-}
-#' @rdname ATACProc
-#' @return \item{clearProcCache}{Clear cache of atacProc object}
-#' @export 
-clearProcCache <- function(atacProc){
-    invisible(atacProc$clearCache())
-}
-#' @rdname ATACProc
+
+
+
+setGeneric(name = "process",
+           def = function(.Object,...){
+               standardGeneric("process")
+           })
+
 #' @return \item{process}{Call this function to redo processing }
-#' @export 
-process <- function(atacProc){
-    invisible(atacProc$process())
-}
+#' @rdname ATACProc-class
+#' @aliases process
+#' @export
+setMethod(f = "process",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              if(.Object@editable){
+                  stop("The \"processing\" method can not be call in editable result object");
+              }
+              if(checkMD5Cache(.Object)){
+                  message(paste0("The process:`",.Object@procName,"` was finished. Nothing to do."))
+                  message("If you need to redo, please call 'clearProcCache(YourObject)'")
+                  .Object@finish<-TRUE
+              }else{
+                  .Object <- writeLog(.Object,as.character(Sys.time()))
+                  if(.Object@singleEnd){
+                      .Object <- writeLog(.Object,paste0("start processing(single end data): ", .Object@procName))
+                  }else{
+                      .Object <- writeLog(.Object,paste0("start processing(paired end data): ", .Object@procName))
+                  }
+                  #.Object@paramlistbk<-.Object@paramlist
+                  .Object <- processing(.Object)
+                  .Object <- setFinish(.Object)
+              }
+              .Object
+          })
 
-#' @rdname ATACProc
-#' @return \item{getNextProcList}{Get list of available downstream process}
-#' @export 
-getNextProcList <- function(atacProc){
-    return(atacProc$getNextProcList())
-}
 
 
-#' @rdname ATACProc
+setGeneric(name = "getProcName",
+           def = function(.Object,...){
+               standardGeneric("getProcName")
+           })
+
 #' @return \item{getProcName}{get atacProc Characher name}
-#' @export 
-getProcName = function(atacProc){
-    return(atacProc$getProcName())
-}
-#' @rdname ATACProc
+#' @rdname ATACProc-class
+#' @aliases getProcName
+#' @export
+setMethod(f = "getProcName",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              return(.Object@procName)
+          })
+
+setGeneric(name = "getParam",
+           def = function(.Object,item,...){
+               standardGeneric("getParam")
+           })
+
+#' @rdname ATACProc-class
 #' @return \item{getParam}{Get parameter value setted by process function}
-#' @export 
-getParam = function(atacProc,item){
-    return(atacProc$getParam(item))
-}
-#' @rdname ATACProc
+#' @aliases  getParam
+#' @export
+setMethod(f = "getParam",
+          signature = "ATACProc",
+          definition = function(.Object,item,...){
+              return(.Object@paramlist[[item]])
+          })
+
+setGeneric(name = "getParamItems",
+           def = function(.Object,...){
+               standardGeneric("getParamItems")
+           })
+
+#' @rdname ATACProc-class
 #' @return \item{getParamItems}{Get parameter name list}
-#' @export 
-getParamItems = function(atacProc){
-    return(atacProc$getParamItems())
-}
-#' @rdname ATACProc
+#' @aliases  getParamItems
+#' @export
+setMethod(f = "getParamItems",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              return(names(.Object@paramlist))
+          })
+
+setGeneric(name = "setResultParam",
+           def = function(.Object,item,val,...){
+               standardGeneric("setResultParam")
+           })
+setMethod(f = "setResultParam",
+          signature = "ATACProc",
+          definition = function(.Object,item,val,...){
+              if(!.Object@editable){
+                  stop("This object can not be edited");
+              }
+              .Object@paramlist[[item]]<-val
+              .Object})
+
+
+setGeneric(name = "isReady",
+           def = function(.Object,...){
+               standardGeneric("isReady")
+           })
+
+#' @rdname ATACProc-class
 #' @return \item{isReady}{Is the process ready}
-#' @export 
-isReady = function(atacProc){
-    return(atacProc$isReady())
-    
-}
-#' @rdname ATACProc
+#' @aliases  isReady
+#' @export
+setMethod(f = "isReady",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              if(.Object@editable){
+                  return(TRUE);
+              }else if(.Object@finish){
+                  return(TRUE);
+              }else{
+                  return(FALSE);
+              }
+          })
+
+
+setGeneric(name = "clearProcCache",
+           def = function(.Object,...){
+               standardGeneric("clearProcCache")
+           })
+
+#' @rdname ATACProc-class
+#' @return \item{clearProcCache}{Clear cache of atacProc object}
+#' @aliases  clearProcCache
+#' @export
+setMethod(f = "clearProcCache",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              if(!unlink(getParamMD5Path(.Object))){
+                  message("Chache has been cleared")
+              }else{
+                  message("Chache does not exist. Nothing has been done.")
+              }
+              rslist<-grep("(o|O)utput",names(.Object@paramlist))
+              for(i in 1:length(rslist)){
+                  unlink(.Object@paramlist[[rslist[i]]])
+              }
+              .Object@finish<-FALSE
+              .Object
+          })
+
+setGeneric(name = "isSingleEnd",
+           def = function(.Object,...){
+               standardGeneric("isSingleEnd")
+           })
+
+#' @rdname ATACProc-class
 #' @return \item{isSingleEnd}{Single end data if TRUE else FALSE}
-#' @export 
-isSingleEnd = function(atacProc){
-    return(atacProc$isSingleEnd())
-}
-#' @rdname ATACProc
+#' @aliases  isSingleEnd
+#' @export
+setMethod(f = "isSingleEnd",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              return(.Object@singleEnd)
+          })
+
+
+setGeneric(name = "getReportVal",
+           def = function(.Object,item,...){
+               standardGeneric("getReportVal")
+           })
+
+#' @rdname ATACProc-class
 #' @return \item{getReportVal}{Get report value of item}
-#' @export 
-getReportVal = function(atacProc,item){
-    return(atacProc$getReportVal(item))
-    
-}
-#' @rdname ATACProc
+#' @aliases   getReportVal
+#' @export
+setMethod(f = "getReportVal",
+          signature = "ATACProc",
+          definition = function(.Object,item,...){
+              if(.Object@finish){
+                  if(sum(item == getReportItemsImp(.Object))>0){
+                      return(getReportValImp(.Object,item))
+                  }else{
+                      stop(paste0(item," is not an item of report value."))
+                  }
+              }else{
+                  stop("Unfinished process is not available for report value.")
+              }
+          })
+
+
+setGeneric(name = "getReportItems",
+           def = function(.Object,...){
+               standardGeneric("getReportItems")
+           })
+
+#' @rdname ATACProc-class
 #' @return \item{getReportItems}{Get all items that can be reported}
-#' @export 
-getReportItems = function(atacProc){
-    return(atacProc$getReportItems())
-}
+#' @aliases getReportItems
+#' @export
+setMethod(f = "getReportItems",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              if(.Object@finish){
+                  return(getReportItemsImp(.Object))
+              }else{
+                  stop("Unfinished process is not available for report items.")
+              }
+          })
+setGeneric(name = "getAutoPath",
+           def = function(.Object,originPath,regexProcName,suffix,...){
+               standardGeneric("getAutoPath")
+           })
+setMethod(f = "getAutoPath",
+          signature = "ATACProc",
+          definition = function(.Object,originPath,regexProcName,suffix,...){
+              if(!is.null(originPath)){
+                  prefix<-getBasenamePrefix(.Object,originPath,regexProcName)
+                  return(file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),suffix)))
+              }else{
+                  return(NULL)
+              }
+          })
+setGeneric(name = "paramValidation",
+           def = function(.Object,...){
+               standardGeneric("paramValidation")
+           })
+setMethod(f = "paramValidation",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              if(!checkMD5Cache(.Object)){
+                  checkAllPath(.Object)
+              }
+              if(!.Object@editable){
+                  checkRequireParam(.Object);
+              }
+          })
+setGeneric(name = "checkRequireParam",
+           def = function(.Object,...){
+               standardGeneric("checkRequireParam")
+           })
+
+
+
+setGeneric(name = "checkAllPath",
+           def = function(.Object,...){
+               standardGeneric("checkAllPath")
+           })
+
+setGeneric(name = "checkFileExist",
+           def = function(.Object,filePath,...){
+               standardGeneric("checkFileExist")
+           })
+setMethod(f = "checkFileExist",
+          signature = "ATACProc",
+          definition = function(.Object,filePath,...){
+              if(!is.null(filePath)){
+                  if(!file.exists(filePath)){
+                      stop(paste("error, file does not exist:",filePath))
+                  }
+              }
+          })
+setGeneric(name = "checkPathExist",
+           def = function(.Object,filePath,...){
+               standardGeneric("checkPathExist")
+           })
+setMethod(f = "checkPathExist",
+          signature = "ATACProc",
+          definition = function(.Object,filePath,...){
+              if(!is.null(filePath)){
+                  if(!dir.exists(dirname(filePath))){
+                      stop(paste("error, path does not exist:",filePath))
+                  }
+              }
+          })
+setGeneric(name = "checkFileCreatable",
+           def = function(.Object,filePath,...){
+               standardGeneric("checkFileCreatable")
+           })
+setMethod(f = "checkFileCreatable",
+          signature = "ATACProc",
+          definition = function(.Object,filePath,...){
+              if(!is.null(filePath)){
+                  if(file.exists(filePath)){
+                      .Object <- writeLog(.Object,paste("file exist:",filePath,". It may be overwrited in processing"));
+                  }else if(!file.create(filePath)){
+                      stop(paste("cannot create file '",filePath,"', No such file or directory or permission denied"));
+                  }else{
+                      unlink(filePath)
+                  }
+              }
+          })
+setGeneric(name = "checkParam",
+           def = function(.Object,paramlist,paramPattern,...){
+               standardGeneric("checkParam")
+           })
+setMethod(f = "checkParam",
+          signature = "ATACProc",
+          definition = function(.Object,paramlist,paramPattern,...){
+              rs<-grepl(paramPattern, paramlist)
+              if(sum(rs)>0){
+                  banp=paste(paramlist[rs], collapse = "'/'")
+                  stop(sprintf("Parameter(s) '%s' are not acceptable in paramList. it should be set as fix parameter.",banp))
+              }
+          })
+setGeneric(name = "getSuffix",
+           def = function(.Object,filePath,...){
+               standardGeneric("getSuffix")
+           })
+setMethod(f = "getSuffix",
+          signature = "ATACProc",
+          definition = function(.Object,filePath,...){
+              filename<-basename(filePath)
+              lst=strsplit(filename,"\\.")[[1]]
+              if(length(lst)==1){
+                  return(NULL)
+              }else{
+                  return(lst[length(lst)])
+              }
+          })
+setGeneric(name = "getSuflessFileName",
+           def = function(.Object,filePath,...){
+               standardGeneric("getSuflessFileName")
+           })
+setMethod(f = "getSuflessFileName",
+          signature = "ATACProc",
+          definition = function(.Object,filePath,...){
+              sfx=getSuffix(.Object,filePath)
+              if(is.null(sfx)){
+                  return(filePath)
+              }else {
+                  return(strsplit(filePath,paste0(".",sfx)))
+              }
+          })
+setGeneric(name = "getParamMD5Path",
+           def = function(.Object,...){
+               standardGeneric("getParamMD5Path")
+           })
+setMethod(f = "getParamMD5Path",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              paramstr=c(.Object@procName)
+              for(n in sort(names(.Object@paramlist))){
+                  paramstr<-c(paramstr,n)
+                  paramstr<-c(paramstr,.Object@paramlist[[n]])
+              }
+              rslist<-grep("((o|O)utput)|((i|I)nput)",names(.Object@paramlist))
+              flag = FALSE
+              for(i in 1:length(rslist)){
+                  filelist<-.Object@paramlist[[rslist[i]]]
+                  for(j in 1:length(filelist)){
+                      if(!is.character(filelist[j])){
+                          flag = TRUE
+                          break
+                      }
+                      fileinfo<-file.info(filelist[j])
+                      if(is.na(fileinfo$isdir)){
+                          paramstr<-c(paramstr,runif(1))
+                          flag = TRUE
+                          break
+                      }
+                      if(!fileinfo$isdir){
+                          paramstr<-c(paramstr,fileinfo$size)
+                      }
+                  }
+                  if(flag){
+                      break
+                  }
+              }
+              md5code<-substr(digest(object = paramstr,algo = "md5"),1,8)
+              curtmpdir<-.obtainConfigure("tmpdir")
+              md5filepath<-file.path(curtmpdir,paste(.Object@procName,md5code,"log",sep = "."))
+              return(md5filepath)
+          })
+setGeneric(name = "setFinish",
+           def = function(.Object,...){
+               standardGeneric("setFinish")
+           })
+setMethod(f = "setFinish",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              .Object@finish<-TRUE
+              .Object<-writeLog(.Object,as.character(Sys.time()))
+              .Object<-writeLog(.Object,"processing finished")
+              logFilePath<-getParamMD5Path(.Object)
+              write.table(.Object@logRecord,logFilePath,quote = FALSE,row.names = FALSE,col.names = FALSE)
+              .Object
+          })
+setGeneric(name = "checkMD5Cache",
+           def = function(.Object,...){
+               standardGeneric("checkMD5Cache")
+           })
+setMethod(f = "checkMD5Cache",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              if(file.exists(getParamMD5Path(.Object))){
+                  return(TRUE)
+              }else{
+                  return(FALSE)
+              }
+          })
+setGeneric(name = "getBasenamePrefix",
+           def = function(.Object,filepath,words,...){
+               standardGeneric("getBasenamePrefix")
+           })
+setMethod(f = "getBasenamePrefix",
+          signature = "ATACProc",
+          definition = function(.Object,filepath,words,...){
+              return(basename(gsub(paste0("[.]",words,".*"),"",filepath)))
+          })
+
+setGeneric(name = "getPathPrefix",
+           def = function(.Object,filepath,words,...){
+               standardGeneric("getPathPrefix")
+           })
+setMethod(f = "getPathPrefix",
+          signature = "ATACProc",
+          definition = function(.Object,filepath,words,...){
+              return(gsub(paste0("[.]",words,".*"),"",filepath))
+          })
+
+setGeneric(name = "writeLog",
+           def = function(.Object,msg,...,isWarnning=FALSE,appendLog=TRUE){
+               standardGeneric("writeLog")
+           })
+setMethod(f = "writeLog",
+          signature = "ATACProc",
+          definition = function(.Object,msg,...,isWarnning=FALSE,appendLog=TRUE){
+              if(isWarnning){
+                  warning(msg)
+                  msg<-paste0("Warning:",msg)
+              }else{
+                  message(msg)
+              }
+              if(appendLog){
+                  .Object@logRecord<-c(.Object@logRecord,msg)
+              }else{
+                  .Object@logRecord<-msg
+              }
+              .Object
+          })
+setGeneric(name = "processing",
+           def = function(.Object,...){
+               standardGeneric("processing")
+           })
+
+setGeneric(name = "getReportValImp",
+           def = function(.Object,...){
+               standardGeneric("getReportValImp")
+           })
+setMethod(f = "getReportValImp",
+          signature = "ATACProc",
+          definition = function(.Object,...){
+              return(.Object@reportVal[[item]])
+          })
+setGeneric(name = "getReportItemsImp",
+           def = function(.Object,item,...){
+               standardGeneric("getReportItemsImp")
+           })
+setMethod(f = "getReportItemsImp",
+          signature = "ATACProc",
+          definition = function(.Object,item,...){
+              return(names(.Object@reportVal))
+          })
+
+
