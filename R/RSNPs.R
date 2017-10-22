@@ -163,6 +163,7 @@ setMethod(
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacMotifScan}}
 
+#' @name atacSNPAnno
 #' @export
 #' @docType methods
 #' @rdname atacSNPAnno-methods

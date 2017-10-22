@@ -97,6 +97,7 @@ setMethod(
 #' \code{\link{atacSam2Bam}}
 #' \code{\link{atacBam2Bed}}
 
+#' @name atacBamSort
 #' @export
 #' @docType methods
 #' @rdname atacBamSort-methods

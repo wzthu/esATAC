@@ -180,6 +180,7 @@ setMethod(
 #' @importFrom IRanges subsetByOverlaps
 #' @importFrom R.utils getAbsolutePath
 
+#' @name atacMotifScan
 #' @export
 #' @docType methods
 #' @rdname atacMotifScan-methods

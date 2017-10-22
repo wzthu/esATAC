@@ -83,7 +83,7 @@ setMethod(
 #' @description
 #' Extract cutting site from ATAC-seq fangment bed file
 #' (from \code{\link{atacSamToBed}}).
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSamToBed}}.
 #' @param bedInput \code{Character} scalar.
@@ -99,7 +99,7 @@ setMethod(
 #' means a DNA fragment, the cutting site is start+1 and end, this function
 #' extract and sort this information for the next step
 #' (\code{\link{atacCutSiteCount}}).
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream
 #' analysis.
 #' @author Wei Zhang
 #'
@@ -115,7 +115,7 @@ setMethod(
 #' @seealso
 #' \code{\link{atacCutSiteCount}}
 
-
+#' @name atacExtractCutSite
 #' @export
 #' @docType methods
 #' @rdname atacExtractCutSite-methods

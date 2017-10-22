@@ -107,7 +107,7 @@ setMethod(
 #' @title Quality control for ATAC-seq data.
 #' @description
 #' Generate quality control plots from fastq/fasta/bam of ATAC-seq data.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacUnzipAndMerge}},
 #' \code{\link{atacRenamer}},
@@ -119,7 +119,7 @@ setMethod(
 #' folder as your input file.
 #' @details Every highthroughput sequencing need quality control analysis, this
 #' function provide QC for ATAC-seq, such as GC content.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream
 #' analysis.
 #' @author Wei Zhang
 #' @examples
@@ -141,6 +141,7 @@ setMethod(
 #' \code{\link{atacRenamer}},
 #' \code{\link{atacSam2Bam}}.
 #' @importFrom QuasR qQCReport
+#' @name atacQCReport
 #' @export
 #' @docType methods
 #' @rdname atacQCReport-methods

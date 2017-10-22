@@ -242,6 +242,7 @@ setMethod(
 #' dir(td)
 #'
 
+#' @name atacTSSQC
 #' @export
 #' @docType methods
 #' @rdname atacTSSQC-methods

@@ -172,6 +172,7 @@ setMethod(
 #' \link[clusterProfiler]{enrichGO} function enrichGO in package
 #' "clusterProfiler"
 #' @importFrom clusterProfiler enrichGO
+#' @name atacGOAnalysis
 #' @export
 #' @docType methods
 #' @rdname atacGOAnalysis-methods

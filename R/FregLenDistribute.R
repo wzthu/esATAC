@@ -181,7 +181,7 @@ setMethod(
 #' The fourier transform of fregment distribution will be calculated.
 #' Strength distribution around period at 10.4bp and 180bp
 #' will be shown in another two plots.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSamToBed}}
 #' \code{\link{samToBed}}
@@ -193,14 +193,14 @@ setMethod(
 #' BED file input path.
 #' @details The parameter related to input and output file path
 #' will be automatically
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 #' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
 #' \code{atacProc} should be set \code{NULL}
 #' or you can use \code{fregLenDistr} instead.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacSamToBed}}
@@ -220,7 +220,7 @@ setMethod(
 #'
 #' dir(td)
 #'
-
+#' @name atacFregLenDistr
 #' @export
 #' @docType methods
 #' @rdname atacFregLenDistr-methods

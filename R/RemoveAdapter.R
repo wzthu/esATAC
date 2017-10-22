@@ -420,7 +420,7 @@ listToFrame <- function(a){
 #' @title Use AdapterRemoval to remove adapters
 #' @description
 #' Use AdapterRemoval to remove adapters
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacRenamer}}
 #' \code{\link{renamer}}
@@ -459,7 +459,7 @@ listToFrame <- function(a){
 #' Default: generate from known parameters
 #' @details The parameter related to input and output file path
 #' will be automatically
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' obtained from \code{\link{ATACProc-class}} object or
 #' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
@@ -476,7 +476,7 @@ listToFrame <- function(a){
 #' paramList and findParamList are invalid if they are already handled as explicit
 #' function arguments. See the output of
 #' \code{adapterremoval_usage()} for details about available parameters.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacRenamer}}
@@ -505,6 +505,7 @@ listToFrame <- function(a){
 #' @importFrom Rbowtie2 remove_adapters
 
 
+#' @name atacRemoveAdapter
 #' @export
 #' @docType methods
 #' @rdname atacRemoveAdapter-methods

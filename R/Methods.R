@@ -91,7 +91,7 @@ getSuffixlessFileName = function(filePath){
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical}. If the HTML report file will be created.
 #' @param prefix For identifying files.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacSamToBed}}
@@ -101,7 +101,7 @@ getSuffixlessFileName = function(filePath){
 #' td<-tempdir()
 #' options(atacConf=setConfigure("threads",4))
 #' dir.create(file.path(td,"ref"))
-#' # change the refdir to your installed refdir path 
+#' # change the refdir to your installed refdir path
 #' # or it will be time comsuming to build bowtie2 index
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
@@ -490,16 +490,16 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical}. If the HTML report file will be created.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacPipe}}
-#' @examples 
+#' @examples
 #' \dontrun{
 #' td<-tempdir()
 #' options(atacConf=setConfigure("threads",4))
 #' dir.create(file.path(td,"ref"))
-#' # change the refdir to your installed refdir path 
+#' # change the refdir to your installed refdir path
 #' # or it will be time comsuming to build bowtie2 index
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
@@ -507,7 +507,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
 #'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
 #' )
-#' ctrl <- c(     
+#' ctrl <- c(
 #'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
 #'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
 #' )
