@@ -207,7 +207,7 @@ grid.arrange(g12, g22, ncol=2)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 casetb<-getReportVal(caselist$atacProcs$blacklistQC,"report")
-ctrltb<-ctrllist$atacProcs$blacklistQC$getReportVal("report")
+ctrltb<-getReportVal(ctrllist$atacProcs$blacklistQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
