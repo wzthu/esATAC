@@ -56,8 +56,6 @@ show the current process of parameter \code{atacProc} if TRUE}
 \item{display}{\code{Logitcal} scalar.
 Save to pdf file if FALSE.}
 
-\item{...}{ignored}
-
 \item{item}{\code{Characters} scalar
 The parameters name}
 }
