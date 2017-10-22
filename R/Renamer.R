@@ -186,7 +186,7 @@ singleCall<-function(number,.Object){
 #' dir(td)
 #'
 
-
+#' @name atacRenamer
 #' @export
 #' @docType methods
 #' @rdname atacRenamer-methods

@@ -180,7 +180,7 @@ setMethod(
 #' @title Use bowtie2 aligner to map reads to reference genome
 #' @description
 #' Use bowtie2 aligner to map reads to reference genome
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacRemoveAdapter}}
 #' \code{\link{removeAdapter}}
@@ -212,7 +212,7 @@ setMethod(
 #' The threads will be created in this process. default: 1
 #' @details The parameter related to input and output file path
 #' will be automatically
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 #' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
@@ -230,7 +230,7 @@ setMethod(
 #' bowtie2 are invalid if they are already handled as explicit
 #' function arguments. See the output of
 #' \code{bowtie2_usage()} for details about available parameters.
-#' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacRemoveAdapter}}
@@ -263,6 +263,7 @@ setMethod(
 #'     head(readLines(file.path(td, "result.sam")))
 #' }
 
+#' @name atacBowtie2Mapping
 #' @export
 #' @docType methods
 #' @rdname atacBowtie2Mapping-methods

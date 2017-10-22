@@ -213,6 +213,7 @@ setMethod(
 #' @importFrom ChIPseeker plotAnnoPie
 
 
+#' @name atacPeakAnno
 #' @export
 #' @docType methods
 #' @rdname atacPeakAnno-methods

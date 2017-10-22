@@ -163,6 +163,7 @@ setMethod(
 #' @seealso
 #' \code{\link{atacPeakCalling}}
 
+#' @name atacpeakComp
 #' @export
 #' @docType methods
 #' @rdname atacpeakComp-methods

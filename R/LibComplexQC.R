@@ -155,7 +155,7 @@ setMethod(
 #' M1: number of genomic locations where exactly one read maps uniquely,
 #' M2: number of genomic locations where two reads map uniquely
 #' M_DISTINCT: number of distinct genomic locations to which some read maps uniquely.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacBowtie2Mapping}}
 #' \code{\link{bowtie2Mapping}}
@@ -170,7 +170,7 @@ setMethod(
 #' when \code{subsample} is TRUE
 #' @details The parameter related to input and output file path
 #' will be automatically
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 #' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
@@ -193,7 +193,7 @@ setMethod(
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' atacproc<-libComplexQC(samInput = samfile)
 #'
-#'
+#' @name atacLibComplexQC
 #' @export
 #' @docType methods
 #' @rdname atacLibComplexQC-methods

@@ -129,13 +129,13 @@ setMethod(
 #' @title Quality control for fraction of reads in peaks (FRiP)
 #' @description
 #' Calculate the fraction of reads falling within peak regions
-#' @param atacProcReads \code{\link{ATACProc}} object scalar.
+#' @param atacProcReads \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSamToBed}}
 #' \code{\link{samToBed}}
 #' \code{\link{atacBedUtils}}
 #' \code{\link{bedUtils}}
-#' @param atacProcPeak \code{\link{ATACProc}} object scalar.
+#' @param atacProcPeak \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}},
 #' \code{\link{peakCalling}}.
@@ -149,7 +149,7 @@ setMethod(
 #' Peaks BED file
 #' @details The parameter related to input and output file path
 #' will be automatically
-#' obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+#' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 #' generated based on known parameters
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
@@ -176,7 +176,7 @@ setMethod(
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
 #'
-#'
+#' @name atacFripQC
 #' @export
 #' @docType methods
 #' @rdname atacFripQC-methods

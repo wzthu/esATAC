@@ -204,10 +204,10 @@ setMethod(
 #' NOTE: The input parameter is a a little bit complex,
 #' \code{atacExtractCutSite} and \code{atacMotifScan} is recommended to use which
 #' makes the entire procedure easier.
-#' @param atacProcCutSite \code{\link{ATACProc}} object scalar.
+#' @param atacProcCutSite \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacExtractCutSite}}.
-#' @param atacProcMotifScan \code{\link{ATACProc}} object scalar.
+#' @param atacProcMotifScan \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacMotifScan}}.
 #' @param csInput Your cut site information file(from atacExtractCutSite function,
@@ -236,7 +236,7 @@ setMethod(
 #' \code{atacMotifScan} will do all this, you just specify which motif you want.
 #' Therefore, \code{\link{atacExtractCutSite}} and \code{\link{atacMotifScan}} is
 #' recommended to use together.
-#' @return An invisible \code{\link{ATACProc}} object scalar.
+#' @return An invisible \code{\link{ATACProc-class}} object scalar.
 #' @author Wei Zhang
 #' @examples
 #'
@@ -266,7 +266,7 @@ setMethod(
 #' \code{\link{atacExtractCutSite}}
 #' \code{\link{atacMotifScan}}
 #'
-
+#' @name atacCutSiteCount
 #' @export
 #' @docType methods
 #' @rdname atacCutSiteCount-methods

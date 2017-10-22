@@ -193,7 +193,6 @@ setMethod(
 
 
 #' @title Convert SAM file to BED file
-#' @name atacSamToBed
 #' @description
 #' This function is used to convert SAM file to BED file and
 #' merge interleave paired end reads,
@@ -261,7 +260,7 @@ setMethod(
 #' samfile <- file.path(td,"Example.sam")
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' samToBed(samInput = samfile)
-#'
+#' @name atacSamToBed
 #' @export
 #' @docType methods
 #' @rdname atacSamToBed-methods
