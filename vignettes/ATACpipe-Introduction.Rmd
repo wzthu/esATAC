@@ -352,67 +352,81 @@ dir(td)
 
 
 ### ATAC-seq Peak Annotation
-ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). Function "peakanno" use  function "annotatePeak" in package "ChIPseeker"" to annotate ATAC-seq peak, for more parameters and usage, [click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html).
 
+ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhencer). 
 
-```{r echo=TRUE, results='hide', message=FALSE}
+Function "atacPeakAnno" and "peakanno" use  function "annotatePeak" in package "ChIPseeker" to annotate ATAC-seq peak. for more information about package "ChIPseeker", [please click here](http://www.bioconductor.org/packages/release/bioc/html/ChIPseeker.html)[4].
+
+Function "atacPeakAnno" and "peakanno" accept a bed file path as an input, users can change the parameters like "tssRegion", "TxDb" according to their require. Now, bioconductor offers many species' annotation database, [click here to search more](http://bioconductor.org/packages/release/BiocViews.html#___AnnotationData).
+
+The following example is to exhibit how to annotate a UCSC bed file.
+
+```{r echo = TRUE, results = 'hide', message = FALSE}
+## extract example peak file from package "ATACpipe"
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
 peak1_path <- as.vector(bunzip2(filename = p1bz,
 destname = file.path(getwd(), "Example_peak1.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+## run peakanno to annotate peaks
 AnnoInfo <- peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.knownGene, annoDb = "org.Hs.eg.db")
 ```
 
-The output contains a pie chart in pdf format like below.
-```{r echo=TRUE, results='hide', message=FALSE}
+The output contains a pie chart in pdf format like below. It reports the percentage of peaks located in different functional regions.
+```{r eval = TRUE, echo = FALSE, warning = FALSE, results = 'hide', message = FALSE}
 library(ChIPseeker)
 ```
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
-peakanno <- AnnoInfo$getReportVal("annoOutput.rds")
+```{r eval = TRUE, echo = FALSE, warning = FALSE, results = 'hide', message = FALSE}
+peakanno <- getReportVal(AnnoInfo, "annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
-The function also generate a file contains annotation for all peaks.
+The function also generate a file(with suffix .df) contains annotation for all peaks. It is converted from dataframe in R, and users could open it with text editor or excel.
 Below is a part of the output.
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
+```{r eval = TRUE, echo = FALSE, warning = FALSE}
 peakanno <- as.data.frame(peakanno)
 colnames(peakanno)[1] <- "chromatin"
 peakanno <- subset(peakanno, select=c("chromatin", "start", "end", 
                                       "annotation", "geneStart", "geneEnd", 
-                                      "geneId", "distanceToTSS", "SYMBOL", 
-                                      "GENENAME"))
-knitr::kable(peakanno[1:10, ])
+                                      "geneId", "distanceToTSS", "SYMBOL"))
+knitr::kable(peakanno[1:5, ])
 ```
 
 ### Go Analysis
 
-GO analysis is performing enrichment analysis on gene sets.
+GO analysis is performing enrichment analysis on gene sets. It establishes the relationship between gene sets and functions, and report the most significant function to users.
 
-The function need gene Id as input. User could choose different GO(molecular function, biological process and cellular component) according to different parameter. 
+Function "atacGOAnalysis" and "goanalysis" use  function "enrichGO" in package "clusterProfiler" to do GO analysis. for more information about package "clusterProfiler", [please click here](https://bioconductor.org/packages/release/bioc/html/clusterProfiler.html)[5].
 
-```{r eval=FALSE,echo=TRUE, results='hide', message=FALSE}
+The function need gene Id set as input. User could choose different GO terms(molecular function, biological process and cellular component) according to different input of parameter "ont". 
+
+The following example is to exhibit how to do GO analisys on a gene set.
+
+```{r eval = TRUE, echo = TRUE, results = 'hide', message = FALSE}
 ## extract gene ID
 library(clusterProfiler)
 data(geneList)
 geneId <- names(geneList)[1:100]
+## do GO analysis
 goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
 ```
 
-The output file contains the GO term sorted by p-value, 
-Below is a part of the output.
+The output file(suffix .df) contains the GO term sorted by p-value, below is a part of the output.
 
-```{r eval=FALSE, echo=FALSE, warning=FALSE}
-go_path <- goAna$getReportVal("goOutput")
+```{r eval = TRUE, echo = FALSE, warning = FALSE}
+go_path <- getReportVal(goAna, "goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data[1:10, ])
+knitr::kable(go_data[1:5, ])
 ```
 
 
 ### Motif Scan
 
-The function search motif occurance in the given regios.
-Multi-motif is supported, and output file is named by your input list.
+This function search motif occurance in the given regions.
+
+Function "atacMotifScan" and "motifscan" use  function "matchPWM" in package "Biostrings", for more parameters and usage, [click here](http://www.bioconductor.org/packages/release/bioc/html/Biostrings.html)[6].
+
+Multi-motif is supported, and the output file is named by your input PWM list. for Multi-motif, we offer  parallel computing method for accelerating. Users could specify the parameter "n.cores" to accelerate the program.
 
 The input motif PWM matrix is stored in a list like below.
 
@@ -422,34 +436,39 @@ pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 pwm
 ```
 
-Using "motifscan" function to search motif in given genome regions.
+Using "motifscan" function to search motif in given genome regions, UCSC bed file is recommented.
 
-```{r eval=FALSE,echo=TRUE, results='hide', message=FALSE}
-motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
+```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
+sample.path <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
+sample.path <- as.vector(bunzip2(filename = sample.path,
+destname = file.path(getwd(), "chr20_sample_peak.bed"),
+ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+motif.data <- motifscan(peak = sample.path, genome = BSgenome.Hsapiens.UCSC.hg19,
 motifPWM = pwm, prefix = "test")
 ```
 
+This function reports the exact motif position in the given genome like below(motif: CTCF).
 
-
-
-```{r eval=FALSE, echo=FALSE, warning=FALSE}
-file <- readRDS(motif.data$getParam("rdsOutput"))
-motif_name <- file[1,1]
-motif_path <- file[1,2]
-motif.info <- read.table(file = motif_path, header = FALSE, col.names = c("chromatin", "start", "end", "strand", "score", "sequence"))
-
-
-knitr::kable(motif.info[1:10, ])
+```{r eval = TRUE, echo = FALSE, warning = FALSE}
+CTCF.df <- data.frame(chromatin = c("chr20", "chr20", "chr20", "chr20"),
+                      start = c("189774", "239773", "247783", "281074"), 
+                      end = c("189792", "239791", "247801", "281092"), 
+                      strand = c("+", "+", "-", "-"),
+                      score = c("0.8794931", "0.9003697", "0.9337214", "0.8511201"), 
+                      sequence = c("ACTCCTCTAGAGGGTGCTC", "TTGCCACTGGGGGGAGACA",
+                      "CTGCCGGCAGATGGCGGTA", "TTGCCTGCAGGGGTGGGAA"))
+knitr::kable(CTCF.df)
 ```
-
 
 ### Plot Footprint
 
 The interaction between TF and DNA would leave a "footprint" in motif position, but it is not evident in a single site, so intergrated footprint is necessary.
-In addition, we only count Tn5 cut site.
+In addition, we only consider Tn5 cut site.
 This function is based on the motif scan.
 
-```{r eval=FALSE,echo=TRUE, results='hide', warning=FALSE, results='hide', message=FALSE}
+Fisrt, collecting all cut site from the bed file(Note: every line in the bed file is a DNA fagment) and save them.
+
+```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
 ## extract cut site position from bed file
 fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
 frag <- as.vector(bunzip2(filename = fra_path,
@@ -458,29 +477,18 @@ ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
 ```
 
+Next, plot footprint for different motifs. 
+
 In the motif scan, we get a variable named "motif.data", is contains multi-motif information. In order to plot footprint of these motif in a single procedure, we will use the output of function motifscan, here is "motif.data".
 
 ```{r eval=FALSE, echo=TRUE, warning=FALSE, results='hide', message=FALSE}
-fp <- atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data, prefix = "test")
+fp <- atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
 ```
 
-The following is CTCF footprint using example data.
+The following is CTCF footprint using example data. Note: we only using a small part of the chromatin 20 
+as example.
 
-```{r eval=FALSE, echo=FALSE, warning=FALSE}
-footprint_data <- fp$getReportVal("footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
-     xlab = "Relative Distance From Motif (bp)", 
-     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-axis(1, at = seq(1, 100, len = 3),
-     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
-     padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
-     labels = seq(0, 100, len = 3),
-     padj = -1.0, tck = -0.01)
-axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
-```
+![](CTCF_footprint.png)
 
 ## Query and Object Operations
 
