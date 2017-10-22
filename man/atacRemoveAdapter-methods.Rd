@@ -23,7 +23,7 @@ removeAdapter(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   findParamList = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacRenamer}}
 \code{\link{renamer}}
@@ -72,7 +72,7 @@ for removing adapter. See below for details.}
 for identifying adapter. See below for details.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 Use AdapterRemoval to remove adapters
@@ -80,7 +80,7 @@ Use AdapterRemoval to remove adapters
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.

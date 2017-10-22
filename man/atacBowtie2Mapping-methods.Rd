@@ -23,7 +23,7 @@ bowtie2Mapping(fastqInput1, fastqInput2 = NULL, samOutput = NULL,
   paramList = "--no-discordant --no-unal --no-mixed -X 2000")
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacRemoveAdapter}}
 \code{\link{removeAdapter}}}
@@ -63,7 +63,7 @@ The threads will be created in this process. default: 1}
 See below for details.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 Use bowtie2 aligner to map reads to reference genome
@@ -71,7 +71,7 @@ Use bowtie2 aligner to map reads to reference genome
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.

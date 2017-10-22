@@ -98,7 +98,6 @@ sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBed(samInput = samfile)
-
 }
 \author{
 Zheng Wei

@@ -22,11 +22,11 @@ cutsitecount(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
   prefix = NULL)
 }
 \arguments{
-\item{atacProcCutSite}{\code{\link{ATACProc}} object scalar.
+\item{atacProcCutSite}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacExtractCutSite}}.}
 
-\item{atacProcMotifScan}{\code{\link{ATACProc}} object scalar.
+\item{atacProcMotifScan}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacMotifScan}}.}
 
@@ -54,7 +54,7 @@ up/downstream of the motif. default:100.}
 \item{prefix}{prefix for the pdf file.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar.
+An invisible \code{\link{ATACProc-class}} object scalar.
 }
 \description{
 This function is used to count cut site number in given motif

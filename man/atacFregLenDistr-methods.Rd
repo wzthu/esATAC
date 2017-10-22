@@ -15,7 +15,7 @@ atacFregLenDistr(atacProc, reportPrefix = NULL, bedInput = NULL)
 fregLenDistr(bedInput, reportPrefix = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
@@ -29,7 +29,7 @@ The prefix of report files path.}
 BED file input path.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 These functions are used to generate fregment distribution plot.
@@ -40,7 +40,7 @@ will be shown in another two plots.
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.

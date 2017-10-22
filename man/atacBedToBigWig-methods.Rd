@@ -16,7 +16,7 @@ atacBedToBigWig(atacProc, bedInput = NULL, bsgenome = NULL,
 bedToBigWig(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacSamToBed}},
 \code{\link{atacBedUtils}}.}
@@ -34,7 +34,7 @@ BigWig file output path.}
 Save as wig file instead of binary BigWig file}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 This function is used to generate BigWig file
@@ -44,7 +44,7 @@ The BigWig file can be shown reads coverage on genome browser.
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.

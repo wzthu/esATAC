@@ -75,14 +75,14 @@ setMethod(
 #' @title Sort bam file and rebuild bai index.
 #' @description
 #' Sort bamfile and build index.
-#' @param atacProc \code{\link{ATACProc}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSam2Bam}}.
 #' @param bamInput \code{Character} scalar.
 #' Input bam file path.
 #' @param bamOutput \code{Character} scalar.
 #' Output bam file path.
-#' @return An invisible \code{\link{ATACProc}} object scalar for
+#' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
 #' @examples

@@ -18,7 +18,7 @@ peakQC(bedInput, bsgenome = NULL, reportOutput = NULL,
   qcbedInput = c("DHS", "blacklist", "path/to/bed"))
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacSamToBed}},
 \code{\link{atacBedUtils}}.}
@@ -37,7 +37,7 @@ Other quality control BED file input path.}
 BED file input path for quality control.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 These functions are used to generate fregment distribution plot.
@@ -48,7 +48,7 @@ will be shown in another two plots.
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
@@ -70,7 +70,6 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) \%>\%
 atacPeakCalling \%>\% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19)
 dir(td)
-
 }
 \author{
 Zheng Wei

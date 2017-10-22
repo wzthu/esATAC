@@ -15,7 +15,7 @@ atacQCReport(atacProc = NULL, input_file = NULL, output_file = NULL)
 qcreport(input_file, output_file = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacUnzipAndMerge}},
 \code{\link{atacRenamer}},
@@ -29,7 +29,7 @@ output file path. Defult:"input_file_FastQC.pdf" in the same
 folder as your input file.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream
+An invisible \code{\link{ATACProc-class}} object scalar for downstream
 analysis.
 }
 \description{

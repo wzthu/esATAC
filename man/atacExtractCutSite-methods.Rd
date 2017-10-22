@@ -16,7 +16,7 @@ atacExtractCutSite(atacProc, bedInput = NULL, csOutput.dir = NULL,
 extractcutsite(bedInput, csOutput.dir = NULL, prefix = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacSamToBed}}.}
 
@@ -32,7 +32,7 @@ same path as input bed file.}
 Output file name prefix, e.g. prefix_chr*.bed, default "Cutsite".}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream
+An invisible \code{\link{ATACProc-class}} object scalar for downstream
 analysis.
 }
 \description{

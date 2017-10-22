@@ -15,7 +15,7 @@ atacBamSort(atacProc = NULL, bamInput = NULL, bamOutput = NULL)
 bamsort(bamInput = NULL, bamOutput = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacSam2Bam}}.}
 
@@ -26,7 +26,7 @@ Input bam file path.}
 Output bam file path.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for
+An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{

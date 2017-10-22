@@ -15,7 +15,7 @@ atacBam2Bed(atacProc, bamInput = NULL, bedOutput = NULL)
 bam2bed(bamInput, bedOutput = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacBamSort}},
 \code{\link{atacSam2Bam}}.}
@@ -28,7 +28,7 @@ Bed file output path. If ignored, bed file will be put in the same path as
 the bam file.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for
+An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{

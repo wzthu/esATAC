@@ -35,7 +35,7 @@ interleaved paired-end sequencing data.}
 \item{prefix}{For identifying files.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 The pipeline to process sequencing data into destination files including
@@ -47,7 +47,7 @@ and various quality control report files.
 td<-tempdir()
 options(atacConf=setConfigure("threads",4))
 dir.create(file.path(td,"ref"))
-# change the refdir to your installed refdir path 
+# change the refdir to your installed refdir path
 # or it will be time comsuming to build bowtie2 index
 options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 options(atacConf=setConfigure("genome","hg19"))

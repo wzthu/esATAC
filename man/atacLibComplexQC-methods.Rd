@@ -17,7 +17,7 @@ libComplexQC(samInput, reportOutput = NULL, singleEnd = FALSE,
   subsampleSize = Inf)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacBowtie2Mapping}}
 \code{\link{bowtie2Mapping}}}
@@ -51,7 +51,7 @@ M_DISTINCT: number of distinct genomic locations to which some read maps uniquel
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
@@ -68,7 +68,6 @@ sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 atacproc<-libComplexQC(samInput = samfile)
-
 
 }
 \author{

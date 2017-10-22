@@ -24,7 +24,7 @@ bedUtils(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,
   uniqueBed = FALSE, minFregLen = 0, maxFregLen = 2e+09)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar.
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacBam2Bed}}
 \code{\link{bam2bed}}
@@ -72,7 +72,7 @@ The maximum fregment size will be retained.}
 Report output file path.}
 }
 \value{
-An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
+An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 }
 \description{
 This function is used to
@@ -87,7 +87,7 @@ remove duplicates reads in bed.
 \details{
 The parameter related to input and output file path
 will be automatically
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
 generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
@@ -106,7 +106,6 @@ samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 atacproc<-samToBed(samInput = samfile) \%>\%
 atacBedUtils(maxFregLen = 100, chrFilterList = NULL)
-
 
 }
 \author{
