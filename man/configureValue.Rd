@@ -15,40 +15,48 @@ getConfigure(item = c("threads", "tmpdir", "refdir", "genome", "knownGene",
 setConfigure(item = c("threads", "tmpdir", "refdir", "genome"), val)
 }
 \arguments{
-\item{item}{\code{Character} scalar. 
-The items that are setable or gettable including 
+\item{item}{\code{Character} scalar.
+The items that are setable or gettable including
 "threads","tmpdir","refdir","genome","knownGene",
 "bsgenome","bt2Idx","DHS" and "blacklist".}
 
-\item{val}{\code{Character} or \code{Integer} scalar. 
-The items value that are setable including 
+\item{val}{\code{Character} or \code{Integer} scalar.
+The items value that are setable including
 "threads","tmpdir","refdir","genome"}
 }
 \value{
-\code{Character} scalar for getting 
-"tmpdir","refdir", bt2Idx","DHS" and "blacklist", 
-all of them are file or directory path. 
+\code{Character} scalar for getting
+"tmpdir","refdir", bt2Idx","DHS" and "blacklist",
+all of them are file or directory path.
 Getting "genome" will return the genome tag like "hg19" "mm10" etc.
-\code{Integer} scalar for getting "threads", 
+\code{Integer} scalar for getting "threads",
 the max threads can be created by the process.
 \code{TxDb} object for getting "knownGene".
 \code{BSGenome} object for getting "bsgenome"
 }
 \description{
-These functions are used to configure and 
-query global parameters. The items include 
+These functions are used to configure and
+query global parameters. The items include
 "threads","tmpdir","refdir","genome","knownGene",
-"bsgenome","bt2Idx","DHS" and "blacklist".  
+"bsgenome","bt2Idx","DHS" and "blacklist".
 "threads","tmpdir","refdir","genome" are setable
 and getable. While the others are readable only.
 You should consider to configure these parameters
 before starting the workflow
 }
+\examples{
+getAllConfigure()
+
+getConfigure("threads")
+
+options(atacConf=setConfigure("tmpdir",td))
+
+}
 \author{
 Zheng Wei
 }
 \seealso{
-\code{\link{atacSamToBed}} 
+\code{\link{atacSamToBed}}
 \code{\link{atacBedUtils}}
 }
 

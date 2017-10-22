@@ -237,7 +237,13 @@ setMethod(f = "GetOrgDb",
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
-
+#' @examples 
+#' getAllConfigure()
+#' 
+#' getConfigure("threads")
+#' 
+#' options(atacConf=setConfigure("tmpdir",td))
+#' 
 #' @importFrom Rcpp  evalCpp
 #' @importFrom igraph  graph
 #' @importFrom igraph vertex.attributes
