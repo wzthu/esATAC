@@ -48,13 +48,10 @@ setMethod(
             qcval0<-.sam2bed_merge_call(samfile = .Object@paramlist[["samInput"]], bedfile = paste0(.Object@paramlist[["reportOutput"]],".tmp"),
                                         posOffset = 0, negOffset = 0,sortBed = FALSE,
                                         uniqueBed = FALSE, filterList = NULL,minFregLen = 0,maxFregLen = 1000000,saveExtLen = FALSE ,downSample=.Object@paramlist[["subsampleSize"]])
-            print("test00")
         }else{
             qcval0<-.sam2bed_call(samfile = .Object@paramlist[["samInput"]], bedfile = paste0(.Object@paramlist[["reportOutput"]],".tmp"),
                                   posOffset = 0, negOffset = 0, sortBed = FALSE, uniqueBed = FALSE,  filterList = NULL,downSample=.Object@paramlist[["subsampleSize"]])
-            print("test01")
         }
-        print("test1")
         qcval<-.lib_complex_qc_call(bedfile=paste0(.Object@paramlist[["reportOutput"]],".tmp"), sortedBed=FALSE, max_reads=.Object@paramlist[["subsampleSize"]])
         qcval[["samTotal"]] <- qcval0[["total"]]
         qcval[["chrM"]] <- qcval0[["filted"]]
@@ -63,7 +60,6 @@ setMethod(
         qcval[["NRF"]] <- as.numeric(qcval[["total"]])/
             (as.numeric(qcval[["nonMultimap"]]))
 
-        print("test2")
         unlink(paste0(.Object@paramlist[["reportOutput"]],".tmp"))
         print(qcval)
         print(.Object@paramlist[["reportOutput"]])
@@ -194,13 +190,10 @@ LibComplexQC <-R6Class(
                 qcval0<-.sam2bed_merge_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportOutput"]],".tmp"),
                                     posOffset = 0, negOffset = 0,sortBed = FALSE,
                                     uniqueBed = FALSE, filterList = NULL,minFregLen = 0,maxFregLen = 1000000,saveExtLen = FALSE ,downSample=private$paramlist[["subsampleSize"]])
-                print("test00")
             }else{
                 qcval0<-.sam2bed_call(samfile = private$paramlist[["samInput"]], bedfile = paste0(private$paramlist[["reportOutput"]],".tmp"),
                               posOffset = 0, negOffset = 0, sortBed = FALSE, uniqueBed = FALSE,  filterList = NULL,downSample=private$paramlist[["subsampleSize"]])
-                print("test01")
             }
-            print("test1")
             qcval<-.lib_complex_qc_call(bedfile=paste0(private$paramlist[["reportOutput"]],".tmp"), sortedBed=FALSE, max_reads=private$paramlist[["subsampleSize"]])
             qcval[["samTotal"]] <- qcval0[["total"]]
             qcval[["chrM"]] <- qcval0[["filted"]]
@@ -209,7 +202,6 @@ LibComplexQC <-R6Class(
             qcval[["NRF"]] <- as.numeric(qcval[["total"]])/
                 (as.numeric(qcval[["nonMultimap"]]))
 
-            print("test2")
             unlink(paste0(private$paramlist[["reportOutput"]],".tmp"))
             print(qcval)
             print(private$paramlist[["reportOutput"]])
