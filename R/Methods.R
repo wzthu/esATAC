@@ -96,6 +96,24 @@ getSuffixlessFileName = function(filePath){
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
+#' @examples 
+#' \dontrun{
+#' td<-tempdir()
+#' options(atacConf=setConfigure("threads",4))
+#' dir.create(file.path(td,"ref"))
+#' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+#' options(atacConf=setConfigure("genome","hg19"))
+#' bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
+#' bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
+#' # for single end
+#' dir.create(file.path(td,"single"))
+#' options(atacConf=setConfigure("tmpdir",file.path(td,"single")))
+#' atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
+#' # for paired end
+#' dir.create(file.path(td,"paired"))
+#' options(atacConf=setConfigure("tmpdir",file.path(td,"paired")))
+#' atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
+#' }
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
@@ -159,6 +177,129 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     }else{
         filelist <- data.frame(`Mate1 files`=fastqInput1,
                           `Mate2 files`=fastqInput2)
+    }
+    if(is.null(fastqInput2)&&!interleave){
+        wholesummary = data.frame(Item=c("Sequence Files Type",
+                                         "Original total reads",
+                                         "-- Reads after adapter removing (ratio)",
+                                         "-- -- Total mapped reads (ratio of original reads)",
+                                         "-- -- -- Unique locations mapped uniquely by reads",
+                                         "-- -- -- Uniquely mappable reads",
+                                         "-- -- -- Non-Redundant Fraction (NRF)",
+                                         "-- -- -- Locations with only 1 reads mapping uniquely",
+                                         "-- -- -- Locations with only 2 reads mapping uniquely",
+                                         "-- -- -- PCR Bottlenecking Coefficients 1 (PBC1)",
+                                         "-- -- -- PCR Bottlenecking Coefficients 2 (PBC2)",
+                                         "-- -- -- Non-mitochondrial reads (ratio)",
+                                         "-- -- -- -- Unique mapped reads (ratio)",
+                                         "-- -- -- -- -- Duplicate removed reads (final for use)",
+                                         "-- -- -- -- -- -- -- Total peaks",
+                                         "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
+                                         "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
+                                         "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
+                                  
+                                  Value=c(seqtype,
+                                          getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
+                                          getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
+                                                     getReportVal(removeAdapter,"statisticslist")[[1]]),
+                                          getVMRShow(getReportVal(sam2Bed,"total"),
+                                                     getReportVal(removeAdapter,"statisticslist")[[1]]),
+                                          getVMShow(getReportVal(libComplexQC,"total")),
+                                          #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                          getVMShow(getReportVal(libComplexQC,"nonMultimap")),
+                                          #getf(libComplexQC$getReportVal("NRF")),
+                                          getRshow(getReportVal(libComplexQC,"total"),
+                                                   getReportVal(libComplexQC,"nonMultimap")),
+                                          getVMShow(getReportVal(libComplexQC,"one")),
+                                          #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                          getVMShow(getReportVal(libComplexQC,"two")),
+                                          #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                          #getf(libComplexQC$getReportVal("PBC1")),
+                                          getRshow(getReportVal(libComplexQC,"one"),
+                                                   getReportVal(libComplexQC,"total")),
+                                          #getf(libComplexQC$getReportVal("PBC2")),
+                                          getRshow(getReportVal(libComplexQC,"one"),
+                                                   getReportVal(libComplexQC,"two")),
+                                          getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
+                                                     getReportVal(sam2Bed,"total")),
+                                          getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
+                                                     getReportVal(sam2Bed,"total")),
+                                          getVMRShow(getReportVal(sam2Bed,"save"),
+                                                     getReportVal(sam2Bed,"total")),
+                                          sprintf("%d",as.numeric(getReportVal(fripQC,"totalPeaks"))),
+                                          getPer(getReportVal(DHSQC,"qcbedRate")),
+                                          getPer(getReportVal(blacklistQC,"qcbedRate")),
+                                          getPer(getReportVal(fripQC,"FRiP")))
+                                  ,
+                                  `Reference`=c("SE / PE",
+                                                "",
+                                                ">99%",
+                                                ">95%",
+                                                "",
+                                                "",
+                                                ">0.7",
+                                                "",
+                                                "",
+                                                ">0.7",
+                                                ">3",
+                                                ">70%",
+                                                "",
+                                                ">25M",
+                                                "",
+                                                "",
+                                                "",
+                                                ""
+                                  )
+                                  #`Annotation`=c()
+        )
+        filtstat = data.frame(
+            Item=c("Original total reads",
+                   "Reads after adapter removing (ratio)",
+                   "Total mapped reads (ratio of original reads)",
+                   "-- Non-mitochondrial reads (ratio)",
+                   "-- -- Unique mapped reads (ratio)",
+                   "-- -- -- Duplicate removed reads (ratio final for use)"
+            ),
+            Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
+                    getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
+                               getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
+                    getVMRShow(getReportVal(sam2Bed,"total"),
+                               getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
+                    getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
+                               getReportVal(sam2Bed,"total"),TRUE),
+                    getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
+                               getReportVal(sam2Bed,"total"),TRUE),
+                    getVMRShow(getReportVal(sam2Bed,"save"),
+                               getReportVal(sam2Bed,"total"),TRUE)
+            ),
+            `Reference`=c("",
+                          ">99%",
+                          ">95%",
+                          ">70%",
+                          ">60%",
+                          ">25M,>60%"
+            )
+        )
+        atacProcs=list(unzipAndMerge = unzipAndMerge,
+                       renamer = renamer,
+                       removeAdapter = removeAdapter,
+                       bowtie2Mapping = bowtie2Mapping,
+                       libComplexQC = libComplexQC,
+                       sam2Bed = sam2Bed,
+                       bedToBigWig = bedToBigWig,
+                       tssqc100 = tssqc100,
+                       peakCalling = peakCalling,
+                       DHSQC = DHSQC,
+                       blacklistQC = blacklistQC,
+                       fripQC = fripQC,
+                       atacQC = atacQC
+        )
+        conclusion <- list(filelist=filelist,
+                           wholesummary = wholesummary,
+                           atacProcs = atacProcs,
+                           filtstat = filtstat
+        )
+        return(conclusion)
     }
 
     wholesummary = data.frame(Item=c("Sequence Files Type",
@@ -344,9 +485,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
-#' \code{\link{atacSamToBed}}
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacPipe}}
 #' @export
+#' 
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE, 
@@ -369,15 +510,15 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
                 createReport = FALSE, prefix = "CTRL_all_data") #saveTmp = TRUE,
 
-    bed.case <-caselist$atacProcs$sam2Bed$getParam("bedOutput")
-    bed.ctrl <-ctrllist$atacProcs$sam2Bed$getParam("bedOutput")
+    bed.case <-getParam(caselist$atacProcs$sam2Bed,"bedOutput")
+    bed.ctrl <-getParam(ctrllist$atacProcs$sam2Bed,"bedOutput")
 
-    case.peak <- caselist$atacProcs$peakCalling$getParam("bedOutput")
-    ctrl.peak <- ctrllist$atacProcs$peakCalling$getParam("bedOutput")
+    case.peak <- getParam(caselist$atacProcs$peakCalling,"bedOutput")
+    ctrl.peak <- getParam(ctrllist$atacProcs$peakCalling,"bedOutput")
 
     peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak, operation = "diff")
-    diff.case <- peakCom$getParam("bedOutput")[1]
-    diff.ctrl <- peakCom$getParam("bedOutput")[2]
+    diff.case <- getParam(peakCom,"bedOutput")[1]
+    diff.ctrl <- getParam(peakCom,"bedOutput")[2]
 
     pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
     # for case

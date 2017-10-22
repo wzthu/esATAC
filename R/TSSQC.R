@@ -170,8 +170,8 @@ setMethod(
 
 setMethod(
     f = "getReportValImp",
-    signature = "CutSiteCountR",
-    definition = function(.Object, item){
+    signature = "TSSQC",
+    definition = function(.Object, item,...){
         tss <- read.table(file= .Object@paramlist[["tsstxtOutput"]],header=TRUE)
         if(item == "tss"){
             return(tss)
@@ -182,7 +182,7 @@ setMethod(
 
 setMethod(
     f = "getReportItemsImp",
-    signature = "CutSiteCountR",
+    signature = "TSSQC",
     definition = function(.Object){
         return(c("tss"))
     }
