@@ -23,6 +23,7 @@
 #' @param display \code{Logitcal} scalar.
 #' Save to pdf file if FALSE.
 #' @param item \code{Characters} scalar
+#' @param ... ignored
 #' The parameters name
 #' @return the function and result of functions
 #' 
