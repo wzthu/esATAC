@@ -12,15 +12,15 @@ renamer(fastqInput1 = NULL, fastqInput2 = NULL, fastqOutput1 = NULL,
   fastqOutput2 = NULL, interleave = FALSE, threads = NULL)
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc}} object scalar. 
+\item{atacProc}{\code{\link{ATACProc}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacUnzipAndMerge}} 
+\code{\link{atacUnzipAndMerge}}
 \code{\link{unzipAndMerge}}}
 
-\item{fastqOutput1}{\code{Character} scalar. 
+\item{fastqOutput1}{\code{Character} scalar.
 The output file path of renamed fastqInput1.}
 
-\item{fastqOutput2}{\code{Character} scalar. 
+\item{fastqOutput2}{\code{Character} scalar.
 The output file path of renamed fastqInput2.}
 
 \item{fastqInput1}{\code{Character} scalar. For single-end sequencing,
@@ -36,11 +36,11 @@ For single-end sequencing files and interleaved paired-end sequencing
 files(argument interleaved=\code{TRUE}),
 it must be \code{NULL}.}
 
-\item{interleave}{\code{Character} scalar. 
+\item{interleave}{\code{Character} scalar.
 Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
 
-\item{threads}{\code{Integer} scalar. 
+\item{threads}{\code{Integer} scalar.
 The threads will be created in this process. default: 1}
 }
 \value{
@@ -51,13 +51,13 @@ Rename reads name in fastq with increasing integer
 }
 \details{
 The parameter related to input and output file path
-will be automatically 
-obtained from \code{\link{ATACProc}} object(\code{atacProc}) or 
-generated based on known parameters 
+will be automatically
+obtained from \code{\link{ATACProc}} object(\code{atacProc}) or
+generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
-If you want to use this function independently, 
-\code{atacProc} should be set \code{NULL} 
+If you want to use this function independently,
+\code{atacProc} should be set \code{NULL}
 or you can use \code{renamer} instead.
 }
 \examples{
@@ -72,20 +72,20 @@ prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
 
 reads_merged_1 <- file.path(td,"reads1.fastq")
 reads_merged_2 <- file.path(td,"reads2.fastq")
-atacproc <- 
+atacproc <-
 atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) \%>\%
 atacRenamer
 
-dir(td) 
+dir(td)
 
 }
 \author{
 Zheng Wei
 }
 \seealso{
-\code{\link{atacUnzipAndMerge}} 
+\code{\link{atacUnzipAndMerge}}
 \code{\link{unzipAndMerge}}
-\code{\link{atacQCReport}} 
+\code{\link{atacQCReport}}
 \code{\link{atacRemoveAdapter}}
 }
 

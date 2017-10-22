@@ -101,6 +101,8 @@ getSuffixlessFileName = function(filePath){
 #' td<-tempdir()
 #' options(atacConf=setConfigure("threads",4))
 #' dir.create(file.path(td,"ref"))
+#' # change the refdir to your installed refdir path 
+#' # or it will be time comsuming to build bowtie2 index
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
 #' bedbzfile11 <- c(
@@ -492,6 +494,26 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacPipe}}
+#' @examples 
+#' \dontrun{
+#' td<-tempdir()
+#' options(atacConf=setConfigure("threads",4))
+#' dir.create(file.path(td,"ref"))
+#' # change the refdir to your installed refdir path 
+#' # or it will be time comsuming to build bowtie2 index
+#' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+#' options(atacConf=setConfigure("genome","hg19"))
+#' case <- c(
+#'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
+#'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+#' )
+#' ctrl <- c(     
+#'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
+#'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+#' )
+#' atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
+#          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
+#' }
 #' @export
 #' 
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
