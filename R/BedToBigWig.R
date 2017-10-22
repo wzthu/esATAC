@@ -1,3 +1,93 @@
+setClass(Class = "BedToBigWig",
+         contains = "ATACProc"
+)
+
+setMethod(
+    f = "initialize",
+    signature = "BedToBigWig",
+    definition = function(.Object,atacProc, ..., bedInput = NULL, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, editable=FALSE){
+        .Object <- init(.Object,"BedToBigWig",editable,list(arg1=atacProc))
+
+        if(!is.null(atacProc)){
+            .Object@paramlist[["bedInput"]] <- getParam(atacProc, "bedOutput");
+            regexProcName<-sprintf("(BED|bed|Bed|%s)",getProcName(atacProc))
+        }else{
+            regexProcName<-"(BED|bed|Bed)"
+        }
+
+        if(!is.null(bedInput)){
+            .Object@paramlist[["bedInput"]] <- bedInput;
+        }
+        if(toWig){
+            sfx<-".wig"
+        }else{
+            sfx<-".bw"
+        }
+
+        if(is.null(bwOutput)){
+            if(!is.null(.Object@paramlist[["bedInput"]])){
+                prefix <- getBasenamePrefix(.Object, .Object@paramlist[["bedInput"]],regexProcName)
+                .Object@paramlist[["bwOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),sfx))
+            }
+        }else{
+            .Object@paramlist[["bwOutput"]] <- bwOutput;
+        }
+
+        .Object@paramlist[["bsgenome"]] <- bsgenome
+
+        .Object@paramlist[["toWig"]] <- toWig
+
+        paramValidation(.Object)
+        .Object
+    }
+)
+
+setMethod(
+    f = "processing",
+    signature = "BedToBigWig",
+    definition = function(.Object,...){
+        if(is.null(.Object@paramlist[["bsgenome"]])){
+            genome <- seqinfo(.obtainConfigure("bsgenome"))
+        }else{
+            genome <- seqinfo(.Object@paramlist[["bsgenome"]])
+        }
+        bedranges <- import(.Object@paramlist[["bedInput"]], genome = genome)
+        cov <- coverage(bedranges)
+        ans <- GRanges(cov)
+        ans <- subset(ans, score > 0)
+        if(.Object@paramlist[["toWig"]]){
+            export.wig(ans,.Object@paramlist[["bwOutput"]])
+        }else{
+            export.bw(ans,.Object@paramlist[["bwOutput"]])
+        }
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "checkRequireParam",
+    signature = "BedToBigWig",
+    definition = function(.Object,...){
+        if(is.null(.Object@paramlist[["bedInput"]])){
+            stop(paste("bedInput is requied"));
+        }
+    }
+)
+
+setMethod(
+    f = "checkAllPath",
+    signature = "BedToBigWig",
+    definition = function(.Object,...){
+        checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
+        checkFileCreatable(.Object,.Object@paramlist[["bwOutput"]]);
+    }
+)
+
+
+
+
+
 BedToBigWig <- R6Class(
     classname = "BedToBigWig",
     inherit = ATACProc,
@@ -109,7 +199,7 @@ BedToBigWig <- R6Class(
 #' @examples
 #' library(R.utils)
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
@@ -121,16 +211,37 @@ BedToBigWig <- R6Class(
 #' dir(td)
 
 #' @rdname atacBedToBigWig
-#' @export
-atacBedToBigWig <- function(atacProc, bedInput = NULL,bsgenome = NULL, bwOutput = NULL, toWig = FALSE){
-    atacproc <- BedToBigWig$new(atacProc = atacProc, bedInput = bedInput, bsgenome = bsgenome, bwOutput = bwOutput, toWig = toWig)
-    atacproc$process()
-    invisible(atacproc)
-}
+#' @exportMethod atacBedToBigWig
+setGeneric("atacBedToBigWig",function(atacProc, bedInput = NULL,
+                                      bsgenome = NULL, bwOutput = NULL,
+                                      toWig = FALSE) standardGeneric("atacBedToBigWig"))
+setMethod(
+    f = "atacBedToBigWig",
+    signature = "ATACProc",
+    definition = function(atacProc, bedInput = NULL,
+                          bsgenome = NULL, bwOutput = NULL,
+                          toWig = FALSE){
+        atacproc <- new(
+            "BedToBigWig",
+            atacProc = atacProc,
+            bedInput = bedInput,
+            bsgenome = bsgenome,
+            bwOutput = bwOutput,
+            toWig = toWig)
+        atacproc <- process(atacproc)
+        invisible(atacproc)
+    }
+)
 #' @rdname atacBedToBigWig
 #' @export
 bedToBigWig <- function(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE){
-    atacproc <- BedToBigWig$new(atacProc = NULL, bedInput = bedInput, bsgenome = bsgenome, bwOutput = bwOutput, toWig = toWig)
-    atacproc$process()
+    atacproc <- new(
+        "BedToBigWig",
+        atacProc = NULL,
+        bedInput = bedInput,
+        bsgenome = bsgenome,
+        bwOutput = bwOutput,
+        toWig = toWig)
+    atacproc <- process(atacproc)
     invisible(atacproc)
 }

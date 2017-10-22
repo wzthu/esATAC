@@ -10,7 +10,7 @@ atacCutSiteCount(atacProcCutSite = NULL, atacProcMotifScan = NULL,
   matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
   prefix = NULL)
 
-cutsitecount(csInput, motif_info, chr = c(1:22, "X", "Y"),
+cutsitecount(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
   matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
   prefix = NULL)
 }
@@ -93,10 +93,11 @@ ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 
 
 }
+\author{
+Wei Zhang
+}
 \seealso{
 \code{\link{atacExtractCutSite}}
 \code{\link{atacMotifScan}}
 }
-\author{
-Wei Zhang
-}
+

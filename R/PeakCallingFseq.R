@@ -1,3 +1,127 @@
+setClass(Class = "PeakCallingFseq",
+         contains = "ATACProc"
+)
+
+setMethod(
+    f = "initialize",
+    signature = "PeakCallingFseq",
+    definition = function(.Object,atacProc,..., bedInput=NULL,background=NULL,genomicReadsCount=NULL,
+                          fragmentSize=0,featureLength=NULL,bedOutput=NULL,
+                          fileformat=c("bed","wig","npf"), ploidyDir=NULL,
+                          wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
+                          wgThresholdSet=NULL,editable=FALSE){
+        .Object <- init(.Object,"PeakCallingFseq",editable,list(arg1=atacProc))
+        if(!is.null(atacProc)){
+            .Object@paramlist[["bedInput"]] <- getParam(atacProc,"bedOutput");
+            .Object@paramlist[["bedFileList"]] <- basename(getParam(atacProc,"bedOutput"));
+            .Object@paramlist[["inBedDir"]] <- dirname(getParam(atacProc,"bedOutput"));
+            regexProcName<-sprintf("(BED|bed|Bed|%s)",getProcName(atacProc))
+        }else{
+            regexProcName<-"(BED|bed|Bed)"
+        }
+        
+        if(!is.null(bedInput)){
+            .Object@paramlist[["bedInput"]] <- bedInput;
+            .Object@paramlist[["bedFileList"]] <- basename(bedInput)
+            .Object@paramlist[["inBedDir"]] <- dirname(bedInput);
+        }
+        if(!is.null(bedOutput)){
+            .Object@paramlist[["bedOutput"]] <-bedOutput
+        }else{
+            if(!is.null(.Object@paramlist[["bedInput"]])){
+                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["bedInput"]],regexProcName)
+                .Object@paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".bed"))
+            }
+            #.Object@paramlist[["bedOutput"]] <-paste(.Object@paramlist[["bedInput"]],".peak.bed",sep="");
+        }
+        .Object@paramlist[["outTmpDir"]] <- paste0(.Object@paramlist[["bedOutput"]],".tmp");
+        
+        .Object@paramlist[["background"]] <- background;
+        .Object@paramlist[["genomicReadsCount"]] <- genomicReadsCount;
+        .Object@paramlist[["fragmentSize"]] <- fragmentSize;
+        .Object@paramlist[["featureLength"]] <- featureLength;
+        .Object@paramlist[["fileformat"]] <- fileformat[1];
+        .Object@paramlist[["ploidyDir"]] <- ploidyDir;
+        .Object@paramlist[["wiggleTrackStep"]] <- wiggleTrackStep;
+        .Object@paramlist[["threshold"]] <- threshold;
+        .Object@paramlist[["verbose"]] <- verbose;
+        .Object@paramlist[["wgThresholdSet"]] <- wgThresholdSet;
+        
+        
+        paramValidation(.Object)
+        .Object
+    }
+)
+
+setMethod(
+    f = "processing",
+    signature = "PeakCallingFseq",
+    definition = function(.Object,...){
+        dir.create(.Object@paramlist[["outTmpDir"]])
+        .fseq_call(bedFileList=.Object@paramlist[["bedFileList"]],
+                   background=.Object@paramlist[["background"]],
+                   genomicReadsCount=.Object@paramlist[["genomicReadsCount"]],
+                   inputDir=.Object@paramlist[["inBedDir"]],
+                   fragmentSize=.Object@paramlist[["fragmentSize"]],
+                   featureLength=.Object@paramlist[["featureLength"]],
+                   outputDir=.Object@paramlist[["outTmpDir"]],
+                   outputFormat=.Object@paramlist[["fileformat"]],
+                   ploidyDir=.Object@paramlist[["ploidyDir"]],
+                   wiggleTrackStep=.Object@paramlist[["wiggleTrackStep"]],
+                   threshold=.Object@paramlist[["threshold"]],
+                   verbose=.Object@paramlist[["verbose"]],
+                   wgThresholdSet=.Object@paramlist[["wgThresholdSet"]]);
+        
+        filename<-list.files(.Object@paramlist[["outTmpDir"]])
+        for(i in 1:length(filename)){
+            filename[i]<-strsplit(filename[i],split="\\.")[[1]][1]
+        }
+        peakfiles <- sort(filename)
+        peakfiles<-paste0(peakfiles,".bed")
+        peakfiles <- paste0(.Object@paramlist[["outTmpDir"]],"/",peakfiles)
+        file.create(.Object@paramlist[["bedOutput"]])
+        for(i in 1:length(peakfiles)){
+            if(file.exists(peakfiles[i])&&file.info(peakfiles[i])$size>0){
+                df <- read.table(peakfiles[i], header = FALSE,sep = "\t")
+                df <- cbind(df,"*")
+                write.table(x=df,file = .Object@paramlist[["bedOutput"]],append = TRUE,
+                            quote = FALSE,sep = "\t",row.names = FALSE,col.names = FALSE)
+            }
+            #file.append(.Object@paramlist[["bedOutput"]],peakfiles[i])
+        }
+        #mergeFile(.Object@paramlist[["bedOutput"]],peakfiles)
+        unlink(.Object@paramlist[["outTmpDir"]],recursive = TRUE,force = TRUE)
+      
+        
+        .Object
+    }
+)
+
+setMethod(
+    f = "checkRequireParam",
+    signature = "PeakCallingFseq",
+    definition = function(.Object,...){
+        if(is.null(.Object@paramlist[["bedInput"]])){
+            stop("bedInput is required.")
+        }
+    }
+)
+
+
+
+setMethod(
+    f = "checkAllPath",
+    signature = "PeakCallingFseq",
+    definition = function(.Object,...){
+        checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
+        checkFileExist(.Object,.Object@paramlist[["background"]]);
+        checkPathExist(.Object,.Object@paramlist[["ploidyDir"]]);
+        checkFileCreatable(.Object,.Object@paramlist[["bedOutput"]]);
+    }
+)
+
+
+
 PeakCallingFseq <-R6Class(
     classname = "PeakCallingFseq",
     inherit = ATACProc,
@@ -155,7 +279,7 @@ PeakCallingFseq <-R6Class(
 #' library(R.utils)
 #' library(magrittr)
 #' td <- tempdir()
-#' setConfigure("tmpdir",td)
+#' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
@@ -167,18 +291,30 @@ PeakCallingFseq <-R6Class(
 #' dir(td)
 
 #' @rdname atacPeakCalling
-#' @export
-atacPeakCalling <- function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
-                            fragmentSize=0,featureLength=NULL,bedOutput=NULL,
-                             ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
-                            wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                            wgThresholdSet=NULL){
-    peakcalling <- PeakCallingFseq$new(atacProc,bedInput,background,genomicReadsCount,
-                                       fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
-                                       wiggleTrackStep,threshold,verbose,wgThresholdSet)
-    peakcalling$process();
-    invisible(peakcalling)
-}
+#' @exportMethod atacPeakCalling
+setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
+                                         fragmentSize=0,featureLength=NULL,bedOutput=NULL,
+                                         ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
+                                         wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
+                                         wgThresholdSet=NULL) standardGeneric("atacPeakCalling")) 
+
+
+setMethod(
+    f = "atacPeakCalling",
+    signature = "ATACProc",
+    definition = function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
+                          fragmentSize=0,featureLength=NULL,bedOutput=NULL,
+                          ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
+                          wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
+                          wgThresholdSet=NULL){
+        peakcalling <- new("PeakCallingFseq",atacProc = atacProc,bedInput=bedInput,background=background,genomicReadsCount=genomicReadsCount,
+                           fragmentSize=fragmentSize,featureLength=featureLength,bedOutput=bedOutput,fileformat="bed", ploidyDir=ploidyDir,
+                           wiggleTrackStep=wiggleTrackStep,threshold=threshold,verbose=verbose,wgThresholdSet=wgThresholdSet)
+        peakcalling<-process(peakcalling)
+        invisible(peakcalling)
+    }
+)
+
 #' @rdname atacPeakCalling
 #' @export
 peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
@@ -186,9 +322,9 @@ peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
                             ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                             wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
                             wgThresholdSet=NULL){
-    peakcalling <- PeakCallingFseq$new(atacProc = NULL,bedInput,background,genomicReadsCount,
-                                       fragmentSize,featureLength,bedOutput,fileformat="bed", ploidyDir,
-                                       wiggleTrackStep,threshold,verbose,wgThresholdSet)
-    peakcalling$process();
+    peakcalling <- new("PeakCallingFseq",atacProc = NULL,bedInput=bedInput,background=background,genomicReadsCount=genomicReadsCount,
+                       fragmentSize=fragmentSize,featureLength=featureLength,bedOutput=bedOutput,fileformat="bed", ploidyDir=ploidyDir,
+                       wiggleTrackStep=wiggleTrackStep,threshold=threshold,verbose=verbose,wgThresholdSet=wgThresholdSet)
+    peakcalling<-process(peakcalling)
     invisible(peakcalling)
 }
