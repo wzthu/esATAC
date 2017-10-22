@@ -9,7 +9,7 @@ setMethod(
     definition = function(.Object,atacProcReads,atacProcPeak,bsgenome = NULL,
                           reportOutput=NULL,readsBedInput=NULL,
                           peakBedInput=NULL,editable=FALSE){
-        .Object <- init(.Object,"FripQC",editable,list(arg1 = atacProcReads, arg2 = atacProcPeak))
+        .Object <- init(.Object,"FRiPQC",editable,list(arg1 = atacProcReads, arg2 = atacProcPeak))
         if(!is.null(atacProcReads)){
             .Object@paramlist[["readsBedInput"]] <- getParam(atacProcReads, "bedOutput");
             #.Object@paramlist[["readsCount"]] <- atacProcReads$getParam("readsCount")
