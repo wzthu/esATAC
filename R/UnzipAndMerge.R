@@ -35,7 +35,7 @@ setMethod(
                     .Object@paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(.Object@paramlist[["fastqInput1"]][1]))
                     .Object@paramlist[["fastqOutput1"]]<-removeCompressSuffix(.Object,.Object@paramlist[["fastqOutput1"]])
                 }
-                
+
             }else{
                 .Object@singleEnd<-FALSE
                 .Object@paramlist[["fastqInput1"]]<-fastqInput1
@@ -67,7 +67,7 @@ setMethod(
                 }
             }
         }
-        
+
         paramValidation(.Object)
         .Object
     }
@@ -184,7 +184,7 @@ setMethod(
                  basename(filename)!=basename(destname)){
             file.copy(filename,destname,overwrite = TRUE)
         }
-        
+
         return(destname)
     }
 )
@@ -215,7 +215,7 @@ setMethod(
 #' @aliases atacUnzipAndMerge
 #' @aliases removeAdapter
 #' @title Unzip and merge fastq files
-#' @description 
+#' @description
 #' Unzip and merge fastq files that are in format of bzip, gzip or fastq
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
 #' it contains sequence file paths.
@@ -229,32 +229,32 @@ setMethod(
 #' files(argument interleaved=\code{TRUE}),
 #' it must be \code{NULL}.
 #' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
-#' path for fastqInput2. 
+#' path for fastqInput2.
 #' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
-#' path for fastqInput2. 
+#' path for fastqInput2.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @return An invisible \code{\link{ATACProc}} object scalar for downstream analysis.
 #' @author Zheng Wei
-#' @seealso 
-#' \code{\link{atacRenamer}} 
-#' \code{\link{atacQCReport}} 
-#' @examples 
+#' @seealso
+#' \code{\link{atacRenamer}}
+#' \code{\link{atacQCReport}}
+#' @examples
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
-#' 
+#'
 #' # Identify adapters
 #' prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
 #' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 #' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
-#' 
+#'
 #' reads_merged_1 <- file.path(td,"reads1.fastq")
 #' reads_merged_2 <- file.path(td,"reads2.fastq")
-#' atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) 
+#' atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 #' dir(td)
-#' 
+#'
 #' @rdname atacUnzipAndMerge
-#' @export 
+#' @export
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
                              interleave = FALSE){
@@ -270,7 +270,7 @@ atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
 }
 
 #' @rdname atacUnzipAndMerge
-#' @export 
+#' @export
 unzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
                              interleave = FALSE){

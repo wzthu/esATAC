@@ -79,10 +79,6 @@ setMethod(
 )
 
 
-
-#' @name atacExtractCutSite
-#' @aliases atacExtractCutSite
-#' @aliases extractcutsite
 #' @title Extract ATAC-seq cutting site from bed file.
 #' @description
 #' Extract cutting site from ATAC-seq fangment bed file
@@ -120,11 +116,14 @@ setMethod(
 #' \code{\link{atacCutSiteCount}}
 
 
-#' @rdname atacExtractCutSite
-#' @exportMethod atacExtractCutSite
+#' @export
+#' @docType methods
+#' @rdname atacExtractCutSite-methods
 setGeneric("atacExtractCutSite",
            function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL) standardGeneric("atacExtractCutSite"))
 
+#' @rdname atacExtractCutSite-methods
+#' @aliases atacExtractCutSite
 setMethod(
     f = "atacExtractCutSite",
     signature = "ATACProc",
@@ -136,7 +135,7 @@ setMethod(
 )
 
 
-#' @rdname atacExtractCutSite
+#' @rdname atacExtractCutSite-methods
 #' @export
 extractcutsite <- function(bedInput, csOutput.dir = NULL, prefix = NULL){
     atacproc <- new("CutSitePre", atacProc = NULL, bedInput = bedInput, csOutput.dir = csOutput.dir, prefix = prefix)

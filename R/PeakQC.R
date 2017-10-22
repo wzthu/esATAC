@@ -138,9 +138,6 @@ setMethod(
 
 
 
-#' @name atacPeakQC
-#' @aliases atacPeakQC
-#' @aliases peakQC
 #' @title Quality control for peak overlap
 #' @description
 #' These functions are used to generate fregment distribution plot.
@@ -189,11 +186,15 @@ setMethod(
 #' bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
 #' atacPeakCalling %>% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19)
 #' dir(td)
-#' @rdname atacPeakQC
-#' @exportMethod atacPeakQC
+#'
+#' @export
+#' @docType methods
+#' @rdname atacPeakQC-methods
 setGeneric("atacPeakQC",function(atacProc, bsgenome = NULL,
                                  reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
                                  bedInput = NULL) standardGeneric("atacPeakQC"))
+#' @rdname atacPeakQC-methods
+#' @aliases atacPeakQC
 setMethod(
     f = "atacPeakQC",
     signature = "ATACProc",
@@ -211,7 +212,7 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacPeakQC
+#' @rdname atacPeakQC-methods
 #' @export
 peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed")){
     atacproc <- new(
