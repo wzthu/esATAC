@@ -96,6 +96,10 @@ getSuffixlessFileName = function(filePath){
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
+#' @import JASPAR2016
+#' @importFrom TFBSTools getMatrixSet
+#' @importFrom TFBSTools toPWM
+#' @importFrom TFBSTools name
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
@@ -135,7 +139,16 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+        # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+        # motif information
+        opts <- list()
+        opts[["species"]] <- 9606
+        pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
+        pwm <- TFBSTools::toPWM(pwm)
+        names(pwm) <- TFBSTools::name(pwm)
+        pwm <- lapply(X = pwm, FUN = as.matrix)
+        names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
+
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "90%", prefix = prefix)
@@ -346,6 +359,10 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
+#' @import JASPAR2016
+#' @importFrom TFBSTools getMatrixSet
+#' @importFrom TFBSTools toPWM
+#' @importFrom TFBSTools name
 #' @export
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
@@ -389,7 +406,16 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
 
     # case ctrl motif analysis
-    pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+    #pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+    # motif information
+    opts <- list()
+    opts[["species"]] <- 9606
+    pwm <- TFBSTools::getMatrixSet(JASPAR2016::JASPAR2016, opts)
+    pwm <- TFBSTools::toPWM(pwm)
+    names(pwm) <- TFBSTools::name(pwm)
+    pwm <- lapply(X = pwm, FUN = as.matrix)
+    names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
+
     mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = "90%")
     cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
     cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL")

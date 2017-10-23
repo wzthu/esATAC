@@ -60,50 +60,57 @@ RMotifScan <- R6::R6Class(
             private$writeLog(sprintf("peak file:%s", private$paramlist[["peak"]]))
             private$writeLog(sprintf("Output destination:%s", private$paramlist[["scanO.dir"]]))
             # running
-            cl <- makeCluster(private$paramlist[["n.cores"]])
-            sitesetList <- list()
+            peak <- rtracklayer::import(private$paramlist[["peak"]])
+            save_info <- data.frame()
+
+
+            # processing 2*n.core motifs in each turn
+            k <- private$paramlist[["n.cores"]] * 2
             n_motif <- length(private$paramlist[["motifPWM"]])
-            k <- 10
             motif_in_group <- split(private$paramlist[["motifPWM"]],
                          rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
             n_group <- length(motif_in_group)
+
+            # write order(motif index) while writing save_info
+            WriteMotifOrder <- 1
+            cl <- makeCluster(private$paramlist[["n.cores"]])
             for(i in seq(n_group)){
                 thisGroup.motif <- motif_in_group[[i]]
                 thisGroup.motifname <- names(thisGroup.motif)
-                thisGroup.motifinfo <- paste(thisGroup.motifname, collapse = ",")
+                thisGroup.motifnum <- length(thisGroup.motif)
                 thisGroup.motifinfo <- paste("Now, processing the following motif: ",
-                                             thisGroup.motifinfo, sep = "")
+                                             paste(thisGroup.motifname, collapse = ","),
+                                             sep = "")
                 print(thisGroup.motifinfo)
-                sitesetList_in_group <- parLapply(cl = cl,
+                sitesetList <- parLapply(cl = cl,
                                                   X = thisGroup.motif,
                                                   fun = Biostrings::matchPWM,
                                                   subject = private$paramlist[["genome"]],
                                                   min.score = private$paramlist[["min.score"]],
                                                   with.score = TRUE)
-                sitesetList <- append(sitesetList, sitesetList_in_group)
+
+                for(i in seq(thisGroup.motifnum)){
+                    motif_name <- names(sitesetList[i])
+                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                             ranges = peak,
+                                                             ignore.strand = TRUE)
+                    output_data <- sort(x = output_data, ignore.strand = TRUE)
+                    output_data <- as.data.frame(output_data)
+                    output_data <- within(output_data, rm(width))
+                    output_path <- paste(private$paramlist[["scanO.dir"]],
+                                         "/", private$paramlist[["prefix"]], "_",
+                                         motif_name, sep = "")
+                    motif_len <- private$paramlist[["motifPWM.len"]][[motif_name]]
+                    save_info[WriteMotifOrder, 1] <- motif_name
+                    save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
+                    save_info[WriteMotifOrder, 3] <- motif_len
+                    WriteMotifOrder <- WriteMotifOrder + 1
+                    write.table(x = output_data, file = output_path, row.names = FALSE,
+                                col.names = FALSE, quote = FALSE)
+                }
             }
             stopCluster(cl)
 
-            peak <- rtracklayer::import(private$paramlist[["peak"]])
-            save_info <- data.frame()
-            for(i in seq(n_motif)){
-                motif_name <- names(sitesetList[i])
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(private$paramlist[["scanO.dir"]],
-                                     "/", private$paramlist[["prefix"]], "_",
-                                     motif_name, sep = "")
-                motif_len <- private$paramlist[["motifPWM.len"]][[motif_name]]
-                save_info[i, 1] <- motif_name
-                save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
-                save_info[i, 3] <- motif_len
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-            }
             saveRDS(object = save_info, file = private$paramlist[["rdsOutput"]])
         }, # processing end
 
@@ -183,7 +190,7 @@ RMotifScan <- R6::R6Class(
 #' @export
 atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = parallel::detectCores()/2, prefix = NULL){
+                          n.cores = NULL, prefix = NULL){
     tmp <- RMotifScan$new(atacProc, peak, genome, motifPWM, min.score,
                           scanO.dir, n.cores, prefix)
     tmp$process()
@@ -194,7 +201,7 @@ atacMotifScan <- function(atacProc, peak = NULL, genome = NULL,
 #' @export
 motifscan <- function(peak, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                      n.cores = parallel::detectCores()/2, prefix = NULL){
+                      n.cores = NULL, prefix = NULL){
     tmp <- RMotifScan$new(atacProc = NULL, peak, genome, motifPWM, min.score,
                           scanO.dir, n.cores, prefix)
     tmp$process()
