@@ -4,6 +4,7 @@
 \name{atacQCReport}
 \alias{atacQCReport}
 \alias{atacQCReport,ATACProc-method}
+\alias{atacQCReport}
 \alias{qcreport}
 \title{Quality control for ATAC-seq data.}
 \usage{

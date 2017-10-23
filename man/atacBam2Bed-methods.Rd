@@ -4,6 +4,7 @@
 \name{atacBam2Bed}
 \alias{atacBam2Bed}
 \alias{atacBam2Bed,ATACProc-method}
+\alias{atacBam2Bed}
 \alias{bam2bed}
 \title{Convert bam format to bed format.}
 \usage{

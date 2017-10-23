@@ -4,6 +4,7 @@
 \alias{configureValue}
 \alias{getAllConfigure}
 \alias{getConfigure}
+\alias{getConfigure}
 \alias{setConfigure}
 \title{Global parameters configure}
 \usage{

@@ -4,6 +4,7 @@
 \name{atacBedToBigWig}
 \alias{atacBedToBigWig}
 \alias{atacBedToBigWig,ATACProc-method}
+\alias{atacBedToBigWig}
 \alias{bedToBigWig}
 \title{generate BigWig file from BED file}
 \usage{

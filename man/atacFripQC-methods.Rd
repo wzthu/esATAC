@@ -4,6 +4,7 @@
 \name{atacFripQC}
 \alias{atacFripQC}
 \alias{atacFripQC,ATACProc-method}
+\alias{atacFripQC}
 \alias{fripQC}
 \title{Quality control for fraction of reads in peaks (FRiP)}
 \usage{

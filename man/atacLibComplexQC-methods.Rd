@@ -4,6 +4,7 @@
 \name{atacLibComplexQC}
 \alias{atacLibComplexQC}
 \alias{atacLibComplexQC,ATACProc-method}
+\alias{atacLibComplexQC}
 \alias{libComplexQC}
 \title{Quality control for library complexity}
 \usage{

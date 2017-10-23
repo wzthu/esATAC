@@ -4,6 +4,7 @@
 \name{atacSam2Bam}
 \alias{atacSam2Bam}
 \alias{atacSam2Bam,ATACProc-method}
+\alias{atacSam2Bam}
 \alias{sam2bam}
 \title{Convert sam format to bam format.}
 \usage{

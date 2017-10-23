@@ -4,6 +4,7 @@
 \name{atacBedUtils}
 \alias{atacBedUtils}
 \alias{atacBedUtils,ATACProc-method}
+\alias{atacBedUtils}
 \alias{bedUtils}
 \title{process bed file with limit memory}
 \usage{

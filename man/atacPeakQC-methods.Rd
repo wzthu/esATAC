@@ -4,6 +4,7 @@
 \name{atacPeakQC}
 \alias{atacPeakQC}
 \alias{atacPeakQC,ATACProc-method}
+\alias{atacPeakQC}
 \alias{peakQC}
 \title{Quality control for peak overlap}
 \usage{

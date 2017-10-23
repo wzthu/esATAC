@@ -4,6 +4,7 @@
 \name{atacPeakCalling}
 \alias{atacPeakCalling}
 \alias{atacPeakCalling,ATACProc-method}
+\alias{atacPeakCalling}
 \alias{peakCalling}
 \title{Use F-seq to call peak}
 \usage{

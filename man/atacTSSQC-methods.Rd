@@ -4,6 +4,7 @@
 \name{atacTSSQC}
 \alias{atacTSSQC}
 \alias{atacTSSQC,ATACProc-method}
+\alias{atacTSSQC}
 \alias{tssQC}
 \title{Quality control for transcription start site(TSS) reads enrichment}
 \usage{
