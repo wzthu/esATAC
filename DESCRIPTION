@@ -1,37 +1,100 @@
 Package: ATACpipe
 Type: Package
 Title: ATAC-seq Data Quantifying and Annotating Workflow
-Version: 0.99.10
+Version: 0.99.15
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
-Description: This package provides a framework and 
-        complete preset pipeline for the quantification
-        and analysis of ATAC-seq and DNase-seq Reads. 
-        It covers a complete workflow
-        starting from raw sequence reads, 
-        over creation of alignments
-        and quality control report, to the quantification of genomic
-        regions of interest. The package is managed by dataflow graph,
-        and users can also build their own pipeline easily and flexibly. 
-Depends: R (>= 3.4.1), QuasR, Rsamtools, GenomicRanges
-License: GPL (>= 3)
+Description: This package provides a framework and
+    complete preset pipeline for the quantification
+    and analysis of ATAC-seq and DNase-seq Reads.
+    It covers a complete workflow
+    starting from raw sequence reads,
+    over creation of alignments
+    and quality control report, to the quantification of genomic
+    regions of interest. The package is managed by dataflow graph,
+    and users can also build their own pipeline easily and flexibly.
+Depends:
+    R (>= 3.4.1),
+    QuasR,
+    Rsamtools,
+    GenomicRanges
+License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: Rcpp (>= 0.12.11), R6, knitr, Rbowtie2, rtracklayer, ggplot2,
-        Biostrings, ChIPseeker, clusterProfiler, igraph, rJava,
-        DiagrammeR, magrittr, digest, BSgenome, AnnotationDbi,
-        GenomicFeatures, R.utils, GenomeInfoDb, BiocGenerics,
-        S4Vectors, IRanges, rmarkdown, tools, VennDiagram, grid,
-        JASPAR2016, TFBSTools
-Suggests: BSgenome.Hsapiens.UCSC.hg19,
-        TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db
+Imports:
+    Rcpp (>= 0.12.11),
+    knitr,
+    Rbowtie2,
+    rtracklayer,
+    ggplot2,
+    Biostrings,
+    ChIPseeker,
+    clusterProfiler,
+    igraph,
+    rJava,
+    DiagrammeR,
+    magrittr,
+    digest,
+    BSgenome,
+    AnnotationDbi,
+    GenomicFeatures,
+    R.utils,
+    GenomeInfoDb,
+    BiocGenerics,
+    S4Vectors,
+    IRanges,
+    rmarkdown,
+    tools, 
+    VennDiagram, 
+    grid,
+    JASPAR2016, 
+    TFBSTools
+Suggests:
+    BSgenome.Hsapiens.UCSC.hg19,
+    TxDb.Hsapiens.UCSC.hg19.knownGene,
+    org.Hs.eg.db
 LinkingTo: Rcpp
 SystemRequirements: C++11
-biocViews: Sequencing, DNASeq, QualityControl, Alignment,
-        Preprocessing, Coverage, ATACSeq, DNaseSeq
+Collate: 
+    ATACpipe.R
+    BaseProc.R
+    BamToBed.R
+    BedToBigWig.R
+    BedUtils.R
+    ConfigVal.R
+    CppInterface.R
+    CutSiteCountR.R
+    CutSitePre.R
+    FRiPQC.R
+    FastQC.R
+    FregLenDistribute.R
+    GraphMng.R
+    JavaExports.R
+    JavaInterface.R
+    LibComplexQC.R
+    Mapping.R
+    Methods.R
+    PeakCallingFseq.R
+    PeakQC.R
+    RGo.R
+    RMotifScan.R
+    RPeakAnno.R
+    RPeakComp.R
+    RSNPs.R
+    RcppExports.R
+    RemoveAdapter.R
+    Renamer.R
+    Rsortbam.R
+    SamToBam.R
+    SamToBed.R
+    TSSQC.R
+    UnzipAndMerge.R
+    onLoad.R
+    RMotifScanPair.R
+biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
+    Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-10-18 01:40:12 UTC; Zwei

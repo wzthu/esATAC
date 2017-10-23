@@ -1,0 +1,29 @@
+#' 
+#' 
+#' @description  
+#' This package provides a framework and
+#' complete preset pipeline for the quantification
+#' and analysis of ATAC-seq and DNase-seq Reads.
+#' It covers a complete workflow
+#' starting from raw sequence reads,
+#' over creation of alignments
+#' and quality control report, to the quantification of genomic
+#' regions of interest. The package is managed by dataflow graph,
+#' and users can also build their own pipeline easily and flexibly.
+#' 
+#' @details 
+#' See packageDescription('ATACpipe') for package details.
+#' @seealso 
+#' \code{\link{printMap}},
+#' \code{\link{atacPipe}},
+#' \code{\link{atacRenamer}},
+#' \code{\link{atacRemoveAdapter}},
+#' \code{\link{atacBowtie2Mapping}},
+#' \code{\link{atacPeakCalling}},
+#' \code{\link{atacMotifScan}}
+#'
+#' @docType package
+#' @name ATACpipe-package
+#' @title ATACpipe: ATAC-seq Data Quantifying and Annotating Workflow
+#' @author Zheng Wei and Wei Zhang
+NULL
