@@ -4,7 +4,6 @@
 \name{atacSamToBed}
 \alias{atacSamToBed}
 \alias{atacSamToBed,ATACProc-method}
-\alias{atacSamToBed}
 \alias{samToBed}
 \title{Convert SAM file to BED file}
 \usage{

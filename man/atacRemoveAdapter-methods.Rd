@@ -4,7 +4,6 @@
 \name{atacRemoveAdapter}
 \alias{atacRemoveAdapter}
 \alias{atacRemoveAdapter,ATACProc-method}
-\alias{atacRemoveAdapter}
 \alias{removeAdapter}
 \title{Use AdapterRemoval to remove adapters}
 \usage{

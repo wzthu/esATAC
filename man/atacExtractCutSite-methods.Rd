@@ -4,7 +4,6 @@
 \name{atacExtractCutSite}
 \alias{atacExtractCutSite}
 \alias{atacExtractCutSite,ATACProc-method}
-\alias{atacExtractCutSite}
 \alias{extractcutsite}
 \title{Extract ATAC-seq cutting site from bed file.}
 \usage{

@@ -4,7 +4,6 @@
 \name{atacFripQC}
 \alias{atacFripQC}
 \alias{atacFripQC,ATACProc-method}
-\alias{atacFripQC}
 \alias{fripQC}
 \title{Quality control for fraction of reads in peaks (FRiP)}
 \usage{
@@ -71,7 +70,7 @@ bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 peaksProc<- readsProc \%>\% atacPeakCalling
 library(BSgenome.Hsapiens.UCSC.hg19)
-#atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
+atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
 
 }
 \seealso{

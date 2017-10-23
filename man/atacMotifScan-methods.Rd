@@ -4,7 +4,6 @@
 \name{atacMotifScan}
 \alias{atacMotifScan}
 \alias{atacMotifScan,ATACProc-method}
-\alias{atacMotifScan}
 \alias{motifscan}
 \title{Search Motif Position in Given Regions}
 \usage{

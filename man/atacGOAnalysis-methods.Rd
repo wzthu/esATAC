@@ -4,7 +4,6 @@
 \name{atacGOAnalysis}
 \alias{atacGOAnalysis}
 \alias{atacGOAnalysis,ATACProc-method}
-\alias{atacGOAnalysis}
 \alias{goanalysis}
 \title{Gene Ontology Analysis}
 \usage{

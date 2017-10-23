@@ -4,7 +4,6 @@
 \name{atacFregLenDistr}
 \alias{atacFregLenDistr}
 \alias{atacFregLenDistr,ATACProc-method}
-\alias{atacFregLenDistr}
 \alias{fregLenDistr}
 \title{Quality control for fregment length distribution}
 \usage{

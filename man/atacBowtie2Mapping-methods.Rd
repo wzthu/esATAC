@@ -4,7 +4,6 @@
 \name{atacBowtie2Mapping}
 \alias{atacBowtie2Mapping}
 \alias{atacBowtie2Mapping,ATACProc-method}
-\alias{atacBowtie2Mapping}
 \alias{bowtie2Mapping}
 \title{Use bowtie2 aligner to map reads to reference genome}
 \usage{

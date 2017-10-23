@@ -4,7 +4,6 @@
 \name{atacPeakAnno}
 \alias{atacPeakAnno}
 \alias{atacPeakAnno,ATACProc-method}
-\alias{atacPeakAnno}
 \alias{peakanno}
 \title{Annotate ATAC-seq Peak}
 \usage{

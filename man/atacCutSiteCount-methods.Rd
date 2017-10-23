@@ -4,7 +4,6 @@
 \name{atacCutSiteCount}
 \alias{atacCutSiteCount}
 \alias{atacCutSiteCount,ATACProc-method}
-\alias{atacCutSiteCount}
 \alias{cutsitecount}
 \title{Count cut site number in given motif region.}
 \usage{

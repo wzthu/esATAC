@@ -4,7 +4,6 @@
 \name{atacpeakComp}
 \alias{atacpeakComp}
 \alias{atacpeakComp,ATACProc-method}
-\alias{atacpeakComp}
 \alias{peakcomp}
 \title{Find the overlap or differential peaks between two samples.}
 \usage{

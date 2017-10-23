@@ -4,7 +4,6 @@
 \name{atacBamSort}
 \alias{atacBamSort}
 \alias{atacBamSort,ATACProc-method}
-\alias{atacBamSort}
 \alias{bamsort}
 \title{Sort bam file and rebuild bai index.}
 \usage{

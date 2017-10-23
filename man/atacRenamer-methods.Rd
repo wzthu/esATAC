@@ -4,7 +4,6 @@
 \name{atacRenamer}
 \alias{atacRenamer}
 \alias{atacRenamer,ATACProc-method}
-\alias{atacRenamer}
 \alias{renamer}
 \title{Rename reads name in fastq}
 \usage{

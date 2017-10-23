@@ -4,7 +4,6 @@
 \name{atacSNPAnno}
 \alias{atacSNPAnno}
 \alias{atacSNPAnno,ATACProc-method}
-\alias{atacSNPAnno}
 \alias{snpanno}
 \title{Find whether snps are in the given regions.}
 \usage{
