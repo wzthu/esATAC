@@ -11,6 +11,7 @@ setMethod(
                           strandLength = NULL, FootPrint = TRUE, prefix = NULL, editable = FALSE){
         .Object <- init(.Object, "CutSiteCountR", editable, list(arg1 = atacProcCutSite, arg2 = atacProcMotifScan))
 
+        # necessary parameters
         if(!is.null(atacProcCutSite)){
             .Object@paramlist[["csfile.dir"]] <- getParam(atacProcCutSite, "csfile.dir");
         }else{
@@ -21,13 +22,12 @@ setMethod(
         }else{
             .Object@paramlist[["motif_info"]] <- readRDS(motif_info)
         }
-
         .Object@paramlist[["chr"]] <- as.list(chr)
         .Object@paramlist[["strandLength"]] <- strandLength
         .Object@paramlist[["FootPrint"]] <- FootPrint
-
         if(is.null(prefix)){
-            .Object@paramlist[["prefix"]] <- "cutsite"
+            .Object@paramlist[["prefix"]] <- "ATAC_CutSite"
+            warning("Please specify a prefix, otherwise your file will be overwrite!")
         }else{
             .Object@paramlist[["prefix"]] <- prefix
         }
@@ -40,7 +40,8 @@ setMethod(
                 sep = ""
             )
             .Object@paramlist[["footprint.data"]] <- paste(
-                .Object@paramlist[["matrixfile.dir"]],
+                .Object@paramlist[["matrixfile.dir"]], "/Footprint_",
+                .Object@paramlist[["prefix"]],
                 "_data.rds",
                 sep = ""
             )
@@ -54,7 +55,6 @@ setMethod(
                 sep = ""
             )
         }
-
         dir.create(.Object@paramlist[["matrixfile.dir"]])
 
         paramValidation(.Object)
@@ -78,13 +78,13 @@ setMethod(
             matrixsave.dir <- file.path(.Object@paramlist[["matrixfile.dir"]], motif_name)
             dir.create(matrixsave.dir)
             footprint.path <- file.path(
-                .obtainConfigure("tmpdir"),
+                .Object@paramlist[["matrixfile.dir"]],
                 paste(.Object@paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
             )
             # start!
-            .Object <- writeLog(.Object,paste0("Start Processing %s", motif_name))
-            .Object <- writeLog(.Object,sprintf("Matrix Destination:%s", matrixsave.dir))
-            .Object <- writeLog(.Object,sprintf("Footprint PDF Destination:%s", matrixsave.dir))
+            .Object <- writeLog(.Object, sprintf("Start Processing %s", motif_name))
+            .Object <- writeLog(.Object, sprintf("Matrix Destination:%s", matrixsave.dir))
+            .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", matrixsave.dir))
             tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
             # using tmp dir to save temp data
             dir.create(tmp_dir, FALSE, TRUE, "0700")
@@ -129,7 +129,8 @@ setMethod(
             }
             if(.Object@paramlist[["FootPrint"]]){
                 if(nrow(data) == 0){
-                    stop("Can not find any cut site in motif position.")
+                    print("Can not find any cut site in motif position.")
+                    next
                 }
                 fp <- apply(data, 2, sum)
                 footprint_data[[motif_name]] <- fp
@@ -149,6 +150,7 @@ setMethod(
 
         }
         saveRDS(object = footprint_data, file = .Object@paramlist[["footprint.data"]])
+
         .Object
     }
 )
@@ -159,7 +161,7 @@ setMethod(
     signature = "CutSiteCountR",
     definition = function(.Object,...){
         if(is.null(.Object@paramlist[["csfile.dir"]])){
-            stop("csfile.dir is required.")
+            stop("Parameter csfile.dir is required.")
         }
     }
 )
@@ -182,7 +184,7 @@ setMethod(
             fp <- readRDS(.Object@paramlist[["footprint.data"]])
             return(fp)
         }else if(item == "pdf.dir"){
-            return(.obtainConfigure("tmpdir"))
+            return(.Object@paramlist[["matrixfile.dir"]])
         }
     }
 )
@@ -240,27 +242,28 @@ setMethod(
 #' @author Wei Zhang
 #' @examples
 #'
-#' library(R.utils)
-#' library(BSgenome.Hsapiens.UCSC.hg19)
+#' \dontrun{
+#' # library(R.utils)
+#' # library(BSgenome.Hsapiens.UCSC.hg19)
 #' ## processing bed file
-#' fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
-#' frag <- as.vector(bunzip2(filename = fra_path,
-#' destname = file.path(getwd(), "chr20.50000.bed"),
-#' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-#' cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
+#' # fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
+#' # frag <- as.vector(bunzip2(filename = fra_path,
+#' # destname = file.path(getwd(), "chr20.50000.bed"),
+#' # ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' # cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
 #'
 #' ## find motif position
-#' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
-#' peak1_path <- as.vector(bunzip2(filename = p1bz,
-#' destname = file.path(getwd(), "Example_peak1.bed"),
-#' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
+#' # p1bz <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
+#' # peak1_path <- as.vector(bunzip2(filename = p1bz,
+#' # destname = file.path(getwd(), "chr20_sample_peak.bed"),
+#' # ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 #' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
 #' # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
 #' # motifPWM = pwm, prefix = "test")
 #'
 #' ## plot footprint
 #' # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
-#'
+#' }
 #'
 #' @seealso
 #' \code{\link{atacExtractCutSite}}
