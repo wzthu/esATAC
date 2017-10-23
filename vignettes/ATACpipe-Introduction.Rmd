@@ -187,6 +187,17 @@ network bandwidth.
 If the reference data is not configured, 
 the related argument of functions has to be set manually during using. 
 
+### Datasets
+
+Most of the test datasets in this package are generated from GEO: SRR891271 [(from GSE47753)](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE47753)[7].
+The data is ATAC-seq paired end sequencing for GM12878 cell line. 
+We random sampling 20000 mapped fragments from chr20 and 
+rebuild raw paired-end FASTQ files(file names with chr20 prefix).
+We also subsample the reads in SAM file and peak calling BED result files.
+Besides, the files in "uzmg", "adrm" and "bt2" are the test files from AdapterRemoval and Bowtie2.
+For detail, you can read the subsequent sections.
+
+
 
 ## Preset Pipeline
 
@@ -197,29 +208,57 @@ and threads allowed to be created will according to the configurations.
 
 ### Case Study
 
-For single-end case study, a fastq file of sequencing data and 
-its adapter are required. The preset pipeline can be
-called like this:
-
-```{r casesingle, eval=TRUE}
-bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
-#uncomment to run:
-#atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
-```
-
-For paired-end case study, two fastq files of sequencing data are required. 
+For single-end and paired-end case study, 
+a fastq file of sequencing data and 
+its adapter are required. 
 The preset pipeline can be called like this:
 
-```{r casepair, eval=TRUE}
-bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
-bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
-#uncomment to run:
-#atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
+```{r casesingle, eval=FALSE}
+td<-tempdir()
+options(atacConf=setConfigure("threads",4))
+dir.create(file.path(td,"ref"))
+# Change the refdir to your installed refdir path
+# or it will be time comsuming to build bowtie2 index.
+options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+options(atacConf=setConfigure("genome","hg19"))
+bedbzfile11 <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2")
+)
+bedbzfile12 <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz"),
+    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+)
+# for single end
+dir.create(file.path(td,"single"))
+options(atacConf=setConfigure("tmpdir",file.path(td,"single")))
+conclusion1<-atacPipe(fastqInput1 = bedbzfile11,adapter1 = "CTGTCTCTTATACACATCTCCGAGCCCACGAGACTGAAG")
+# for paired end
+dir.create(file.path(td,"paired"))
+options(atacConf=setConfigure("tmpdir",file.path(td,"paired")))
+conclusion2<-atacPipe(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12)
+
 ```
 
-A report of quality control and analysis will be created.
+First of all, you need to configure the max threads that may be created, 
+the reference directory (folder path) and the genome. 
+If you haven't installed the reference, 
+you can set path for reference storage that can be used next time,
+rather than using the example temp path in example.
+If you have installed the reference,
+set the path last time you have installed. 
+The package will only check the reference and install the deprecated files
+rather than all of the files.
+
+Secondly, prepare your raw sequencing data FASTQ files of single-end or paired-end 
+
+Finally, you will receive an conclusion list (conclusion1 and conclusion2 in example code).
+A HTML report of quality control and analysis will be created for paired-end data.
+
+This process is time consuming. You can visit our website to see the result example:
 
 [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+
 
 ### Case-Control Study
 
@@ -227,17 +266,28 @@ For case-Control study, paired-end sequencing data are supported only.
 Two fastq files of sequencing data for case and control each are required.
 The preset pipeline can be called like this:
 
-```{r casecontrol, eval=TRUE}
-bedbzfile11 <- system.file(package="ATACpipe", "extdata", "chr20_1.fq.bz2")
-bedbzfile12 <- system.file(package="ATACpipe", "extdata", "chr20_2.fq.bz2")
-bedbzfile21 <- system.file(package="ATACpipe", "extdata", "chr21_1.fq.bz2")
-bedbzfile22 <- system.file(package="ATACpipe", "extdata", "chr21_2.fq.bz2")
-#uncomment to run: 
-#atacPipe2(case=list(fastqInput1 = bedbzfile11,fastqInput2 = bedbzfile12),
-#          control=list(fastqInput1 = bedbzfile21,fastqInput2 = bedbzfile22))
+```{r casecontrol, eval=FALSE}
+td<-tempdir()
+options(atacConf=setConfigure("threads",4))
+dir.create(file.path(td,"ref"))
+# change the refdir to your installed refdir path
+# or it will be time comsuming to build bowtie2 index
+options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+options(atacConf=setConfigure("genome","hg19"))
+case <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+)
+ctrl <- c(
+    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
+    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+)
+conclusion<-atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 ```
 
-A report of quality control and analysis will be created.
+The processes are similar to atacPipe. You will also receive conclusion list and
+
+a HTML report for quality control and analysis will be created. You may see:
 
 [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)
 
@@ -569,6 +619,8 @@ and Kui Hua for providing package testing on Macbook.
 [5] Yu G, Wang L, Han Y and He Q (2012). “clusterProfiler: an R package for comparing biological themes among gene clusters.” OMICS: A Journal of Integrative Biology, 16(5), pp. 284-287. doi: 10.1089/omi.2011.0118.
 
 [6] Pagès H, Aboyoun P, Gentleman R and DebRoy S (2017). Biostrings: String objects representing biological sequences, and matching algorithms. R package version 2.44.2.
+
+[7] Buenrostro, J. D., Giresi, P. G., Zaba, L. C., Chang, H. Y., & Greenleaf, W. J. (2013). Transposition of native chromatin for fast and sensitive epigenomic profiling of open chromatin, DNA-binding proteins and nucleosome position. Nature methods, 10(12), 1213-1218.
 
 ## Session Infomation
 
