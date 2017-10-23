@@ -174,8 +174,9 @@ setMethod(
 #' readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 #' peaksProc<- readsProc %>% atacPeakCalling
 #' library(BSgenome.Hsapiens.UCSC.hg19)
+#' \dontrun{
 #' atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
-#'
+#' }
 #' @name atacFripQC
 #' @export
 #' @docType methods

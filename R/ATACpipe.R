@@ -1,4 +1,4 @@
-#' ATACpipe: ATAC-seq Data Quantifying and Annotating Workflow
+#' 
 #' 
 #' @description  
 #' This package provides a framework and
@@ -23,7 +23,7 @@
 #' \code{\link{atacMotifScan}}
 #'
 #' @docType package
-#' @name ATACpipe
-#' @title ATACpipe-package
+#' @name ATACpipe-package
+#' @title ATACpipe: ATAC-seq Data Quantifying and Annotating Workflow
 #' @author Zheng Wei and Wei Zhang
 NULL
