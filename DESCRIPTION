@@ -45,7 +45,11 @@ Imports:
     S4Vectors,
     IRanges,
     rmarkdown,
-    tools
+    tools, 
+    VennDiagram, 
+    grid,
+    JASPAR2016, 
+    TFBSTools
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
@@ -87,8 +91,10 @@ Collate:
     TSSQC.R
     UnzipAndMerge.R
     onLoad.R
+    RMotifScanPair.R
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
+NeedsCompilation: yes
