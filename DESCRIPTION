@@ -53,6 +53,7 @@ Suggests:
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
+    ATACpipe.R
     BaseProc.R
     BamToBed.R
     BedToBigWig.R
