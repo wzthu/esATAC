@@ -1,0 +1,11 @@
+PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_WIN -DR_EVN_FLAG
+
+.PHONY: clean all
+
+all: $(SHLIB)
+
+
+
+clean:
+	rm -f *.dll
+	rm -f *.o
