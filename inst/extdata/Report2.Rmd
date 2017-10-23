@@ -266,7 +266,7 @@ venn.plot <- draw.pairwise.venn(
     area2 = PeakNumInCC[2] + PeakNumInCC[3],
     cross.area = PeakNumInCC[3],
     category = c("Case", "Control"),
-    fill = c("blue", "red")
+    fill = c("skyblue", "mediumorchid")
 )
 ```
 
@@ -287,7 +287,15 @@ Gene ontology analysis for all genes around differential peak regions.
 go_path <- comp_result$goAna.case$getReportVal("goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data[1:20, ])
+go_data$pvalue <- signif(go_data$pvalue, digits = 3)
+go_data$pvalue <- as.character(go_data$pvalue)
+go_data$qvalue <- signif(go_data$qvalue, digits = 3)
+go_data$qvalue <- as.character(go_data$qvalue)
+if(nrow(go_data) < 15){
+    knitr::kable(go_data)
+}else{
+    knitr::kable(go_data[1:15, ])
+}
 ```
 
 [Click to Visit Case Differential Go Analysis file](`r go_path`)
@@ -298,7 +306,15 @@ knitr::kable(go_data[1:20, ])
 go_path <- comp_result$goAna.ctrl$getReportVal("goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data[1:20, ])
+go_data$pvalue <- signif(go_data$pvalue, digits = 3)
+go_data$pvalue <- as.character(go_data$pvalue)
+go_data$qvalue <- signif(go_data$qvalue, digits = 3)
+go_data$qvalue <- as.character(go_data$qvalue)
+if(nrow(go_data) < 15){
+    knitr::kable(go_data)
+}else{
+    knitr::kable(go_data[1:15, ])
+}
 ```
 
 [Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
@@ -316,7 +332,13 @@ motif_enrich.case <- motif_enrich.case[, c(1, 3, 4)]
 colnames(motif_enrich.case) <- c("motif", "motif length", "p_value")
 motif_enrich.case <- motif_enrich.case[order(motif_enrich.case$p_value), ]
 rownames(motif_enrich.case) <- seq(nrow(motif_enrich.case))
-knitr::kable(motif_enrich.case)
+motif_enrich.case$p_value <- signif(motif_enrich.case$p_value, digits = 3)
+motif_enrich.case$p_value <- as.character(motif_enrich.case$p_value)
+if(nrow(motif_enrich.case) < 15){
+    knitr::kable(motif_enrich.case)
+}else{
+    knitr::kable(motif_enrich.case[1:15, ])
+}
 ```
 
 ## motif enrich in control specific peak regions
@@ -327,7 +349,13 @@ motif_enrich.ctrl <- motif_enrich.ctrl[, c(1, 3, 4)]
 colnames(motif_enrich.ctrl) <- c("motif", "motif length", "p_value")
 motif_enrich.ctrl <- motif_enrich.ctrl[order(motif_enrich.ctrl$p_value), ]
 rownames(motif_enrich.ctrl) <- seq(nrow(motif_enrich.ctrl))
-knitr::kable(motif_enrich.ctrl)
+motif_enrich.ctrl$p_value <- signif(motif_enrich.ctrl$p_value, digits = 3)
+motif_enrich.ctrl$p_value <- as.character(motif_enrich.ctrl$p_value)
+if(nrow(motif_enrich.ctrl) < 15){
+    knitr::kable(motif_enrich.ctrl)
+}else{
+    knitr::kable(motif_enrich.ctrl[1:15, ])
+}
 ```
 
 # Footprint analysis
@@ -335,35 +363,52 @@ knitr::kable(motif_enrich.ctrl)
 
 ```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE, message=FALSE}
 par(mfrow=c(1,2))
+
 footprint_data <- comp_result$footprint.case$getReportVal("footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2,
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
      main = "Footprint In Case",
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
     padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
     labels = seq(0, 100, len = 3),
     padj = -1.0, tck = -0.01)
 axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
 
 footprint_data <- comp_result$footprint.ctrl$getReportVal("footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Control",
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Case",
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
     padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
     labels = seq(0, 100, len = 3),
     padj = -1.0, tck = -0.01)
 axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
 
 pdf.dir <- comp_result$footprint.case$getReportVal("pdf.dir")
 pdf.dir <- comp_result$footprint.ctrl$getReportVal("pdf.dir")
