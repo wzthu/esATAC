@@ -184,6 +184,13 @@ NOTE: The installation will consume several hours for data download,
 building bowtie2 index depending on computer performance and 
 network bandwidth. 
 
+NOTE: The installation is network based. Please keep your network connection.
+But you don need to worry about disconnect. 
+We will continue to check finished part and only build unfinish part.
+
+Genome hg19 and mm10 are supported currently. 
+More genomes will be supported in the future.
+
 If the reference data is not configured, 
 the related argument of functions has to be set manually during using. 
 
@@ -209,8 +216,8 @@ and threads allowed to be created will according to the configurations.
 ### Case Study
 
 For single-end and paired-end case study, 
-a fastq file of sequencing data and 
-its adapter are required. 
+fastq file(s) of sequencing data are required. 
+Adapter is also required for single-end data.
 The preset pipeline can be called like this:
 
 ```{r casesingle, eval=FALSE}
