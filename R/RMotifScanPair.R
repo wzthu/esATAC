@@ -101,104 +101,108 @@ RMotifScanPair <- R6::R6Class(
             ctrl_peak.num <- length(ctrl_mid.peak)
             backg_peak.num <- length(backg_mid.peak)
 
+            # save info
+            case_save_info <- data.frame()
+            ctrl_save_info <- data.frame()
+            backg_save_info <- data.frame()
+
             # running
-            cl <- makeCluster(private$paramlist[["n.cores"]])
             sitesetList <- list()
             n_motif <- length(private$paramlist[["motifPWM"]])
-            k <- 10
+            k <- private$paramlist[["n.cores"]] * 2
             motif_in_group <- split(private$paramlist[["motifPWM"]],
                                     rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
             n_group <- length(motif_in_group)
+
+            WriteMotifOrder <- 1
+            cl <- makeCluster(private$paramlist[["n.cores"]])
             for(i in seq(n_group)){
                 thisGroup.motif <- motif_in_group[[i]]
                 thisGroup.motifname <- names(thisGroup.motif)
-                thisGroup.motifinfo <- paste(thisGroup.motifname, collapse = ",")
+                thisGroup.motifnum <- length(thisGroup.motif)
                 thisGroup.motifinfo <- paste("Now, processing the following motif: ",
-                                             thisGroup.motifinfo, sep = "")
+                                             paste(thisGroup.motifname, collapse = ","),
+                                             sep = "")
                 print(thisGroup.motifinfo)
-                sitesetList_in_group <- parLapply(cl = cl,
+                sitesetList <- parLapply(cl = cl,
                                                   X = thisGroup.motif,
                                                   fun = Biostrings::matchPWM,
                                                   subject = private$paramlist[["genome"]],
                                                   min.score = private$paramlist[["min.score"]],
                                                   with.score = TRUE)
-                sitesetList <- append(sitesetList, sitesetList_in_group)
+
+                for(i in seq(thisGroup.motifnum)){
+                    # processing motif scan
+                    motif_name <- names(sitesetList[i])
+                    motif_len <- private$paramlist[["motifPWM.len"]][[motif_name]]
+                    # for case
+                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                             ranges = case.peak,
+                                                             ignore.strand = TRUE)
+                    output_data <- sort(x = output_data, ignore.strand = TRUE)
+                    output_data <- as.data.frame(output_data)
+                    output_data <- within(output_data, rm(width))
+                    output_path <- paste(private$paramlist[["scanO.dir"]],
+                                         "/", private$paramlist[["prefix"]][1], "_",
+                                         motif_name, sep = "")
+                    case_save_info[WriteMotifOrder, 1] <- motif_name
+                    case_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
+                    case_save_info[WriteMotifOrder, 3] <- motif_len
+                    write.table(x = output_data, file = output_path, row.names = FALSE,
+                                col.names = FALSE, quote = FALSE)
+                    # for ctrl
+                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                             ranges = ctrl.peak,
+                                                             ignore.strand = TRUE)
+                    output_data <- sort(x = output_data, ignore.strand = TRUE)
+                    output_data <- as.data.frame(output_data)
+                    output_data <- within(output_data, rm(width))
+                    output_path <- paste(private$paramlist[["scanO.dir"]],
+                                         "/", private$paramlist[["prefix"]][2], "_",
+                                         motif_name, sep = "")
+                    ctrl_save_info[WriteMotifOrder, 1] <- motif_name
+                    ctrl_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
+                    ctrl_save_info[WriteMotifOrder, 3] <- motif_len
+                    write.table(x = output_data, file = output_path, row.names = FALSE,
+                                col.names = FALSE, quote = FALSE)
+                    # for olap
+                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                             ranges = backg.peak,
+                                                             ignore.strand = TRUE)
+                    output_data <- sort(x = output_data, ignore.strand = TRUE)
+                    output_data <- as.data.frame(output_data)
+                    output_data <- within(output_data, rm(width))
+                    output_path <- paste(private$paramlist[["scanO.dir"]],
+                                         "/", private$paramlist[["prefix"]][3], "_",
+                                         motif_name, sep = "")
+                    backg_save_info[WriteMotifOrder, 1] <- motif_name
+                    backg_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
+                    backg_save_info[WriteMotifOrder, 3] <- motif_len
+                    write.table(x = output_data, file = output_path, row.names = FALSE,
+                                col.names = FALSE, quote = FALSE)
+
+                    # processing motif enrichment
+                    case_overlap <- GenomicRanges::findOverlaps(query = case_mid.peak,
+                                                                subject = sitesetList[[i]],
+                                                                ignore.strand = TRUE)
+                    ctrl_overlap <- GenomicRanges::findOverlaps(query = ctrl_mid.peak,
+                                                                subject = sitesetList[[i]],
+                                                                ignore.strand = TRUE)
+                    backg_overlap <- GenomicRanges::findOverlaps(query = backg_mid.peak,
+                                                                 subject = sitesetList[[i]],
+                                                                 ignore.strand = TRUE)
+                    case.occur <- length(unique(S4Vectors::queryHits(case_overlap)))
+                    ctrl.occur <- length(unique(S4Vectors::queryHits(ctrl_overlap)))
+                    backg.occur <- length(unique(S4Vectors::queryHits(backg_overlap)))
+                    case.btest <- binom.test(x = case.occur, n = case_peak.num, p = backg.occur / backg_peak.num)
+                    ctrl.btest <- binom.test(x = ctrl.occur, n = ctrl_peak.num, p = backg.occur / backg_peak.num)
+                    case_save_info[WriteMotifOrder ,4] <- case.btest$p.value
+                    ctrl_save_info[WriteMotifOrder, 4] <- ctrl.btest$p.value
+
+                    WriteMotifOrder <- WriteMotifOrder + 1
+                }
             }
             stopCluster(cl)
-
-            n_motif <- length(sitesetList)
-            case_save_info <- data.frame()
-            ctrl_save_info <- data.frame()
-            backg_save_info <- data.frame()
-
-            for(i in seq(n_motif)){
-                # processing motif scan
-                motif_name <- names(sitesetList[i])
-                motif_len <- private$paramlist[["motifPWM.len"]][[motif_name]]
-                # for case
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = case.peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(private$paramlist[["scanO.dir"]],
-                                     "/", private$paramlist[["prefix"]][1], "_",
-                                     motif_name, sep = "")
-                case_save_info[i, 1] <- motif_name
-                case_save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
-                case_save_info[i, 3] <- motif_len
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-                # for ctrl
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = ctrl.peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(private$paramlist[["scanO.dir"]],
-                                     "/", private$paramlist[["prefix"]][2], "_",
-                                     motif_name, sep = "")
-                ctrl_save_info[i, 1] <- motif_name
-                ctrl_save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
-                ctrl_save_info[i, 3] <- motif_len
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-                # for olap
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = backg.peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(private$paramlist[["scanO.dir"]],
-                                     "/", private$paramlist[["prefix"]][3], "_",
-                                     motif_name, sep = "")
-                backg_save_info[i, 1] <- motif_name
-                backg_save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
-                backg_save_info[i, 3] <- motif_len
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-
-                # processing motif enrichment
-                case_overlap <- GenomicRanges::findOverlaps(query = case_mid.peak,
-                                                            subject = sitesetList[[i]],
-                                                            ignore.strand = TRUE)
-                ctrl_overlap <- GenomicRanges::findOverlaps(query = ctrl_mid.peak,
-                                                            subject = sitesetList[[i]],
-                                                            ignore.strand = TRUE)
-                backg_overlap <- GenomicRanges::findOverlaps(query = backg_mid.peak,
-                                                             subject = sitesetList[[i]],
-                                                             ignore.strand = TRUE)
-                case.occur <- length(unique(S4Vectors::queryHits(case_overlap)))
-                ctrl.occur <- length(unique(S4Vectors::queryHits(ctrl_overlap)))
-                backg.occur <- length(unique(S4Vectors::queryHits(backg_overlap)))
-                case.btest <- binom.test(x = case.occur, n = case_peak.num, p = backg.occur / backg_peak.num)
-                ctrl.btest <- binom.test(x = ctrl.occur, n = ctrl_peak.num, p = backg.occur / backg_peak.num)
-                case_save_info[i ,4] <- case.btest$p.value
-                ctrl_save_info[i, 4] <- ctrl.btest$p.value
-            }
 
             saveRDS(object = case_save_info, file = private$paramlist[["rdsOutput.peak1"]])
             saveRDS(object = ctrl_save_info, file = private$paramlist[["rdsOutput.peak2"]])
@@ -310,7 +314,7 @@ RMotifScanPair <- R6::R6Class(
 #' @export
 atacMotifScanPair <- function(atacProc, peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                               motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                              n.cores = parallel::detectCores()/2, prefix = NULL){
+                              n.cores = NULL, prefix = NULL){
     tmp <- RMotifScanPair$new(atacProc, peak1, peak2, background, genome,
                           motifPWM, min.score, scanO.dir, n.cores, prefix)
     tmp$process()
@@ -321,7 +325,7 @@ atacMotifScanPair <- function(atacProc, peak1 = NULL, peak2 = NULL, background =
 #' @export
 motifscanpair <- function(peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = parallel::detectCores()/2, prefix = NULL){
+                          n.cores = NULL, prefix = NULL){
     tmp <- RMotifScanPair$new(atacProc = NULL, peak1, peak2, background, genome,
                           motifPWM, min.score, scanO.dir, n.cores, prefix)
     tmp$process()

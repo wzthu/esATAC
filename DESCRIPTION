@@ -22,7 +22,8 @@ Imports: Rcpp (>= 0.12.11), R6, knitr, Rbowtie2, rtracklayer, ggplot2,
         Biostrings, ChIPseeker, clusterProfiler, igraph, rJava,
         DiagrammeR, magrittr, digest, BSgenome, AnnotationDbi,
         GenomicFeatures, R.utils, GenomeInfoDb, BiocGenerics,
-        S4Vectors, IRanges, rmarkdown, tools, VennDiagram, grid
+        S4Vectors, IRanges, rmarkdown, tools, VennDiagram, grid,
+        JASPAR2016, TFBSTools
 Suggests: BSgenome.Hsapiens.UCSC.hg19,
         TxDb.Hsapiens.UCSC.hg19.knownGene, org.Hs.eg.db
 LinkingTo: Rcpp
@@ -33,4 +34,4 @@ VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
-Packaged: 2017-10-15 11:02:55 UTC; Zwei
+Packaged: 2017-10-18 01:40:12 UTC; Zwei
