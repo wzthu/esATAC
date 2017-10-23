@@ -1,4 +1,0 @@
-# The reason this is marked as unsupported on win32 is that
-# the imported or depended package: QuasR, Rbowtie and bowtie2
-# related methods in Rbowtie2 are not support 32-bit windows. 
-UnsupportedPlatforms: win32
