@@ -45,7 +45,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 
 
-# Sequence statistics
+# Sequence Statistics
 ## FastQC
 
 Quality control for the sequence data
@@ -54,7 +54,7 @@ QC_path <- getReportVal(atacProcs$atacQC,"pdf")
 ```
 [Click to Visit Report](`r QC_path`)
 
-## Remove Adapter
+## Remove adapter
 
 The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
@@ -71,7 +71,7 @@ knitr::kable(getReportVal(atacProcs$removeAdapter,"statistics"))
 
 For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
 
-# Reads alignment statistics
+# Reads Alignment Statistics
 
 ## Bowtie2 alignment log
 
@@ -131,7 +131,7 @@ g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=
 grid.arrange(g1, g2, ncol=2)
 ```
 
-# Peak statistics
+# Peak Statistics
 
 ## Blacklist ratio
 
@@ -161,7 +161,7 @@ peakanno <- getReportVal(atacProcs$Peakanno,"annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
-# Go analysis
+# Gene Ontology Analysis
 
 Gene ontology analysis for all genes around peak regions.
 
@@ -182,7 +182,7 @@ if(nrow(go_data) < 15){
 
 [Click to Visit Go Analysis file](`r go_path`)
 
-# Footprint analysis
+# Footprint Analysis
 
 The following figure is CTCF footprint.
 
