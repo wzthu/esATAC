@@ -56,7 +56,13 @@ setMethod(
         }
 
         if(is.null(scanO.dir)){
-            .Object@paramlist[["scanO.dir"]] <- dirname(.Object@paramlist[["peak1"]])
+            pre_prefix <- paste(.Object@paramlist[["prefix"]], sep = "", collapse = "_")
+            .Object@paramlist[["scanO.dir"]] <- paste(dirname(.Object@paramlist[["peak1"]]),
+                                                      "/",
+                                                      pre_prefix,
+                                                      "_MotifScanOutput",
+                                                      sep = "")
+            dir.create(.Object@paramlist[["scanO.dir"]])
         }else{
             .Object@paramlist[["scanO.dir"]] <- scanO.dir
         }
@@ -296,7 +302,7 @@ setMethod(
 #' the file name to save the motif position information in separate files.
 #' @param n.cores How many core to run this function.
 #' Default: from \code{\link{setConfigure}}.
-#' @param prefix prefix for Output file.
+#' @param prefix prefix for Output file. Order: peak1, peak2, backgroud.
 #' @details This function scan motif position in a given genome regions.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
