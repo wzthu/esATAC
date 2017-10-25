@@ -33,7 +33,12 @@ setMethod(
         }
         # unnecessary parameters
         if(is.null(scanO.dir)){
-            .Object@paramlist[["scanO.dir"]] <- dirname(.Object@paramlist[["peak"]])
+            .Object@paramlist[["scanO.dir"]] <- paste(tools::file_path_sans_ext(.Object@paramlist[["peak"]]),
+                                                      "_",
+                                                      .Object@paramlist[["prefix"]],
+                                                      "_MotifScanOutput",
+                                                      sep = "")
+            dir.create(.Object@paramlist[["scanO.dir"]])
         }else{
             .Object@paramlist[["scanO.dir"]] <- scanO.dir
         }

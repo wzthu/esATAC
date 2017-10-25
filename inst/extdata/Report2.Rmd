@@ -61,7 +61,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 ```
 
 
-# Sequence statistics
+# Sequence Statistics
 ## FastQC
 
 Quality control for the sequence data
@@ -74,7 +74,7 @@ QC_path2 <- getReportVal(ctrllist$atacProcs$atacQC,"pdf")
 
 [Click to Visit Report for control](`r QC_path2`)
 
-## Remove Adapter
+## Remove adapter
 
 The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
@@ -107,7 +107,7 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
 
 For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
 
-# Reads alignment statistics
+# Reads Alignment Statistics
 
 ## Bowtie2 alignment log
 
@@ -201,7 +201,7 @@ grid.arrange(g11, g21, ncol=2)
 grid.arrange(g12, g22, ncol=2)
 ```
 
-# Peak statistics
+# Peak Statistics
 
 ## Blacklist ratio
 
@@ -238,7 +238,7 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
                         ))
 ```
 
-## Peak Annotation
+## Peak annotation
 
 * For case
 ```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
@@ -270,17 +270,17 @@ venn.plot <- draw.pairwise.venn(
 )
 ```
 
-The total number in case is `r PeakNumInCC[4]`, specific in case is `r PeakNumInCC[1]`.
+The total peaks in case are `r PeakNumInCC[4]`, specific peaks in case are `r PeakNumInCC[1]`.
 
-The total number in control is `r PeakNumInCC[5]`, specific in control is `r PeakNumInCC[2]`.
+The total peaks in control are `r PeakNumInCC[5]`, specific peaks in control are `r PeakNumInCC[2]`.
 
-The overlap peak are merged to `r PeakNumInCC[3]` peaks.
+The overlap peaks are merged to `r PeakNumInCC[3]` peaks.
 
-# Go analysis
+# GO Analysis
 
-Gene ontology analysis for all genes around differential peak regions.
+Gene ontology analysis for all genes around specific peak regions of case and control.
 
-## For case differential peak regions.
+## Significant GO terms of case specific peaks
 
 ```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 go_path <- getReportVal(comp_result$goAna.case, "goOutput")
@@ -299,7 +299,7 @@ if(nrow(go_data) < 15){
 
 [Click to Visit Case Differential Go Analysis file](`r go_path`)
 
-## For control differential peak regions.
+## Significant GO terms of control specific peaks
 
 ```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 go_path <- getReportVal(comp_result$goAna.ctrl, "goOutput")
@@ -319,9 +319,11 @@ if(nrow(go_data) < 15){
 [Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
 
 # Motif Enrichment Analysis
-This function takes case and control specific peaks as foreground respectively, overlap peaks as background.
 
-## motif enrich in case specific peak regions 
+This function takes case and control specific peaks as foreground respectively, 
+overlap peaks between case and control as background.
+
+## Significant motifs of case specific peaks
 
 ```{r cols.print=3, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 motif_enrich.case <- getReportVal(comp_result$mout, "rdsOutput.peak1")
@@ -338,7 +340,7 @@ if(nrow(motif_enrich.case) < 15){
 }
 ```
 
-## motif enrich in control specific peak regions
+## Significant motifs of control specific peaks
 
 ```{r cols.print=3, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 motif_enrich.ctrl <- getReportVal(comp_result$mout, "rdsOutput.peak2")
@@ -355,7 +357,7 @@ if(nrow(motif_enrich.ctrl) < 15){
 }
 ```
 
-# Footprint analysis
+# Footprint Analysis
 
 ```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE, message=FALSE}
 par(mfrow=c(1,2))
