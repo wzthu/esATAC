@@ -291,9 +291,9 @@ go_data$pvalue <- as.character(go_data$pvalue)
 go_data$qvalue <- signif(go_data$qvalue, digits = 3)
 go_data$qvalue <- as.character(go_data$qvalue)
 if(nrow(go_data) < 15){
-    knitr::kable(go_data)
+    knitr::kable(go_data, align = "l")
 }else{
-    knitr::kable(go_data[1:15, ])
+    knitr::kable(go_data[1:15, ], align = "l")
 }
 ```
 
@@ -310,9 +310,9 @@ go_data$pvalue <- as.character(go_data$pvalue)
 go_data$qvalue <- signif(go_data$qvalue, digits = 3)
 go_data$qvalue <- as.character(go_data$qvalue)
 if(nrow(go_data) < 15){
-    knitr::kable(go_data)
+    knitr::kable(go_data, align = "l")
 }else{
-    knitr::kable(go_data[1:15, ])
+    knitr::kable(go_data[1:15, ], align = "l")
 }
 ```
 
@@ -334,9 +334,9 @@ rownames(motif_enrich.case) <- seq(nrow(motif_enrich.case))
 motif_enrich.case$p_value <- signif(motif_enrich.case$p_value, digits = 3)
 motif_enrich.case$p_value <- as.character(motif_enrich.case$p_value)
 if(nrow(motif_enrich.case) < 15){
-    knitr::kable(motif_enrich.case)
+    knitr::kable(motif_enrich.case, align = "l")
 }else{
-    knitr::kable(motif_enrich.case[1:15, ])
+    knitr::kable(motif_enrich.case[1:15, ], align = "l")
 }
 ```
 
@@ -351,9 +351,9 @@ rownames(motif_enrich.ctrl) <- seq(nrow(motif_enrich.ctrl))
 motif_enrich.ctrl$p_value <- signif(motif_enrich.ctrl$p_value, digits = 3)
 motif_enrich.ctrl$p_value <- as.character(motif_enrich.ctrl$p_value)
 if(nrow(motif_enrich.ctrl) < 15){
-    knitr::kable(motif_enrich.ctrl)
+    knitr::kable(motif_enrich.ctrl, align = "l")
 }else{
-    knitr::kable(motif_enrich.ctrl[1:15, ])
+    knitr::kable(motif_enrich.ctrl[1:15, ], align = "l")
 }
 ```
 
@@ -419,7 +419,7 @@ All motif footprint figures are saved as pdf files.
 [Click to Visit Ctrl Differential Footprint file](`r pdf.dir`)
 
 
-# Annotation of items in table 
+# Annotation of Items in Table 
 
 For single end sequencing data, ATACpipe will counts reads number. 
 
