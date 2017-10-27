@@ -327,7 +327,7 @@ void BedUtils::bedToBed(){
 
     void BedUtils::outputBedLine(ofstream * ofBed,BedLine*bedLine){
         if(ofBed){
-            (*ofBed)<<bedLine->chr<<"\t"<<bedLine->start<<"\t"<<bedLine->end<<"\t"<<bedLine->extend<<endl;
+            (*ofBed)<<bedLine->chr<<"\t"<<bedLine->start<<"\t"<<bedLine->end<<bedLine->extend<<endl;
         }
     }
 
