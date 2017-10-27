@@ -67,11 +67,11 @@ getSuffixlessFileName = function(filePath){
 
 
 #' @docType package
-#' @name ATACpipe-package
+#' @name esATAC-package
 #' @details 
-#' See packageDescription('ATACpipe') for package details.
+#' See packageDescription('esATAC') for package details.
 #'
-#' @title ATACpipe: ATAC-seq Data Quantifying and Annotating Workflow
+#' @title esATAC: ATAC-seq Data Quantifying and Annotating Workflow
 #' @description
 #' This package provides a framework and
 #' complete preset pipeline for the quantification
@@ -126,12 +126,12 @@ getSuffixlessFileName = function(filePath){
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
 #' bedbzfile11 <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2")
+#'     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+#'     system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2")
 #' )
 #' bedbzfile12 <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+#'     system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+#'     system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 #' )
 #' # for single end
 #' dir.create(file.path(td,"single"))
@@ -183,7 +183,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "85%", prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
@@ -470,7 +470,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
 
-        rmdfile<-system.file(package="ATACpipe", "extdata", "Report.Rmd")
+        rmdfile<-system.file(package="esATAC", "extdata", "Report.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 
@@ -524,12 +524,12 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
 #' case <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+#'     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+#'     system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
 #' )
 #' ctrl <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+#'     system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+#'     system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 #' )
 #' atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 #          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
@@ -579,7 +579,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
 
-        rmdfile<-system.file(package="ATACpipe", "extdata", "Report2.Rmd")
+        rmdfile<-system.file(package="esATAC", "extdata", "Report2.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 

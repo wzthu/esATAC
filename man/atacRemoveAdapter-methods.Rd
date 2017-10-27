@@ -105,7 +105,7 @@ td <- tempdir()
 options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
-prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
+prefix<-system.file(package="esATAC", "extdata", "uzmg")
 (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
 
