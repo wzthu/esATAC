@@ -30,6 +30,47 @@ test_that("Unzip and merge FASTQ files, remove adapter and mapping",{
     UnzipAndMergeLog <- dir(td)[grepl(pattern = "UnzipAndMerge.*log",dir(td))]
     RemoveAdapterLog <- dir(td)[grepl(pattern = "RemoveAdapter.*log",dir(td))]
     RenamerLog <- dir(td)[grepl(pattern = "Renamer.*log",dir(td))]
+    expect_true(file.exists(file.path(td,UnzipAndMergeLog)))
+    expect_true(file.exists(file.path(td,RemoveAdapterLog)))
+    expect_true(file.exists(file.path(td,RemoveAdapterLog)))
 
+})
+
+
+test_that("test bowtie2 mapping",{
+    td <- tempdir()
+    options(atacConf=setConfigure("tmpdir",td))
+    
+    ## Building a bowtie2 index
+    library("Rbowtie2")
+    refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
+    full=TRUE)
+    bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
+    "--threads 4 --quiet",overwrite=TRUE)
+    ## Alignments
+    reads_1 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
+    "reads_1.fastq")
+    reads_2 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
+    "reads_2.fastq")
+    expect_true(file.exists(reads_1))
+    expect_true(file.exists(reads_2))
+    
+    expect_true(file.exists(file.path(td, "lambda_virus.1.bt2")))
+    expect_true(file.exists(file.path(td, "lambda_virus.2.bt2")))
+    expect_true(file.exists(file.path(td, "lambda_virus.3.bt2")))
+    expect_true(file.exists(file.path(td, "lambda_virus.4.bt2")))
+    expect_true(file.exists(file.path(td, "lambda_virus.rev.1.bt2")))
+    expect_true(file.exists(file.path(td, "lambda_virus.rev.2.bt2")))
+    
+    bowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+       samOutput = file.path(td, "result.sam"),
+       fastqInput1=reads_1,fastqInput2=reads_2,threads=3)
+    
+    expect_true(file.exists(file.path(td, "result.sam")))
+    expect_true(file.exists(file.path(td, "reads_1.Bowtie2Mapping.report")))
+    
+    Bowtie2Mapping <- dir(td)[grepl(pattern = "Bowtie2Mapping.*log",dir(td))]
+    expect_true(file.exists(file.path(td,Bowtie2Mapping)))
+    
 })
          
