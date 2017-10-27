@@ -66,11 +66,26 @@ getSuffixlessFileName = function(filePath){
 }
 
 
-
-#' @name atacPipe
-#' @title Pipeline for single replicate
+#' @docType package
+#' @name ATACpipe-package
+#' @details 
+#' See packageDescription('ATACpipe') for package details.
+#'
+#' @title ATACpipe: ATAC-seq Data Quantifying and Annotating Workflow
 #' @description
-#' The pipeline to process sequencing data into destination files including
+#' This package provides a framework and
+#' complete preset pipeline for the quantification
+#' and analysis of ATAC-seq and DNase-seq Reads.
+#' It covers a complete workflow
+#' starting from raw sequence reads,
+#' over creation of alignments
+#' and quality control report, to the quantification of genomic
+#' regions of interest. The package is managed by dataflow graph,
+#' and users can also build their own pipeline easily and flexibly.
+#'
+#' Pipeline for single replicate is shown below. 
+#' For case control study, see: \code{\link{atacPipe2}}.
+#' The pipeline is to process sequencing data into destination files including
 #' a HTML report file reads storage files (BED BAM)
 #' and various quality control report files.
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
@@ -92,10 +107,15 @@ getSuffixlessFileName = function(filePath){
 #' @param createReport \code{Logical}. If the HTML report file will be created.
 #' @param prefix For identifying files.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
-#' @author Zheng Wei
-#' @seealso
-#' \code{\link{atacSamToBed}}
-#' \code{\link{atacBedUtils}}
+#' @author Zheng Wei and Wei Zhang
+#' @seealso 
+#' \code{\link{printMap}},
+#' \code{\link{atacPipe2}},
+#' \code{\link{atacRenamer}},
+#' \code{\link{atacRemoveAdapter}},
+#' \code{\link{atacBowtie2Mapping}},
+#' \code{\link{atacPeakCalling}},
+#' \code{\link{atacMotifScan}}
 #' @examples
 #' \dontrun{
 #' td<-tempdir()

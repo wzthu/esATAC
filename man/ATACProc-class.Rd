@@ -138,8 +138,8 @@ process(atacproc)
 
 }
 \seealso{
-\code{\link{atacSamToBed}}
-\code{\link{atacBedUtils}}
+\code{\link{atacPipe}}
+\code{\link{atacRemoveAdapter}}
 }
 \author{
 Zheng Wei

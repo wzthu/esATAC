@@ -10,8 +10,8 @@
 #' @return The value return by object methods.
 #' @author Zheng Wei
 #' @seealso
-#' \code{\link{atacSamToBed}}
-#' \code{\link{atacBedUtils}}
+#' \code{\link{atacPipe}}
+#' \code{\link{atacRemoveAdapter}}
 
 #' @param .Object,atacProc ATACProc object return by functions or Character scalar.
 #' @param preProc \code{Logitcal} scalar.

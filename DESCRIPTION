@@ -1,7 +1,7 @@
 Package: ATACpipe
 Type: Package
 Title: ATAC-seq Data Quantifying and Annotating Workflow
-Version: 0.99.12
+Version: 0.99.17
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
@@ -53,6 +53,7 @@ Suggests:
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
+    ATACpipe.R
     BaseProc.R
     BamToBed.R
     BedToBigWig.R
