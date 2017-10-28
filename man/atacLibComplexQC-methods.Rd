@@ -9,13 +9,13 @@
 \title{Quality control for library complexity}
 \usage{
 atacLibComplexQC(atacProc, reportOutput = NULL, samInput = NULL,
-  singleEnd = FALSE, subsampleSize = Inf)
+  singleEnd = FALSE, subsampleSize = Inf, ...)
 
 \S4method{atacLibComplexQC}{ATACProc}(atacProc, reportOutput = NULL,
-  samInput = NULL, singleEnd = FALSE, subsampleSize = Inf)
+  samInput = NULL, singleEnd = FALSE, subsampleSize = Inf, ...)
 
 libComplexQC(samInput, reportOutput = NULL, singleEnd = FALSE,
-  subsampleSize = Inf)
+  subsampleSize = Inf, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -35,6 +35,8 @@ Single end data if TRUE. Paired end data if FALSE.}
 \item{subsampleSize}{\code{Integer} scalar.
 Down sample reads if the number is less than total number
 when \code{subsample} is TRUE}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{libComplexQC}} object scalar for downstream analysis.

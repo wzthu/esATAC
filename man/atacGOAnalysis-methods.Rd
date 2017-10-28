@@ -11,16 +11,17 @@
 atacGOAnalysis(atacProc = NULL, gene = NULL, OrgDb = NULL,
   keytype = "ENTREZID", ont = "MF", pvalueCutoff = 0.05,
   pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-  readable = FALSE, pool = FALSE, goOutput = NULL)
+  readable = FALSE, pool = FALSE, goOutput = NULL, ...)
 
 \S4method{atacGOAnalysis}{ATACProc}(atacProc = NULL, gene = NULL,
   OrgDb = NULL, keytype = "ENTREZID", ont = "MF", pvalueCutoff = 0.05,
   pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-  readable = FALSE, pool = FALSE, goOutput = NULL)
+  readable = FALSE, pool = FALSE, goOutput = NULL, ...)
 
 goanalysis(gene, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
   pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL,
-  qvalueCutoff = 0.2, readable = FALSE, pool = FALSE, goOutput = NULL)
+  qvalueCutoff = 0.2, readable = FALSE, pool = FALSE, goOutput = NULL,
+  ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -53,6 +54,8 @@ It has to be the return value of upstream process:
 \item{goOutput}{\code{Character} scalar.
 Output file path. Defult:in the same folder as your input file with the
 suffix "df".}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar.

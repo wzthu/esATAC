@@ -10,14 +10,15 @@
 \usage{
 atacTSSQC(atacProc, txdbKnownGene = NULL, bsgenome = NULL,
   reportPrefix = NULL, bedInput = NULL, fregLenRange = c(0, 2000),
-  tssUpdownstream = 1000)
+  tssUpdownstream = 1000, ...)
 
 \S4method{atacTSSQC}{ATACProc}(atacProc, txdbKnownGene = NULL,
   bsgenome = NULL, reportPrefix = NULL, bedInput = NULL,
-  fregLenRange = c(0, 2000), tssUpdownstream = 1000)
+  fregLenRange = c(0, 2000), tssUpdownstream = 1000, ...)
 
 tssQC(bedInput, txdbKnownGene = NULL, bsgenome = NULL,
-  reportPrefix = NULL, fregLenRange = c(0, 2000), tssUpdownstream = 1000)
+  reportPrefix = NULL, fregLenRange = c(0, 2000), tssUpdownstream = 1000,
+  ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -42,6 +43,8 @@ The fregment length ranges.}
 
 \item{tssUpdownstream}{\code{Interger} scalar.
 The upstream and downstrem from TSS locations.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

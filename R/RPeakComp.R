@@ -187,6 +187,7 @@ setMethod(
 #' than this rate of the short peak, these two peak are considered to be
 #' overlap and will be merged to a bigger peak. Default: 0.2. NOTICE: multi-peak will be
 #' merged together!
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
@@ -216,7 +217,7 @@ setMethod(
 #' @docType methods
 #' @rdname atacpeakComp-methods
 setGeneric("atacpeakComp",function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-                                   bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2) standardGeneric("atacpeakComp"))
+                                   bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...) standardGeneric("atacpeakComp"))
 
 #' @rdname atacpeakComp-methods
 #' @aliases atacpeakComp
@@ -224,7 +225,7 @@ setMethod(
     f = "atacpeakComp",
     signature = "ATACProc",
     definition = function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-                          bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2){
+                          bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){
         atacproc <- new(
             "RPeakComp",
             atacProcPeak1 = atacProcPeak1,
@@ -240,7 +241,7 @@ setMethod(
 
 #' @rdname atacpeakComp-methods
 #' @export
-peakcomp <- function(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2){
+peakcomp <- function(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){
     atacproc <- new(
         "RPeakComp",
         atacProcPeak1 = NULL,

@@ -147,6 +147,7 @@ setMethod(
 #' Input region info path. The first 3 column must be chr, position, end.
 #' @param annoOutput \code{Character} scalar.
 #' Output path.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar.
 #' @author Wei Zhang
 #' @examples
@@ -168,7 +169,7 @@ setMethod(
 #' @docType methods
 #' @rdname atacSNPAnno-methods
 setGeneric("atacSNPAnno",function(atacProc = NULL, snp.info = NULL, region.info = NULL,
-                                  annoOutput = NULL) standardGeneric("atacSNPAnno"))
+                                  annoOutput = NULL, ...) standardGeneric("atacSNPAnno"))
 
 #' @rdname atacSNPAnno-methods
 #' @aliases atacSNPAnno
@@ -176,7 +177,7 @@ setMethod(
     f = "atacSNPAnno",
     signature = "ATACProc",
     definition = function(atacProc = NULL, snp.info = NULL, region.info = NULL,
-                          annoOutput = NULL){
+                          annoOutput = NULL, ...){
         atacproc <- new(
             "RSNPs",
             atacProc = atacProc,
@@ -189,7 +190,7 @@ setMethod(
 )
 #' @rdname atacSNPAnno-methods
 #' @export
-snpanno <- function(snp.info, region.info = NULL, annoOutput = NULL){
+snpanno <- function(snp.info, region.info = NULL, annoOutput = NULL, ...){
     atacproc <- new(
         "RSNPs",
         atacProc = NULL,

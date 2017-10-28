@@ -8,12 +8,12 @@
 \alias{bam2bed}
 \title{Convert bam format to bed format.}
 \usage{
-atacBam2Bed(atacProc, bamInput = NULL, bedOutput = NULL)
+atacBam2Bed(atacProc, bamInput = NULL, bedOutput = NULL, ...)
 
 \S4method{atacBam2Bed}{ATACProc}(atacProc, bamInput = NULL,
-  bedOutput = NULL)
+  bedOutput = NULL, ...)
 
-bam2bed(bamInput, bedOutput = NULL)
+bam2bed(bamInput, bedOutput = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -27,6 +27,8 @@ Bam file input path.}
 \item{bedOutput}{\code{Character} scalar.
 Bed file output path. If ignored, bed file will be put in the same path as
 the bam file.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

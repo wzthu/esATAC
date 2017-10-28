@@ -11,18 +11,18 @@
 atacSamToBed(atacProc, reportOutput = NULL, merge = c("auto", "yes", "no"),
   posOffset = +4, negOffset = -5, chrFilterList = "chrM",
   samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,
-  maxFregLen = 100, saveExtLen = FALSE, uniqueBed = TRUE)
+  maxFregLen = 100, saveExtLen = FALSE, uniqueBed = TRUE, ...)
 
 \S4method{atacSamToBed}{ATACProc}(atacProc, reportOutput = NULL,
   merge = c("auto", "yes", "no"), posOffset = +4, negOffset = -5,
   chrFilterList = "chrM", samInput = NULL, bedOutput = NULL,
   sortBed = TRUE, minFregLen = 0, maxFregLen = 100, saveExtLen = FALSE,
-  uniqueBed = TRUE)
+  uniqueBed = TRUE, ...)
 
 samToBed(samInput, reportOutput = NULL, merge = c("auto", "yes", "no"),
   posOffset = +4, negOffset = -5, chrFilterList = "chrM",
   bedOutput = NULL, sortBed = TRUE, minFregLen = 0, maxFregLen = 100,
-  saveExtLen = FALSE, uniqueBed = TRUE)
+  saveExtLen = FALSE, uniqueBed = TRUE, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -65,6 +65,8 @@ Save the fregment that are not in the range of minFregLen and MaxFregLen}
 
 \item{uniqueBed}{\code{Logical} scalar
 Remove duplicates reads in bed if TRUE. default: FALSE}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

@@ -9,13 +9,14 @@
 \title{Find the overlap or differential peaks between two samples.}
 \usage{
 atacpeakComp(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-  bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2)
+  bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...)
 
 \S4method{atacpeakComp}{ATACProc}(atacProcPeak1, atacProcPeak2,
-  bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2)
+  bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2,
+  ...)
 
 peakcomp(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
-  olap.rate = 0.2)
+  olap.rate = 0.2, ...)
 }
 \arguments{
 \item{atacProcPeak1}{\code{\link{ATACProc-class}} object scalar.
@@ -43,6 +44,8 @@ peaks, bedInput2 specific peaks, overlap peaks.}
 than this rate of the short peak, these two peak are considered to be
 overlap and will be merged to a bigger peak. Default: 0.2. NOTICE: multi-peak will be
 merged together!}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

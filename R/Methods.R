@@ -92,6 +92,7 @@ getSuffixlessFileName = function(filePath){
 #' @param createReport \code{Logical}. If the HTML report file will be created.
 #' @param motifPWM Motif PWM, a list.
 #' @param prefix For identifying files.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -130,7 +131,7 @@ getSuffixlessFileName = function(filePath){
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL){ #saveTmp = TRUE,
+                     interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL, ...){ #saveTmp = TRUE,
 
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
@@ -168,15 +169,15 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
 
         if(is.null(motifPWM)){
-            pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+            # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
             # motif information
-            # opts <- list()
-            # opts[["species"]] <- 9606
-            # pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
-            # pwm <- TFBSTools::toPWM(pwm)
-            # names(pwm) <- TFBSTools::name(pwm)
-            # pwm <- lapply(X = pwm, FUN = as.matrix)
-            # names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
+            opts <- list()
+            opts[["species"]] <- 9606
+            pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
+            pwm <- TFBSTools::toPWM(pwm)
+            names(pwm) <- TFBSTools::name(pwm)
+            pwm <- lapply(X = pwm, FUN = as.matrix)
+            names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
         }else{
             pwm <- motifPWM
         }
@@ -510,6 +511,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical}. If the HTML report file will be created.
 #' @param motifPWM Motif PWM, a list.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -542,7 +544,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, createReport = TRUE, motifPWM = NULL){ #saveTmp = TRUE,
+                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, ...){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -557,15 +559,15 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
 
     if(is.null(motifPWM)){
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+        # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
         # motif information
-        # opts <- list()
-        # opts[["species"]] <- 9606
-        # pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
-        # pwm <- TFBSTools::toPWM(pwm)
-        # names(pwm) <- TFBSTools::name(pwm)
-        # pwm <- lapply(X = pwm, FUN = as.matrix)
-        # names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
+        opts <- list()
+        opts[["species"]] <- 9606
+        pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
+        pwm <- TFBSTools::toPWM(pwm)
+        names(pwm) <- TFBSTools::name(pwm)
+        pwm <- lapply(X = pwm, FUN = as.matrix)
+        names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
     }else{
         pwm <- motifPWM
     }

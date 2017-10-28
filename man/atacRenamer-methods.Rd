@@ -9,14 +9,14 @@
 \title{Rename reads name in fastq}
 \usage{
 atacRenamer(atacProc, fastqOutput1 = NULL, fastqOutput2 = NULL,
-  fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE)
+  fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE, ...)
 
 \S4method{atacRenamer}{ATACProc}(atacProc, fastqOutput1 = NULL,
   fastqOutput2 = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE)
+  interleave = FALSE, ...)
 
 renamer(fastqInput1 = NULL, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE, threads = NULL)
+  fastqOutput2 = NULL, interleave = FALSE, threads = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -46,6 +46,8 @@ it must be \code{NULL}.}
 \item{interleave}{\code{Character} scalar.
 Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{...}{Additional arguments, currently unused.}
 
 \item{threads}{\code{Integer} scalar.
 The threads will be created in this process. default: 1}

@@ -157,6 +157,7 @@ setMethod(
 #' Other quality control BED file input path.
 #' @param bedInput \code{Character} scalar.
 #' BED file input path for quality control.
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object or
@@ -192,7 +193,7 @@ setMethod(
 #' @rdname atacPeakQC-methods
 setGeneric("atacPeakQC",function(atacProc, bsgenome = NULL,
                                  reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
-                                 bedInput = NULL) standardGeneric("atacPeakQC"))
+                                 bedInput = NULL, ...) standardGeneric("atacPeakQC"))
 #' @rdname atacPeakQC-methods
 #' @aliases atacPeakQC
 setMethod(
@@ -200,7 +201,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, bsgenome = NULL,
                           reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
-                          bedInput = NULL){
+                          bedInput = NULL, ...){
         atacproc <- new(
             "PeakQC",
             atacProc = atacProc,
@@ -214,7 +215,7 @@ setMethod(
 )
 #' @rdname atacPeakQC-methods
 #' @export
-peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed")){
+peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), ...){
     atacproc <- new(
         "PeakQC",
         atacProc = NULL,

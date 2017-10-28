@@ -9,12 +9,12 @@
 \title{Find whether snps are in the given regions.}
 \usage{
 atacSNPAnno(atacProc = NULL, snp.info = NULL, region.info = NULL,
-  annoOutput = NULL)
+  annoOutput = NULL, ...)
 
 \S4method{atacSNPAnno}{ATACProc}(atacProc = NULL, snp.info = NULL,
-  region.info = NULL, annoOutput = NULL)
+  region.info = NULL, annoOutput = NULL, ...)
 
-snpanno(snp.info, region.info = NULL, annoOutput = NULL)
+snpanno(snp.info, region.info = NULL, annoOutput = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -35,6 +35,8 @@ Input region info path. The first 3 column must be chr, position, end.}
 
 \item{annoOutput}{\code{Character} scalar.
 Output path.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar.

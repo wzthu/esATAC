@@ -102,6 +102,7 @@ setMethod(
 #' @param bwOutput \code{Character} scalar.
 #' BigWig file output path.
 #' @param toWig \code{Logical} scalar.
+#' @param ... Additional arguments, currently unused.
 #' Save as wig file instead of binary BigWig file
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -141,7 +142,7 @@ setMethod(
 #' @rdname atacBedToBigWig-methods
 setGeneric("atacBedToBigWig",function(atacProc, bedInput = NULL,
                                       bsgenome = NULL, bwOutput = NULL,
-                                      toWig = FALSE) standardGeneric("atacBedToBigWig"))
+                                      toWig = FALSE, ...) standardGeneric("atacBedToBigWig"))
 
 #' @rdname atacBedToBigWig-methods
 #' @aliases atacBedToBigWig
@@ -150,7 +151,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, bedInput = NULL,
                           bsgenome = NULL, bwOutput = NULL,
-                          toWig = FALSE){
+                          toWig = FALSE, ...){
         atacproc <- new(
             "BedToBigWig",
             atacProc = atacProc,
@@ -164,7 +165,7 @@ setMethod(
 )
 #' @rdname atacBedToBigWig-methods
 #' @export
-bedToBigWig <- function(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE){
+bedToBigWig <- function(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, ...){
     atacproc <- new(
         "BedToBigWig",
         atacProc = NULL,

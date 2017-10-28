@@ -9,12 +9,12 @@
 \title{Extract ATAC-seq cutting site from bed file.}
 \usage{
 atacExtractCutSite(atacProc, bedInput = NULL, csOutput.dir = NULL,
-  prefix = NULL)
+  prefix = NULL, ...)
 
 \S4method{atacExtractCutSite}{ATACProc}(atacProc, bedInput = NULL,
-  csOutput.dir = NULL, prefix = NULL)
+  csOutput.dir = NULL, prefix = NULL, ...)
 
-extractcutsite(bedInput, csOutput.dir = NULL, prefix = NULL)
+extractcutsite(bedInput, csOutput.dir = NULL, prefix = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -31,6 +31,8 @@ same path as input bed file.}
 
 \item{prefix}{\code{Character} scalar.
 Output file name prefix, e.g. prefix_chr*.bed, default "Cutsite".}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream

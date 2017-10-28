@@ -234,6 +234,7 @@ setMethod(
 #' path for fastqInput2.
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -257,7 +258,7 @@ setMethod(
 #' @export
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
-                             interleave = FALSE){
+                             interleave = FALSE, ...){
     atacproc <- new(
         "UnzipAndMerge",
         fastqInput1 = fastqInput1,
@@ -273,7 +274,7 @@ atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
 #' @export
 unzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
-                             interleave = FALSE){
+                             interleave = FALSE, ...){
     atacproc <- new(
         "UnzipAndMerge",
         fastqInput1 = fastqInput1,

@@ -10,15 +10,15 @@
 \usage{
 atacMotifScanPair(atacProc, peak1 = NULL, peak2 = NULL, background = NULL,
   genome = NULL, motifPWM = NULL, min.score = "85\%", scanO.dir = NULL,
-  n.cores = NULL, prefix = NULL)
+  n.cores = NULL, prefix = NULL, ...)
 
 \S4method{atacMotifScanPair}{ATACProc}(atacProc, peak1 = NULL, peak2 = NULL,
   background = NULL, genome = NULL, motifPWM = NULL, min.score = "85\%",
-  scanO.dir = NULL, n.cores = NULL, prefix = NULL)
+  scanO.dir = NULL, n.cores = NULL, prefix = NULL, ...)
 
 motifscanpair(peak1 = NULL, peak2 = NULL, background = NULL,
   genome = NULL, motifPWM = NULL, min.score = "85\%", scanO.dir = NULL,
-  n.cores = NULL, prefix = NULL)
+  n.cores = NULL, prefix = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -48,7 +48,9 @@ the file name to save the motif position information in separate files.}
 \item{n.cores}{How many core to run this function.
 Default: from \code{\link{setConfigure}}.}
 
-\item{prefix}{prefix for Output file.}
+\item{prefix}{prefix for Output file. Order: peak1, peak2, backgroud.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for
