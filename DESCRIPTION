@@ -1,13 +1,13 @@
 Package: esATAC
 Type: Package
 Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
-Version: 0.99.22
+Version: 0.99.23
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
 Description: This package provides a framework and
     complete preset pipeline for the quantification
-    and analysis of ATAC-seq and DNase-seq Reads.
+    and analysis of ATAC-seq Reads.
     It covers a complete workflow
     starting from raw sequence reads,
     over creation of alignments
