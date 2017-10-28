@@ -242,7 +242,7 @@ setMethod(
 #' \code{\link{atacQCReport}}
 #' @examples
 #' 
-#' 
+#' td<-tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' # Identify adapters

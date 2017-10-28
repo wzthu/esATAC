@@ -44,7 +44,7 @@ Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \examples{
 
-
+td<-tempdir()
 options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
