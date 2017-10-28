@@ -1,8 +1,10 @@
 context("test the subpipeline from raw fastq file to mapped reads in SAM file")
 
-test_that("Unzip and merge FASTQ files, remove adapter and mapping",{
+test_that("Unzip and merge FASTQ files, remove adapter",{
     library(magrittr)
     td <- tempdir()
+    dir.create(file.path(td,"umr"))
+    td<-file.path(td,"umr")
     options(atacConf=setConfigure("tmpdir",td))
     #'
     # Identify adapters
@@ -39,6 +41,8 @@ test_that("Unzip and merge FASTQ files, remove adapter and mapping",{
 
 test_that("test bowtie2 mapping",{
     td <- tempdir()
+    dir.create(file.path(td,"map"))
+    td<-file.path(td,"map")
     options(atacConf=setConfigure("tmpdir",td))
     
     ## Building a bowtie2 index
@@ -77,6 +81,8 @@ test_that("test bowtie2 mapping",{
 
 test_that("test fastqc",{
     td <- tempdir()
+    dir.create(file.path(td,"fastqc"))
+    td<-file.path(td,"fastqc")
     options(atacConf=setConfigure("tmpdir",td))
     library(R.utils)
     fra_path <- system.file("extdata", "chr20_1.2.fq.bz2", package="ATACpipe")

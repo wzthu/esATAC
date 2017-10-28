@@ -5,6 +5,8 @@ context("SAM, BAM and BED file quality control operation and fseq")
 test_that("test fragments length distribute",{
     library(R.utils)
     td <- tempdir()
+    dir.create(file.path(td,"fraglen"))
+    td<-file.path(td,"fraglen")
     options(atacConf=setConfigure("tmpdir",td))
     
     bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
@@ -28,6 +30,8 @@ test_that("test TSS location enrichment ",{
     
     library(R.utils)
     td <- tempdir()
+    dir.create(file.path(td,"tss"))
+    td<-file.path(td,"tss")
     options(atacConf=setConfigure("tmpdir",td))
     #'
     bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
@@ -35,7 +39,7 @@ test_that("test TSS location enrichment ",{
     bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
     library(TxDb.Hsapiens.UCSC.hg19.knownGene)
     library(BSgenome.Hsapiens.UCSC.hg19)
-    tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
+    tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247),tssUpdownstream = 100)
     
     
     expect_true(file.exists(file.path(td,"chr20.50000.bed")))
@@ -51,7 +55,10 @@ test_that("test TSS location enrichment ",{
 test_that("test FRiP and peak enrichment quality control and peak calling ",{
     library(R.utils)
     library(magrittr)
+    library(rJava)
     td <- tempdir()
+    dir.create(file.path(td,"frip"))
+    td<-file.path(td,"frip")
     options(atacConf=setConfigure("tmpdir",td))
     #'
     bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")

@@ -57,6 +57,10 @@ setMethod(
         }else{
             .Object@paramlist[["reportPrefix"]] <- reportPrefix;
         }
+        
+        .Object@paramlist[["reportPrefix_adapter1_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter1")
+        .Object@paramlist[["reportPrefix_adapter2_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter2")
+        
 
         .Object@paramlist[["adapter1"]] <- adapter1
         .Object@paramlist[["adapter2"]] <- adapter2

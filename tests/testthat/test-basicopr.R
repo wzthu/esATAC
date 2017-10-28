@@ -2,9 +2,11 @@ context("test basic operation of ATACProc object")
 
 
 
-test_that("test fragments length distribute",{
+test_that("test basic operation",{
     library(magrittr)
     td <- tempdir()
+    dir.create(file.path(td,"baseopr"))
+    td<-file.path(td,"baseopr")
     options(atacConf=setConfigure("tmpdir",td))
     #'
     # Identify adapters
@@ -40,7 +42,8 @@ test_that("test fragments length distribute",{
    
     (pitems<-getParamItems(atacproc))
     expect_equivalent(pitems,c("fastqInput1","fastqInput2","interleave","fastqOutput1",
-                               "fastqOutput2","reportPrefix","paramList","findParamList"))
+                               "fastqOutput2","reportPrefix","reportPrefix_adapter1_Output",
+                               "reportPrefix_adapter2_Output","paramList","findParamList"))
     expect_false(getParam(atacproc,pitems[3]))
     #'
     #'

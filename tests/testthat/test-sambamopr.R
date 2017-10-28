@@ -5,6 +5,8 @@ context("SAM and BAM file operation")
 test_that("SAM To BAM ",{
     library(R.utils)
     td <- tempdir()
+    dir.create(file.path(td,"sam2bam"))
+    td<-file.path(td,"sam2bam")
     options(atacConf=setConfigure("tmpdir",td))
     sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACpipe")
     sam_path <- as.vector(bunzip2(filename = sam_bz,
@@ -23,6 +25,8 @@ test_that("SAM to BED ",{
     library(R.utils)
     library(magrittr)
     td <- tempdir()
+    dir.create(file.path(td,"sam2bed"))
+    td<-file.path(td,"sam2bed")
     options(atacConf=setConfigure("tmpdir",td))
     #'
     sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
@@ -47,6 +51,8 @@ test_that("sort BAM file and to BED",{
     library(Rsamtools)
     library(magrittr)
     td <- tempdir()
+    dir.create(file.path(td,"bam2bed"))
+    td<-file.path(td,"bam2bed")
     options(atacConf=setConfigure("tmpdir",td))
     ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
     bamsort(bamInput = ex1_file) %>% atacBam2Bed
@@ -65,6 +71,8 @@ test_that("sort BAM file and to BED",{
 test_that("bed to bigwig",{
     library(R.utils)
     td <- tempdir()
+    dir.create(file.path(td,"bed2bw"))
+    td<-file.path(td,"bed2bw")
     options(atacConf=setConfigure("tmpdir",td))
     
     bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")

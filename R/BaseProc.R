@@ -433,9 +433,12 @@ setMethod(f = "checkFileExist",
           signature = "ATACProc",
           definition = function(.Object,filePath,...){
               if(!is.null(filePath)){
-                  if(!file.exists(filePath)){
-                      stop(paste("error, file does not exist:",filePath))
+                  for(p in filePath){
+                      if(!file.exists(p)){
+                          stop(paste("error, file does not exist:",p))
+                      }
                   }
+                  
               }
           })
 setGeneric(name = "checkPathExist",

@@ -63,9 +63,10 @@ setMethod(
 
         readsbed<-readsbed[(width(readsbed)>=.Object@paramlist[["fregLenRange"]][1])&
                                (width(readsbed)<=.Object@paramlist[["fregLenRange"]][2])]
-
+        
         txdb<-.Object@paramlist[["knownGene"]]
         #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
+        
         TSS <- promoters(txdb, upstream=.Object@paramlist[["updownstream"]], downstream=1+.Object@paramlist[["updownstream"]])
         #end(trans)<-start(trans)+1
         TSS<-unique(TSS)
@@ -73,14 +74,14 @@ setMethod(
 
         #end(trans)<-start(trans)+.Object@paramlist[["updownstream"]]
         #start(trans)<-start(trans)-.Object@paramlist[["updownstream"]]
-
+        
         pairs<-findOverlapPairs(readsbed, TSS,ignore.strand = TRUE)
         reads<-ranges(first(pairs))
         transspan<-second(pairs)
         #gp<-paste(as.character(start(transspan)),as.character(end(transspan)))
         #readsgps<-split(reads,gp)
         rvlist<-as.vector(strand(transspan)=="-")
-
+        
 
         rs<-start(reads)-start(transspan)
         #rs[rs<0] <- 0
