@@ -120,6 +120,7 @@ setMethod(
     }
 )
 
+
 #' @name atacPeakCalling
 #' @title Use F-seq to call peak
 #' @description
@@ -150,6 +151,7 @@ setMethod(
 #' verbose output if TRUE.
 #' @param wgThresholdSet \code{Character} scalar.
 #' wg threshold set default: NULL (calculated)
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -190,7 +192,8 @@ setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,gen
                                          fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                                          ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                                          wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                                         wgThresholdSet=NULL) standardGeneric("atacPeakCalling"))
+
+                                         wgThresholdSet=NULL, ...) standardGeneric("atacPeakCalling"))
 
 #' @rdname atacPeakCalling-methods
 #' @aliases atacPeakCalling
@@ -201,7 +204,7 @@ setMethod(
                           fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                           ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                           wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                          wgThresholdSet=NULL){
+                          wgThresholdSet=NULL, ...){
         peakcalling <- new("PeakCallingFseq",atacProc = atacProc,bedInput=bedInput,background=background,genomicReadsCount=genomicReadsCount,
                            fragmentSize=fragmentSize,featureLength=featureLength,bedOutput=bedOutput,fileformat="bed", ploidyDir=ploidyDir,
                            wiggleTrackStep=wiggleTrackStep,threshold=threshold,verbose=verbose,wgThresholdSet=wgThresholdSet)
@@ -216,7 +219,7 @@ peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                             ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                             wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
-                            wgThresholdSet=NULL){
+                            wgThresholdSet=NULL, ...){
     peakcalling <- new("PeakCallingFseq",atacProc = NULL,bedInput=bedInput,background=background,genomicReadsCount=genomicReadsCount,
                        fragmentSize=fragmentSize,featureLength=featureLength,bedOutput=bedOutput,fileformat="bed", ploidyDir=ploidyDir,
                        wiggleTrackStep=wiggleTrackStep,threshold=threshold,verbose=verbose,wgThresholdSet=wgThresholdSet)

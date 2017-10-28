@@ -9,12 +9,13 @@
 \title{Quality control for fraction of reads in peaks (FRiP)}
 \usage{
 atacFripQC(atacProcReads, atacProcPeak, bsgenome = NULL,
-  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL)
+  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL, ...)
 
 \S4method{atacFripQC}{ATACProc}(atacProcReads, atacProcPeak, bsgenome = NULL,
-  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL)
+  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL, ...)
 
-fripQC(readsBedInput, peakBedInput, bsgenome = NULL, reportOutput = NULL)
+fripQC(readsBedInput, peakBedInput, bsgenome = NULL, reportOutput = NULL,
+  ...)
 }
 \arguments{
 \item{atacProcReads}{\code{\link{ATACProc-class}} object scalar.
@@ -40,6 +41,8 @@ Reads BED file for peak calling.}
 
 \item{peakBedInput}{\code{Character} scalar.
 Peaks BED file}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{fripQC}} object scalar for downstream analysis.

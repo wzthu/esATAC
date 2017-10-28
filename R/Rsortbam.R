@@ -82,6 +82,7 @@ setMethod(
 #' Input bam file path.
 #' @param bamOutput \code{Character} scalar.
 #' Output bam file path.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
@@ -102,7 +103,7 @@ setMethod(
 #' @docType methods
 #' @rdname atacBamSort-methods
 setGeneric("atacBamSort",function(atacProc = NULL,
-                                  bamInput = NULL, bamOutput = NULL) standardGeneric("atacBamSort"))
+                                  bamInput = NULL, bamOutput = NULL, ...) standardGeneric("atacBamSort"))
 
 #' @rdname atacBamSort-methods
 #' @aliases atacBamSort
@@ -110,7 +111,7 @@ setMethod(
     f = "atacBamSort",
     signature = "ATACProc",
     definition = function(atacProc = NULL,
-                          bamInput = NULL, bamOutput = NULL){
+                          bamInput = NULL, bamOutput = NULL, ...){
         atacproc <- new(
             "Rsortbam",
             atacProc = atacProc,
@@ -123,7 +124,7 @@ setMethod(
 
 #' @rdname atacBamSort-methods
 #' @export
-bamsort <- function(bamInput = NULL, bamOutput = NULL){
+bamsort <- function(bamInput = NULL, bamOutput = NULL, ...){
     atacproc <- new(
         "Rsortbam",
         atacProc = NULL,

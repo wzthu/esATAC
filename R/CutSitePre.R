@@ -94,6 +94,7 @@ setMethod(
 #' same path as input bed file.
 #' @param prefix \code{Character} scalar.
 #' Output file name prefix, e.g. prefix_chr*.bed, default "Cutsite".
+#' @param ... Additional arguments, currently unused.
 #' @details In ATAC-seq data, every line in merged bed file
 #' (from \code{\link{atacSamToBed}}, the first 3 column is chr, start, end)
 #' means a DNA fragment, the cutting site is start+1 and end, this function
@@ -120,14 +121,14 @@ setMethod(
 #' @docType methods
 #' @rdname atacExtractCutSite-methods
 setGeneric("atacExtractCutSite",
-           function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL) standardGeneric("atacExtractCutSite"))
+           function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL, ...) standardGeneric("atacExtractCutSite"))
 
 #' @rdname atacExtractCutSite-methods
 #' @aliases atacExtractCutSite
 setMethod(
     f = "atacExtractCutSite",
     signature = "ATACProc",
-    definition = function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL){
+    definition = function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL, ...){
         atacproc <- new("CutSitePre", atacProc = atacProc, bedInput = bedInput, csOutput.dir = csOutput.dir, prefix = prefix)
         atacproc <- process(atacproc)
         invisible(atacproc)
@@ -137,7 +138,8 @@ setMethod(
 
 #' @rdname atacExtractCutSite-methods
 #' @export
-extractcutsite <- function(bedInput, csOutput.dir = NULL, prefix = NULL){
+
+extractcutsite <- function(bedInput, csOutput.dir = NULL, prefix = NULL, ...){
     atacproc <- new("CutSitePre", atacProc = NULL, bedInput = bedInput, csOutput.dir = csOutput.dir, prefix = prefix)
     atacproc <- process(atacproc)
     invisible(atacproc)

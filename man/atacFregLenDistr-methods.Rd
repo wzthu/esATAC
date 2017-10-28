@@ -8,12 +8,12 @@
 \alias{fregLenDistr}
 \title{Quality control for fregment length distribution}
 \usage{
-atacFregLenDistr(atacProc, reportPrefix = NULL, bedInput = NULL)
+atacFregLenDistr(atacProc, reportPrefix = NULL, bedInput = NULL, ...)
 
 \S4method{atacFregLenDistr}{ATACProc}(atacProc, reportPrefix = NULL,
-  bedInput = NULL)
+  bedInput = NULL, ...)
 
-fregLenDistr(bedInput, reportPrefix = NULL)
+fregLenDistr(bedInput, reportPrefix = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -28,6 +28,8 @@ The prefix of report files path.}
 
 \item{bedInput}{\code{Character} scalar.
 BED file input path.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

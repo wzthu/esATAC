@@ -117,6 +117,7 @@ setMethod(
 #' @param output_file \code{Character} scalar.
 #' output file path. Defult:"input_file_FastQC.pdf" in the same
 #' folder as your input file.
+#' @param ... Additional arguments, currently unused.
 #' @details Every highthroughput sequencing need quality control analysis, this
 #' function provide QC for ATAC-seq, such as GC content.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream
@@ -147,7 +148,8 @@ setMethod(
 #' @rdname atacQCReport-methods
 setGeneric("atacQCReport",function(atacProc = NULL,
                                    input_file = NULL,
-                                   output_file = NULL) standardGeneric("atacQCReport"))
+                                   output_file = NULL, ...) standardGeneric("atacQCReport"))
+
 
 #' @rdname atacQCReport-methods
 #' @aliases atacQCReport
@@ -156,7 +158,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc = NULL,
                           input_file = NULL,
-                          output_file = NULL){
+                          output_file = NULL, ...){
         atacproc <- new(
             "FastQC",
             atacProc = atacProc,
@@ -170,7 +172,7 @@ setMethod(
 
 #' @rdname atacQCReport-methods
 #' @export
-qcreport <- function(input_file, output_file = NULL){
+qcreport <- function(input_file, output_file = NULL, ...){
     atacproc <- new(
         "FastQC",
         atacProc = NULL,

@@ -6,10 +6,10 @@
 \title{Unzip and merge fastq files}
 \usage{
 atacUnzipAndMerge(fastqInput1, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE)
+  fastqOutput2 = NULL, interleave = FALSE, ...)
 
 unzipAndMerge(fastqInput1, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE)
+  fastqOutput2 = NULL, interleave = FALSE, ...)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -33,6 +33,8 @@ path for fastqInput2.}
 
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

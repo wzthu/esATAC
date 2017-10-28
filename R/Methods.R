@@ -105,7 +105,9 @@ getSuffixlessFileName = function(filePath){
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical}. If the HTML report file will be created.
+#' @param motifPWM Motif PWM, a list.
 #' @param prefix For identifying files.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei and Wei Zhang
 #' @seealso 
@@ -145,7 +147,7 @@ getSuffixlessFileName = function(filePath){
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE,  createReport = TRUE, prefix = NULL){ #saveTmp = TRUE,
+                     interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL, ...){ #saveTmp = TRUE,
 
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
@@ -181,9 +183,24 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
+
+
+        if(is.null(motifPWM)){
+            # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
+            # motif information
+            opts <- list()
+            opts[["species"]] <- 9606
+            pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
+            pwm <- TFBSTools::toPWM(pwm)
+            names(pwm) <- TFBSTools::name(pwm)
+            pwm <- lapply(X = pwm, FUN = as.matrix)
+            names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
+        }else{
+            pwm <- motifPWM
+        }
+
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-        pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
         output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "85%", prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
@@ -510,10 +527,16 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical}. If the HTML report file will be created.
+#' @param motifPWM Motif PWM, a list.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacPipe}}
+#' @import JASPAR2016
+#' @importFrom TFBSTools getMatrixSet
+#' @importFrom TFBSTools toPWM
+#' @importFrom TFBSTools name
 #' @examples
 #' \dontrun{
 #' td<-tempdir()
@@ -538,7 +561,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, createReport = TRUE){ #saveTmp = TRUE,
+                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, ...){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -551,12 +574,68 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     if(!interleave && (control[["fastqInput2"]]=="paths/To/fastq2"||is.null(control[["fastqInput2"]]))){
         stop("fastqInput2 for control can not be NULL")
     }
+
+    if(is.null(motifPWM)){
+        # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
+        # motif information
+        opts <- list()
+        opts[["species"]] <- 9606
+        pwm <- TFBSTools::getMatrixSet(JASPAR2016, opts)
+        pwm <- TFBSTools::toPWM(pwm)
+        names(pwm) <- TFBSTools::name(pwm)
+        pwm <- lapply(X = pwm, FUN = as.matrix)
+        names(pwm) <- gsub( pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE )
+    }else{
+        pwm <- motifPWM
+    }
+
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
                adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-                createReport = FALSE, prefix = "CASE_all_data") #saveTmp = TRUE,
+                createReport = FALSE, motifPWM =pwm, prefix = "CASE_all_data") #saveTmp = TRUE,
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-                createReport = FALSE, prefix = "CTRL_all_data") #saveTmp = TRUE,
+                createReport = FALSE, motifPWM =pwm, prefix = "CTRL_all_data") #saveTmp = TRUE,
+
+
+    bed.case <- getParam(caselist$atacProcs$sam2Bed, "bedOutput")
+    bed.ctrl <- getParam(ctrllist$atacProcs$sam2Bed, "bedOutput")
+
+    case.peak <- getParam(caselist$atacProcs$peakCalling, "bedOutput")
+    ctrl.peak <- getParam(ctrllist$atacProcs$peakCalling,"bedOutput")
+
+    peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak)
+    case_specific.peak <- getParam(peakCom, "bedOutput")[1]
+    ctrl_specific.peak <- getParam(peakCom, "bedOutput")[2]
+    overlap.peak <- getParam(peakCom, "bedOutput")[3]
+
+    # for case
+    Peakanno.case <- peakanno(peakInput = case_specific.peak)
+    goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
+
+    # for ctrl
+    Peakanno.ctrl <- peakanno(peakInput = ctrl_specific.peak)
+    goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
+
+    mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = "90%")
+    cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
+    cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CTRL")
+
+    footprint.case <- atacCutSiteCount(atacProcCutSite = cs_case,
+                                       motif_info = getParam(mout, "rdsOutput.peak1"),
+                                       strandLength = 100, prefix = "Case")
+
+    footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_ctrl,
+                                       motif_info = getParam(mout, "rdsOutput.peak2"),
+                                       strandLength = 100, prefix = "Ctrl")
+
+    comp_result <- list(
+        peakCom = peakCom,
+        goAna.case = goAna.case,
+        goAna.ctrl = goAna.ctrl,
+        mout = mout,
+        footprint.case = footprint.case,
+        footprint.ctrl = footprint.ctrl
+    )
 
     wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
                           Case = caselist[["wholesummary"]][["Value"]],

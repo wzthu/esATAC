@@ -8,7 +8,7 @@ atacPipe2(case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
   "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
   control = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
   "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL), interleave = FALSE,
-  createReport = TRUE)
+  createReport = TRUE, motifPWM = NULL, ...)
 }
 \arguments{
 \item{case}{\code{List} scalar. Input for case sample. \code{fastqInput1},
@@ -25,6 +25,10 @@ the path of the mate 2 fastq file, is required, when \code{interleave=FALSE}.
 interleaved paired-end sequencing data.}
 
 \item{createReport}{\code{Logical}. If the HTML report file will be created.}
+
+\item{motifPWM}{Motif PWM, a list.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

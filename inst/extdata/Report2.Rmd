@@ -61,7 +61,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 ```
 
 
-# Sequence statistics
+# Sequence Statistics
 ## FastQC
 
 Quality control for the sequence data
@@ -74,7 +74,7 @@ QC_path2 <- getReportVal(ctrllist$atacProcs$atacQC,"pdf")
 
 [Click to Visit Report for control](`r QC_path2`)
 
-## Remove Adapter
+## Remove adapter
 
 The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
@@ -107,7 +107,7 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
 
 For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
 
-# Reads alignment statistics
+# Reads Alignment Statistics
 
 ## Bowtie2 alignment log
 
@@ -201,7 +201,7 @@ grid.arrange(g11, g21, ncol=2)
 grid.arrange(g12, g22, ncol=2)
 ```
 
-# Peak statistics
+# Peak Statistics
 
 ## Blacklist ratio
 
@@ -239,7 +239,252 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
 ```
 
 
-# Annotation of items in table 
+## Peak annotation
+
+* For case
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(ChIPseeker)
+peakanno <- getReportVal(caselist$atacProcs$Peakanno, "annoOutput.rds")
+plotAnnoPie(x = peakanno)
+```
+
+* For control
+```{r eval=TRUE, echo=FALSE, warning=FALSE,, message=FALSE}
+peakanno <- getReportVal(ctrllist$atacProcs$Peakanno, "annoOutput.rds")
+plotAnnoPie(x = peakanno)
+```
+
+# Case Control Peak Compare
+
+The following is the peak comparation result for case and control. 
+
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+library(VennDiagram)
+library(grid)
+PeakNumInCC <- getReportVal(comp_result$peakCom, "venn.data")
+venn.plot <- draw.pairwise.venn(
+    area1 = PeakNumInCC[1] + PeakNumInCC[3],
+    area2 = PeakNumInCC[2] + PeakNumInCC[3],
+    cross.area = PeakNumInCC[3],
+    category = c("Case", "Control"),
+    fill = c("skyblue", "mediumorchid")
+)
+```
+
+The total peaks in case are `r PeakNumInCC[4]`, specific peaks in case are `r PeakNumInCC[1]`.
+
+The total peaks in control are `r PeakNumInCC[5]`, specific peaks in control are `r PeakNumInCC[2]`.
+
+The overlap peaks are merged to `r PeakNumInCC[3]` peaks.
+
+# GO Analysis
+
+Gene ontology analysis for all genes around specific peak regions of case and control.
+
+## Significant GO terms of genes associated with case specific peaks
+
+```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+go_path <- getReportVal(comp_result$goAna.case, "goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+go_data$pvalue <- signif(go_data$pvalue, digits = 3)
+go_data$pvalue <- as.character(go_data$pvalue)
+go_data$qvalue <- signif(go_data$qvalue, digits = 3)
+go_data$qvalue <- as.character(go_data$qvalue)
+if(nrow(go_data) < 15){
+    knitr::kable(go_data, align = "l")
+}else{
+    knitr::kable(go_data[1:15, ], align = "l")
+}
+```
+
+[Click to Visit Case Differential Go Analysis file](`r go_path`)
+
+## Significant GO terms of genes associated with  control specific peaks
+
+```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+go_path <- getReportVal(comp_result$goAna.ctrl, "goOutput")
+go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
+go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
+go_data$pvalue <- signif(go_data$pvalue, digits = 3)
+go_data$pvalue <- as.character(go_data$pvalue)
+go_data$qvalue <- signif(go_data$qvalue, digits = 3)
+go_data$qvalue <- as.character(go_data$qvalue)
+if(nrow(go_data) < 15){
+    knitr::kable(go_data, align = "l")
+}else{
+    knitr::kable(go_data[1:15, ], align = "l")
+}
+```
+
+[Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
+
+# Motif Enrichment Analysis
+
+This function takes case and control specific peaks as foreground respectively, 
+overlap peaks between case and control as background.
+
+## Significant motifs of case specific peaks
+
+```{r cols.print=3, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+motif_enrich.case <- getReportVal(comp_result$mout, "rdsOutput.peak1")
+motif_enrich.case <- motif_enrich.case[, c(1, 3, 4)]
+colnames(motif_enrich.case) <- c("motif", "motif length", "p_value")
+motif_enrich.case <- motif_enrich.case[order(motif_enrich.case$p_value), ]
+rownames(motif_enrich.case) <- seq(nrow(motif_enrich.case))
+motif_enrich.case$p_value <- signif(motif_enrich.case$p_value, digits = 3)
+motif_enrich.case$p_value[motif_enrich.case$p_value < 1e-300] <- 0
+motif_enrich.case$p_value <- as.character(motif_enrich.case$p_value)
+if(nrow(motif_enrich.case) < 15){
+    knitr::kable(motif_enrich.case, align = "l")
+}else{
+    knitr::kable(motif_enrich.case[1:15, ], align = "l")
+}
+```
+
+## Significant motifs of control specific peaks
+
+```{r cols.print=3, eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+motif_enrich.ctrl <- getReportVal(comp_result$mout, "rdsOutput.peak2")
+motif_enrich.ctrl <- motif_enrich.ctrl[, c(1, 3, 4)]
+colnames(motif_enrich.ctrl) <- c("motif", "motif length", "p_value")
+motif_enrich.ctrl <- motif_enrich.ctrl[order(motif_enrich.ctrl$p_value), ]
+rownames(motif_enrich.ctrl) <- seq(nrow(motif_enrich.ctrl))
+motif_enrich.ctrl$p_value <- signif(motif_enrich.ctrl$p_value, digits = 3)
+motif_enrich.ctrl$p_value[motif_enrich.ctrl$p_value < 1e-300] <- 0
+motif_enrich.ctrl$p_value <- as.character(motif_enrich.ctrl$p_value)
+if(nrow(motif_enrich.ctrl) < 15){
+    knitr::kable(motif_enrich.ctrl, align = "l")
+}else{
+    knitr::kable(motif_enrich.ctrl[1:15, ], align = "l")
+}
+```
+
+# Genomic Footprint
+
+The following is the footprint for motif occurance of case&control peaks.
+
+```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE, message=FALSE}
+par(mfrow=c(1,2))
+
+footprint_data <- getReportVal(caselist$atacProcs$footprint, "footprint.data")
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Case",
+    xlab = "Relative Distance From Motif (bp)",
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
+
+footprint_data <- getReportVal(ctrllist$atacProcs$footprint, "footprint.data")
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Case",
+    xlab = "Relative Distance From Motif (bp)",
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
+
+case.dir <- getReportVal(caselist$atacProcs$footprint, "pdf.dir")
+ctrl.dir <- getReportVal(ctrllist$atacProcs$footprint, "pdf.dir")
+```
+
+The following is the footprint for motif occurance of case&control specific peaks.
+
+```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE, message=FALSE}
+par(mfrow=c(1,2))
+
+footprint_data <- getReportVal(comp_result$footprint.case, "footprint.data")
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Case",
+    xlab = "Relative Distance From Motif (bp)",
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
+
+footprint_data <- getReportVal(comp_result$footprint.ctrl, "footprint.data")
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
+     main = "Footprint In Case",
+    xlab = "Relative Distance From Motif (bp)",
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+axis(1, at = seq(1, 100, len = 3),
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
+axis(2, padj = 1.0,tck = -0.02)
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
+
+casesp.dir <- getReportVal(comp_result$footprint.case, "pdf.dir")
+ctrlsp.dir <- getReportVal(comp_result$footprint.ctrl, "pdf.dir")
+```
+
+All motif footprint figures are saved as pdf files.
+
+[Click to Visit Case Footprint file](`r case.dir`)
+
+[Click to Visit Ctrl Footprint file](`r ctrl.dir`)
+
+[Click to Visit Case Specific Footprint file](`r casesp.dir`)
+
+[Click to Visit Ctrl Specific Footprint file](`r ctrlsp.dir`)
+
+
+
+# Annotation of Items in Table 
 
 For single end sequencing data, esATAC will counts reads number. 
 

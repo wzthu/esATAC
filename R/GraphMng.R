@@ -1,10 +1,10 @@
-#' @importFrom igraph neighbors 
+#' @importFrom igraph neighbors
 setClass(Class = "GraphMng",
          slots = list(
              private = "list"
          ))
 setMethod(f = "initialize",
-          signature = "GraphMng", 
+          signature = "GraphMng",
           definition = function(.Object,...){
               .Object@private <- list(
                   graph=NULL,
@@ -49,19 +49,18 @@ setMethod(f = "initialize",
                   "PeakCallingFseq", "RMotifScan",
                   "PeakCallingFseq", "RPeakAnno",
                   "PeakCallingFseq", "RSNPs",
+                  "PeakCallingFseq", "RPeakComp",
                   "SamToBed", "CutSitePre",
                   "CutSitePre", "CutSiteCountR",
                   "RMotifScan", "CutSiteCountR",
                   "RPeakAnno", "RGo",
                   "RMotifScan", "RSNPs",
-                  "RPeakComp", "RMotifScan",
-                  "RPeakComp", "RPeakAnno",
-                  "RPeakComp", "RSNPs"
-                  
+                  "RPeakComp", "RMotifScanPair"
+
               )
               #edges1<-sapply(edges1,function(x) x$classname)
-              
-              
+
+
               nodes1<-unique(edges1)
               edges2<-c(
                   "PeakCallingFseq","FRiPQC",
@@ -69,16 +68,17 @@ setMethod(f = "initialize",
               )
               #edges2<-sapply(edges2,function(x) x$classname)
               nodes2<-unique(edges2)
-              
+
               allNodes<-unique(edges1)
               .Object@private$allProcName<-allNodes
               #create first parameter graph
               gph1<-getGraph(.Object,edges1)
-              
+
               #create second parameter graph
               gph2<-getGraph(.Object,edges2)
-              
-              
+
+
+
               #create merged graph
               edges<-c(edges1,edges2)
               # for(i in seq(1,length(edges2),2)){
@@ -88,12 +88,10 @@ setMethod(f = "initialize",
               #         }
               #     }
               # }
-              
+
+
               gph<-getGraph(.Object,edges)
-              
-              
-              
-              
+
               .Object@private$graph<-gph
               .Object@private$graph1<-gph1
               .Object@private$graph2<-gph2
@@ -120,12 +118,12 @@ setMethod(f = "checkRelation1",
 
 
 setGeneric(name = "checkRelation2",
-           def = function(graphMngObj,...){
+           def = function(graphMngObj,resultProcName,procName,...){
                standardGeneric("checkRelation2")
            })
 setMethod(f = "checkRelation2",
           signature = "GraphMng",
-          definition = function(graphMngObj,...){
+          definition = function(graphMngObj,resultProcName,procName,...){
               return(are.connected(graphMngObj@private$graphDep2,resultProcName,procName))
           })
 
@@ -142,7 +140,7 @@ setMethod(f = "graphPrintMap",
                   }else{
                       graphMngObj@private$graph%>%export_graph(file_name = file.path(.obtainConfigure("tmpdir"),"currentMap.pdf"),file_type="pdf")
                   }
-                  
+
               }else{
                   tempMap<-graphMngObj@private$graph
                   if(preProc){
@@ -161,9 +159,10 @@ setMethod(f = "graphPrintMap",
                       render_graph(tempMap)
                   }else{
                       tempMap%>%export_graph(file_name = file.path(.obtainConfigure("tmpdir"),"currentMap.pdf"),file_type="pdf")
-                      
+
                   }
-                  
+
+
               }
           })
 
@@ -274,7 +273,7 @@ setMethod(f = "getGraph",
               }
               nodes <- unique(edges)
               idx=as.vector(sapply(nodes,function(x) which(x==graphMngObj@private$allProcName)))
-              
+
               ndf<- create_node_df(
                   idx = idx,
                   n = length(nodes),
@@ -286,10 +285,10 @@ setMethod(f = "getGraph",
                   color = "White",
                   fontcolor = "Black",
                   style = "filled"
-                  
-                  
+
               )
-              
+
+
               startidx<-as.vector(sapply(edges[seq(1,length(edges),2)],function(x) which(x==nodes)))
               endidx<-as.vector(sapply(edges[seq(2,length(edges),2)],function(x) which(x==nodes)))
               edf<-create_edge_df(
@@ -297,7 +296,7 @@ setMethod(f = "getGraph",
                   to = endidx,
                   color = "DeepSkyBlue"
               )
-              
+
               gph<-create_graph(nodes_df = ndf,edges_df = edf)%>%
                   set_global_graph_attrs(attr_type = "graph",attr = "layout",value = "dot")
               #set_global_graph_attrs(attr_type = "node",attr = "fontname",value = "Helvetica")%>%

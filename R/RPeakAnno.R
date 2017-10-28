@@ -188,6 +188,7 @@ setMethod(
 #' region or not.
 #' @param annoOutput \code{Character} scalar.
 #' the output file path.
+#' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
@@ -226,7 +227,7 @@ setGeneric("atacPeakAnno",function(atacProc, peakInput = NULL, tssRegion = c(-10
                                   flankDistance = 5000, sameStrand = FALSE,
                                   ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                                   ignoreDownstream = FALSE, overlap = "TSS",
-                                  annoOutput = NULL) standardGeneric("atacPeakAnno"))
+                                  annoOutput = NULL, ...) standardGeneric("atacPeakAnno"))
 
 
 #' @rdname atacPeakAnno-methods
@@ -243,7 +244,7 @@ setMethod(
                           flankDistance = 5000, sameStrand = FALSE,
                           ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                           ignoreDownstream = FALSE, overlap = "TSS",
-                          annoOutput = NULL){
+                          annoOutput = NULL, ...){
         atacproc <- new(
             "RPeakAnno",
             atacProc = atacProc,
@@ -277,7 +278,7 @@ peakanno <- function(peakInput, tssRegion = c(-1000, 1000),
                      flankDistance = 5000, sameStrand = FALSE,
                      ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                      ignoreDownstream = FALSE, overlap = "TSS",
-                     annoOutput = NULL){
+                     annoOutput = NULL, ...){
     atacproc <- new(
         "RPeakAnno",
         atacProc = NULL,

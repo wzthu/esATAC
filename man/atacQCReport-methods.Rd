@@ -8,12 +8,12 @@
 \alias{qcreport}
 \title{Quality control for ATAC-seq data.}
 \usage{
-atacQCReport(atacProc = NULL, input_file = NULL, output_file = NULL)
+atacQCReport(atacProc = NULL, input_file = NULL, output_file = NULL, ...)
 
 \S4method{atacQCReport}{ATACProc}(atacProc = NULL, input_file = NULL,
-  output_file = NULL)
+  output_file = NULL, ...)
 
-qcreport(input_file, output_file = NULL)
+qcreport(input_file, output_file = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -28,6 +28,8 @@ Input file path. One or two(\code{vector}) fastq/a or a bam file path.}
 \item{output_file}{\code{Character} scalar.
 output file path. Defult:"input_file_FastQC.pdf" in the same
 folder as your input file.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream

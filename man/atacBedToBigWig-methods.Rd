@@ -9,12 +9,13 @@
 \title{generate BigWig file from BED file}
 \usage{
 atacBedToBigWig(atacProc, bedInput = NULL, bsgenome = NULL,
-  bwOutput = NULL, toWig = FALSE)
+  bwOutput = NULL, toWig = FALSE, ...)
 
 \S4method{atacBedToBigWig}{ATACProc}(atacProc, bedInput = NULL,
-  bsgenome = NULL, bwOutput = NULL, toWig = FALSE)
+  bsgenome = NULL, bwOutput = NULL, toWig = FALSE, ...)
 
-bedToBigWig(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE)
+bedToBigWig(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE,
+  ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -31,7 +32,9 @@ BSGenome object for specific species.}
 \item{bwOutput}{\code{Character} scalar.
 BigWig file output path.}
 
-\item{toWig}{\code{Logical} scalar.
+\item{toWig}{\code{Logical} scalar.}
+
+\item{...}{Additional arguments, currently unused.
 Save as wig file instead of binary BigWig file}
 }
 \value{

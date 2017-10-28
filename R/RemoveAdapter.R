@@ -58,6 +58,10 @@ setMethod(
             .Object@paramlist[["reportPrefix"]] <- reportPrefix;
         }
 
+        .Object@paramlist[["reportPrefix_adapter1_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter1")
+        .Object@paramlist[["reportPrefix_adapter2_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter2")
+        
+
         .Object@paramlist[["adapter1"]] <- adapter1
         .Object@paramlist[["adapter2"]] <- adapter2
 
@@ -457,6 +461,7 @@ listToFrame <- function(a){
 #' for identifying adapter. See below for details.
 #' @param reportPrefix \code{Character}. The prefix of report files path.
 #' Default: generate from known parameters
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object or
@@ -513,7 +518,7 @@ setGeneric("atacRemoveAdapter",function(atacProc,adapter1=NULL,adapter2=NULL,
                                         fastqOutput1=NULL,reportPrefix=NULL,
                                         fastqOutput2=NULL,fastqInput1=NULL,
                                         fastqInput2=NULL,interleave=FALSE,
-                                        paramList= NULL,findParamList=NULL) standardGeneric("atacRemoveAdapter"))
+                                        paramList= NULL,findParamList=NULL, ...) standardGeneric("atacRemoveAdapter"))
 #' @rdname atacRemoveAdapter-methods
 #' @aliases atacRemoveAdapter
 setMethod(
@@ -523,7 +528,7 @@ setMethod(
                           fastqOutput1=NULL,reportPrefix=NULL,
                           fastqOutput2=NULL,fastqInput1=NULL,
                           fastqInput2=NULL,interleave=FALSE,
-                          paramList= NULL,findParamList=NULL){
+                          paramList= NULL,findParamList=NULL, ...){
         atacproc <- new("RemoveAdapter",atacProc = atacProc,
                         adapter1 = adapter1,adapter2 = adapter2,
                         fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,
@@ -542,7 +547,7 @@ removeAdapter <- function(fastqInput1, fastqInput2=NULL,
                               fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,
                               interleave=FALSE,
-                              paramList = NULL,findParamList = NULL){
+                              paramList = NULL,findParamList = NULL, ...){
     atacproc <- new("RemoveAdapter",atacProc = NULL,
                     adapter1 = adapter1,adapter2 = adapter2,
                     fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,

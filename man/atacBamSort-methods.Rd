@@ -8,12 +8,12 @@
 \alias{bamsort}
 \title{Sort bam file and rebuild bai index.}
 \usage{
-atacBamSort(atacProc = NULL, bamInput = NULL, bamOutput = NULL)
+atacBamSort(atacProc = NULL, bamInput = NULL, bamOutput = NULL, ...)
 
 \S4method{atacBamSort}{ATACProc}(atacProc = NULL, bamInput = NULL,
-  bamOutput = NULL)
+  bamOutput = NULL, ...)
 
-bamsort(bamInput = NULL, bamOutput = NULL)
+bamsort(bamInput = NULL, bamOutput = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -25,6 +25,8 @@ Input bam file path.}
 
 \item{bamOutput}{\code{Character} scalar.
 Output bam file path.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

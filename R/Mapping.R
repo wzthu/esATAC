@@ -210,6 +210,7 @@ setMethod(
 #' interleaved paired-end sequencing data.
 #' @param threads \code{Integer} scalar.
 #' The threads will be created in this process. default: 1
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -267,7 +268,9 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacBowtie2Mapping-methods
-setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000") standardGeneric("atacBowtie2Mapping"))
+
+setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...) standardGeneric("atacBowtie2Mapping"))
+
 
 
 #' @rdname atacBowtie2Mapping-methods
@@ -275,7 +278,8 @@ setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =N
 setMethod(
     f = "atacBowtie2Mapping",
     signature = "ATACProc",
-    definition = function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
+    definition = function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
+
         atacproc<-new("Bowtie2Mapping",atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                      fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
         atacproc <- process(atacproc)
@@ -284,7 +288,7 @@ setMethod(
 )
 #' @rdname atacBowtie2Mapping-methods
 #' @export
-bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000"){
+bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
     atacproc<-new("Bowtie2Mapping",atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                   fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
     atacproc <- process(atacproc)

@@ -1,7 +1,7 @@
 Package: esATAC
 Type: Package
 Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
-Version: 0.99.18
+Version: 0.99.19
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
@@ -24,6 +24,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     Rcpp (>= 0.12.11),
+    methods,
     knitr,
     Rbowtie2,
     rtracklayer,
@@ -45,7 +46,16 @@ Imports:
     S4Vectors,
     IRanges,
     rmarkdown,
-    tools
+    tools, 
+    VennDiagram, 
+    grid,
+    JASPAR2016, 
+    TFBSTools, 
+    grDevices, 
+    graphics,
+    stats, 
+    utils,
+    parallel
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
@@ -87,8 +97,11 @@ Collate:
     TSSQC.R
     UnzipAndMerge.R
     onLoad.R
+    RMotifScanPair.R
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
+NeedsCompilation: yes
+

@@ -6,21 +6,21 @@
 \alias{atacCutSiteCount,ATACProc-method}
 \alias{atacCutSiteCount}
 \alias{cutsitecount}
-\title{Count cut site number in given motif region.}
+\title{Count cut site number in given motif region and plot footprint.}
 \usage{
 atacCutSiteCount(atacProcCutSite = NULL, atacProcMotifScan = NULL,
   csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
   matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
-  prefix = NULL)
+  prefix = NULL, ...)
 
 \S4method{atacCutSiteCount}{ATACProc}(atacProcCutSite = NULL,
   atacProcMotifScan = NULL, csInput = NULL, motif_info = NULL,
   chr = c(1:22, "X", "Y"), matrixOutput = NULL, strandLength = 100,
-  FootPrint = TRUE, prefix = NULL)
+  FootPrint = TRUE, prefix = NULL, ...)
 
 cutsitecount(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
   matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
-  prefix = NULL)
+  prefix = NULL, ...)
 }
 \arguments{
 \item{atacProcCutSite}{\code{\link{ATACProc-class}} object scalar.
@@ -31,16 +31,16 @@ It has to be the return value of upstream process:
 It has to be the return value of upstream process:
 \code{\link{atacMotifScan}}.}
 
-\item{csInput}{Your cut site information file(from atacExtractCutSite function,
-separated by chromatin name and all cut site are sorted) path with prefix.
-e.g. "/your_cut_site_information_path/prefix"}
+\item{csInput}{Your cut site information file(from atacExtractCutSite
+function, separated by chromatin name and all cut site are sorted) path
+with prefix. e.g. "/your_cut_site_information_path/prefix"}
 
 \item{motif_info}{A rds file from function \code{\link{atacMotifScan}}.
 In the rds file, it saves 3 column information(motif, motif exact position
 information file path and motif length).}
 
 \item{chr}{Which chromatin the program will processing. It must be identical
-with the file name of cut site information file.
+with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
 \item{matrixOutput}{The output directory, where to save your cut site count
@@ -53,13 +53,15 @@ up/downstream of the motif. default:100.}
 \item{FootPrint}{TRUE or FALSE, plot footprint or not.}
 
 \item{prefix}{prefix for the pdf file.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar.
 }
 \description{
 This function is used to count cut site number in given motif
-region and plot footprint. Multi-motif is supported.
+regions and plot footprint. Multi-motif is supported.
 NOTE: The input parameter is a a little bit complex,
 \code{atacExtractCutSite} and \code{atacMotifScan} is recommended to use which
 makes the entire procedure easier.

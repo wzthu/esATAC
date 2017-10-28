@@ -9,14 +9,16 @@
 \title{Search Motif Position in Given Regions}
 \usage{
 atacMotifScan(atacProc, peak = NULL, genome = NULL, motifPWM = NULL,
-  min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL)
+  min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL,
+  ...)
 
 \S4method{atacMotifScan}{ATACProc}(atacProc, peak = NULL, genome = NULL,
   motifPWM = NULL, min.score = "85\%", scanO.dir = NULL, n.cores = NULL,
-  prefix = NULL)
+  prefix = NULL, ...)
 
-motifscan(peak, genome = NULL, motifPWM = NULL, min.score = "85\%",
-  scanO.dir = NULL, n.cores = NULL, prefix = NULL)
+motifscan(peak = NULL, genome = NULL, motifPWM = NULL,
+  min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL,
+  ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -46,6 +48,8 @@ the file name to save the motif position information in separate files.}
 Default: from \code{\link{setConfigure}}.}
 
 \item{prefix}{prefix for Output file.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

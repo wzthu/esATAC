@@ -8,7 +8,7 @@
 \usage{
 atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   adapter2 = NULL, interleave = FALSE, createReport = TRUE,
-  prefix = NULL)
+  motifPWM = NULL, prefix = NULL, ...)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -34,7 +34,11 @@ interleaved paired-end sequencing data.}
 
 \item{createReport}{\code{Logical}. If the HTML report file will be created.}
 
+\item{motifPWM}{Motif PWM, a list.}
+
 \item{prefix}{For identifying files.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

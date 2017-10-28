@@ -1,4 +1,4 @@
 library(testthat)
-library(ATACpipe)
+library(esATAC)
 
-test_check("ATACpipe")
+test_check("esATAC")

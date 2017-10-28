@@ -87,6 +87,7 @@ setMethod(
 #' @param bedOutput \code{Character} scalar.
 #' Bed file output path. If ignored, bed file will be put in the same path as
 #' the bam file.
+#' @param ... Additional arguments, currently unused.
 #' @details The bam file wiil be automatically obtained from
 #' object(\code{atacProc}) or input by hand. Output can be ignored.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
@@ -108,14 +109,17 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacBam2Bed-methods
-setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL) standardGeneric("atacBam2Bed"))
+
+setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, ...) standardGeneric("atacBam2Bed"))
 
 #' @rdname atacBam2Bed-methods
 #' @aliases atacBam2Bed
 setMethod(
     f = "atacBam2Bed",
     signature = "ATACProc",
-    definition = function(atacProc, bamInput = NULL, bedOutput = NULL){
+
+    definition = function(atacProc, bamInput = NULL, bedOutput = NULL, ...){
+
         atacproc <- new("BamToBed", atacProc = atacProc, bamInput = bamInput, bedOutput = bedOutput)
         atacproc <- process(atacproc)
         invisible(atacproc)
@@ -124,7 +128,8 @@ setMethod(
 
 #' @rdname atacBam2Bed-methods
 #' @export
-bam2bed <- function(bamInput, bedOutput = NULL){
+
+bam2bed <- function(bamInput, bedOutput = NULL, ...){
     atacproc <- new("BamToBed", atacProc = NULL, bamInput = bamInput, bedOutput = bedOutput)
     atacproc <- process(atacproc)
     invisible(atacproc)

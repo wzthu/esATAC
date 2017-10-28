@@ -161,6 +161,7 @@ setMethod(
 #' The minimum fregment size will be retained.
 #' @param maxFregLen \code{Integer} scalar
 #' The maximum fregment size will be retained.
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -201,7 +202,8 @@ setMethod(
 #' @rdname atacBedUtils-methods
 setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                                   posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                                  sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9) standardGeneric("atacBedUtils"))
+                                  sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...) standardGeneric("atacBedUtils"))
+
 #' @rdname atacBedUtils-methods
 #' @aliases atacBedUtils
 setMethod(
@@ -209,7 +211,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                           posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){
+                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...){
         atacproc <- new(
             "BedUtils",
             atacProc = atacProc,
@@ -233,7 +235,7 @@ setMethod(
 #' @export
 bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,reportOutput = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                         sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9){
+                         sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...){
     atacproc <- new(
         "BedUtils",
         atacProc = NULL,

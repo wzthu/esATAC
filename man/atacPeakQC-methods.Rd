@@ -9,14 +9,14 @@
 \title{Quality control for peak overlap}
 \usage{
 atacPeakQC(atacProc, bsgenome = NULL, reportOutput = NULL,
-  qcbedInput = c("DHS", "blacklist", "path/to/bed"), bedInput = NULL)
+  qcbedInput = c("DHS", "blacklist", "path/to/bed"), bedInput = NULL, ...)
 
 \S4method{atacPeakQC}{ATACProc}(atacProc, bsgenome = NULL,
   reportOutput = NULL, qcbedInput = c("DHS", "blacklist", "path/to/bed"),
-  bedInput = NULL)
+  bedInput = NULL, ...)
 
 peakQC(bedInput, bsgenome = NULL, reportOutput = NULL,
-  qcbedInput = c("DHS", "blacklist", "path/to/bed"))
+  qcbedInput = c("DHS", "blacklist", "path/to/bed"), ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -36,6 +36,8 @@ Other quality control BED file input path.}
 
 \item{bedInput}{\code{Character} scalar.
 BED file input path for quality control.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

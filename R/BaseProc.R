@@ -10,8 +10,10 @@
 #' @return The value return by object methods.
 #' @author Zheng Wei
 #' @seealso
+
 #' \code{\link{atacPipe}}
 #' \code{\link{atacRemoveAdapter}}
+
 
 #' @param .Object,atacProc ATACProc object return by functions or Character scalar.
 #' @param preProc \code{Logitcal} scalar.
@@ -33,7 +35,9 @@
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' # Identify adapters
+
 #' prefix<-system.file(package="esATAC", "extdata", "uzmg")
+
 #' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 #' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
 #'
@@ -433,8 +437,10 @@ setMethod(f = "checkFileExist",
           signature = "ATACProc",
           definition = function(.Object,filePath,...){
               if(!is.null(filePath)){
-                  if(!file.exists(filePath)){
-                      stop(paste("error, file does not exist:",filePath))
+                  for(p in filePath){
+                      if(!file.exists(p)){
+                          stop(paste("error, file does not exist:",p))
+                      }
                   }
               }
           })
@@ -503,7 +509,7 @@ setGeneric(name = "getSuflessFileName",
 setMethod(f = "getSuflessFileName",
           signature = "ATACProc",
           definition = function(.Object,filePath,...){
-              sfx=getSuffix(.Object,filePath)
+              sfx<-getSuffix(.Object,filePath)
               if(is.null(sfx)){
                   return(filePath)
               }else {
@@ -623,12 +629,12 @@ setGeneric(name = "processing",
            })
 
 setGeneric(name = "getReportValImp",
-           def = function(.Object,...){
+           def = function(.Object,item,...){
                standardGeneric("getReportValImp")
            })
 setMethod(f = "getReportValImp",
           signature = "ATACProc",
-          definition = function(.Object,...){
+          definition = function(.Object,item,...){
               return(.Object@reportVal[[item]])
           })
 setGeneric(name = "getReportItemsImp",

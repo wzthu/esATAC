@@ -1,4 +1,5 @@
 #' @importFrom Rbowtie2 bowtie2_build
+#' @importFrom Biostrings masks DNAStringSet injectHardMask
 setClass(Class = ".ConfigClass",
          slots = list(
              configList = "list",
@@ -237,13 +238,15 @@ setMethod(f = "GetOrgDb",
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
-#' @examples 
+
+#' @examples
 #' getAllConfigure()
-#' 
+#'
 #' getConfigure("threads")
-#' 
+#'
 #' options(atacConf=setConfigure("tmpdir",tempdir()))
-#' 
+#'
+
 #' @importFrom Rcpp  evalCpp
 #' @importFrom igraph  graph
 #' @importFrom igraph vertex.attributes
@@ -292,12 +295,26 @@ setMethod(f = "GetOrgDb",
 #' @importFrom BiocGenerics subset
 #' @importFrom rmarkdown render
 #' @importFrom knitr knit
+#' @importFrom grDevices dev.off
+#' @importFrom grDevices pdf
+#' @importFrom graphics abline
+#' @importFrom graphics axis
+#' @importFrom graphics plot
+#' @importFrom stats binom.test
+#' @importFrom stats fft
+#' @importFrom stats runif
+#' @importFrom utils download.file
+#' @importFrom utils read.table
+#' @importFrom utils write.table
 #' @import IRanges
 #' @import S4Vectors
 #' @import tools
 #' @import Rsamtools
+#' @import methods
 # @importFrom markdown markdownToHTML
 #' @useDynLib esATAC
+
+
 
 
 

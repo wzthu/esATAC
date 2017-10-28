@@ -14,7 +14,7 @@ atacPeakAnno(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
   "Downstream", "Intergenic"), annoDb = NULL, addFlankGeneInfo = FALSE,
   flankDistance = 5000, sameStrand = FALSE, ignoreOverlap = FALSE,
   ignoreUpstream = FALSE, ignoreDownstream = FALSE, overlap = "TSS",
-  annoOutput = NULL)
+  annoOutput = NULL, ...)
 
 \S4method{atacPeakAnno}{ATACProc}(atacProc, peakInput = NULL,
   tssRegion = c(-1000, 1000), TxDb = NULL, level = "transcript",
@@ -22,14 +22,14 @@ atacPeakAnno(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
   "Downstream", "Intergenic"), annoDb = NULL, addFlankGeneInfo = FALSE,
   flankDistance = 5000, sameStrand = FALSE, ignoreOverlap = FALSE,
   ignoreUpstream = FALSE, ignoreDownstream = FALSE, overlap = "TSS",
-  annoOutput = NULL)
+  annoOutput = NULL, ...)
 
 peakanno(peakInput, tssRegion = c(-1000, 1000), TxDb = NULL,
   level = "transcript", genomicAnnotationPriority = c("Promoter", "5UTR",
   "3UTR", "Exon", "Intron", "Downstream", "Intergenic"), annoDb = NULL,
   addFlankGeneInfo = FALSE, flankDistance = 5000, sameStrand = FALSE,
   ignoreOverlap = FALSE, ignoreUpstream = FALSE, ignoreDownstream = FALSE,
-  overlap = "TSS", annoOutput = NULL)
+  overlap = "TSS", annoOutput = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -73,6 +73,8 @@ region or not.}
 
 \item{annoOutput}{\code{Character} scalar.
 the output file path.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

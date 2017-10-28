@@ -30,10 +30,10 @@ setMethod(
             suffix <- tail(name_split, 1)
             if(suffix == "bam"){
                 .Object@paramlist[["name_tmp"]] <- paste0(name_split[-length(name_split)], collapse = ".")
-                .Object@paramlist[["bamOutput"]] <- bamInput
+                .Object@paramlist[["bamOutput"]] <- bamOutput
                 .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
             }else{
-                .Object@paramlist[["name_tmp"]] <- bamInput
+                .Object@paramlist[["name_tmp"]] <- bamOutput
                 .Object@paramlist[["bamOutput"]] <- paste0(.Object@paramlist[["name_tmp"]], ".bam", collapse = "")
                 .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
             }
@@ -93,6 +93,7 @@ setMethod(
 #' @param bamOutput \code{Character} scalar.
 #' Bam file output path. If ignored, bed file will be put in the same path as
 #' the sam file.
+#' @param ... Additional arguments, currently unused.
 #' @details The sam file wiil be automatically obtained from
 #' object(\code{atacProc}) or input by hand. bamOutput can be ignored.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
@@ -117,14 +118,14 @@ setMethod(
 #' @docType methods
 #' @rdname atacSam2Bam-methods
 setGeneric("atacSam2Bam",function(atacProc = NULL,
-                                  samInput = NULL, bamOutput = NULL) standardGeneric("atacSam2Bam"))
+                                  samInput = NULL, bamOutput = NULL, ...) standardGeneric("atacSam2Bam"))
 #' @rdname atacSam2Bam-methods
 #' @aliases atacSam2Bam
 setMethod(
     f = "atacSam2Bam",
     signature = "ATACProc",
     definition = function(atacProc = NULL,
-                          samInput = NULL, bamOutput = NULL){
+                          samInput = NULL, bamOutput = NULL, ...){
         atacproc <- new(
             "SamToBam",
             atacProc = atacProc,
@@ -136,7 +137,7 @@ setMethod(
 )
 #' @rdname atacSam2Bam-methods
 #' @export
-sam2bam <- function(samInput, bamOutput = NULL){
+sam2bam <- function(samInput, bamOutput = NULL, ...){
     atacproc <- new(
         "SamToBam",
         atacProc = NULL,

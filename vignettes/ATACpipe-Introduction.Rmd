@@ -62,6 +62,7 @@ Following the flowchart, related functions could be found in manual.
 
 
 
+
 The workflow start with "UnzipAndMerge" function atacUnzipAndMerge. 
 It unzips and merges the replicates into one FASTQ file(two for paired end file). 
 Names of reads will be renamed as numbers: 1,2,3,... by calling
@@ -84,6 +85,8 @@ or the examples in following sections.
 
 
 
+
+### Contact
 
 ### Contact
 
@@ -264,6 +267,7 @@ A HTML report of quality control and analysis will be created for paired-end dat
 
 This process is time consuming. You can visit our website to see the result example:
 
+
 [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
 
 
@@ -272,6 +276,7 @@ This process is time consuming. You can visit our website to see the result exam
 For case-Control study, paired-end sequencing data are supported only.
 Two fastq files of sequencing data for case and control each are required.
 The preset pipeline can be called like this:
+
 
 ```{r casecontrol, eval=FALSE}
 td<-tempdir()
@@ -295,6 +300,7 @@ conclusion<-atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 The processes are similar to atacPipe. You will also receive conclusion list and
 
 a HTML report for quality control and analysis will be created. You may see:
+
 
 [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)
 
@@ -537,6 +543,7 @@ Note: we only using a small part of the chromatin 20 as example.
 
 ### Workflow Map 
 
+
 esATAC is organized in data flow graph. Except for referring manual, 
 the user may print the map to know workflow order.
 
@@ -628,7 +635,6 @@ and Kui Hua for providing package testing on Macbook.
 [6] Pagès H, Aboyoun P, Gentleman R and DebRoy S (2017). Biostrings: String objects representing biological sequences, and matching algorithms. R package version 2.44.2.
 
 [7] Buenrostro, J. D., Giresi, P. G., Zaba, L. C., Chang, H. Y., & Greenleaf, W. J. (2013). Transposition of native chromatin for fast and sensitive epigenomic profiling of open chromatin, DNA-binding proteins and nucleosome position. Nature methods, 10(12), 1213-1218.
-
 ## Session Infomation
 
 ```{r session}

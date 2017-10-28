@@ -45,7 +45,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 
 
-# Sequence statistics
+# Sequence Statistics
 ## FastQC
 
 Quality control for the sequence data
@@ -54,7 +54,7 @@ QC_path <- getReportVal(atacProcs$atacQC,"pdf")
 ```
 [Click to Visit Report](`r QC_path`)
 
-## Remove Adapter
+## Remove adapter
 
 The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
@@ -71,7 +71,7 @@ knitr::kable(getReportVal(atacProcs$removeAdapter,"statistics"))
 
 For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
 
-# Reads alignment statistics
+# Reads Alignment Statistics
 
 ## Bowtie2 alignment log
 
@@ -131,7 +131,7 @@ g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=
 grid.arrange(g1, g2, ncol=2)
 ```
 
-# Peak statistics
+# Peak Statistics
 
 ## Blacklist ratio
 
@@ -161,38 +161,62 @@ peakanno <- getReportVal(atacProcs$Peakanno,"annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
-# Go analysis
+# Gene Ontology Analysis
 
 Gene ontology analysis for all genes around peak regions.
 
 ```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
-go_path <- getReportVal(atacProcs$goAna,"goOutput")
+go_path <- getReportVal(atacProcs$goAna, "goOutput")
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
-knitr::kable(go_data)
+go_data$pvalue <- signif(go_data$pvalue, digits = 3)
+go_data$pvalue <- as.character(go_data$pvalue)
+go_data$qvalue <- signif(go_data$qvalue, digits = 3)
+go_data$qvalue <- as.character(go_data$qvalue)
+if(nrow(go_data) < 15){
+    knitr::kable(go_data)
+}else{
+    knitr::kable(go_data[1:15, ])
+}
 ```
 
 [Click to Visit Go Analysis file](`r go_path`)
 
-# Footprint analysis
+# Footprint Analysis
 
 The following figure is CTCF footprint.
 
+```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
+footprint_data <- getReportVal(atacProcs$footprint, "footprint.data")
+if("CTCF" %in% names(footprint_data)){
+    footprint_figure.name <- "CTCF"
+    footprint_figure.data <- as.vector(footprint_data$CTCF)
+}else{
+    footprint_figure.name <- names(footprint_data[1])
+    footprint_figure.data <- as.vector(footprint_data[[1]])
+}
+footprint_figure.length <- length(footprint_figure.data) - 200
+```
+
+The following figure is `r footprint_figure.name` footprint.
+
+
 ```{r eval=TRUE, echo=FALSE, fig.height=7, fig.width=7, results = 'asis', warning=FALSE}
-footprint_data <- getReportVal(atacProcs$footprint,"footprint.data")
-CTCF_data <- as.vector(footprint_data$CTCF)
-plot(CTCF_data, type = "l", col = "blue", lwd = 2, 
-     xlab = "Relative Distance From Motif (bp)", 
-     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
+plot(footprint_figure.data, type = "l", col = "blue", lwd = 2, 
+    xlab = "Relative Distance From Motif (bp)", 
+    ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
-     labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
-     padj = -1.0, tck = -0.01)
-axis(1, at = 100 + 19 + seq(1, 100, len = 3),
-     labels = seq(0, 100, len = 3),
-     padj = -1.0, tck = -0.01)
+    labels = -(100 + 1 - seq(1, 100 + 1, len = 3)),
+    padj = -1.0, tck = -0.01)
+axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
+    labels = seq(0, 100, len = 3),
+    padj = -1.0, tck = -0.01)
 axis(2, padj = 1.0,tck = -0.02)
-abline(v = c(100, 100 + 19 + 1), lty = 2)
-pdf.dir <- getReportVal(atacProcs$footprint,"pdf.dir")
+
+abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
+
+pdf.dir <- atacProcs$footprint$getReportVal("pdf.dir")
+
 ```
 
 All motif footprint figures are saved as pdf files.

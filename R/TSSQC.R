@@ -66,6 +66,7 @@ setMethod(
 
         txdb<-.Object@paramlist[["knownGene"]]
         #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
+
         TSS <- promoters(txdb, upstream=.Object@paramlist[["updownstream"]], downstream=1+.Object@paramlist[["updownstream"]])
         #end(trans)<-start(trans)+1
         TSS<-unique(TSS)
@@ -210,6 +211,7 @@ setMethod(
 #' The fregment length ranges.
 #' @param tssUpdownstream \code{Interger} scalar.
 #' The upstream and downstrem from TSS locations.
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -240,7 +242,7 @@ setMethod(
 #' tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
 #'
 #' dir(td)
-#'
+#' @importFrom BiocGenerics strand
 
 #' @name atacTSSQC
 #' @export
@@ -248,7 +250,8 @@ setMethod(
 #' @rdname atacTSSQC-methods
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                                   reportPrefix=NULL,bedInput = NULL,
-                                  fregLenRange=c(0,2000),tssUpdownstream=1000) standardGeneric("atacTSSQC"))
+                                  fregLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
+
 #' @rdname atacTSSQC-methods
 #' @aliases atacTSSQC
 setMethod(
@@ -256,7 +259,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                           reportPrefix=NULL,bedInput = NULL,
-                          fregLenRange=c(0,2000),tssUpdownstream=1000){
+                          fregLenRange=c(0,2000),tssUpdownstream=1000, ...){
         atacproc <- new(
             "TSSQC",
             atacProc = atacProc,
@@ -276,7 +279,7 @@ setMethod(
 
 #' @rdname atacTSSQC-methods
 #' @export
-tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000, ...){
     atacproc <- new(
         "TSSQC",
         atacProc = NULL,
