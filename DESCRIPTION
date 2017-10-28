@@ -49,7 +49,8 @@ Imports:
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
-    org.Hs.eg.db
+    org.Hs.eg.db,
+    testthat
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
