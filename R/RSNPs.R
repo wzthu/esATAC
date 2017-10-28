@@ -57,11 +57,11 @@ setMethod(
 
         SNP_info <- read.table(file = .Object@paramlist[["snp.info"]],
                                header = FALSE)
-        snp_gr <- with(SNP_info, GRanges(V1, IRanges(V2 - 1, V2)))
+        snp_gr <- with(SNP_info, GRanges(SNP_info[, 1], IRanges(SNP_info[, 2] - 1, SNP_info[, 2])))
         if(.Object@paramlist[["type"]] == "file"){
             peak_info <- read.table(file = .Object@paramlist[["region.info"]],
                                     header = FALSE)
-            peak_gr <- with(peak_info, GRanges(V1, IRanges(V2, V3)))
+            peak_gr <- with(peak_info, GRanges(peak_info[, 1], IRanges(peak_info[, 2], peak_info[, 3])))
 
             overlaps <- GenomicRanges::findOverlaps(query = peak_gr,
                                                     subject = snp_gr,

@@ -30,10 +30,10 @@ setMethod(
             suffix <- tail(name_split, 1)
             if(suffix == "bam"){
                 .Object@paramlist[["name_tmp"]] <- paste0(name_split[-length(name_split)], collapse = ".")
-                .Object@paramlist[["bamOutput"]] <- bamInput
+                .Object@paramlist[["bamOutput"]] <- bamOutput
                 .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
             }else{
-                .Object@paramlist[["name_tmp"]] <- bamInput
+                .Object@paramlist[["name_tmp"]] <- bamOutput
                 .Object@paramlist[["bamOutput"]] <- paste0(.Object@paramlist[["name_tmp"]], ".bam", collapse = "")
                 .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
             }
