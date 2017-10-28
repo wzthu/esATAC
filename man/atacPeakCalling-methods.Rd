@@ -11,18 +11,18 @@
 atacPeakCalling(atacProc, bedInput = NULL, background = NULL,
   genomicReadsCount = NULL, fragmentSize = 0, featureLength = NULL,
   bedOutput = NULL, ploidyDir = NULL, wiggleTrackStep = NULL,
-  threshold = NULL, verbose = TRUE, wgThresholdSet = NULL)
+  threshold = NULL, verbose = TRUE, wgThresholdSet = NULL, ...)
 
 \S4method{atacPeakCalling}{ATACProc}(atacProc, bedInput = NULL,
   background = NULL, genomicReadsCount = NULL, fragmentSize = 0,
   featureLength = NULL, bedOutput = NULL, ploidyDir = NULL,
   wiggleTrackStep = NULL, threshold = NULL, verbose = TRUE,
-  wgThresholdSet = NULL)
+  wgThresholdSet = NULL, ...)
 
 peakCalling(bedInput, background = NULL, genomicReadsCount = NULL,
   fragmentSize = 0, featureLength = NULL, bedOutput = NULL,
   ploidyDir = NULL, wiggleTrackStep = NULL, threshold = NULL,
-  verbose = TRUE, wgThresholdSet = NULL)
+  verbose = TRUE, wgThresholdSet = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -62,6 +62,8 @@ verbose output if TRUE.}
 
 \item{wgThresholdSet}{\code{Character} scalar.
 wg threshold set default: NULL (calculated)}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

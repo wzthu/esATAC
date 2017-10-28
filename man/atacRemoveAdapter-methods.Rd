@@ -11,17 +11,17 @@
 atacRemoveAdapter(atacProc, adapter1 = NULL, adapter2 = NULL,
   fastqOutput1 = NULL, reportPrefix = NULL, fastqOutput2 = NULL,
   fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE,
-  paramList = NULL, findParamList = NULL)
+  paramList = NULL, findParamList = NULL, ...)
 
 \S4method{atacRemoveAdapter}{ATACProc}(atacProc, adapter1 = NULL,
   adapter2 = NULL, fastqOutput1 = NULL, reportPrefix = NULL,
   fastqOutput2 = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE, paramList = NULL, findParamList = NULL)
+  interleave = FALSE, paramList = NULL, findParamList = NULL, ...)
 
 removeAdapter(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   adapter2 = NULL, fastqOutput1 = NULL, reportPrefix = NULL,
   fastqOutput2 = NULL, interleave = FALSE, paramList = NULL,
-  findParamList = NULL)
+  findParamList = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -71,6 +71,8 @@ for removing adapter. See below for details.}
 
 \item{findParamList}{Additional arguments to be passed on to the binaries
 for identifying adapter. See below for details.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.

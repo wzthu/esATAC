@@ -8,12 +8,12 @@
 \alias{sam2bam}
 \title{Convert sam format to bam format.}
 \usage{
-atacSam2Bam(atacProc = NULL, samInput = NULL, bamOutput = NULL)
+atacSam2Bam(atacProc = NULL, samInput = NULL, bamOutput = NULL, ...)
 
 \S4method{atacSam2Bam}{ATACProc}(atacProc = NULL, samInput = NULL,
-  bamOutput = NULL)
+  bamOutput = NULL, ...)
 
-sam2bam(samInput, bamOutput = NULL)
+sam2bam(samInput, bamOutput = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -26,6 +26,8 @@ Sam file input path.}
 \item{bamOutput}{\code{Character} scalar.
 Bam file output path. If ignored, bed file will be put in the same path as
 the sam file.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

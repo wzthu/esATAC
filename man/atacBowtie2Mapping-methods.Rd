@@ -11,17 +11,17 @@
 atacBowtie2Mapping(atacProc, samOutput = NULL, reportOutput = NULL,
   bt2Idx = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
   interleave = FALSE, threads = NULL,
-  paramList = "--no-discordant --no-unal --no-mixed -X 2000")
+  paramList = "--no-discordant --no-unal --no-mixed -X 2000", ...)
 
 \S4method{atacBowtie2Mapping}{ATACProc}(atacProc, samOutput = NULL,
   reportOutput = NULL, bt2Idx = NULL, fastqInput1 = NULL,
   fastqInput2 = NULL, interleave = FALSE, threads = NULL,
-  paramList = "--no-discordant --no-unal --no-mixed -X 2000")
+  paramList = "--no-discordant --no-unal --no-mixed -X 2000", ...)
 
 bowtie2Mapping(fastqInput1, fastqInput2 = NULL, samOutput = NULL,
   reportOutput = NULL, bt2Idx = NULL, interleave = FALSE,
   threads = NULL,
-  paramList = "--no-discordant --no-unal --no-mixed -X 2000")
+  paramList = "--no-discordant --no-unal --no-mixed -X 2000", ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -62,6 +62,8 @@ The threads will be created in this process. default: 1}
 
 \item{paramList}{Additional arguments to be passed on to the binaries.
 See below for details.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
