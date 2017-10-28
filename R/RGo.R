@@ -160,11 +160,12 @@ setMethod(
 #' @author Wei Zhang
 #' @examples
 #'
+#' \dontrun{
 #' library(clusterProfiler)
 #' data(geneList)
 #' geneId <- names(geneList)[1:100]
-#' #goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
-#'
+#' goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
+#' }
 #'
 #' @references Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He.
 #' clusterProfiler: an R package for comparing biological themes among gene

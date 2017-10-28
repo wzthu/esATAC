@@ -30,6 +30,8 @@
 #' @return the function and result of functions
 #'
 #' @examples
+#' 
+#' \dontrun{
 #' library(magrittr)
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
@@ -63,7 +65,7 @@
 #' clearProcCache(atacproc)
 #'
 #' process(atacproc)
-#'
+#' }
 #' @name ATACProc-class
 #' @rdname ATACProc-class
 #' @exportClass ATACProc

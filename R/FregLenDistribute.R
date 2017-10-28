@@ -195,6 +195,7 @@ setMethod(
 #' \code{\link{bedUtils}}
 #'
 #' @examples
+#' \dontrun{
 #' library(R.utils)
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
@@ -205,7 +206,7 @@ setMethod(
 #' fregLenDistr(bedfile)
 #'
 #' dir(td)
-#'
+#' }
 #' @importFrom BiocGenerics counts 
 #' @importFrom ggplot2 geom_path ggplot geom_vline geom_line theme_bw theme annotate xlab ggsave element_blank
 #' @name atacFregLenDistr
