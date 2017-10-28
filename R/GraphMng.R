@@ -134,6 +134,7 @@ setGeneric(name = "graphPrintMap",
 setMethod(f = "graphPrintMap",
           signature = "GraphMng",
           definition = function(graphMngObj,...,procName=NULL,preProc=FALSE,nextProc=TRUE,curProc=TRUE,display=TRUE){
+              label<-"label"
               if(is.null(procName)){
                   if(display){
                       graphMngObj@private$graph%>%render_graph()

@@ -93,7 +93,8 @@ setMethod(
         rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],1))
         rs<-rbind(rs1,rs2)
         colnames(rs)<-c("period","strength","check")
-        
+        period<-"period"
+        strength<-"strength"
         g1<-ggplot(rs[rs["check"]==0,]) + 
             geom_vline(xintercept = 10.4, linetype=2)+ 
             geom_line(aes(x=period,y=strength),color="Red")+ 

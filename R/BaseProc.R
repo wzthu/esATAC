@@ -501,6 +501,7 @@ setMethod(f = "getSuffix",
               }else{
                   return(lst[length(lst)])
               }
+              return(NULL)
           })
 setGeneric(name = "getSuflessFileName",
            def = function(.Object,filePath,...){
@@ -509,7 +510,7 @@ setGeneric(name = "getSuflessFileName",
 setMethod(f = "getSuflessFileName",
           signature = "ATACProc",
           definition = function(.Object,filePath,...){
-              sfx<-getSuffix(.Object,filePath)
+              sfx<-getSuffix(.Object,filePath=filePath)
               if(is.null(sfx)){
                   return(filePath)
               }else {
