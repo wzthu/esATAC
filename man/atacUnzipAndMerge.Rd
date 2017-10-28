@@ -43,8 +43,8 @@ An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \examples{
-\dontrun{
-td <- tempdir()
+
+
 options(atacConf=setConfigure("tmpdir",td))
 
 # Identify adapters
@@ -56,7 +56,7 @@ reads_merged_1 <- file.path(td,"reads1.fastq")
 reads_merged_2 <- file.path(td,"reads2.fastq")
 atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 dir(td)
-}
+
 }
 \seealso{
 \code{\link{atacRenamer}}

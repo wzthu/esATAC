@@ -52,7 +52,7 @@ If you want to use this function independently,
 or you can use \code{fregLenDistr} instead.
 }
 \examples{
-\dontrun{
+
 library(R.utils)
 td <- tempdir()
 options(atacConf=setConfigure("tmpdir",td))
@@ -63,7 +63,7 @@ bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 fregLenDistr(bedfile)
 
 dir(td)
-}
+
 }
 \seealso{
 \code{\link{atacSamToBed}}

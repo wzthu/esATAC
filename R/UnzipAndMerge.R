@@ -241,8 +241,8 @@ setMethod(
 #' \code{\link{atacRenamer}}
 #' \code{\link{atacQCReport}}
 #' @examples
-#' \dontrun{
-#' td <- tempdir()
+#' 
+#' 
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' # Identify adapters
@@ -254,7 +254,7 @@ setMethod(
 #' reads_merged_2 <- file.path(td,"reads2.fastq")
 #' atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 #' dir(td)
-#' }
+#' 
 #' @rdname atacUnzipAndMerge
 #' @export
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,

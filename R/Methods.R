@@ -47,7 +47,7 @@ getRshow <- function(readSize,total,detail = FALSE){
 }
 
 
-getSuffix = function(filePath){
+getSuffix0 <- function(filePath){
     filename<-basename(filePath)
     lst=strsplit(filename,"\\.")[[1]]
     if(length(lst)==1){
@@ -56,8 +56,8 @@ getSuffix = function(filePath){
         return(lst[length(lst)])
     }
 }
-getSuffixlessFileName = function(filePath){
-    sfx=getSuffix(filePath)
+getSuffixlessFileName0 <- function(filePath){
+    sfx=getSuffix0(filePath)
     if(is.null(sfx)){
         return(basename(filePath))
     }else {
@@ -167,20 +167,20 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     libComplexQC <- atacLibComplexQC(bowtie2Mapping)
     sam2Bed <-atacSamToBed(bowtie2Mapping,maxFregLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
-    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".tssqc100")),fregLenRange = c(0,100))
+    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc100")),fregLenRange = c(0,100))
 
     if(is.null(fastqInput2)&&!interleave){
         peakCalling <- atacPeakCalling(sam2Bed)
-        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".DHSQC")))
-        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
     }else{
-        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".tssqc180_247")),fregLenRange = c(180,247))
+        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc180_247")),fregLenRange = c(180,247))
         fregLenDistr <- atacFregLenDistr(sam2Bed)
         shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
         peakCalling <- atacPeakCalling(shortBed)
-        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".DHSQC")))
-        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName(fastqInput1[1]),".blacklistQC")))
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
 
