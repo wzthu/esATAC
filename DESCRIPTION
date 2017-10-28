@@ -24,6 +24,7 @@ Encoding: UTF-8
 LazyData: true
 Imports:
     Rcpp (>= 0.12.11),
+    methods,
     knitr,
     Rbowtie2,
     rtracklayer,
@@ -49,7 +50,11 @@ Imports:
     VennDiagram, 
     grid,
     JASPAR2016, 
-    TFBSTools
+    TFBSTools, 
+    grDevices, 
+    graphics,
+    stats, 
+    utils
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
