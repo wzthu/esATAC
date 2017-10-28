@@ -168,6 +168,7 @@ setMethod(
 #' @param subsampleSize \code{Integer} scalar.
 #' Down sample reads if the number is less than total number
 #' when \code{subsample} is TRUE
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -198,7 +199,7 @@ setMethod(
 #' @docType methods
 #' @rdname atacLibComplexQC-methods
 setGeneric("atacLibComplexQC",function(atacProc,reportOutput=NULL,samInput=NULL,
-                                  singleEnd = FALSE,subsampleSize=Inf) standardGeneric("atacLibComplexQC"))
+                                  singleEnd = FALSE,subsampleSize=Inf, ...) standardGeneric("atacLibComplexQC"))
 
 #' @rdname atacLibComplexQC-methods
 #' @aliases atacLibComplexQC
@@ -206,7 +207,7 @@ setMethod(
     f = "atacLibComplexQC",
     signature = "ATACProc",
     definition = function(atacProc,reportOutput=NULL,samInput=NULL,
-                          singleEnd = FALSE,subsampleSize=Inf){
+                          singleEnd = FALSE,subsampleSize=Inf, ...){
         atacproc <- new(
             "LibComplexQC",
             atacProc = atacProc,
@@ -220,7 +221,7 @@ setMethod(
 )
 #' @rdname atacLibComplexQC-methods
 #' @export
-libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsampleSize=Inf){
+libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsampleSize=Inf, ...){
     atacproc <- new(
         "LibComplexQC",
         atacProc = NULL,

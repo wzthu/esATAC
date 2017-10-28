@@ -210,6 +210,7 @@ setMethod(
 #' The fregment length ranges.
 #' @param tssUpdownstream \code{Interger} scalar.
 #' The upstream and downstrem from TSS locations.
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -248,7 +249,7 @@ setMethod(
 #' @rdname atacTSSQC-methods
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                                   reportPrefix=NULL,bedInput = NULL,
-                                  fregLenRange=c(0,2000),tssUpdownstream=1000) standardGeneric("atacTSSQC"))
+                                  fregLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
 #' @rdname atacTSSQC-methods
 #' @aliases atacTSSQC
 setMethod(
@@ -256,7 +257,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                           reportPrefix=NULL,bedInput = NULL,
-                          fregLenRange=c(0,2000),tssUpdownstream=1000){
+                          fregLenRange=c(0,2000),tssUpdownstream=1000, ...){
         atacproc <- new(
             "TSSQC",
             atacProc = atacProc,
@@ -276,7 +277,7 @@ setMethod(
 
 #' @rdname atacTSSQC-methods
 #' @export
-tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000){
+tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000, ...){
     atacproc <- new(
         "TSSQC",
         atacProc = NULL,

@@ -303,6 +303,7 @@ setMethod(
 #' @param n.cores How many core to run this function.
 #' Default: from \code{\link{setConfigure}}.
 #' @param prefix prefix for Output file. Order: peak1, peak2, backgroud.
+#' @param ... Additional arguments, currently unused.
 #' @details This function scan motif position in a given genome regions.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
@@ -342,7 +343,7 @@ setMethod(
 setGeneric("atacMotifScanPair",
            function(atacProc, peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                     motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                    n.cores = NULL, prefix = NULL) standardGeneric("atacMotifScanPair"))
+                    n.cores = NULL, prefix = NULL, ...) standardGeneric("atacMotifScanPair"))
 
 #' @rdname atacMotifScanPair-methods
 #' @aliases atacMotifScanPair
@@ -351,7 +352,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = NULL, prefix = NULL){
+                          n.cores = NULL, prefix = NULL, ...){
         atacproc <- new(
             "RMotifScanPair",
             atacProc = atacProc,
@@ -373,7 +374,7 @@ setMethod(
 #' @export
 motifscanpair <- function(peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = NULL, prefix = NULL){
+                          n.cores = NULL, prefix = NULL, ...){
     atacproc <- new(
         "RMotifScanPair",
         atacProc = NULL,

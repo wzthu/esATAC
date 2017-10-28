@@ -151,6 +151,7 @@ singleCall<-function(number,.Object){
 #' interleaved paired-end sequencing data.
 #' @param threads \code{Integer} scalar.
 #' The threads will be created in this process. default: 1
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -194,7 +195,7 @@ setGeneric("atacRenamer",function(atacProc,fastqOutput1=NULL,
                                   fastqOutput2=NULL,
                                   fastqInput1=NULL,
                                   fastqInput2=NULL,
-                                  interleave = FALSE) standardGeneric("atacRenamer"))
+                                  interleave = FALSE, ...) standardGeneric("atacRenamer"))
 
 #' @rdname atacRenamer-methods
 #' @aliases atacRenamer
@@ -206,7 +207,7 @@ setMethod(
              fastqOutput2=NULL,
              fastqInput1=NULL,
              fastqInput2=NULL,
-             interleave = FALSE){
+             interleave = FALSE, ...){
         atacproc <- new(
             "Renamer",
             atacProc = atacProc,
@@ -225,7 +226,7 @@ renamer <- function(fastqInput1=NULL,
                     fastqOutput1=NULL,
                     fastqOutput2=NULL,
                     interleave = FALSE,
-                    threads = NULL){
+                    threads = NULL, ...){
     atacproc <- new(
         "Renamer",
         atacProc = NULL,

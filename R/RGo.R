@@ -151,6 +151,7 @@ setMethod(
 #' @param goOutput \code{Character} scalar.
 #' Output file path. Defult:in the same folder as your input file with the
 #' suffix "df".
+#' @param ... Additional arguments, currently unused.
 #' @details This function using \link[clusterProfiler]{enrichGO} to do GO
 #' analysis but fixed some parameters. If atacProc is not NULL, it will read
 #' the gene ID from the output of \code{\link{atacPeakAnno}}.
@@ -178,7 +179,7 @@ setMethod(
 #' @rdname atacGOAnalysis-methods
 setGeneric("atacGOAnalysis",function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                                      pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-                                     readable = FALSE, pool = FALSE, goOutput = NULL) standardGeneric("atacGOAnalysis"))
+                                     readable = FALSE, pool = FALSE, goOutput = NULL, ...) standardGeneric("atacGOAnalysis"))
 #' @rdname atacGOAnalysis-methods
 #' @aliases atacGOAnalysis
 setMethod(
@@ -186,7 +187,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                           pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-                          readable = FALSE, pool = FALSE, goOutput = NULL){
+                          readable = FALSE, pool = FALSE, goOutput = NULL, ...){
         atacproc <- new(
             "RGo",
             atacProc = atacProc,
@@ -210,7 +211,7 @@ setMethod(
 #' @export
 goanalysis <- function(gene, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                        pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-                       readable = FALSE, pool = FALSE, goOutput = NULL){
+                       readable = FALSE, pool = FALSE, goOutput = NULL, ...){
     atacproc <- new(
         "RGo",
         atacProc = NULL,

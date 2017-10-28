@@ -200,9 +200,9 @@ setMethod(
 
 
 
-#' @title Count cut site number in given motif region.
+#' @title Count cut site number in given motif region and plot footprint.
 #' @description This function is used to count cut site number in given motif
-#' region and plot footprint. Multi-motif is supported.
+#' regions and plot footprint. Multi-motif is supported.
 #' NOTE: The input parameter is a a little bit complex,
 #' \code{atacExtractCutSite} and \code{atacMotifScan} is recommended to use which
 #' makes the entire procedure easier.
@@ -212,14 +212,14 @@ setMethod(
 #' @param atacProcMotifScan \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacMotifScan}}.
-#' @param csInput Your cut site information file(from atacExtractCutSite function,
-#' separated by chromatin name and all cut site are sorted) path with prefix.
-#' e.g. "/your_cut_site_information_path/prefix"
+#' @param csInput Your cut site information file(from atacExtractCutSite
+#' function, separated by chromatin name and all cut site are sorted) path
+#' with prefix. e.g. "/your_cut_site_information_path/prefix"
 #' @param motif_info A rds file from function \code{\link{atacMotifScan}}.
 #' In the rds file, it saves 3 column information(motif, motif exact position
 #' information file path and motif length).
 #' @param chr Which chromatin the program will processing. It must be identical
-#' with the file name of cut site information file.
+#' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
 #' @param matrixOutput The output directory, where to save your cut site count
 #' of every motif position. an empty folder would be great.
@@ -228,6 +228,7 @@ setMethod(
 #' up/downstream of the motif. default:100.
 #' @param FootPrint TRUE or FALSE, plot footprint or not.
 #' @param prefix prefix for the pdf file.
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter is simplified because of too many input file.
 #' parameter \code{atacProcCutSite} and \code{atacProcMotifScan} contains all
 #' input information so function \code{\link{atacExtractCutSite}} and
@@ -276,7 +277,7 @@ setMethod(
 setGeneric("atacCutSiteCount",
            function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                     motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                    strandLength = 100, FootPrint = TRUE, prefix = NULL) standardGeneric("atacCutSiteCount"))
+                    strandLength = 100, FootPrint = TRUE, prefix = NULL, ...) standardGeneric("atacCutSiteCount"))
 
 #' @rdname atacCutSiteCount-methods
 #' @aliases atacCutSiteCount
@@ -285,7 +286,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                           motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                          strandLength = 100, FootPrint = TRUE, prefix = NULL){
+                          strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
         atacproc <- new(
             "CutSiteCountR",
             atacProcCutSite = atacProcCutSite,
@@ -305,7 +306,7 @@ setMethod(
 #' @rdname atacCutSiteCount-methods
 #' @export
 cutsitecount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                         strandLength = 100, FootPrint = TRUE, prefix = NULL){
+                         strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
     atacproc <- new(
         "CutSiteCountR",
         atacProcCutSite = NULL,

@@ -191,6 +191,7 @@ setMethod(
 #' The prefix of report files path.
 #' @param bedInput \code{Character} scalar.
 #' BED file input path.
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -224,14 +225,14 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacFregLenDistr-methods
-setGeneric("atacFregLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL) standardGeneric("atacFregLenDistr"))
+setGeneric("atacFregLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL, ...) standardGeneric("atacFregLenDistr"))
 
 #' @rdname atacFregLenDistr-methods
 #' @aliases atacFregLenDistr
 setMethod(
     f = "atacFregLenDistr",
     signature = "ATACProc",
-    definition = function(atacProc,reportPrefix=NULL,bedInput=NULL){
+    definition = function(atacProc,reportPrefix=NULL,bedInput=NULL, ...){
         atacproc <- new(
             "FregLenDistr",
             atacProc = atacProc,
@@ -246,7 +247,7 @@ setMethod(
 
 #' @rdname atacFregLenDistr-methods
 #' @export
-fregLenDistr<-function(bedInput, reportPrefix=NULL){
+fregLenDistr<-function(bedInput, reportPrefix=NULL, ...){
     atacproc <- new(
         "FregLenDistr",
         atacProc = NULL,

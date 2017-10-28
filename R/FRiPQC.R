@@ -147,6 +147,7 @@ setMethod(
 #' Reads BED file for peak calling.
 #' @param peakBedInput \code{Character} scalar.
 #' Peaks BED file
+#' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
 #' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
@@ -183,7 +184,7 @@ setMethod(
 #' @rdname atacFripQC-methods
 setGeneric("atacFripQC",function(atacProcReads,atacProcPeak,bsgenome = NULL,
                                   reportOutput=NULL,readsBedInput=NULL,
-                                  peakBedInput=NULL) standardGeneric("atacFripQC"))
+                                  peakBedInput=NULL, ...) standardGeneric("atacFripQC"))
 
 #' @rdname atacFripQC-methods
 #' @aliases atacFripQC
@@ -192,7 +193,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProcReads,atacProcPeak,bsgenome = NULL,
                           reportOutput=NULL,readsBedInput=NULL,
-                          peakBedInput=NULL){
+                          peakBedInput=NULL, ...){
         atacproc <- new(
             "FRiPQC",
             atacProcReads = atacProcReads,
@@ -209,7 +210,7 @@ setMethod(
 
 #' @rdname atacFripQC-methods
 #' @export
-fripQC<-function(readsBedInput, peakBedInput,bsgenome = NULL, reportOutput=NULL){
+fripQC<-function(readsBedInput, peakBedInput,bsgenome = NULL, reportOutput=NULL, ...){
     atacproc <- new(
         "FRiPQC",
         atacProcReads = NULL,
