@@ -82,7 +82,7 @@ setMethod(
 
         # write order(motif index) while writing save_info
         WriteMotifOrder <- 1
-        cl <- makeCluster(.Object@paramlist[["n.cores"]])
+        cl <- parallel::makeCluster(.Object@paramlist[["n.cores"]])
         for(i in seq(n_group)){
             thisGroup.motif <- motif_in_group[[i]]
             thisGroup.motifname <- names(thisGroup.motif)
@@ -204,7 +204,10 @@ setMethod(
 #' @importFrom rtracklayer import
 #' @importFrom IRanges subsetByOverlaps
 #' @importFrom R.utils getAbsolutePath
-
+#' @importFrom parallel makeCluster
+#' @importFrom parallel parLapply
+#' @importFrom parallel stopCluster
+#'
 #' @name atacMotifScan
 #' @export
 #' @docType methods
