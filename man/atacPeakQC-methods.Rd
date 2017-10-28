@@ -63,10 +63,10 @@ library(magrittr)
 td <- tempdir()
 options(atacConf=setConfigure("tmpdir",td))
 
-bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
-blacklistfile <- system.file(package="ATACpipe", "extdata", "hg19.blacklist.bed")
+blacklistfile <- system.file(package="esATAC", "extdata", "hg19.blacklist.bed")
 library(BSgenome.Hsapiens.UCSC.hg19)
 bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) \%>\%
 atacPeakCalling \%>\% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19)

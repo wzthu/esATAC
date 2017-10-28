@@ -106,7 +106,7 @@ setMethod(
 #' @examples
 #'
 #' library(R.utils)
-#' fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
+#' fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="esATAC")
 #' frag <- as.vector(bunzip2(filename = fra_path,
 #' destname = file.path(getwd(), "chr20.50000.bed"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))

@@ -297,7 +297,7 @@ setMethod(f = "GetOrgDb",
 #' @import tools
 #' @import Rsamtools
 # @importFrom markdown markdownToHTML
-#' @useDynLib ATACpipe
+#' @useDynLib esATAC
 
 
 

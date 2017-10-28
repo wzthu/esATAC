@@ -1,7 +1,7 @@
-Package: ATACpipe
+Package: esATAC
 Type: Package
-Title: ATAC-seq Data Quantifying and Annotating Workflow
-Version: 0.99.17
+Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
+Version: 0.99.18
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
@@ -53,7 +53,7 @@ Suggests:
     testthat
 LinkingTo: Rcpp
 SystemRequirements: C++11
-Collate:
+Collate: 
     BaseProc.R
     BamToBed.R
     BedToBigWig.R

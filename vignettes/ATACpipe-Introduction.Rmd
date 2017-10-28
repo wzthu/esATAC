@@ -1,11 +1,11 @@
 ---
-title: "ATACpipe-Introduction"
+title: "esATAC-Introduction"
 author: "Zheng Wei and Wei Zhang"
 date: "`r date()`"
 output: html_document
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{An Introduction to ATACpipe}
+  %\VignetteIndexEntry{An Introduction to esATAC}
   %\VignetteEncoding{UTF-8}
 
   
@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 ## Introduction
 
-The ATACpipe package provides a dataflow graphs organized pipeline 
+The esATAC package provides a dataflow graphs organized pipeline 
 for quantifying and annotating ATAC-seq and DNase-seq Reads in R,
 which integrate the functionality of several R packages 
 (such as Rsamtools, ChIPpeakAnno and so on) and external softwares 
@@ -25,7 +25,7 @@ which integrate the functionality of several R packages
 through the Rowtie2 package and 
 [Fseq](http://fureylab.web.unc.edu/software/fseq)[3]). 
 Users can call the preset pipeline functions or 
-rebuild the workflow with elements process of ATACpipe
+rebuild the workflow with elements process of esATAC
 for sequence data (FASTQ, SAM, BAM, BED file) complete/partial processing 
 and analyzing easily and flexibly in a single R script.
 That will be convenient to migrate, share and reproduce all 
@@ -34,11 +34,11 @@ Besides, a quality control report file in HTML,
 which is able to be viewed in web browser,
 will be created in preset pipelines.
 
-ATACpipe can be easily installed on various operator system platforms
+esATAC can be easily installed on various operator system platforms
 (Windows, Linux, Mac OS). All functions in package consume up to 16G memory.
 Most function only consume less than 8G. So the package is available for 
 not only servers but also  most of PC.
-ATACpipe supports analysis of both single end reads and
+esATAC supports analysis of both single end reads and
 paired-end ATAC-seq and DNase-seq sequencing reads data.
 We have successfully apply the pipeline on 
 raw datasets (FASTQ files) from GEO. 
@@ -54,7 +54,7 @@ If you do not know where to start with ATAC-seq or DNase-seq data,
 you can print flowchart like this:
 
 ```{r flowchart,message=FALSE,warning=FALSE}
-library(ATACpipe)
+library(esATAC)
 printMap()
 ```
 
@@ -100,22 +100,22 @@ email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 
 ### Package Installation
 
-To install the latest version of ATACpipe, you will need to be using the
-latest version of R. ATACpipe is part of Bioconductor project, 
-so you can install ATACpipe and its dependencies like this:
+To install the latest version of esATAC, you will need to be using the
+latest version of R. esATAC is part of Bioconductor project, 
+so you can install esATAC and its dependencies like this:
 
 source("http://www.bioconductor.org/biocLite.R")
 
-biocLite("ATACpipe")
+biocLite("esATAC")
 
 
 ### Loading
 
 Just like other R package, 
-you need to load ATACpipe like this each time before using the package.
+you need to load esATAC like this each time before using the package.
 
 ```{r loading0,message=FALSE}
-library(ATACpipe)
+library(esATAC)
 ```
 If you need to use fseq, 
 we recommend to set max memory size for java (8G, 8000M in the example).
@@ -229,12 +229,12 @@ dir.create(file.path(td,"ref"))
 options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 options(atacConf=setConfigure("genome","hg19"))
 bedbzfile11 <- c(
-    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2")
+    system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2")
 )
 bedbzfile12 <- c(
-    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz"),
-    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+    system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+    system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 )
 # for single end
 dir.create(file.path(td,"single"))
@@ -282,12 +282,12 @@ dir.create(file.path(td,"ref"))
 options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 options(atacConf=setConfigure("genome","hg19"))
 case <- c(
-    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+    system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
 )
 ctrl <- c(
-    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
-    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+    system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+    system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 )
 conclusion<-atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 ```
@@ -313,7 +313,7 @@ adapter removed clean reads fastq file(s) that is ready for mapping.
 
 ```{r Preprocess, warning = FALSE, results = 'hide', message = FALSE}
 # Identify adapters
-prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
+prefix<-system.file(package="esATAC", "extdata", "uzmg")
 (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
 
@@ -339,14 +339,14 @@ Then bowtie2 mapping functions could used to map reads to reference genome.
 ```{r Mapping, warning = FALSE, results = 'hide', message = FALSE}
 ## Building a bowtie2 index
 library("Rbowtie2")
-refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
+refs <- dir(system.file(package="esATAC", "extdata", "bt2","refs"),
 full=TRUE)
 bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
 "--threads 4 --quiet",overwrite=TRUE)
 ## Alignments
-reads_1 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
+reads_1 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 "reads_1.fastq")
-reads_2 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
+reads_2 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 "reads_2.fastq")
 if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
     (bowtie2Mapping(bt2Idx = file.path(td, "lambda_virus"),
@@ -371,7 +371,7 @@ During converting, the operation like sorting, shifting, filtering chromosome an
 can also be set to do in the meantime.
 
 ```{r Convert, warning = FALSE, results = 'hide', message = FALSE}
-sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
+sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBed(samInput = samfile) 
@@ -382,7 +382,7 @@ samToBed(samInput = samfile)
 Filter the nucleosome free reads(<100bp) for peak calling.
 
 ```{r FiltCalling, warning = FALSE, results = 'hide', message = FALSE}
-bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
@@ -404,8 +404,8 @@ Function "atacPeakAnno" and "peakanno" accept a bed file path as an input, users
 The following example is to exhibit how to annotate a UCSC bed file.
 
 ```{r echo = TRUE, results = 'hide', message = FALSE}
-## extract example peak file from package "ATACpipe"
-p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="ATACpipe")
+## extract example peak file from package "esATAC"
+p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
 peak1_path <- as.vector(bunzip2(filename = p1bz,
 destname = file.path(getwd(), "Example_peak1.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
@@ -473,7 +473,7 @@ Multi-motif is supported, and the output file is named by your input PWM list. f
 The input motif PWM matrix is stored in a list like below.
 
 ```{r eval=TRUE, echo=TRUE, warning=FALSE}
-pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
 
 pwm
 ```
@@ -481,7 +481,7 @@ pwm
 Using "motifscan" function to search motif in given genome regions, UCSC bed file is recommended.
 
 ```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
-sample.path <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
+sample.path <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="esATAC")
 sample.path <- as.vector(bunzip2(filename = sample.path,
 destname = file.path(getwd(), "chr20_sample_peak.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
@@ -512,7 +512,7 @@ First, collecting all cut site from the bed file(Note: every line in the bed fil
 
 ```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
 ## extract cut site position from bed file
-fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
+fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="esATAC")
 frag <- as.vector(bunzip2(filename = fra_path,
 destname = file.path(getwd(), "chr20.50000.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
@@ -537,12 +537,12 @@ Note: we only using a small part of the chromatin 20 as example.
 
 ### Workflow Map 
 
-ATACpipe is organized in data flow graph. Except for referring manual, 
+esATAC is organized in data flow graph. Except for referring manual, 
 the user may print the map to know workflow order.
 
 
 ```{r printmap, warning=FALSE, message=FALSE}
-bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
@@ -577,7 +577,7 @@ getParam(peakproc,"fragmentSize")
 ### Report Value
 Similarly, it is also easy to query the report value calculated by the process with ATACProc objects
 ```{r getReport, warning=FALSE, results='hide', message=FALSE}
-sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
+sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBedProc<-samToBed(samInput = samfile)
