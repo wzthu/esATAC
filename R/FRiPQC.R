@@ -118,6 +118,33 @@ setMethod(
 
 
 setMethod(
+    f = "processing",
+    signature = "FRiPQC",
+    definition = function(.Object,...){
+        qcval=list();
+        if(is.null(.Object@paramlist[["bsgenome"]])){
+            genome <- seqinfo(.obtainConfigure("bsgenome"))
+        }else{
+            genome <- seqinfo(.Object@paramlist[["bsgenome"]])
+        }
+        message("load reads")
+        gr_a <- rtracklayer::import(con = .Object@paramlist[["readsBedInput"]], genome = genome,format = "bed")
+        message("load peak")
+        gr_b <- rtracklayer::import(con = .Object@paramlist[["peakBedInput"]], genome = genome,format = "bed")
+        message("get overlap number")
+        qcval[["peakReads"]]<-length(subsetByOverlaps(gr_a, gr_b, ignore.strand = TRUE))
+        message("finish overlap")
+        qcval[["totalReads"]]<-length(gr_a)
+        qcval[["totalPeaks"]]<-length(gr_b)
+        qcval[["FRiP"]]<-qcval[["peakReads"]]/qcval[["totalReads"]]
+        #unlink(paste0(.Object@paramlist[["reportPrefix"]],".tmp"))
+        ####.Object@paramlist[["qcval"]]<-qcval
+        write.table(as.data.frame(qcval),file = .Object@paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+        .Object
+    }
+)
+
+setMethod(
     f = "getReportItemsImp",
     signature = "FRiPQC",
     definition = function(.Object){
@@ -168,16 +195,17 @@ setMethod(
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
-#' bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+#' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #'
 #' readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 #' peaksProc<- readsProc %>% atacPeakCalling
 #' library(BSgenome.Hsapiens.UCSC.hg19)
-#' \dontrun{
+#' 
 #' atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
-#' }
+#' 
+
 #' @name atacFripQC
 #' @export
 #' @docType methods
@@ -185,6 +213,7 @@ setMethod(
 setGeneric("atacFripQC",function(atacProcReads,atacProcPeak,bsgenome = NULL,
                                   reportOutput=NULL,readsBedInput=NULL,
                                   peakBedInput=NULL, ...) standardGeneric("atacFripQC"))
+
 
 #' @rdname atacFripQC-methods
 #' @aliases atacFripQC

@@ -66,6 +66,7 @@ setMethod(
 
         txdb<-.Object@paramlist[["knownGene"]]
         #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
+
         TSS <- promoters(txdb, upstream=.Object@paramlist[["updownstream"]], downstream=1+.Object@paramlist[["updownstream"]])
         #end(trans)<-start(trans)+1
         TSS<-unique(TSS)
@@ -233,7 +234,7 @@ setMethod(
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
-#' bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+#' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -250,6 +251,7 @@ setMethod(
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                                   reportPrefix=NULL,bedInput = NULL,
                                   fregLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
+
 #' @rdname atacTSSQC-methods
 #' @aliases atacTSSQC
 setMethod(

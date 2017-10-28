@@ -2,38 +2,38 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 fastxrenamer <- function(argvs) {
-    .Call('_ATACpipe_fastxrenamer', PACKAGE = 'ATACpipe', argvs)
+    .Call('_esATAC_fastxrenamer', PACKAGE = 'esATAC', argvs)
 }
 
 mergeFile <- function(destFile, fileList) {
-    invisible(.Call('_ATACpipe_mergeFile', PACKAGE = 'ATACpipe', destFile, fileList))
+    invisible(.Call('_esATAC_mergeFile', PACKAGE = 'esATAC', destFile, fileList))
 }
 
 R_sam2bed_wrapper <- function(argvs, filterList) {
-    .Call('_ATACpipe_R_sam2bed_wrapper', PACKAGE = 'ATACpipe', argvs, filterList)
+    .Call('_esATAC_R_sam2bed_wrapper', PACKAGE = 'esATAC', argvs, filterList)
 }
 
 R_sam2bed_merge_wrapper <- function(argvs, filterList) {
-    .Call('_ATACpipe_R_sam2bed_merge_wrapper', PACKAGE = 'ATACpipe', argvs, filterList)
+    .Call('_esATAC_R_sam2bed_merge_wrapper', PACKAGE = 'esATAC', argvs, filterList)
 }
 
 bedOprUtils <- function(argvs, filterList) {
-    .Call('_ATACpipe_bedOprUtils', PACKAGE = 'ATACpipe', argvs, filterList)
+    .Call('_esATAC_bedOprUtils', PACKAGE = 'esATAC', argvs, filterList)
 }
 
 lib_complex_qc <- function(argvs) {
-    .Call('_ATACpipe_lib_complex_qc', PACKAGE = 'ATACpipe', argvs)
+    .Call('_esATAC_lib_complex_qc', PACKAGE = 'esATAC', argvs)
 }
 
 ChrDivi_wrapper <- function(argvs) {
-    .Call('_ATACpipe_ChrDivi_wrapper', PACKAGE = 'ATACpipe', argvs)
+    .Call('_esATAC_ChrDivi_wrapper', PACKAGE = 'esATAC', argvs)
 }
 
 CutCountPre_wrapper <- function(argvs) {
-    .Call('_ATACpipe_CutCountPre_wrapper', PACKAGE = 'ATACpipe', argvs)
+    .Call('_esATAC_CutCountPre_wrapper', PACKAGE = 'esATAC', argvs)
 }
 
 CutSiteCount_wrapper <- function(argvs) {
-    .Call('_ATACpipe_CutSiteCount_wrapper', PACKAGE = 'ATACpipe', argvs)
+    .Call('_esATAC_CutSiteCount_wrapper', PACKAGE = 'esATAC', argvs)
 }
 

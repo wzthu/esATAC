@@ -1,7 +1,7 @@
-Package: ATACpipe
+Package: esATAC
 Type: Package
-Title: ATAC-seq Data Quantifying and Annotating Workflow
-Version: 0.99.15
+Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
+Version: 0.99.18
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
@@ -58,11 +58,11 @@ Imports:
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
-    org.Hs.eg.db
+    org.Hs.eg.db,
+    testthat
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
-    ATACpipe.R
     BaseProc.R
     BamToBed.R
     BedToBigWig.R
@@ -103,3 +103,4 @@ VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
+

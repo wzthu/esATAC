@@ -49,12 +49,12 @@ dir.create(file.path(td,"ref"))
 options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 options(atacConf=setConfigure("genome","hg19"))
 case <- c(
-    system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-    system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+    system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+    system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
 )
 ctrl <- c(
-    system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
-    system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+    system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+    system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 )
 atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 }

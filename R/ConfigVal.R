@@ -237,6 +237,7 @@ setMethod(f = "GetOrgDb",
 #' @seealso
 #' \code{\link{atacSamToBed}}
 #' \code{\link{atacBedUtils}}
+
 #' @examples
 #' getAllConfigure()
 #'
@@ -244,6 +245,7 @@ setMethod(f = "GetOrgDb",
 #'
 #' options(atacConf=setConfigure("tmpdir",tempdir()))
 #'
+
 #' @importFrom Rcpp  evalCpp
 #' @importFrom igraph  graph
 #' @importFrom igraph vertex.attributes
@@ -309,7 +311,9 @@ setMethod(f = "GetOrgDb",
 #' @import Rsamtools
 #' @import methods
 # @importFrom markdown markdownToHTML
-#' @useDynLib ATACpipe
+#' @useDynLib esATAC
+
+
 
 
 

@@ -120,6 +120,7 @@ setMethod(
     }
 )
 
+
 #' @name atacPeakCalling
 #' @title Use F-seq to call peak
 #' @description
@@ -174,7 +175,7 @@ setMethod(
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
-#' bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+#' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #'
@@ -191,6 +192,7 @@ setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,gen
                                          fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                                          ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
                                          wiggleTrackStep=NULL,threshold=NULL,verbose=TRUE,
+
                                          wgThresholdSet=NULL, ...) standardGeneric("atacPeakCalling"))
 
 #' @rdname atacPeakCalling-methods

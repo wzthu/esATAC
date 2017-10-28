@@ -1,5 +1,5 @@
 ---
-title: "ATACpipe Report"
+title: "esATAC Report"
 author: "Zheng Wei and Wei Zhang"
 date: "`r Sys.Date()`"
 output: 
@@ -237,6 +237,7 @@ knitr::kable(data.frame(Items=casetb[["Item"]],
                         Control=ctrltb[["Value"]]
                         ))
 ```
+
 
 ## Peak annotation
 
@@ -482,11 +483,12 @@ All motif footprint figures are saved as pdf files.
 [Click to Visit Ctrl Specific Footprint file](`r ctrlsp.dir`)
 
 
+
 # Annotation of Items in Table 
 
-For single end sequencing data, ATACpipe will counts reads number. 
+For single end sequencing data, esATAC will counts reads number. 
 
-For paired end sequencing data, ATACpipe will counts read pairs or fragment number.
+For paired end sequencing data, esATAC will counts read pairs or fragment number.
 
 * __Sequence files type__
 is the type of sequencing data: single end data and paired end data.

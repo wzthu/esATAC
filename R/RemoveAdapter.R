@@ -58,6 +58,10 @@ setMethod(
             .Object@paramlist[["reportPrefix"]] <- reportPrefix;
         }
 
+        .Object@paramlist[["reportPrefix_adapter1_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter1")
+        .Object@paramlist[["reportPrefix_adapter2_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter2")
+        
+
         .Object@paramlist[["adapter1"]] <- adapter1
         .Object@paramlist[["adapter2"]] <- adapter2
 
@@ -491,7 +495,7 @@ listToFrame <- function(a){
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
 #' # Identify adapters
-#' prefix<-system.file(package="ATACpipe", "extdata", "uzmg")
+#' prefix<-system.file(package="esATAC", "extdata", "uzmg")
 #' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 #' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
 #'

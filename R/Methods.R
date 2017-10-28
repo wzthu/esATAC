@@ -66,11 +66,26 @@ getSuffixlessFileName = function(filePath){
 }
 
 
-
-#' @name atacPipe
-#' @title Pipeline for single replicate
+#' @docType package
+#' @name esATAC-package
+#' @details 
+#' See packageDescription('esATAC') for package details.
+#'
+#' @title esATAC: ATAC-seq Data Quantifying and Annotating Workflow
 #' @description
-#' The pipeline to process sequencing data into destination files including
+#' This package provides a framework and
+#' complete preset pipeline for the quantification
+#' and analysis of ATAC-seq and DNase-seq Reads.
+#' It covers a complete workflow
+#' starting from raw sequence reads,
+#' over creation of alignments
+#' and quality control report, to the quantification of genomic
+#' regions of interest. The package is managed by dataflow graph,
+#' and users can also build their own pipeline easily and flexibly.
+#'
+#' Pipeline for single replicate is shown below. 
+#' For case control study, see: \code{\link{atacPipe2}}.
+#' The pipeline is to process sequencing data into destination files including
 #' a HTML report file reads storage files (BED BAM)
 #' and various quality control report files.
 #' @param fastqInput1 \code{Character} vector. For single-end sequencing,
@@ -94,14 +109,15 @@ getSuffixlessFileName = function(filePath){
 #' @param prefix For identifying files.
 #' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
-#' @author Zheng Wei
-#' @seealso
-#' \code{\link{atacSamToBed}}
-#' \code{\link{atacBedUtils}}
-#' @import JASPAR2016
-#' @importFrom TFBSTools getMatrixSet
-#' @importFrom TFBSTools toPWM
-#' @importFrom TFBSTools name
+#' @author Zheng Wei and Wei Zhang
+#' @seealso 
+#' \code{\link{printMap}},
+#' \code{\link{atacPipe2}},
+#' \code{\link{atacRenamer}},
+#' \code{\link{atacRemoveAdapter}},
+#' \code{\link{atacBowtie2Mapping}},
+#' \code{\link{atacPeakCalling}},
+#' \code{\link{atacMotifScan}}
 #' @examples
 #' \dontrun{
 #' td<-tempdir()
@@ -112,12 +128,12 @@ getSuffixlessFileName = function(filePath){
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
 #' bedbzfile11 <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2")
+#'     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+#'     system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2")
 #' )
 #' bedbzfile12 <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+#'     system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+#'     system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 #' )
 #' # for single end
 #' dir.create(file.path(td,"single"))
@@ -168,8 +184,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
 
+
         if(is.null(motifPWM)){
-            # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+            # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
             # motif information
             opts <- list()
             opts[["species"]] <- 9606
@@ -470,7 +487,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
 
-        rmdfile<-system.file(package="ATACpipe", "extdata", "Report.Rmd")
+        rmdfile<-system.file(package="esATAC", "extdata", "Report.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 
@@ -530,12 +547,12 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' options(atacConf=setConfigure("genome","hg19"))
 #' case <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.1.fq.gz"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.1.fq.gz")
+#'     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+#'     system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
 #' )
 #' ctrl <- c(
-#'     system.file(package="ATACpipe", "extdata", "chr20_1.2.fq.bz2"),
-#'     system.file(package="ATACpipe", "extdata", "chr20_2.2.fq.bz2")
+#'     system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+#'     system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 #' )
 #' atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 #          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
@@ -559,7 +576,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
 
     if(is.null(motifPWM)){
-        # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+        # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
         # motif information
         opts <- list()
         opts[["species"]] <- 9606
@@ -578,6 +595,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
                 createReport = FALSE, motifPWM =pwm, prefix = "CTRL_all_data") #saveTmp = TRUE,
+
 
     bed.case <- getParam(caselist$atacProcs$sam2Bed, "bedOutput")
     bed.ctrl <- getParam(ctrllist$atacProcs$sam2Bed, "bedOutput")
@@ -640,12 +658,12 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
 
-        rmdfile<-system.file(package="ATACpipe", "extdata", "Report2.Rmd")
+        rmdfile<-system.file(package="esATAC", "extdata", "Report2.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 
         workdir <- getwd()
-        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,comp_result,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
+        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
 
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"))

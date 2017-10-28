@@ -190,7 +190,7 @@ setMethod(
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
-#' sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
+#' sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 #' samfile <- file.path(td,"Example.sam")
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' atacproc<-samToBed(samInput = samfile) %>%
@@ -203,6 +203,7 @@ setMethod(
 setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                                   posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                                   sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...) standardGeneric("atacBedUtils"))
+
 #' @rdname atacBedUtils-methods
 #' @aliases atacBedUtils
 setMethod(

@@ -1,5 +1,5 @@
 ---
-title: "ATACpipe Report"
+title: "esATAC Report"
 author: "Zheng Wei and Wei Zhang"
 date: "`r Sys.Date()`"
 output: 
@@ -212,9 +212,11 @@ axis(1, at = 100 + footprint_figure.length + seq(1, 100, len = 3),
     labels = seq(0, 100, len = 3),
     padj = -1.0, tck = -0.01)
 axis(2, padj = 1.0,tck = -0.02)
+
 abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
 
 pdf.dir <- atacProcs$footprint$getReportVal("pdf.dir")
+
 ```
 
 All motif footprint figures are saved as pdf files.
@@ -224,9 +226,9 @@ All motif footprint figures are saved as pdf files.
 # Annotation of items in table 
 
 
-For single end sequencing data, ATACpipe will counts reads number. 
+For single end sequencing data, esATAC will counts reads number. 
 
-For paired end sequencing data, ATACpipe will counts read pairs or fragment number.
+For paired end sequencing data, esATAC will counts read pairs or fragment number.
 
 * __Sequence files type__
 is the type of sequencing data: single end data and paired end data.

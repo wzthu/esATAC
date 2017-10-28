@@ -78,6 +78,7 @@ setMethod(f = "initialize",
               gph2<-getGraph(.Object,edges2)
 
 
+
               #create merged graph
               edges<-c(edges1,edges2)
               # for(i in seq(1,length(edges2),2)){
@@ -88,10 +89,8 @@ setMethod(f = "initialize",
               #     }
               # }
 
+
               gph<-getGraph(.Object,edges)
-
-
-
 
               .Object@private$graph<-gph
               .Object@private$graph1<-gph1
@@ -162,6 +161,7 @@ setMethod(f = "graphPrintMap",
                       tempMap%>%export_graph(file_name = file.path(.obtainConfigure("tmpdir"),"currentMap.pdf"),file_type="pdf")
 
                   }
+
 
               }
           })
@@ -286,8 +286,8 @@ setMethod(f = "getGraph",
                   fontcolor = "Black",
                   style = "filled"
 
-
               )
+
 
               startidx<-as.vector(sapply(edges[seq(1,length(edges),2)],function(x) which(x==nodes)))
               endidx<-as.vector(sapply(edges[seq(2,length(edges),2)],function(x) which(x==nodes)))

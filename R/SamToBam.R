@@ -102,7 +102,7 @@ setMethod(
 #' @examples
 #'
 #' library(R.utils)
-#' sam_bz <- system.file("extdata", "Example.sam.bz2", package="ATACpipe")
+#' sam_bz <- system.file("extdata", "Example.sam.bz2", package="esATAC")
 #' sam_path <- as.vector(bunzip2(filename = sam_bz,
 #' destname = file.path(getwd(), "Example.sam"),
 #' ext="bz2", FUN=bzfile, remove = FALSE))

@@ -109,6 +109,7 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacBam2Bed-methods
+
 setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, ...) standardGeneric("atacBam2Bed"))
 
 #' @rdname atacBam2Bed-methods
@@ -116,7 +117,9 @@ setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, 
 setMethod(
     f = "atacBam2Bed",
     signature = "ATACProc",
+
     definition = function(atacProc, bamInput = NULL, bedOutput = NULL, ...){
+
         atacproc <- new("BamToBed", atacProc = atacProc, bamInput = bamInput, bedOutput = bedOutput)
         atacproc <- process(atacproc)
         invisible(atacproc)
@@ -125,6 +128,7 @@ setMethod(
 
 #' @rdname atacBam2Bed-methods
 #' @export
+
 bam2bed <- function(bamInput, bedOutput = NULL, ...){
     atacproc <- new("BamToBed", atacProc = NULL, bamInput = bamInput, bedOutput = bedOutput)
     atacproc <- process(atacproc)

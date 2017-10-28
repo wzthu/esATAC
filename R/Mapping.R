@@ -248,14 +248,14 @@ setMethod(
 #'
 #' ## Building a bowtie2 index
 #' library("Rbowtie2")
-#' refs <- dir(system.file(package="ATACpipe", "extdata", "bt2","refs"),
+#' refs <- dir(system.file(package="esATAC", "extdata", "bt2","refs"),
 #' full=TRUE)
 #' bowtie2_build(references=refs, bt2Index=file.path(td, "lambda_virus"),
 #' "--threads 4 --quiet",overwrite=TRUE)
 #' ## Alignments
-#' reads_1 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
+#' reads_1 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 #' "reads_1.fastq")
-#' reads_2 <- system.file(package="ATACpipe", "extdata", "bt2", "reads",
+#' reads_2 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 #' "reads_2.fastq")
 #' if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
 #'     (bowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
@@ -268,7 +268,9 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacBowtie2Mapping-methods
+
 setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...) standardGeneric("atacBowtie2Mapping"))
+
 
 
 #' @rdname atacBowtie2Mapping-methods
@@ -277,6 +279,7 @@ setMethod(
     f = "atacBowtie2Mapping",
     signature = "ATACProc",
     definition = function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
+
         atacproc<-new("Bowtie2Mapping",atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
                                      fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
         atacproc <- process(atacproc)

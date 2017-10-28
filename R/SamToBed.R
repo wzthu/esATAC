@@ -131,7 +131,6 @@ setMethod(
 )
 
 
-
 setMethod(
     f = "checkAllPath",
     signature = "SamToBed",
@@ -257,7 +256,7 @@ setMethod(
 #' td <- tempdir()
 #' options(atacConf=setConfigure("tmpdir",td))
 #'
-#' sambzfile <- system.file(package="ATACpipe", "extdata", "Example.sam.bz2")
+#' sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 #' samfile <- file.path(td,"Example.sam")
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' samToBed(samInput = samfile)

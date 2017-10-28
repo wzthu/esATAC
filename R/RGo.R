@@ -43,6 +43,7 @@ setMethod(
             }else{
                 .Object@paramlist[["goOutput"]] <- paste(goOutput, ".df", sep = "")
             }
+
         }
 
         .Object@paramlist[["keytype"]] <- keytype
@@ -92,6 +93,7 @@ setMethod(
         if(is.null(.Object@paramlist[["gene"]])){
             stop("Parameter atacProc or gene is required!")
         }
+
         if(is.null(.Object@paramlist[["OrgDb"]])){
             stop("Parameter OrgDb is required!")
         }
@@ -117,7 +119,6 @@ setMethod(
         }
     }
 )
-
 
 setMethod(
     f = "getReportItemsImp",
@@ -180,6 +181,7 @@ setMethod(
 setGeneric("atacGOAnalysis",function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                                      pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
                                      readable = FALSE, pool = FALSE, goOutput = NULL, ...) standardGeneric("atacGOAnalysis"))
+
 #' @rdname atacGOAnalysis-methods
 #' @aliases atacGOAnalysis
 setMethod(

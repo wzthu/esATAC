@@ -11,7 +11,9 @@ setMethod(
                           strandLength = NULL, FootPrint = TRUE, prefix = NULL, editable = FALSE){
         .Object <- init(.Object, "CutSiteCountR", editable, list(arg1 = atacProcCutSite, arg2 = atacProcMotifScan))
 
+
         # necessary parameters
+
         if(!is.null(atacProcCutSite)){
             .Object@paramlist[["csfile.dir"]] <- getParam(atacProcCutSite, "csfile.dir");
         }else{
@@ -22,6 +24,7 @@ setMethod(
         }else{
             .Object@paramlist[["motif_info"]] <- readRDS(motif_info)
         }
+
         .Object@paramlist[["chr"]] <- as.list(chr)
         .Object@paramlist[["strandLength"]] <- strandLength
         .Object@paramlist[["FootPrint"]] <- FootPrint
@@ -94,6 +97,7 @@ setMethod(
             motif_tmp <- paste(tmp_dir, "/Motif", sep = "")
             motif_file_index <- normalizePath(motif_file_index)
 
+
             chr <- .Object@paramlist[["chr"]]
             chr_len <- length(chr)
             data <- data.frame()  # save all matrix
@@ -150,7 +154,6 @@ setMethod(
 
         }
         saveRDS(object = footprint_data, file = .Object@paramlist[["footprint.data"]])
-
         .Object
     }
 )
@@ -190,6 +193,7 @@ setMethod(
 )
 
 
+
 setMethod(
     f = "getReportItemsImp",
     signature = "CutSiteCountR",
@@ -199,8 +203,8 @@ setMethod(
 )
 
 
-
 #' @title Count cut site number in given motif region and plot footprint.
+
 #' @description This function is used to count cut site number in given motif
 #' regions and plot footprint. Multi-motif is supported.
 #' NOTE: The input parameter is a a little bit complex,
@@ -243,28 +247,27 @@ setMethod(
 #' @author Wei Zhang
 #' @examples
 #'
-#' \dontrun{
-#' # library(R.utils)
-#' # library(BSgenome.Hsapiens.UCSC.hg19)
+#' library(R.utils)
+#' library(BSgenome.Hsapiens.UCSC.hg19)
 #' ## processing bed file
-#' # fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="ATACpipe")
-#' # frag <- as.vector(bunzip2(filename = fra_path,
-#' # destname = file.path(getwd(), "chr20.50000.bed"),
-#' # ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-#' # cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
+#' fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="esATAC")
+#' frag <- as.vector(bunzip2(filename = fra_path,
+#' destname = file.path(getwd(), "chr20.50000.bed"),
+#' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
 #'
 #' ## find motif position
-#' # p1bz <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="ATACpipe")
-#' # peak1_path <- as.vector(bunzip2(filename = p1bz,
-#' # destname = file.path(getwd(), "chr20_sample_peak.bed"),
-#' # ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
-#' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="ATACpipe"))
+#' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
+#' peak1_path <- as.vector(bunzip2(filename = p1bz,
+#' destname = file.path(getwd(), "Example_peak1.bed"),
+#' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
+#' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
 #' # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
 #' # motifPWM = pwm, prefix = "test")
 #'
 #' ## plot footprint
 #' # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
-#' }
+#'
 #'
 #' @seealso
 #' \code{\link{atacExtractCutSite}}
@@ -279,6 +282,7 @@ setGeneric("atacCutSiteCount",
                     motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                     strandLength = 100, FootPrint = TRUE, prefix = NULL, ...) standardGeneric("atacCutSiteCount"))
 
+
 #' @rdname atacCutSiteCount-methods
 #' @aliases atacCutSiteCount
 setMethod(
@@ -287,6 +291,7 @@ setMethod(
     definition = function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
                           motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                           strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
+
         atacproc <- new(
             "CutSiteCountR",
             atacProcCutSite = atacProcCutSite,
@@ -307,6 +312,7 @@ setMethod(
 #' @export
 cutsitecount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                          strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
+
     atacproc <- new(
         "CutSiteCountR",
         atacProcCutSite = NULL,

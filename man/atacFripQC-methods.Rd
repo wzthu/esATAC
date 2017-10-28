@@ -67,16 +67,16 @@ library(magrittr)
 td <- tempdir()
 options(atacConf=setConfigure("tmpdir",td))
 
-bedbzfile <- system.file(package="ATACpipe", "extdata", "chr20.50000.bed.bz2")
+bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
 readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
 peaksProc<- readsProc \%>\% atacPeakCalling
 library(BSgenome.Hsapiens.UCSC.hg19)
-\dontrun{
+
 atacFripQC(readsProc,peaksProc,bsgenome=BSgenome.Hsapiens.UCSC.hg19)
-}
+
 }
 \seealso{
 \code{\link{atacSamToBed}}
