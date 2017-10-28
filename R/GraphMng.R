@@ -118,12 +118,12 @@ setMethod(f = "checkRelation1",
 
 
 setGeneric(name = "checkRelation2",
-           def = function(graphMngObj,...){
+           def = function(graphMngObj,resultProcName,procName,...){
                standardGeneric("checkRelation2")
            })
 setMethod(f = "checkRelation2",
           signature = "GraphMng",
-          definition = function(graphMngObj,...){
+          definition = function(graphMngObj,resultProcName,procName,...){
               return(are.connected(graphMngObj@private$graphDep2,resultProcName,procName))
           })
 

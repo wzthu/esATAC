@@ -79,52 +79,36 @@ setMethod(
         readscounts <- merge(readscounts,mg,by="length",all = TRUE)
         readscounts$counts[is.na(readscounts$counts)]<-0
 
-        ggplot(readscounts, aes(length))+geom_ribbon(aes(ymin=0, ymax=counts))
-        ggsave(.Object@paramlist[["lendistrpdfOutput"]])
+        
+        
         write.table(x=readscounts,file = .Object@paramlist[["lendistrtxtOutput"]],quote = FALSE,row.names = FALSE,sep="\t")
+        ggplot(readscounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+        ggsave(.Object@paramlist[["lendistrpdfOutput"]])
+        
+        strength<-Mod(fft(readscounts$counts))/length(readscounts$counts)
+        periodx<-length(readscounts$counts)/(1:(length(readscounts$counts)-1))
+        strength<-strength[2:length(strength)]
+        
+        rs1<-as.data.frame(cbind(periodx[periodx<20&periodx>2],strength[periodx<20&periodx>2],0))
+        rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&periodx>2],1))
+        rs<-rbind(rs1,rs2)
+        colnames(rs)<-c("period","strength","check")
+        
+        g1<-ggplot(rs[rs["check"]==0,]) + 
+            geom_vline(xintercept = 10.4, linetype=2)+ 
+            geom_line(aes(x=period,y=strength),color="Red")+ 
+            theme_bw() + theme(panel.grid =element_blank()) + 
+            annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), 
+                     label = "10.4bp") +xlab("period") + ylab("strength")
+        ggsave(.Object@paramlist[["dnagroovepdfOutput"]])
+        g2<-ggplot(rs[rs["check"]==1,]) + 
+            geom_vline(xintercept = 186, linetype=2)+ 
+            geom_line(aes(x=period,y=strength),color="Red")+ 
+            theme_bw() + theme(panel.grid =element_blank()) + 
+            annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), 
+                     label = "186bp") +xlab("period") + ylab("strength")  
+        ggsave(.Object@paramlist[["histonepdfOutput"]])
 
-        rs<-Mod(fft(readscounts$counts))/length(readscounts$counts)
-        t<-length(readscounts$counts)/(1:(length(readscounts$counts)-1))
-        rs<-rs[2:length(rs)]
-        # t<-t[1:as.integer(length(t)/2)]
-        #rs<-rs[1:as.integer(length(rs)/2)]
-        tp<-rep(0,length(rs))
-        if(length(t)>15&&sum(t>10&t<11)<=1){
-            tp[max(which(t>10))+1]<-1
-            tp[min(which(t<11))-1]<-1
-        }else{
-            tp[t>10&t<11]<-1
-        }
-        if(length(t)>220&&sum(t>100&t<200)<=1){
-            tp[max(which(t>100))+1]<-1
-            tp[min(which(t<200))-1]<-1
-        }else{
-            tp[t>100&t<200]<-2
-        }
-        if(length(t)>15){
-            rs1<-as.data.frame(cbind(t[t<20&t>2],rs[t<20&t>2],tp[t<20&t>2]))
-            #rs_1<-as.data.frame(cbind(t[t<20&t>2&tp==0],rs[t<20&t>2&tp==0],tp[t<20&t>2&tp==0]))
-            #rs_2<-as.data.frame(cbind(t[t<20&t>2&tp!=0],rs[t<20&t>2&tp!=0],tp[t<20&t>2&tp!=0]))
-            #colnames(rs_1)<-c("perior","strength","check")
-            #colnames(rs_2)<-c("perior","strength","check")
-            colnames(rs1)<-c("perior","strength","check")
-            # ggplot(rs1)+geom_line(aes(x=perior,y=strength))+geom_vline(xintercept = 10)+geom_vline(xintercept = 11)
-            #ggplot(rs1,aes(x=perior,y=strength))+geom_area(aes(fill="valence",color=check))
-            checkdna=1
-            ggplot(rs1)+geom_ribbon(data=subset(rs1,perior<=min(rs1$perior[rs1$check==checkdna])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,perior>=max(rs1$perior[rs1$check==checkdna])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs1,check==checkdna),aes(x=perior,ymin=0,ymax=strength),fill="red")
-            ggsave(.Object@paramlist[["dnagroovepdfOutput"]])
-        }
-        if(length(t)>220){
-            rs2<-as.data.frame(cbind(t[t<400&t>2],rs[t<400&t>2],tp[t<400&t>2]))
-            #rs2<-as.data.frame(cbind(t[t<500&t>2&rs>10&rs<11],rs[t<500&t>2&rs>10&rs<11]))
-            colnames(rs2)<-c("perior","strength","check")
-            #ggplot(rs2,aes(x=perior,y=strength))+geom_area(aes(fill="valence"))
-            #ggplot(rs2)+geom_line(aes(x=perior,y=strength))+geom_vline(xintercept = 150)+geom_vline(xintercept = 200)
-            #ggplot(allreadslen)+geom_density(aes(x="strength",fill="clarity"))
-            checkhistone=2
-            ggplot(rs2)+geom_ribbon(data=subset(rs2,perior<=min(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,perior>=max(rs2$perior[rs2$check==checkhistone])),aes(x=perior,ymin=0,ymax=strength),fill="blue")+geom_ribbon(data=subset(rs2,check==checkhistone),aes(x=perior,ymin=0,ymax=strength),fill="red")
-            ggsave(.Object@paramlist[["histonepdfOutput"]])
-        }
         .Object
     }
 )
@@ -221,6 +205,8 @@ setMethod(
 #'
 #' dir(td)
 #'
+#' @importFrom BiocGenerics counts 
+#' @importFrom ggplot2 geom_path ggplot geom_vline geom_line theme_bw theme annotate xlab ggsave element_blank
 #' @name atacFregLenDistr
 #' @export
 #' @docType methods

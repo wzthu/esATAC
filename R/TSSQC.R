@@ -242,7 +242,7 @@ setMethod(
 #' tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
 #'
 #' dir(td)
-#'
+#' @importFrom BiocGenerics strand
 
 #' @name atacTSSQC
 #' @export

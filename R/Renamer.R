@@ -186,6 +186,7 @@ singleCall<-function(number,.Object){
 #'
 #' dir(td)
 #'
+#' @importFrom parallel makeCluster parLapply stopCluster
 
 #' @name atacRenamer
 #' @export

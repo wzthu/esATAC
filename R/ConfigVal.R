@@ -1,4 +1,5 @@
 #' @importFrom Rbowtie2 bowtie2_build
+#' @importFrom Biostrings masks DNAStringSet injectHardMask
 setClass(Class = ".ConfigClass",
          slots = list(
              configList = "list",

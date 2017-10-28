@@ -509,7 +509,7 @@ setGeneric(name = "getSuflessFileName",
 setMethod(f = "getSuflessFileName",
           signature = "ATACProc",
           definition = function(.Object,filePath,...){
-              sfx=getSuffix(.Object,filePath)
+              sfx<-getSuffix(.Object,filePath)
               if(is.null(sfx)){
                   return(filePath)
               }else {
@@ -629,12 +629,12 @@ setGeneric(name = "processing",
            })
 
 setGeneric(name = "getReportValImp",
-           def = function(.Object,...){
+           def = function(.Object,item,...){
                standardGeneric("getReportValImp")
            })
 setMethod(f = "getReportValImp",
           signature = "ATACProc",
-          definition = function(.Object,...){
+          definition = function(.Object,item,...){
               return(.Object@reportVal[[item]])
           })
 setGeneric(name = "getReportItemsImp",

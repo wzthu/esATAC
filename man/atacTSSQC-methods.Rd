@@ -76,7 +76,6 @@ library(BSgenome.Hsapiens.UCSC.hg19)
 tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
 
 dir(td)
-
 }
 \seealso{
 \code{\link{atacSamToBed}}

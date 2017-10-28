@@ -134,7 +134,7 @@ setMethod(
 #' bedToBigWig(bedfile, BSgenome.Hsapiens.UCSC.hg19)
 #'
 #' dir(td)
-
+#' @importFrom rtracklayer export.wig export.bw
 
 #' @name atacBedToBigWig
 #' @export
