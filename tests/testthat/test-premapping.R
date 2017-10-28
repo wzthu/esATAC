@@ -27,12 +27,12 @@ test_that("Unzip and merge FASTQ files, remove adapter and mapping",{
     expect_true(file.exists(file.path(td,"reads_2.fastq.1.UnzipAndMerge.fq")))
     expect_true(file.exists(file.path(td,"reads_2.RemoveAdapter.fq")))
     expect_true(file.exists(file.path(td,"reads_2.Renamer.fq")))
-    UnzipAndMergeLog <- dir(td)[grepl(pattern = "UnzipAndMerge.*log",dir(td))]
-    RemoveAdapterLog <- dir(td)[grepl(pattern = "RemoveAdapter.*log",dir(td))]
-    RenamerLog <- dir(td)[grepl(pattern = "Renamer.*log",dir(td))]
+    UnzipAndMergeLog <- dir(td)[grepl(pattern = "UnzipAndMerge\\..*\\.log",dir(td))]
+    RemoveAdapterLog <- dir(td)[grepl(pattern = "RemoveAdapter\\..*\\.log",dir(td))]
+    RenamerLog <- dir(td)[grepl(pattern = "Renamer\\..*\\.log",dir(td))]
     expect_true(file.exists(file.path(td,UnzipAndMergeLog)))
     expect_true(file.exists(file.path(td,RemoveAdapterLog)))
-    expect_true(file.exists(file.path(td,RemoveAdapterLog)))
+    expect_true(file.exists(file.path(td,RenamerLog)))
 
 })
 
@@ -69,8 +69,8 @@ test_that("test bowtie2 mapping",{
     expect_true(file.exists(file.path(td, "result.sam")))
     expect_true(file.exists(file.path(td, "reads_1.Bowtie2Mapping.report")))
     
-    Bowtie2Mapping <- dir(td)[grepl(pattern = "Bowtie2Mapping.*log",dir(td))]
-    expect_true(file.exists(file.path(td,Bowtie2Mapping)))
+    Bowtie2MappingLog <- dir(td)[grepl(pattern = "Bowtie2Mapping\\..*\\.log",dir(td))]
+    expect_true(file.exists(file.path(td,Bowtie2MappingLog)))
     
 })
 
@@ -90,7 +90,7 @@ test_that("test fastqc",{
     qcreport(input_file = c(fq1, fq2))
     expect_true(file.exists(file.path(td, "chr20_1_FastQC.pdf")))
     
-    FastQC <- dir(td)[grepl(pattern = "FastQC.*log",dir(td))]
-    expect_true(file.exists(file.path(td,FastQC)))
+    FastQCLog <- dir(td)[grepl(pattern = "FastQC\\..*\\.log",dir(td))]
+    expect_true(file.exists(file.path(td,FastQCLog)))
 })
          
