@@ -9,15 +9,15 @@
 \title{Quality control for transcription start site(TSS) reads enrichment}
 \usage{
 atacTSSQC(atacProc, txdbKnownGene = NULL, bsgenome = NULL,
-  reportPrefix = NULL, bedInput = NULL, fregLenRange = c(0, 2000),
+  reportPrefix = NULL, bedInput = NULL, fragLenRange = c(0, 2000),
   tssUpdownstream = 1000, ...)
 
 \S4method{atacTSSQC}{ATACProc}(atacProc, txdbKnownGene = NULL,
   bsgenome = NULL, reportPrefix = NULL, bedInput = NULL,
-  fregLenRange = c(0, 2000), tssUpdownstream = 1000, ...)
+  fragLenRange = c(0, 2000), tssUpdownstream = 1000, ...)
 
 tssQC(bedInput, txdbKnownGene = NULL, bsgenome = NULL,
-  reportPrefix = NULL, fregLenRange = c(0, 2000), tssUpdownstream = 1000,
+  reportPrefix = NULL, fragLenRange = c(0, 2000), tssUpdownstream = 1000,
   ...)
 }
 \arguments{
@@ -38,8 +38,8 @@ The prefix of report files path.}
 \item{bedInput}{\code{Character} scalar.
 BED file input path.}
 
-\item{fregLenRange}{\code{Interger} vector of 2 element.
-The fregment length ranges.}
+\item{fragLenRange}{\code{Interger} vector of 2 element.
+The fragment length ranges.}
 
 \item{tssUpdownstream}{\code{Interger} scalar.
 The upstream and downstrem from TSS locations.}
@@ -73,7 +73,7 @@ bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(BSgenome.Hsapiens.UCSC.hg19)
-tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
+tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fragLenRange=c(180,247))
 
 dir(td)
 }

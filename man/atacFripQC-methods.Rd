@@ -58,8 +58,7 @@ generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
 If you want to use this function independently,
-\code{atacProc} should be set \code{NULL}
-or you can use \code{fregLenDistr} instead.
+or you can use \code{fripQC} instead.
 }
 \examples{
 library(R.utils)
@@ -71,7 +70,7 @@ bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
-readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
+readsProc<-bedUtils(bedInput = bedfile,maxFragLen = 100, chrFilterList = NULL)
 peaksProc<- readsProc \%>\% atacPeakCalling
 library(BSgenome.Hsapiens.UCSC.hg19)
 

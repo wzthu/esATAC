@@ -218,8 +218,7 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{fregLenDistr} instead.
+#' you can use \code{bowtie2Mapping} instead.
 #’ All additional arguments in paramList are interpreted as
 #' additional parameters to be passed on to
 #' bowtie2. You can put all aditional

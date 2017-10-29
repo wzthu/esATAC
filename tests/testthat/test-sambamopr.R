@@ -33,7 +33,7 @@ test_that("SAM to BED ",{
     samfile <- file.path(td,"Example.sam")
     bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
     atacproc<-samToBed(samInput = samfile) %>%
-    atacBedUtils(maxFregLen = 100, chrFilterList = NULL)
+    atacBedUtils(maxFragLen = 100, chrFilterList = NULL)
     expect_true(file.exists(file.path(td,"Example.BedUtils.bed")))
     expect_true(file.exists(file.path(td,"Example.BedUtils.report")))
     expect_true(file.exists(file.path(td,"Example.sam")))

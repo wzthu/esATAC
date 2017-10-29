@@ -79,8 +79,7 @@ generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
 If you want to use this function independently,
-\code{atacProc} should be set \code{NULL}
-or you can use \code{fregLenDistr} instead.
+you can use \code{bowtie2Mapping} instead.
 additional parameters to be passed on to
 bowtie2. You can put all aditional
 arguments in one \code{Character}(e.g. "--threads 8 --no-mixed")

@@ -48,7 +48,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-getReportVal(caselist$atacProcs$fregLenDistr,"readsCounts")
+readsCounts<-getReportVal(caselist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
 ```
 
@@ -56,7 +56,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-getReportVal(ctrllist$atacProcs$fregLenDistr,"readsCounts")
+readsCounts<-getReportVal(ctrllist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
 ```
 
@@ -144,7 +144,7 @@ knitr::kable(x = filtstat)
 ```
 
 
-## Fregment size distribution
+## Fragment size distribution
 
 ```{r fegdist, eval=TRUE}
 library(ggplot2)
@@ -169,8 +169,8 @@ getFsdG1G2 <- function(readsCounts){
     g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
     return(list(g1,g2))
 }
-readsCounts1<-getReportVal(caselist$atacProcs$fregLenDistr,"readsCounts")
-readsCounts2<-getReportVal(ctrllist$atacProcs$fregLenDistr,"readsCounts")
+readsCounts1<-getReportVal(caselist$atacProcs$fragLenDistr,"readsCounts")
+readsCounts2<-getReportVal(ctrllist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts1[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 ggplot(readsCounts2[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 g112<-getFsdG1G2(readsCounts1)

@@ -197,7 +197,7 @@ setMethod(
 #' merge interleave paired end reads,
 #' shift reads,
 #' filter reads according to chromosome,
-#' filter reads according to fregment size,
+#' filter reads according to fragment size,
 #' sort,
 #' remove duplicates reads before generating BED file.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
@@ -222,12 +222,12 @@ setMethod(
 #' Sort bed file in the order of chromatin, start, end
 #' @param uniqueBed \code{Logical} scalar
 #' Remove duplicates reads in bed if TRUE. default: FALSE
-#' @param minFregLen \code{Integer} scalar
-#' The minimum fregment size will be retained.
-#' @param maxFregLen \code{Integer} scalar
-#' The maximum fregment size will be retained.
+#' @param minFragLen \code{Integer} scalar
+#' The minimum fragment size will be retained.
+#' @param maxFragLen \code{Integer} scalar
+#' The maximum fragment size will be retained.
 #' @param saveExtLen \code{Logical} scaler
-#' Save the fregment that are not in the range of minFregLen and MaxFregLen
+#' Save the fragment that are not in the range of minFragLen and maxFragLen
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -236,14 +236,13 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{samToBed} instead.
+#' you can use \code{samToBed} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
 #' \code{\link{atacBowtie2Mapping}}
 #' \code{\link{bowtie2Mapping}}
-#' \code{\link{atacFregLenDistr}}
+#' \code{\link{atacFragLenDistr}}
 #' \code{\link{atacExtractCutSite}}
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacBedUtils}}
@@ -265,7 +264,7 @@ setMethod(
 #' @docType methods
 #' @rdname atacSamToBed-methods
 setGeneric("atacSamToBed",function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
-                                  samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
+                                  samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFragLen = 0,maxFragLen = 100,
                                   saveExtLen = FALSE,uniqueBed = TRUE, ...) standardGeneric("atacSamToBed"))
 
 #' @rdname atacSamToBed-methods
@@ -274,7 +273,7 @@ setMethod(
     f = "atacSamToBed",
     signature = "ATACProc",
     definition = function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
-                          samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
+                          samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFragLen = 0,maxFragLen = 100,
                           saveExtLen = FALSE,uniqueBed = TRUE, ...){
         atacproc <- new(
             "SamToBed",
@@ -287,8 +286,8 @@ setMethod(
             samInput = samInput,
             bedOutput = bedOutput,
             sortBed = sortBed,
-            minFregLen = minFregLen,
-            maxFregLen = maxFregLen,
+            minFregLen = minFragLen,
+            maxFregLen = maxFragLen,
             saveExtLen = saveExtLen,
             uniqueBed = uniqueBed)
         atacproc <- process(atacproc)
@@ -298,7 +297,7 @@ setMethod(
 #' @rdname atacSamToBed-methods
 #' @export
 samToBed <- function(samInput, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
-                         bedOutput = NULL, sortBed = TRUE, minFregLen = 0,maxFregLen = 100,
+                         bedOutput = NULL, sortBed = TRUE, minFragLen = 0,maxFragLen = 100,
                         saveExtLen = FALSE,uniqueBed = TRUE, ...){
     atacproc <- new(
         "SamToBed",
@@ -311,8 +310,8 @@ samToBed <- function(samInput, reportOutput =NULL,merge = c("auto","yes","no"), 
         samInput = samInput,
         bedOutput = bedOutput,
         sortBed = sortBed,
-        minFregLen = minFregLen,
-        maxFregLen = maxFregLen,
+        minFregLen = minFragLen,
+        maxFregLen = maxFragLen,
         saveExtLen = saveExtLen,
         uniqueBed = uniqueBed)
     atacproc <- process(atacproc)

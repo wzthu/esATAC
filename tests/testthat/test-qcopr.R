@@ -12,16 +12,16 @@ test_that("test fragments length distribute",{
     bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
     bedfile <- file.path(td,"chr20.50000.bed")
     bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
-    fregLenDistr(bedfile)
+    fragLenDistr(bedfile)
     #'
     dir(td)
     expect_true(file.exists(file.path(td,"chr20.50000.bed")))
-    expect_true(file.exists(file.path(td,"chr20.50000.FregLenDistr.dnagroove.pdf")))
-    expect_true(file.exists(file.path(td,"chr20.50000.FregLenDistr.histone.pdf")))
-    expect_true(file.exists(file.path(td,"chr20.50000.FregLenDistr.lendistr.pdf")))
-    expect_true(file.exists(file.path(td,"chr20.50000.FregLenDistr.lendistr.txt")))
-    FregLenDistrLog <- dir(td)[grepl(pattern = "FregLenDistr\\..*\\.log",dir(td))]
-    expect_true(file.exists(file.path(td,FregLenDistrLog)))
+    expect_true(file.exists(file.path(td,"chr20.50000.FragLenDistr.dnagroove.pdf")))
+    expect_true(file.exists(file.path(td,"chr20.50000.FragLenDistr.histone.pdf")))
+    expect_true(file.exists(file.path(td,"chr20.50000.FragLenDistr.lendistr.pdf")))
+    expect_true(file.exists(file.path(td,"chr20.50000.FragLenDistr.lendistr.txt")))
+    FragLenDistrLog <- dir(td)[grepl(pattern = "FragLenDistr\\..*\\.log",dir(td))]
+    expect_true(file.exists(file.path(td,FragLenDistrLog)))
     
 })
 
@@ -39,7 +39,7 @@ test_that("test TSS location enrichment ",{
     bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
     library(TxDb.Hsapiens.UCSC.hg19.knownGene)
     library(BSgenome.Hsapiens.UCSC.hg19)
-    tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247),tssUpdownstream = 100)
+    tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fragLenRange=c(180,247),tssUpdownstream = 100)
     
     
     expect_true(file.exists(file.path(td,"chr20.50000.bed")))
@@ -65,7 +65,7 @@ test_that("test FRiP and peak enrichment quality control and peak calling ",{
     bedfile <- file.path(td,"chr20.50000.bed")
     bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
     #'
-    readsProc<-bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL)
+    readsProc<-bedUtils(bedInput = bedfile,maxFragLen = 100, chrFilterList = NULL)
     peaksProc<- readsProc %>% atacPeakCalling
     
     library(BSgenome.Hsapiens.UCSC.hg19)

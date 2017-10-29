@@ -140,10 +140,10 @@ setMethod(
 #' @name atacPeakQC
 #' @title Quality control for peak overlap
 #' @description
-#' These functions are used to generate fregment distribution plot.
-#' The fourier transform of fregment distribution will be calculated.
-#' Strength distribution around period at 10.4bp and 180bp
-#' will be shown in another two plots.
+#' These functions are used to 
+#' calculate the overlap ratio in specific quality control rigion.
+#' Blacklist and DHS region are provided. 
+#' You can also set your own BED file as quality control rigion.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSamToBed}},
@@ -165,8 +165,7 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{peakQC} instead.
+#' you can use \code{peakQC} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -184,7 +183,7 @@ setMethod(
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #' blacklistfile <- system.file(package="esATAC", "extdata", "hg19.blacklist.bed")
 #' library(BSgenome.Hsapiens.UCSC.hg19)
-#' bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
+#' bedUtils(bedInput = bedfile,maxFragLen = 100, chrFilterList = NULL) %>%
 #' atacPeakCalling %>% atacPeakQC(qcbedInput = blacklistfile, bsgenome = BSgenome.Hsapiens.UCSC.hg19)
 #' dir(td)
 #' @name  atacPeakQC

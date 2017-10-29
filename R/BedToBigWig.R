@@ -111,8 +111,7 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{bedToBigWig} instead.
+#' you can use \code{bedToBigWig} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso

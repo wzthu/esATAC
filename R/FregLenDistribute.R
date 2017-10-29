@@ -1,13 +1,13 @@
-setClass(Class = "FregLenDistr",
+setClass(Class = "FragLenDistr",
          contains = "ATACProc"
 )
 
 
 setMethod(
     f = "initialize",
-    signature = "FregLenDistr",
+    signature = "FragLenDistr",
     definition = function(.Object,atacProc,...,reportPrefix=NULL,bedInput=NULL,editable=FALSE){
-        .Object <- init(.Object,"FregLenDistr",editable,list(arg1=atacProc))
+        .Object <- init(.Object,"FragLenDistr",editable,list(arg1=atacProc))
         if(.Object@singleEnd){
             .Object <- writeLog(.Object,"This process is for pair-end sequencing data.",isWarnning=TRUE)
         }
@@ -41,7 +41,7 @@ setMethod(
 
 setMethod(
     f = "processing",
-    signature = "FregLenDistr",
+    signature = "FragLenDistr",
     definition = function(.Object,...){
         readslist<-read.table(file = .Object@paramlist[["bedInput"]],nrows = 1)
         bedcol=length(colnames(readslist))
@@ -117,7 +117,7 @@ setMethod(
 
 setMethod(
     f = "checkRequireParam",
-    signature = "FregLenDistr",
+    signature = "FragLenDistr",
     definition = function(.Object,...){
         if(is.null(.Object@paramlist[["bedInput"]])){
             stop("bedInput is required.")
@@ -128,7 +128,7 @@ setMethod(
 
 setMethod(
     f = "checkAllPath",
-    signature = "FregLenDistr",
+    signature = "FragLenDistr",
     definition = function(.Object,...){
         checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
         checkFileCreatable(.Object,.Object@paramlist[["lendistrpdfOutput"]]);
@@ -141,7 +141,7 @@ setMethod(
 
 setMethod(
     f = "getReportValImp",
-    signature = "FregLenDistr",
+    signature = "FragLenDistr",
     definition = function(.Object, item){
         readscounts <- read.table(file= .Object@paramlist[["lendistrtxtOutput"]],header=TRUE)
         if(item == "readsCounts"){
@@ -153,17 +153,17 @@ setMethod(
 
 setMethod(
     f = "getReportItemsImp",
-    signature = "FregLenDistr",
+    signature = "FragLenDistr",
     definition = function(.Object){
         return(c("readsCounts"))
     }
 )
 
-#' @name atacFregLenDistr
-#' @title Quality control for fregment length distribution
+#' @name atacFragLenDistr
+#' @title Quality control for fragment length distribution
 #' @description
-#' These functions are used to generate fregment distribution plot.
-#' The fourier transform of fregment distribution will be calculated.
+#' These functions are used to generate fragment distribution plot.
+#' The fourier transform of fragment distribution will be calculated.
 #' Strength distribution around period at 10.4bp and 180bp
 #' will be shown in another two plots.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
@@ -184,8 +184,7 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{fregLenDistr} instead.
+#' you can use \code{fragLenDistr} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -203,28 +202,28 @@ setMethod(
 #' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
-#' fregLenDistr(bedfile)
+#' fragLenDistr(bedfile)
 #'
 #' dir(td)
 #' 
 #' @importFrom BiocGenerics counts 
 #' @importFrom ggplot2 geom_path ggplot geom_vline geom_line theme_bw theme annotate xlab ggsave element_blank
-#' @name atacFregLenDistr
+#' @name atacFragLenDistr
 #' @export
 #' @docType methods
-#' @rdname atacFregLenDistr-methods
+#' @rdname atacFragLenDistr-methods
 
-setGeneric("atacFregLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL, ...) standardGeneric("atacFregLenDistr"))
+setGeneric("atacFragLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL, ...) standardGeneric("atacFragLenDistr"))
 
 
-#' @rdname atacFregLenDistr-methods
-#' @aliases atacFregLenDistr
+#' @rdname atacFragLenDistr-methods
+#' @aliases atacFragLenDistr
 setMethod(
-    f = "atacFregLenDistr",
+    f = "atacFragLenDistr",
     signature = "ATACProc",
     definition = function(atacProc,reportPrefix=NULL,bedInput=NULL, ...){
         atacproc <- new(
-            "FregLenDistr",
+            "FragLenDistr",
             atacProc = atacProc,
             reportPrefix = reportPrefix,
             bedInput = bedInput)
@@ -235,12 +234,12 @@ setMethod(
 
 
 
-#' @rdname atacFregLenDistr-methods
+#' @rdname atacFragLenDistr-methods
 #' @export
 
-fregLenDistr<-function(bedInput, reportPrefix=NULL, ...){
+fragLenDistr<-function(bedInput, reportPrefix=NULL, ...){
     atacproc <- new(
-        "FregLenDistr",
+        "FragLenDistr",
         atacProc = NULL,
         reportPrefix = reportPrefix,
         bedInput = bedInput)

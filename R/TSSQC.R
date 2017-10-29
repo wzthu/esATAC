@@ -207,8 +207,8 @@ setMethod(
 #' The prefix of report files path.
 #' @param bedInput \code{Character} scalar.
 #' BED file input path.
-#' @param fregLenRange \code{Interger} vector of 2 element.
-#' The fregment length ranges.
+#' @param fragLenRange \code{Interger} vector of 2 element.
+#' The fragment length ranges.
 #' @param tssUpdownstream \code{Interger} scalar.
 #' The upstream and downstrem from TSS locations.
 #' @param ... Additional arguments, currently unused.
@@ -239,7 +239,7 @@ setMethod(
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 #' library(BSgenome.Hsapiens.UCSC.hg19)
-#' tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fregLenRange=c(180,247))
+#' tssQC(bedfile,TxDb.Hsapiens.UCSC.hg19.knownGene,BSgenome.Hsapiens.UCSC.hg19,fragLenRange=c(180,247))
 #'
 #' dir(td)
 #' @importFrom BiocGenerics strand
@@ -250,7 +250,7 @@ setMethod(
 #' @rdname atacTSSQC-methods
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                                   reportPrefix=NULL,bedInput = NULL,
-                                  fregLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
+                                  fragLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
 
 #' @rdname atacTSSQC-methods
 #' @aliases atacTSSQC
@@ -259,7 +259,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                           reportPrefix=NULL,bedInput = NULL,
-                          fregLenRange=c(0,2000),tssUpdownstream=1000, ...){
+                          fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
         atacproc <- new(
             "TSSQC",
             atacProc = atacProc,
@@ -267,7 +267,7 @@ setMethod(
             bsgenome = bsgenome,
             reportPrefix = reportPrefix,
             bedInput = bedInput,
-            fregLenRange = fregLenRange,
+            fregLenRange = fragLenRange,
             tssUpdownstream = tssUpdownstream)
         atacproc <- process(atacproc)
         invisible(atacproc)
@@ -279,7 +279,7 @@ setMethod(
 
 #' @rdname atacTSSQC-methods
 #' @export
-tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fregLenRange=c(0,2000),tssUpdownstream=1000, ...){
+tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
     atacproc <- new(
         "TSSQC",
         atacProc = NULL,
@@ -287,7 +287,7 @@ tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL
         bsgenome = bsgenome,
         reportPrefix = reportPrefix,
         bedInput = bedInput,
-        fregLenRange = fregLenRange,
+        fregLenRange = fragLenRange,
         tssUpdownstream = tssUpdownstream)
     atacproc <- process(atacproc)
     invisible(atacproc)

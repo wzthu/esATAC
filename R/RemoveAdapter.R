@@ -469,8 +469,7 @@ listToFrame <- function(a){
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{fregLenDistr} instead.
+#' you can use \code{removeAdapter} instead.
 #' You can put all aditional
 #' arguments in one \code{Character}(e.g. "--threads 8") with white space
 #' splited just like command line,

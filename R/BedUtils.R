@@ -125,7 +125,7 @@ setMethod(
 #' downsample bed reads,
 #' shift bed reads,
 #' filter bed reads according to chromosome,
-#' filter bed reads according to fregment size,
+#' filter bed reads according to fragment size,
 #' sort bed,
 #' remove duplicates reads in bed.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
@@ -157,10 +157,10 @@ setMethod(
 #' Sort bed file in the order of chromatin, start, end
 #' @param uniqueBed \code{Logical} scalar
 #' Remove duplicates reads in bed if TRUE. default: FALSE
-#' @param minFregLen \code{Integer} scalar
-#' The minimum fregment size will be retained.
-#' @param maxFregLen \code{Integer} scalar
-#' The maximum fregment size will be retained.
+#' @param minFragLen \code{Integer} scalar
+#' The minimum fragment size will be retained.
+#' @param maxFragLen \code{Integer} scalar
+#' The maximum fragment size will be retained.
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -169,8 +169,7 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{bedUtils} instead.
+#' you can use \code{bedUtils} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -178,7 +177,7 @@ setMethod(
 #' \code{\link{bam2bed}}
 #' \code{\link{atacSamToBed}}
 #' \code{\link{samToBed}}
-#' \code{\link{atacFregLenDistr}}
+#' \code{\link{atacFragLenDistr}}
 #' \code{\link{atacExtractCutSite}}
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacTSSQC}}
@@ -194,7 +193,7 @@ setMethod(
 #' samfile <- file.path(td,"Example.sam")
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' atacproc<-samToBed(samInput = samfile) %>%
-#' atacBedUtils(maxFregLen = 100, chrFilterList = NULL)
+#' atacBedUtils(maxFragLen = 100, chrFilterList = NULL)
 #'
 #' @name atacBedUtils
 #' @export
@@ -202,7 +201,7 @@ setMethod(
 #' @rdname atacBedUtils-methods
 setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                                   posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                                  sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...) standardGeneric("atacBedUtils"))
+                                  sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...) standardGeneric("atacBedUtils"))
 
 #' @rdname atacBedUtils-methods
 #' @aliases atacBedUtils
@@ -211,7 +210,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                           posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                          sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...){
+                          sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...){
         atacproc <- new(
             "BedUtils",
             atacProc = atacProc,
@@ -225,8 +224,8 @@ setMethod(
             select = select,
             sortBed = sortBed,
             uniqueBed = uniqueBed,
-            minFregLen = minFregLen,
-            maxFregLen = maxFregLen)
+            minFregLen = minFragLen,
+            maxFregLen = maxFragLen)
         atacproc <- process(atacproc)
         invisible(atacproc)
     }
@@ -235,7 +234,7 @@ setMethod(
 #' @export
 bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,reportOutput = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                         sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,maxFregLen = 2e9, ...){
+                         sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...){
     atacproc <- new(
         "BedUtils",
         atacProc = NULL,
@@ -249,8 +248,8 @@ bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample =
         select = select,
         sortBed = sortBed,
         uniqueBed = uniqueBed,
-        minFregLen = minFregLen,
-        maxFregLen = maxFregLen)
+        minFregLen = minFragLen,
+        maxFregLen = maxFragLen)
     atacproc <- process(atacproc)
     invisible(atacproc)
 }

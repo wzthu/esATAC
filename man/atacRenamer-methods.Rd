@@ -66,8 +66,7 @@ generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
 If you want to use this function independently,
-\code{atacProc} should be set \code{NULL}
-or you can use \code{renamer} instead.
+you can use \code{renamer} instead.
 }
 \examples{
 library(magrittr)

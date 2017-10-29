@@ -10,18 +10,18 @@
 \usage{
 atacSamToBed(atacProc, reportOutput = NULL, merge = c("auto", "yes", "no"),
   posOffset = +4, negOffset = -5, chrFilterList = "chrM",
-  samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFregLen = 0,
-  maxFregLen = 100, saveExtLen = FALSE, uniqueBed = TRUE, ...)
+  samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFragLen = 0,
+  maxFragLen = 100, saveExtLen = FALSE, uniqueBed = TRUE, ...)
 
 \S4method{atacSamToBed}{ATACProc}(atacProc, reportOutput = NULL,
   merge = c("auto", "yes", "no"), posOffset = +4, negOffset = -5,
   chrFilterList = "chrM", samInput = NULL, bedOutput = NULL,
-  sortBed = TRUE, minFregLen = 0, maxFregLen = 100, saveExtLen = FALSE,
+  sortBed = TRUE, minFragLen = 0, maxFragLen = 100, saveExtLen = FALSE,
   uniqueBed = TRUE, ...)
 
 samToBed(samInput, reportOutput = NULL, merge = c("auto", "yes", "no"),
   posOffset = +4, negOffset = -5, chrFilterList = "chrM",
-  bedOutput = NULL, sortBed = TRUE, minFregLen = 0, maxFregLen = 100,
+  bedOutput = NULL, sortBed = TRUE, minFragLen = 0, maxFragLen = 100,
   saveExtLen = FALSE, uniqueBed = TRUE, ...)
 }
 \arguments{
@@ -54,14 +54,14 @@ Bed file output path.}
 \item{sortBed}{\code{Logical} scalar
 Sort bed file in the order of chromatin, start, end}
 
-\item{minFregLen}{\code{Integer} scalar
-The minimum fregment size will be retained.}
+\item{minFragLen}{\code{Integer} scalar
+The minimum fragment size will be retained.}
 
-\item{maxFregLen}{\code{Integer} scalar
-The maximum fregment size will be retained.}
+\item{maxFragLen}{\code{Integer} scalar
+The maximum fragment size will be retained.}
 
 \item{saveExtLen}{\code{Logical} scaler
-Save the fregment that are not in the range of minFregLen and MaxFregLen}
+Save the fragment that are not in the range of minFragLen and maxFragLen}
 
 \item{uniqueBed}{\code{Logical} scalar
 Remove duplicates reads in bed if TRUE. default: FALSE}
@@ -76,7 +76,7 @@ This function is used to convert SAM file to BED file and
 merge interleave paired end reads,
 shift reads,
 filter reads according to chromosome,
-filter reads according to fregment size,
+filter reads according to fragment size,
 sort,
 remove duplicates reads before generating BED file.
 }
@@ -88,8 +88,7 @@ generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
 If you want to use this function independently,
-\code{atacProc} should be set \code{NULL}
-or you can use \code{samToBed} instead.
+you can use \code{samToBed} instead.
 }
 \examples{
 library(R.utils)
@@ -105,7 +104,7 @@ samToBed(samInput = samfile)
 \seealso{
 \code{\link{atacBowtie2Mapping}}
 \code{\link{bowtie2Mapping}}
-\code{\link{atacFregLenDistr}}
+\code{\link{atacFragLenDistr}}
 \code{\link{atacExtractCutSite}}
 \code{\link{atacPeakCalling}}
 \code{\link{atacBedUtils}}

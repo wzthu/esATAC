@@ -39,7 +39,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-getReportVal(atacProcs$fregLenDistr,"readsCounts")
+readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
 ```
 
@@ -93,12 +93,12 @@ knitr::kable(x = filtstat)
 ```
 
 
-## Fregment size distribution
+## Fragment size distribution
 
 ```{r fegdist, eval=TRUE}
 library(ggplot2)
 load("Report.Rdata")
-readsCounts<-getReportVal(atacProcs$fregLenDistr,"readsCounts")
+readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
 
 library(stats)

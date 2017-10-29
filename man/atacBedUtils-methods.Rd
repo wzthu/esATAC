@@ -11,18 +11,18 @@
 atacBedUtils(atacProc, bedInput = NULL, bedOutput = NULL,
   mergePair = FALSE, downSample = NULL, posOffset = 0L, negOffset = 0L,
   chrFilterList = c("chrM"), select = FALSE, sortBed = FALSE,
-  uniqueBed = FALSE, minFregLen = 0, maxFregLen = 2e+09, ...)
+  uniqueBed = FALSE, minFragLen = 0, maxFragLen = 2e+09, ...)
 
 \S4method{atacBedUtils}{ATACProc}(atacProc, bedInput = NULL,
   bedOutput = NULL, mergePair = FALSE, downSample = NULL,
   posOffset = 0L, negOffset = 0L, chrFilterList = c("chrM"),
-  select = FALSE, sortBed = FALSE, uniqueBed = FALSE, minFregLen = 0,
-  maxFregLen = 2e+09, ...)
+  select = FALSE, sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,
+  maxFragLen = 2e+09, ...)
 
 bedUtils(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,
   reportOutput = NULL, posOffset = 0L, negOffset = 0L,
   chrFilterList = c("chrM"), select = FALSE, sortBed = FALSE,
-  uniqueBed = FALSE, minFregLen = 0, maxFregLen = 2e+09, ...)
+  uniqueBed = FALSE, minFragLen = 0, maxFragLen = 2e+09, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -63,11 +63,11 @@ Sort bed file in the order of chromatin, start, end}
 \item{uniqueBed}{\code{Logical} scalar
 Remove duplicates reads in bed if TRUE. default: FALSE}
 
-\item{minFregLen}{\code{Integer} scalar
-The minimum fregment size will be retained.}
+\item{minFragLen}{\code{Integer} scalar
+The minimum fragment size will be retained.}
 
-\item{maxFregLen}{\code{Integer} scalar
-The maximum fregment size will be retained.}
+\item{maxFragLen}{\code{Integer} scalar
+The maximum fragment size will be retained.}
 
 \item{...}{Additional arguments, currently unused.}
 
@@ -83,7 +83,7 @@ merge interleave paired end reads in bed,
 downsample bed reads,
 shift bed reads,
 filter bed reads according to chromosome,
-filter bed reads according to fregment size,
+filter bed reads according to fragment size,
 sort bed,
 remove duplicates reads in bed.
 }
@@ -95,8 +95,7 @@ generated based on known parameters
 if their values are default(e.g. \code{NULL}).
 Otherwise, the generated values will be overwrited.
 If you want to use this function independently,
-\code{atacProc} should be set \code{NULL}
-or you can use \code{bedUtils} instead.
+you can use \code{bedUtils} instead.
 }
 \examples{
 library(R.utils)
@@ -108,7 +107,7 @@ sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
 bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 atacproc<-samToBed(samInput = samfile) \%>\%
-atacBedUtils(maxFregLen = 100, chrFilterList = NULL)
+atacBedUtils(maxFragLen = 100, chrFilterList = NULL)
 
 }
 \seealso{
@@ -116,7 +115,7 @@ atacBedUtils(maxFregLen = 100, chrFilterList = NULL)
 \code{\link{bam2bed}}
 \code{\link{atacSamToBed}}
 \code{\link{samToBed}}
-\code{\link{atacFregLenDistr}}
+\code{\link{atacFragLenDistr}}
 \code{\link{atacExtractCutSite}}
 \code{\link{atacPeakCalling}}
 \code{\link{atacTSSQC}}

@@ -159,8 +159,7 @@ setMethod(
 #' if their values are default(e.g. \code{NULL}).
 #' Otherwise, the generated values will be overwrited.
 #' If you want to use this function independently,
-#' \code{atacProc} should be set \code{NULL}
-#' or you can use \code{peakCalling} instead.
+#' you can use \code{peakCalling} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
 #' @seealso
@@ -179,7 +178,7 @@ setMethod(
 #' bedfile <- file.path(td,"chr20.50000.bed")
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #'
-#' bedUtils(bedInput = bedfile,maxFregLen = 100, chrFilterList = NULL) %>%
+#' bedUtils(bedInput = bedfile,maxFragLen = 100, chrFilterList = NULL) %>%
 #' atacPeakCalling
 #'
 #' dir(td)

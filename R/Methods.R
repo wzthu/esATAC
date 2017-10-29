@@ -165,9 +165,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2)
     bowtie2Mapping <- atacBowtie2Mapping(removeAdapter)
     libComplexQC <- atacLibComplexQC(bowtie2Mapping)
-    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFregLen = 2000)
+    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFragLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
-    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc100")),fregLenRange = c(0,100))
+    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc100")),fragLenRange = c(0,100))
 
     if(is.null(fastqInput2)&&!interleave){
         peakCalling <- atacPeakCalling(sam2Bed)
@@ -175,9 +175,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
     }else{
-        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc180_247")),fregLenRange = c(180,247))
-        fregLenDistr <- atacFregLenDistr(sam2Bed)
-        shortBed <- atacBedUtils(sam2Bed,maxFregLen = 100, chrFilterList = NULL)
+        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc180_247")),fragLenRange = c(180,247))
+        fragLenDistr <- atacFragLenDistr(sam2Bed)
+        shortBed <- atacBedUtils(sam2Bed,maxFragLen = 100, chrFilterList = NULL)
         peakCalling <- atacPeakCalling(shortBed)
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
@@ -209,13 +209,13 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
     if(interleave){
         seqtype <- "paired end (PE,interleave)"
-        freg <- 2
+        frag <- 2
     }else if(is.null(fastqInput2)){
         seqtype <- "single end (SE)"
-        freg <- 1
+        frag <- 1
     }else{
         seqtype <- "paired end (PE)"
-        freg <- 2
+        frag <- 2
     }
     if(is.null(fastqInput2)){
         filelist <- data.frame(`File(s)`=fastqInput1)
@@ -245,7 +245,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
                                   Value=c(seqtype,
                                           getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                          getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
+                                          getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
                                                      getReportVal(removeAdapter,"statisticslist")[[1]]),
                                           getVMRShow(getReportVal(sam2Bed,"total"),
                                                      getReportVal(removeAdapter,"statisticslist")[[1]]),
@@ -306,7 +306,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                    "-- -- -- Duplicate removed reads (ratio final for use)"
             ),
             Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                    getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
+                    getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
                                getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
                     getVMRShow(getReportVal(sam2Bed,"total"),
                                getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
@@ -370,7 +370,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
                               Value=c(seqtype,
                                       getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                      getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
+                                      getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
                                                  getReportVal(removeAdapter,"statisticslist")[[1]]),
                                       getVMRShow(getReportVal(sam2Bed,"total"),
                                                  getReportVal(removeAdapter,"statisticslist")[[1]]),
@@ -436,7 +436,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                "-- -- -- Duplicate removed reads (ratio final for use)"
                ),
          Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                 getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/freg,
+                 getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
                             getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
                  getVMRShow(getReportVal(sam2Bed,"total"),
                             getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
@@ -464,7 +464,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                    bedToBigWig = bedToBigWig,
                    tssqc100 = tssqc100,
                    tssqc180_247 = tssqc180_247,
-                   fregLenDistr = fregLenDistr,
+                   fragLenDistr = fragLenDistr,
                    peakCalling = peakCalling,
                    DHSQC = DHSQC,
                    blacklistQC = blacklistQC,
