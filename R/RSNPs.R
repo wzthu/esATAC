@@ -168,7 +168,7 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacSNPAnno-methods
-setGeneric("atacSNPAnno",function(atacProc = NULL, snp.info = NULL, region.info = NULL,
+setGeneric("atacSNPAnno",function(atacProc, snp.info = NULL, region.info = NULL,
                                   annoOutput = NULL, ...) standardGeneric("atacSNPAnno"))
 
 #' @rdname atacSNPAnno-methods
@@ -176,7 +176,7 @@ setGeneric("atacSNPAnno",function(atacProc = NULL, snp.info = NULL, region.info 
 setMethod(
     f = "atacSNPAnno",
     signature = "ATACProc",
-    definition = function(atacProc = NULL, snp.info = NULL, region.info = NULL,
+    definition = function(atacProc, snp.info = NULL, region.info = NULL,
                           annoOutput = NULL, ...){
         atacproc <- new(
             "RSNPs",

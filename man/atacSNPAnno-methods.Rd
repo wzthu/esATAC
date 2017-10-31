@@ -8,10 +8,10 @@
 \alias{snpanno}
 \title{Find whether snps are in the given regions.}
 \usage{
-atacSNPAnno(atacProc = NULL, snp.info = NULL, region.info = NULL,
+atacSNPAnno(atacProc, snp.info = NULL, region.info = NULL,
   annoOutput = NULL, ...)
 
-\S4method{atacSNPAnno}{ATACProc}(atacProc = NULL, snp.info = NULL,
+\S4method{atacSNPAnno}{ATACProc}(atacProc, snp.info = NULL,
   region.info = NULL, annoOutput = NULL, ...)
 
 snpanno(snp.info, region.info = NULL, annoOutput = NULL, ...)

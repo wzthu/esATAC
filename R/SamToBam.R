@@ -117,14 +117,14 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacSam2Bam-methods
-setGeneric("atacSam2Bam",function(atacProc = NULL,
+setGeneric("atacSam2Bam",function(atacProc,
                                   samInput = NULL, bamOutput = NULL, ...) standardGeneric("atacSam2Bam"))
 #' @rdname atacSam2Bam-methods
 #' @aliases atacSam2Bam
 setMethod(
     f = "atacSam2Bam",
     signature = "ATACProc",
-    definition = function(atacProc = NULL,
+    definition = function(atacProc,
                           samInput = NULL, bamOutput = NULL, ...){
         atacproc <- new(
             "SamToBam",

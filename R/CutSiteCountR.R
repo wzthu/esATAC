@@ -278,7 +278,7 @@ setMethod(
 #' @docType methods
 #' @rdname atacCutSiteCount-methods
 setGeneric("atacCutSiteCount",
-           function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
+           function(atacProcCutSite, atacProcMotifScan = NULL, csInput = NULL,
                     motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                     strandLength = 100, FootPrint = TRUE, prefix = NULL, ...) standardGeneric("atacCutSiteCount"))
 
@@ -288,7 +288,7 @@ setGeneric("atacCutSiteCount",
 setMethod(
     f = "atacCutSiteCount",
     signature = "ATACProc",
-    definition = function(atacProcCutSite = NULL, atacProcMotifScan = NULL, csInput = NULL,
+    definition = function(atacProcCutSite, atacProcMotifScan = NULL, csInput = NULL,
                           motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                           strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
 
