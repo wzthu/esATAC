@@ -215,7 +215,7 @@ axis(2, padj = 1.0,tck = -0.02)
 
 abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
 
-pdf.dir <- atacProcs$footprint$getReportVal("pdf.dir")
+pdf.dir <- getReportVal(atacProcs$footprint,"pdf.dir")
 
 ```
 
