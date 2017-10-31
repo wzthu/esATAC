@@ -146,7 +146,7 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacQCReport-methods
-setGeneric("atacQCReport",function(atacProc = NULL,
+setGeneric("atacQCReport",function(atacProc,
                                    input_file = NULL,
                                    output_file = NULL, ...) standardGeneric("atacQCReport"))
 
@@ -156,7 +156,7 @@ setGeneric("atacQCReport",function(atacProc = NULL,
 setMethod(
     f = "atacQCReport",
     signature = "ATACProc",
-    definition = function(atacProc = NULL,
+    definition = function(atacProc,
                           input_file = NULL,
                           output_file = NULL, ...){
         atacproc <- new(

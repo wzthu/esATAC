@@ -8,9 +8,9 @@
 \alias{bamsort}
 \title{Sort bam file and rebuild bai index.}
 \usage{
-atacBamSort(atacProc = NULL, bamInput = NULL, bamOutput = NULL, ...)
+atacBamSort(atacProc, bamInput = NULL, bamOutput = NULL, ...)
 
-\S4method{atacBamSort}{ATACProc}(atacProc = NULL, bamInput = NULL,
+\S4method{atacBamSort}{ATACProc}(atacProc, bamInput = NULL,
   bamOutput = NULL, ...)
 
 bamsort(bamInput = NULL, bamOutput = NULL, ...)

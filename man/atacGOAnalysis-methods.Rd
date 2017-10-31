@@ -8,13 +8,13 @@
 \alias{goanalysis}
 \title{Gene Ontology Analysis}
 \usage{
-atacGOAnalysis(atacProc = NULL, gene = NULL, OrgDb = NULL,
-  keytype = "ENTREZID", ont = "MF", pvalueCutoff = 0.05,
-  pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
-  readable = FALSE, pool = FALSE, goOutput = NULL, ...)
+atacGOAnalysis(atacProc, gene = NULL, OrgDb = NULL, keytype = "ENTREZID",
+  ont = "MF", pvalueCutoff = 0.05, pAdjustMethod = "BH",
+  universe = NULL, qvalueCutoff = 0.2, readable = FALSE, pool = FALSE,
+  goOutput = NULL, ...)
 
-\S4method{atacGOAnalysis}{ATACProc}(atacProc = NULL, gene = NULL,
-  OrgDb = NULL, keytype = "ENTREZID", ont = "MF", pvalueCutoff = 0.05,
+\S4method{atacGOAnalysis}{ATACProc}(atacProc, gene = NULL, OrgDb = NULL,
+  keytype = "ENTREZID", ont = "MF", pvalueCutoff = 0.05,
   pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
   readable = FALSE, pool = FALSE, goOutput = NULL, ...)
 

@@ -8,9 +8,9 @@
 \alias{qcreport}
 \title{Quality control for ATAC-seq data.}
 \usage{
-atacQCReport(atacProc = NULL, input_file = NULL, output_file = NULL, ...)
+atacQCReport(atacProc, input_file = NULL, output_file = NULL, ...)
 
-\S4method{atacQCReport}{ATACProc}(atacProc = NULL, input_file = NULL,
+\S4method{atacQCReport}{ATACProc}(atacProc, input_file = NULL,
   output_file = NULL, ...)
 
 qcreport(input_file, output_file = NULL, ...)
