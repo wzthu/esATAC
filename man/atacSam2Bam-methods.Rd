@@ -8,9 +8,9 @@
 \alias{sam2bam}
 \title{Convert sam format to bam format.}
 \usage{
-atacSam2Bam(atacProc = NULL, samInput = NULL, bamOutput = NULL, ...)
+atacSam2Bam(atacProc, samInput = NULL, bamOutput = NULL, ...)
 
-\S4method{atacSam2Bam}{ATACProc}(atacProc = NULL, samInput = NULL,
+\S4method{atacSam2Bam}{ATACProc}(atacProc, samInput = NULL,
   bamOutput = NULL, ...)
 
 sam2bam(samInput, bamOutput = NULL, ...)

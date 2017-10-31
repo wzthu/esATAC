@@ -179,7 +179,7 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacGOAnalysis-methods
-setGeneric("atacGOAnalysis",function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
+setGeneric("atacGOAnalysis",function(atacProc, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                                      pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
                                      readable = FALSE, pool = FALSE, goOutput = NULL, ...) standardGeneric("atacGOAnalysis"))
 
@@ -188,7 +188,7 @@ setGeneric("atacGOAnalysis",function(atacProc = NULL, gene = NULL, OrgDb = NULL,
 setMethod(
     f = "atacGOAnalysis",
     signature = "ATACProc",
-    definition = function(atacProc = NULL, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
+    definition = function(atacProc, gene = NULL, OrgDb = NULL, keytype = "ENTREZID", ont = "MF",
                           pvalueCutoff = 0.05, pAdjustMethod = "BH", universe = NULL, qvalueCutoff = 0.2,
                           readable = FALSE, pool = FALSE, goOutput = NULL, ...){
         atacproc <- new(

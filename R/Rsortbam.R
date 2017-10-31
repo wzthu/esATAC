@@ -102,7 +102,7 @@ setMethod(
 #' @export
 #' @docType methods
 #' @rdname atacBamSort-methods
-setGeneric("atacBamSort",function(atacProc = NULL,
+setGeneric("atacBamSort",function(atacProc,
                                   bamInput = NULL, bamOutput = NULL, ...) standardGeneric("atacBamSort"))
 
 #' @rdname atacBamSort-methods
@@ -110,7 +110,7 @@ setGeneric("atacBamSort",function(atacProc = NULL,
 setMethod(
     f = "atacBamSort",
     signature = "ATACProc",
-    definition = function(atacProc = NULL,
+    definition = function(atacProc,
                           bamInput = NULL, bamOutput = NULL, ...){
         atacproc <- new(
             "Rsortbam",
