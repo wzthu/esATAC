@@ -9,10 +9,10 @@ Description: This package provides a framework and complete preset pipeline for
     the quantification and analysis of ATAC-seq Reads. It covers raw sequencing
     reads preprocessing (FASTQ files), reads alignment (Rbowtie2), aligned reads
     file operation (SAM, BAM, and BED files), peak calling (fseq), genome 
-    annotations (Motif, GO, SNP analysis), quality control report. The package 
+    annotations (Motif, GO, SNP analysis) and quality control report. The package 
     is managed by dataflow graph. It is easy for user to pass variables between 
-    processes and understand the workflow. Therefore, users can build their own
-    customized pipeline easily and flexibly.
+    processes and understand the workflow. They can build their own customized 
+    pipeline easily and flexibly.
 Depends:
     R (>= 3.4.1),
     QuasR,
