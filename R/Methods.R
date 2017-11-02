@@ -617,8 +617,8 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' # or it will be time comsuming to build bowtie2 index
 #' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
 #' # configure the genome you will use like hg19, mm10 and so on 
-#' if there is no reference files(e.g. bowtie index) in refdir, 
-#' it will download and build automatically 
+#' # if there is no reference files(e.g. bowtie index) in refdir, 
+#' # it will download and build automatically 
 #' options(atacConf=setConfigure("genome","hg19"))
 #' case <- c(
 #'     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),

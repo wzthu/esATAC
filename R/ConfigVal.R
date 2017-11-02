@@ -98,7 +98,7 @@ setMethod(f = "isValidVal",
                        file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))||
                        file.exists(paste0(fileprefix,".rev.1.bt2"))&&file.exists(paste0(fileprefix,".rev.1.bt2")))){
                       file.create(fileprefixlock)
-                      bowtie2_build(fastaFilePath,fileprefix,"--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
+                      bowtie2_build(fastaFilePath,fileprefix,"-q","--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
                       unlink(fileprefixlock)
                   }
                   .Object@configList[["bt2Idx"]]<-fileprefix
