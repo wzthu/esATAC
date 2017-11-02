@@ -14,10 +14,10 @@
 #' \code{\link{atacRemoveAdapter}}
 
 
-#' @param .Object,atacProc. ATACProc object scalar. 
+#' @param .Object ATACProc object scalar. 
 #' ATACProc object return by process functions.
-#' Character scalar, the ATACProc subclass name, 
-#' which is only available for \code{printMap}.(Default: NULL)
+#' @param atacProc Character scalar. The ATACProc subclass name 
+#' for \code{printMap}.(Default: NULL). For \code{atacPrintMap}, see \code{.Object}
 #' @param preProc \code{Logitcal} scalar.
 #' show the available upstream processes if TRUE.(Default: FALSE)
 #' @param nextProc \code{Logitcal} scalar.

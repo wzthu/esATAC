@@ -51,6 +51,9 @@ printMap(atacProc = NULL, preProc = FALSE, nextProc = TRUE,
 \S4method{getReportItems}{ATACProc}(.Object, ...)
 }
 \arguments{
+\item{atacProc}{Character scalar. The ATACProc subclass name 
+for \code{printMap}.(Default: NULL). For \code{atacPrintMap}, see \code{.Object}}
+
 \item{preProc}{\code{Logitcal} scalar.
 show the available upstream processes if TRUE.(Default: FALSE)}
 
@@ -63,10 +66,8 @@ show the current process of parameter \code{.Object} if TRUE. (Default: TRUE)}
 \item{display}{\code{Logitcal} scalar.
 Save to pdf file if FALSE. (Default: TRUE)}
 
-\item{.Object, atacProc.}{ATACProc object scalar. 
-ATACProc object return by process functions.
-Character scalar, the ATACProc subclass name, 
-which is only available for \code{printMap}.(Default: NULL)}
+\item{.Object}{ATACProc object scalar. 
+ATACProc object return by process functions.}
 
 \item{...}{Additional arguments, currently unused.}
 
