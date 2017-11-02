@@ -629,7 +629,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'     system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 #' )
 #' atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
-#          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
+#'         control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
 #' }
 #' @export
 #'
