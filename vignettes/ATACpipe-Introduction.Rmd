@@ -117,7 +117,7 @@ To install the latest version of esATAC, you will need to be using the
 latest version of R. esATAC is part of Bioconductor project, 
 so you can install esATAC and its dependencies like this:
 
-```{r installpkg,message=FALSE,warning=FALSE}
+```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
 source("http://www.bioconductor.org/biocLite.R")
 biocLite("esATAC")
 ```
