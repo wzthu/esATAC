@@ -70,22 +70,24 @@ Intermediate files will be save at tmpdir path (default is ./)
 }
 \examples{
 \dontrun{
-## These codes are time consuming so they will not be run and checked by bioconductor checker.
-# obtain the temporary folder path
+## These codes are time consuming so they will not be run and 
+checked by bioconductor checker.
+# obtain the temporary folder path for test
 td<-tempdir()
-# configure the max threads allowed to created by the pipeline 
-# (4 threads here, defaut is 1)
-# more threads will cosume more memory
-options(atacConf=setConfigure("threads",4))
+
 # create a folder that will install reference files for this example
 dir.create(file.path(td,"ref"))
+
 # change the refdir to your installed refdir path
 # or it will be time comsuming to build bowtie2 index
 options(atacConf=setConfigure("refdir",file.path(td,"ref")))
+
 # configure the genome you will use like hg19, mm10 and so on 
 # if there is no reference files(e.g. bowtie index) in refdir, 
 # it will download and build automatically 
 options(atacConf=setConfigure("genome","hg19"))
+
+# your data
 case <- c(
     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
     system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
@@ -94,6 +96,8 @@ ctrl <- c(
     system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
     system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
 )
+
+# call pipeline
 atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
         control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
 }
