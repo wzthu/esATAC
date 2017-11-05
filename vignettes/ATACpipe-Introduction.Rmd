@@ -76,6 +76,7 @@ or use the lowercase of the initial letter
 ?samToBed
 ```
 
+
 The workflow start with "UnzipAndMerge" function atacUnzipAndMerge. 
 It unzips and merges the replicates into one FASTQ file(two for paired end file). 
 Names of reads will be renamed as numbers: 1,2,3,... by calling
@@ -91,10 +92,42 @@ BAM or BED file, sorting according to chromosome/start site/end site,
 reads conditional filtering, reads shifting and so on. 
 The ready-use reads in BED file may call peak by "PeakCallingFseq" 
 function atacPeakCallingFseq.
-The pipeline also provide quality control elements (e.g. "FastQC", 
-"LibComplexQC", "TSSQC") and some general genome function analysis elements
+
+For preset pipeline (see [Quick Start](#quickstart)), 
+several summary tables will be shown in an HTML file([Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)) like this:
+
+|    Item                                               |    Case     |    Control      | Reference|
+|:-----------------------------------------------------|:------------|:-----------|:-----------|
+|    Sequence Files Type                                   |    paired end (PE)    |    paired end (PE)    |    SE / PE|
+|    Original total reads                               |    54.1M    |    56.5M    |    |
+|    – Reads after adapter removing (ratio)               |    54.1M (100.00%)    |    56.5M (100.00%)    |    >99%|
+|    – – Total mapped reads (ratio of original reads)   |    52.7M (97.53%)    |    55.1M (97.63%)    |    >95%|
+|    – – – Unique locations mapped uniquely by reads       |    27.3M    |    25.6M    |    |
+|    – – – Non-Redundant Fraction (NRF)                   |    0.73    |    0.7    |    >0.7|
+|    – – – Locations with only 1 reads mapping uniquely |    24.1M    |    23.1M    |    |
+|    – – – Locations with only 2 reads mapping uniquely |    2.5M    |    1.9M    |    |
+|    – – – PCR Bottlenecking Coefficients 1 (PBC1)       |    0.88    |    0.9    |    >0.7|
+|    – – – PCR Bottlenecking Coefficients 2 (PBC2)       |    9.71    |    12.28    |    >3|
+|    – – – Non-mitochondrial reads (ratio)               |    37.4M (70.87%)    |    36.6M (66.31%)    |    >70%|
+|    – – – – Unique mapped reads (ratio)                   |    29.1M (55.26%)    |    26.6M (48.21%)    |    |
+|    – – – – – Duplicate removed reads (final for use)  |    25.9M (49.13%)    |    24.2M (43.97%)    |    >25M|
+|    – – – – – – Nucleosome free reads (<100bp)           |    10.5M (40.47%)    |    8.2M (33.92%)    |    |
+|    – – – – – – – Total peaks                           |    118157    |    116686    |    |
+|    – – – – – – – Peaks overlaped with union DHS ratio |    76.00%    |    79.00%    |    |
+|    – – – – – – – Peaks overlaped with blacklist ratio |    0.10%    |    0.10%    |    |
+|    – – – – – – Fraction of reads in peaks (FRiP)       |    52.00%    |    66.50%    |    |
+
+
+The pipeline also provide quality control elements (e.g."FragLenDistr", "FastQC",
+) and some general genome function analysis elements
 (e.g. "RMotifScan","RPeakAnno"). For more detail, you can see the manual
 or the examples in following sections.
+
+
+![Fragments Length Distribution Example](fregLenDistr.png)
+
+
+![Fourier Transformation Analysis of Distribution](wave.png)
 
 
 
@@ -219,7 +252,7 @@ For detail, you can read the subsequent sections.
 
 
 
-# Quick Start
+# Quick Start {#quickstart}
 
 ## Starting from Scratch
 
@@ -228,6 +261,11 @@ esATAC provides an easy-to-use entry, you only need to provide your ATAC-seq seq
 (a) For Case-control Analysis
 
 ```{r casecontrol, eval=FALSE}
+library(esATAC)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(org.Hs.eg.db)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
 # set reference installation path
 options(atacConf=setConfigure("refdir","your/reference/path"))
 
@@ -252,6 +290,11 @@ atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 
 (b) For single file analysis
 ```{r casesingle, eval=FALSE}
+library(esATAC)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(org.Hs.eg.db)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
 # set reference installation path
 options(atacConf=setConfigure("refdir","your/reference/path"))
 
@@ -285,7 +328,7 @@ Example: hg19 reference files
 * hg19.knownGene.sqlite
 * hg19.blacklist.bed
 
-NOTE: genome.1.bt2, genome.2.bt2, genome.3.bt2, genome.4.bt2, genome.rev.1.bt2, genome.rev.2.bt2 are bowtie2 index files; genome.fa is genome sequences. You can put them into reference installation path mannually. genome.DHS.bed, genome.knownGene.sqlite, genome.blacklist.bed are small files, which will be automatically generated or download.
+NOTE: genome.1.bt2, genome.2.bt2, genome.3.bt2, genome.4.bt2, genome.rev.1.bt2, genome.rev.2.bt2 are bowtie2 index files. It takes long time to build bowtie2 index from genome.fa file so you can put them into reference installation path mannually. genome.fa is the reference genome sequence. It will be generated from BSgenome pakcage(e.g. BSgenome.Hsapiens.UCSC.hg19) in several minutes rather than download from internet. genome.DHS.bed, genome.knownGene.sqlite, genome.blacklist.bed are small files, which will be automatically generated or download in short time. 
 
 
 ##  Search a Specific Motif Set
@@ -295,7 +338,7 @@ By default, esATAC will perform footprint analysis for all the TF motif PWM matr
 motiflist<-list("the pwms")
 
 
-atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
+conclusion2 <- atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]),motifPWM = motiflist)
 
 
@@ -305,7 +348,7 @@ conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq,motifP
 To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retypin your command line.
 The program will automatically check the steps that have been finished and continue the anlalysis.
 
-# Build User-defined Pipeline or Use Functions Indivially
+# Build User-defined Pipeline or Use Functions Individually
 
 All sub-processes are available for recombine new whole pipeline or
 sub-pipeline easily and flexibly. They are also able to be called individually.
