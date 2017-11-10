@@ -260,3 +260,85 @@ motifscan <- function(peak = NULL, genome = NULL,
     atacproc <- process(atacproc)
     invisible(atacproc)
 }
+
+
+
+#' @name PWMFromFile
+#' @title Processing PFM or PWM file.
+#' @description
+#' atacMotifScan and atacMotifScanPair accept PWM in a \code{list}, this
+#' function convert a PFM or PWM file(in JASPAR format) to a list in R.
+#' @param motif.file PFM or PWM file.
+#' @param is.PWM TRUE or FALSE. If TRUE, the input file contains PWM, do not
+#' need convert to PWM. If FALSE, the input file contains PFM, need convert
+#' to PWM. Default:FALSE.
+#' @details Converting a PFM or PWM file(in JASPAR format) to a list in R.
+#' @return A list contains PWM.
+#' @author Wei Zhang
+#' @importFrom TFBSTools PFMatrix
+#' @importFrom TFBSTools as.matrix
+#' @examples
+#'
+#' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
+#' pwm_list <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+#' @export
+PWMFromFile <- function(motif.file = NULL, is.PWM = FALSE){
+
+    PWMList <- list()
+    name.flag <- FALSE
+    A.flag <- FALSE
+    C.flag <- FALSE
+    G.flag <- FALSE
+    T.flag <- FALSE
+
+    con <- file(motif.file, "r")
+    line <- readLines(con, n = 1)
+    while( length(line) != 0 ){
+
+        if(substring(line, 1, 1) == ">"){
+            name_str <- unlist(strsplit(x = sub(pattern = ">", replacement = "", x = line), split = "\\s+"))
+            motif_name <- tail(name_str, n = 1)
+            name.flag <- TRUE
+        }else if(substring(line, 1, 1) == "A"){
+            A_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+            A_num <- as.numeric(unlist(A_str_num))
+            A.flag <- TRUE
+        }else if(substring(line, 1, 1) == "C"){
+            C_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+            C_num <- as.numeric(unlist(C_str_num))
+            C.flag <- TRUE
+        }else if(substring(line, 1, 1) == "G"){
+            G_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+            G_num <- as.numeric(unlist(G_str_num))
+            G.flag <- TRUE
+        }else if(substring(line, 1, 1) == "T"){
+            T_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+            T_num <- as.numeric(unlist(T_str_num))
+            T.flag <- TRUE
+        }
+
+        if(name.flag & A.flag & C.flag & G.flag & T.flag){
+            p_matrix <- matrix(data = c(A_num, C_num, G_num, T_num), nrow = 4,
+                               byrow = TRUE,  dimnames=list(c("A", "C", "G", "T")))
+
+            if(!is.PWM){
+                p_matrix <- TFBSTools::PFMatrix(profileMatrix = p_matrix)
+                p_matrix <- TFBSTools::as.matrix(TFBSTools::toPWM(p_matrix))
+            }
+
+            PWMList[[motif_name]] <- p_matrix
+
+            name.flag <- FALSE
+            A.flag <- FALSE
+            C.flag <- FALSE
+            G.flag <- FALSE
+            T.flag <- FALSE
+        }
+
+        line <- readLines(con, n = 1)
+    }
+    close(con)
+
+    return(PWMList)
+}
+
