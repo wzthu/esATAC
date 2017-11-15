@@ -81,6 +81,10 @@ setMethod(
     f = "processing",
     signature = "Bowtie2Mapping",
     definition = function(.Object,...){
+        paramList <- NULL
+        if(!is.null(.Object@paramlist[["paramList"]])){
+            paramList <- paste(.Object@paramlist[["paramList"]],collapse = " ")
+        }
         if(!is.null(.Object@paramlist[["threads"]])){
             if(.Object@paramlist[["threads"]]>1){
                 paramList<-paste(c("-p",as.character(.Object@paramlist[["threads"]]),.Object@paramlist[["paramList"]]),collapse = " ")

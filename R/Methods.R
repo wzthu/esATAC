@@ -129,7 +129,12 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param motifPWM \code{List} scalar. Motif PWM, a list.
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
-#' @param ... parameter "chr", which chromatin the program will processing.
+#' @param ... Parameter "refdir", \code{Character} scalar, the path for reference data being installed to and storage.
+#' Ignore this parameter if you have called \code{options(atacConf=setConfigure("refdir","your/reference/path"))} in the session.
+#' Parameter "genome", \code{Character} scalar, the genome(like hg19, mm10, etc.) 
+#' reference data in "refdir" to be used in the pipeline.
+#' Ignore this parameter if you have called \code{options(atacConf=setConfigure("genome","hg19"))} in the session.
+#' Parameter "chr", which chromatin the program will processing.
 #' It must be identical with the filename of cut site information files or
 #' a subset.
 #' Default:c(1:22, "X", "Y").
@@ -151,40 +156,35 @@ getSuffixlessFileName0 <- function(filePath){
 #' @examples
 #' \dontrun{
 #' ## These codes are time consuming so they will not be run and
-#' checked by bioconductor checker.
-#' # obtain the temporary folder path for test
-#' td<-tempdir()
+#' ## checked by bioconductor checker.
+#' 
+#' # The path for genome reference data being installed to and storage
+#' # Change this path to an permanent path to be used in future
+#' refdir <- file.path(tempdir(),"ref")
 #'
 #' # create a folder that will install reference files for this example
-#' dir.create(file.path(td,"ref"))
-#'
-#' # change the refdir to your installed refdir path
-#' # or it will be time comsuming to build bowtie2 index
-#' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
-#'
-#' # configure the genome you will use like hg19, mm10 and so on
-#' # if there is no reference files(e.g. bowtie index) in refdir,
-#' # it will download and build automatically
-#' options(atacConf=setConfigure("genome","hg19"))
-#'
-#'
-#' fastq files path
+#' dir.create(refdir)
+#' 
+#' # fastq files path
 #' mate1Fastq <- system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")
-#' mate2Fastq <- system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2")
+#' mate2Fastq <- system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
 #'
 #' # call the esATAC pipeline
 #' # for a quick example(only 3 motif will be processed)
 #' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
 #' pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
-#' conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq, motifPWM = pwm)
+#' conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq, 
+#'                        refdir = refdir, genome = "hg19", motifPWM = pwm)
 #'
 #' # for overall example(all human motif in JASPAR will be processed)
-#' conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq)
+#' conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq,
+#'                        refdir = refdir, genome = "hg19")
 #' }
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
                      interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL, ...){ #saveTmp = TRUE,
+
 
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
@@ -198,6 +198,14 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     }
 
     param.tmp <- list(...)
+    if(!is.null(param.tmp[["refdir"]])){
+        options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
+    }
+    if(!is.null(param.tmp[["genome"]])){
+        options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
+    }
+    
+    
 
     unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
     atacQC <- atacQCReport(atacProc = unzipAndMerge)
@@ -573,7 +581,12 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
 #' @param motifPWM \code{List} scalar. Motif PWM list.
-#' @param ... parameter "chr", which chromatin the program will processing.
+#' @param ... Parameter "refdir", \code{Character} scalar, the path for reference data being installed to and storage.
+#' Ignore this parameter if you have called \code{options(atacConf=setConfigure("refdir","your/reference/path"))} in the session.
+#' Parameter "genome", \code{Character} scalar, the genome(like hg19, mm10, etc.) 
+#' reference data in "refdir" to be used in the pipeline.
+#' Ignore this parameter if you have called \code{options(atacConf=setConfigure("genome","hg19"))} in the session.
+#' parameter "chr", which chromatin the program will processing.
 #' It must be identical with the filename of cut site information files or
 #' a subset.
 #' Default:c(1:22, "X", "Y").
@@ -617,22 +630,15 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @examples
 #' \dontrun{
 #' ## These codes are time consuming so they will not be run and
-#' checked by bioconductor checker.
-#' # obtain the temporary folder path for test
-#' td<-tempdir()
+#' ## checked by bioconductor checker.
+#' 
+#' # The path for genome reference data being installed to and storage
+#' # Change this path to an permanent path to be used in future
+#' refdir <- file.path(tempdir(),"ref")
 #'
 #' # create a folder that will install reference files for this example
-#' dir.create(file.path(td,"ref"))
-#'
-#' # change the refdir to your installed refdir path
-#' # or it will be time comsuming to build bowtie2 index
-#' options(atacConf=setConfigure("refdir",file.path(td,"ref")))
-#'
-#' # configure the genome you will use like hg19, mm10 and so on
-#' # if there is no reference files(e.g. bowtie index) in refdir,
-#' # it will download and build automatically
-#' options(atacConf=setConfigure("genome","hg19"))
-#'
+#' dir.create(refdir)
+#' 
 #' # your data
 #' case <- c(
 #'     system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
@@ -645,16 +651,17 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'
 #' # call pipeline
 #'
-#' for a quick example(only 3 motif will be processed)
+#' # for a quick example(only 3 motif will be processed)
 #' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
 #' pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
 #' atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
 #'          control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]),
-#'          motifPWM = pwm)
+#'          refdir = refdir, genome = "hg19", motifPWM = pwm)
 #'
 #' # for overall example(all human motif in JASPAR will be processed)
 #' atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
-#'         control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]))
+#'         control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]),
+#'         refdir = refdir, genome = "hg19")
 #' }
 #' @export
 #'
@@ -675,6 +682,12 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
 
     param.tmp <- list(...)
+    if(!is.null(param.tmp[["refdir"]])){
+        options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
+    }
+    if(!is.null(param.tmp[["genome"]])){
+        options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
+    }
 
     if("chr" %in% names(param.tmp)){
         chr <- param.tmp[["chr"]]
