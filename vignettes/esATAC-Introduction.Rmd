@@ -21,20 +21,17 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 # Introduction
 
-The esATAC package provides a dataflow graphs organized pipeline 
+The esATAC package provides a dataflow graphs organized end-to-end pipeline 
 for quantifying and annotating ATAC-seq and DNase-seq Reads in R,
 which integrate the functionality of several R packages 
 (such as Rsamtools, ChIPpeakAnno and so on) and external softwares 
 (e.g. [AdapterRemoval](https://github.com/MikkelSchubert/adapterremoval)[1], [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)[2], 
 through the Rowtie2 package and 
 [Fseq](http://fureylab.web.unc.edu/software/fseq)[3]). 
-Users can call the preset pipeline functions or 
-rebuild the workflow with elements process of esATAC
-for sequence data (FASTQ, SAM, BAM, BED file) complete/partial processing 
-and analyzing easily and flexibly in a single R script.
+Users could process raw FASTQ files through preset pipeline or customize their own workflow starting from any intermediate stages easily and flexibly in a single R script.
 That will be convenient to migrate, share and reproduce all 
 details such as parameters settings, intermediate result and so on.
-Besides, a quality control report file in HTML, 
+Besides, a pretty quality control report file in HTML, 
 which is able to be viewed in web browser,
 will be created in preset pipelines.
 
@@ -251,28 +248,28 @@ For detail, you can read the subsequent sections.
 
 esATAC provides an easy-to-use entry, you only need to provide your ATAC-seq sequencing files (FASTQ format), and assign the spaces and genome assembly, it will do everything for you.
 
-> For Case-control Analysis
+### For Case-control Analysis
 
-Need to be prepared:
+The R scripts below are ready to run. No more edit is needed.
 
-* FASTQ files pathes (may be .gz or .bz2 zipped)
-    + case: mate 1 & mate 2 FASTQ files 
-        - caseMate1Fastq 
-        - caseMate2Fastq
-    + control: mate 1 & mate 2 FASTQ files
-        - ctrlMate1Fastq
-        - ctrlMate2Fastq
-* refdir: directory for installing genome reference and storage for reuse
-* genome: may be one of these
+Costumize the code commented with "MODIFY" if you need to run on your own data.
+
+> Need to be prepared for your own data:
+
+* FASTQ files pathes (may be .gz or .bz2 zipped FASTQ files)
+    + case:   
+        - `caseMate1Fastq`: mate 1 FASTQ file(s)
+        - `caseMate2Fastq`: mate 2 FASTQ file(s)
+    + control: 
+        - `ctrlMate1Fastq`: mate 1 FASTQ file(s)
+        - `ctrlMate2Fastq`: mate 2 FASTQ file(s)
+* `refdir`: directory for installing genome reference and storage for reuse
+* `genome`: genome version may be one of these
     + hg19
     + hg38
     + mm9
     + mm10
     + ...
-
-The codes below are ready to run. No more edit is needed.
-
-Costumize the code commented with "MODIFY" if you need to run on your own data.
 
 ```{r casecontrol, eval=FALSE}
 library(esATAC)
@@ -306,24 +303,26 @@ conclusion <-
 ```
 [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)
 
-> For single sample analysis
+### For Single Sample Analysis
 
-Need to be prepared:
+The R scripts below are ready to run. No more edit is needed.
 
-* FASTQ files pathes (may be .gz or .bz2 zipped)
-    + mate1Fastq 
-    + mate2Fastq
-* refdir: directory for installing genome reference and storage for reuse
-* genome: may be one of these
+Costumize the code commented with "MODIFY" if you need to run on your own data.
+
+> Need to be prepared for your own data:
+
+* FASTQ files pathes (may be .gz or .bz2 zipped FASTQ files)
+    + `mate1Fastq`: mate 1 FASTQ file(s)
+    + `mate2Fastq`: mate 2 FASTQ file(s)
+* `refdir`: directory for installing genome reference and storage for reuse
+* `genome`: may be one of these
     + hg19
     + hg38
     + mm9
     + mm10
     + ...
 
-The codes below are ready to run. No more edit is needed.
 
-Costumize the code commented with "MODIFY" if you need to run on your own data.
 
 ```{r casesingle, eval=FALSE}
 library(esATAC)
@@ -393,7 +392,7 @@ conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq,
 
 ```
 ## Resume Your Analysis
-To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line.
+To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
 The program will automatically check the steps that have been finished and continue the anlalysis.
 
 # Build User-defined Pipeline or Use Functions Individually
