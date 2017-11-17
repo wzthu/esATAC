@@ -127,7 +127,7 @@ setMethod(
     }
 )
 
-
+#' @name RSNPs
 #' @title Find whether snps are in the given regions.
 #' @description
 #' Find snps(user providing) in given regions.
@@ -164,15 +164,13 @@ setMethod(
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacMotifScan}}
 
-#' @name atacSNPAnno
-#' @export
-#' @docType methods
-#' @rdname atacSNPAnno-methods
+
 setGeneric("atacSNPAnno",function(atacProc, snp.info = NULL, region.info = NULL,
                                   annoOutput = NULL, ...) standardGeneric("atacSNPAnno"))
 
-#' @rdname atacSNPAnno-methods
+#' @rdname RSNPs
 #' @aliases atacSNPAnno
+#' @export
 setMethod(
     f = "atacSNPAnno",
     signature = "ATACProc",
@@ -188,7 +186,8 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacSNPAnno-methods
+#' @rdname RSNPs
+#' @aliases snpanno
 #' @export
 snpanno <- function(snp.info, region.info = NULL, annoOutput = NULL, ...){
     atacproc <- new(
