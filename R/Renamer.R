@@ -123,7 +123,7 @@ singleCall<-function(number,.Object){
     }
 }
 
-#' @name atacRenamer
+
 #' @title Rename reads name in fastq
 #' @description
 #' Rename reads name in fastq with increasing integer
@@ -187,18 +187,18 @@ singleCall<-function(number,.Object){
 #'
 #' @importFrom parallel makeCluster parLapply stopCluster
 
-#' @name atacRenamer
-#' @export
-#' @docType methods
-#' @rdname atacRenamer-methods
+#' @name Renamer
+
+
 setGeneric("atacRenamer",function(atacProc,fastqOutput1=NULL,
                                   fastqOutput2=NULL,
                                   fastqInput1=NULL,
                                   fastqInput2=NULL,
                                   interleave = FALSE, ...) standardGeneric("atacRenamer"))
 
-#' @rdname atacRenamer-methods
+#' @rdname Renamer
 #' @aliases atacRenamer
+#' @export
 setMethod(
     f = "atacRenamer",
     signature = "ATACProc",
@@ -219,7 +219,8 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacRenamer-methods
+#' @rdname Renamer
+#' @aliases renamer
 #' @export
 renamer <- function(fastqInput1=NULL,
                     fastqInput2=NULL,

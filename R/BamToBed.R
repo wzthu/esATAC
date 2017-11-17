@@ -73,7 +73,7 @@ setMethod(
     }
 )
 
-
+#' @name Bam2Bed
 #' @title Convert bam format to bed format.
 #' @description
 #' This function convert a bam file into a bed file.
@@ -105,15 +105,14 @@ setMethod(
 #' \link[rtracklayer]{import}
 #' \link[rtracklayer]{export}
 #' @importFrom rtracklayer export
-#' @name atacBam2Bed
-#' @export
-#' @docType methods
-#' @rdname atacBam2Bed-methods
+
+
 
 setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, ...) standardGeneric("atacBam2Bed"))
 
-#' @rdname atacBam2Bed-methods
+#' @rdname Bam2Bed
 #' @aliases atacBam2Bed
+#' @export
 setMethod(
     f = "atacBam2Bed",
     signature = "ATACProc",
@@ -126,7 +125,8 @@ setMethod(
     }
 )
 
-#' @rdname atacBam2Bed-methods
+#' @rdname Bam2Bed
+#' @aliases bam2bed
 #' @export
 
 bam2bed <- function(bamInput, bedOutput = NULL, ...){

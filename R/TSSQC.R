@@ -191,7 +191,7 @@ setMethod(
 
 
 
-#' @name atacTSSQC
+#' @name TSSQC
 #' @title Quality control for transcription start site(TSS) reads enrichment
 #' @description
 #' These functions are used to generate the reads coverage plot around TSS.
@@ -244,16 +244,14 @@ setMethod(
 #' dir(td)
 #' @importFrom BiocGenerics strand
 
-#' @name atacTSSQC
-#' @export
-#' @docType methods
-#' @rdname atacTSSQC-methods
+
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                                   reportPrefix=NULL,bedInput = NULL,
                                   fragLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
 
-#' @rdname atacTSSQC-methods
+#' @rdname TSSQC
 #' @aliases atacTSSQC
+#' @export
 setMethod(
     f = "atacTSSQC",
     signature = "ATACProc",
@@ -277,7 +275,8 @@ setMethod(
 
 
 
-#' @rdname atacTSSQC-methods
+#' @rdname TSSQC
+#' @aliases tssQC
 #' @export
 tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
     atacproc <- new(

@@ -420,7 +420,7 @@ listToFrame <- function(a){
 
 
 
-#' @name atacRemoveAdapter
+#' @name RemoveAdapter
 #' @title Use AdapterRemoval to remove adapters
 #' @description
 #' Use AdapterRemoval to remove adapters
@@ -509,17 +509,15 @@ listToFrame <- function(a){
 #' @importFrom Rbowtie2 remove_adapters
 
 
-#' @name atacRemoveAdapter
-#' @export
-#' @docType methods
-#' @rdname atacRemoveAdapter-methods
+
 setGeneric("atacRemoveAdapter",function(atacProc,adapter1=NULL,adapter2=NULL,
                                         fastqOutput1=NULL,reportPrefix=NULL,
                                         fastqOutput2=NULL,fastqInput1=NULL,
                                         fastqInput2=NULL,interleave=FALSE,
                                         paramList= NULL,findParamList=NULL, ...) standardGeneric("atacRemoveAdapter"))
-#' @rdname atacRemoveAdapter-methods
+#' @rdname RemoveAdapter
 #' @aliases atacRemoveAdapter
+#' @export
 setMethod(
     f = "atacRemoveAdapter",
     signature = "ATACProc",
@@ -539,7 +537,8 @@ setMethod(
     }
 )
 
-#' @rdname atacRemoveAdapter-methods
+#' @rdname RemoveAdapter
+#' @aliases removeAdapter
 #' @export
 removeAdapter <- function(fastqInput1, fastqInput2=NULL,
                               adapter1=NULL,adapter2=NULL,

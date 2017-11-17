@@ -162,7 +162,7 @@ setMethod(
 )
 
 
-
+#' @name RPeakComp
 #' @title Find the overlap or differential peaks between two samples.
 #' @description
 #' This function compares two peak file and report overlap or differential peaks
@@ -212,15 +212,13 @@ setMethod(
 #' @seealso
 #' \code{\link{atacPeakCalling}}
 
-#' @name atacpeakComp
-#' @export
-#' @docType methods
-#' @rdname atacpeakComp-methods
+
 setGeneric("atacpeakComp",function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
                                    bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...) standardGeneric("atacpeakComp"))
 
-#' @rdname atacpeakComp-methods
+#' @rdname RPeakComp
 #' @aliases atacpeakComp
+#' @export
 setMethod(
     f = "atacpeakComp",
     signature = "ATACProc",
@@ -239,7 +237,8 @@ setMethod(
     }
 )
 
-#' @rdname atacpeakComp-methods
+#' @rdname RPeakComp
+#' @aliases peakcomp
 #' @export
 peakcomp <- function(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){
     atacproc <- new(
