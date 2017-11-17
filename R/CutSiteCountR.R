@@ -202,7 +202,7 @@ setMethod(
     }
 )
 
-#' @name CutSiteCount
+#' @name CutSiteCountR
 #' @title Count cut site number in given motif region and plot footprint.
 
 #' @description This function is used to count cut site number in given motif
@@ -280,7 +280,7 @@ setGeneric("atacCutSiteCount",
                     strandLength = 100, FootPrint = TRUE, prefix = NULL, ...) standardGeneric("atacCutSiteCount"))
 
 
-#' @rdname CutSiteCount
+#' @rdname CutSiteCountR
 #' @aliases atacCutSiteCount
 #' @export
 setMethod(
@@ -306,7 +306,7 @@ setMethod(
     }
 )
 
-#' @rdname CutSiteCount
+#' @rdname CutSiteCountR
 #' @aliases cutsitecount
 #' @export
 cutsitecount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,

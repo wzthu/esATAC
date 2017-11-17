@@ -73,7 +73,7 @@ setMethod(
     }
 )
 
-#' @name Bam2Bed
+#' @name BamToBed
 #' @title Convert bam format to bed format.
 #' @description
 #' This function convert a bam file into a bed file.
@@ -110,7 +110,7 @@ setMethod(
 
 setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, ...) standardGeneric("atacBam2Bed"))
 
-#' @rdname Bam2Bed
+#' @rdname BamToBed
 #' @aliases atacBam2Bed
 #' @export
 setMethod(
@@ -125,7 +125,7 @@ setMethod(
     }
 )
 
-#' @rdname Bam2Bed
+#' @rdname BamToBed
 #' @aliases bam2bed
 #' @export
 

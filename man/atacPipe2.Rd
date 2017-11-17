@@ -55,9 +55,21 @@ conclusion list will generated. See detail for usage.
 }
 \details{
 NOTE: Before using the pipeline,
-configure reference following the example or vignette is required.
-you can build yourself or download from our website:
-\url{http://bioinfo.au.tsinghua.edu.cn/member/zwei/}
+configure and install reference following the example or vignette is required.
+Build bowtie index may take some time. If you already have bowtie2 index files or you want to download(ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
+Example: hg19 bowtie2 index files
+
+hg19.1.bt2
+
+hg19.2.bt2
+
+hg19.3.bt2
+
+hg19.4.bt2
+
+hg19.rev.1.bt2
+
+hg19.rev.2.bt2
 
 For single end reads FASTQ files,
 The required parameters are fastqInput1 and adapter1.

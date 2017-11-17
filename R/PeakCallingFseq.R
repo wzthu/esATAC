@@ -121,7 +121,7 @@ setMethod(
 )
 
 
-#' @name PeakCalling
+#' @name PeakCallingFseq
 #' @title Use F-seq to call peak
 #' @description
 #' Use F-seq to call peak
@@ -191,7 +191,7 @@ setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,gen
 
                                          wgThresholdSet=NULL, ...) standardGeneric("atacPeakCalling"))
 
-#' @rdname PeakCalling
+#' @rdname PeakCallingFseq
 #' @aliases atacPeakCalling
 #' @export
 setMethod(
@@ -210,7 +210,7 @@ setMethod(
     }
 )
 
-#' @rdname PeakCalling
+#' @rdname PeakCallingFseq
 #' @aliases peakCalling
 #' @export
 peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
