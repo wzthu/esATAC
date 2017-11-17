@@ -53,8 +53,14 @@ printMap()
 ```
 
 Following the flowchart, related functions could be found in manual.
-For example,if you want to query "SamToBed" in the flowchart, 
-you can add "atac" prefix to query mannual like this:
+For example,if you want to query functions related to "SamToBed" in the flowchart, 
+you can query "SamToBed" directly like this:
+
+```{r querymannual0,message=FALSE,warning=FALSE}
+?SamToBed
+```
+
+If you know exactly function name, you can add "atac" prefix to query mannual like this:
 
 ```{r querymannual,message=FALSE,warning=FALSE}
 ?atacSamToBed
@@ -137,7 +143,7 @@ email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 ## Package Installation
 
 To install the latest version of esATAC, you will need to be using the
-latest version of R. esATAC is part of Bioconductor project, 
+latest version of R. esATAC is part of Bioconductor project (starting from Bioc 3.6, check your current Bioconductor version), 
 so you can install esATAC and its dependencies like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
@@ -252,11 +258,11 @@ esATAC provides an easy-to-use entry, you only need to provide your ATAC-seq seq
 
 The R scripts below are ready to run. No more edit is needed.
 
-Costumize the code commented with "MODIFY" if you need to run on your own data.
+Customize the code commented with "MODIFY" if you need to run on your own data.
 
 > Need to be prepared for your own data:
 
-* FASTQ files pathes (may be .gz or .bz2 zipped FASTQ files)
+* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
     + case:   
         - `caseMate1Fastq`: mate 1 FASTQ file(s)
         - `caseMate2Fastq`: mate 2 FASTQ file(s)
@@ -301,17 +307,20 @@ conclusion <-
               refdir = refdir, genome = "hg19")
 
 ```
-[Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)
+
+If you run the scripts above without modification, you are able to obtain default HTML
+[example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
+
 
 ### For Single Sample Analysis
 
 The R scripts below are ready to run. No more edit is needed.
 
-Costumize the code commented with "MODIFY" if you need to run on your own data.
+Customize the code commented with "MODIFY" if you need to run on your own data.
 
 > Need to be prepared for your own data:
 
-* FASTQ files pathes (may be .gz or .bz2 zipped FASTQ files)
+* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
     + `mate1Fastq`: mate 1 FASTQ file(s)
     + `mate2Fastq`: mate 2 FASTQ file(s)
 * `refdir`: directory for installing genome reference and storage for reuse
@@ -347,7 +356,11 @@ conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq,
                        refdir = refdir, genome = "hg19")
 ```
 
-[Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+
+If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
+
+
 
 esATAC will download the genome sequence and annotation files, build bowtie2 index, mapping the reads, do the quality control analysis, find peak regions, perform GO analysis and motif enrichment analysis, etc. automatically. Finally, you will get an report file in html format included to the analysis results.
 

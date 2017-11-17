@@ -78,7 +78,7 @@ setMethod(
     }
 )
 
-#' @name ExtractCutSite
+#' @name CutSitePre
 #' @title Extract ATAC-seq cutting site from bed file.
 #' @description
 #' Extract cutting site from ATAC-seq fangment bed file
@@ -120,7 +120,7 @@ setMethod(
 setGeneric("atacExtractCutSite",
            function(atacProc, bedInput = NULL, csOutput.dir = NULL, prefix = NULL, ...) standardGeneric("atacExtractCutSite"))
 
-#' @rdname ExtractCutSite
+#' @rdname CutSitePre
 #' @aliases atacExtractCutSite
 #' @export
 setMethod(
@@ -134,7 +134,7 @@ setMethod(
 )
 
 
-#' @rdname ExtractCutSite
+#' @rdname CutSitePre
 #' @aliases extractcutsite
 #' @export
 
