@@ -100,7 +100,7 @@ ctrl <- c(
 
 # call pipeline
 
-for a quick example(only 3 motif will be processed)
+# for a quick example(only 3 motif will be processed)
 pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
 pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
 atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
