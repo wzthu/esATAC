@@ -17,7 +17,7 @@ setConfigure(item = c("threads", "tmpdir", "refdir", "genome"), val)
 }
 \arguments{
 \item{item}{\code{Character} scalar.
-The items that are setable or gettable including
+The items that are setable or getable including
 "threads","tmpdir","refdir","genome","knownGene",
 "bsgenome","bt2Idx","DHS" and "blacklist".}
 
@@ -43,7 +43,24 @@ query global parameters. The items include
 "threads","tmpdir","refdir","genome" are setable
 and getable. While the others are readable only.
 You should consider to configure these parameters
-before starting the workflow
+before starting the workflow.
+
+For get \code{getConfigure} and \code{setConfigure}:
+\describe{
+  \item{"refdir"}{\code{Character} scalar, the path for reference data being installed to and storage.} 
+  \item{"genome"}{\code{Character} scalar, the genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.} 
+  \item{"tmpdir"}{\code{Character} scalar, the temporary file storage path} 
+  \item{"threads"}{\code{Integer} scalar, the max threads allowed to be created} 
+}
+
+For get \code{getConfigure} only:
+\describe{
+  \item{"knownGene"}{\code{TxDb} scalar, known gene TxDb object} 
+  \item{"bsgenome"}{\code{BSGenome} scalar, BSGenome object}
+  \item{"bt2Idx"}{\code{Character} scalar, bowtie2 index path prefix} 
+  \item{"DHS"}{\code{Character} scalar, DHS BED file path}
+  \item{"blacklist"}{\code{Character} scalar, blacklist BED file path}  
+}
 }
 \examples{
 getAllConfigure()

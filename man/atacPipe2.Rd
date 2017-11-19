@@ -28,15 +28,19 @@ interleaved paired-end sequencing data.}
 
 \item{motifPWM}{\code{List} scalar. Motif PWM list.}
 
-\item{...}{Parameter "refdir", \code{Character} scalar, the path for reference data being installed to and storage.
-Ignore this parameter if you have called \code{options(atacConf=setConfigure("refdir","your/reference/path"))} in the session.
-Parameter "genome", \code{Character} scalar, the genome(like hg19, mm10, etc.) 
-reference data in "refdir" to be used in the pipeline.
-Ignore this parameter if you have called \code{options(atacConf=setConfigure("genome","hg19"))} in the session.
-parameter "chr", which chromatin the program will processing.
-It must be identical with the filename of cut site information files or
-a subset.
-Default:c(1:22, "X", "Y").}
+\item{...}{Configure "refdir", "genome", "threads", "tmpdir" for this function.
+They will overwrite global configuration. 
+If you need to set globally, see \link{configureValue}. 
+\describe{
+  \item{refdir}{\code{Character} scalar, the path for reference data being installed to and storage.} 
+  \item{genome}{\code{Character} scalar, the genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.} 
+  \item{tmpdir}{\code{Character} scalar, the temporary file storage path} 
+  \item{threads}{\code{Integer} scalar, the max threads allowed to be created} 
+}
+Parameter "chr", which chromatin the program will processing. 
+\describe{
+   \item{chr}{\code{Character} scalar, It must be identical with the filename of cut site information files or a subset. Default:c(1:22, "X", "Y").}
+}}
 }
 \value{
 \code{List} scalar. It is a list that save the result of the pipeline.
@@ -54,22 +58,18 @@ An HTML report file, result files(e.g. BED, BAM files) and
 conclusion list will generated. See detail for usage.
 }
 \details{
-NOTE: Before using the pipeline,
-configure and install reference following the example or vignette is required.
-Build bowtie index may take some time. If you already have bowtie2 index files or you want to download(ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
+NOTE: 
+Build bowtie index in this function may take some time. If you already have bowtie2 index files or you want to download(ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
 Example: hg19 bowtie2 index files
 
-hg19.1.bt2
-
-hg19.2.bt2
-
-hg19.3.bt2
-
-hg19.4.bt2
-
-hg19.rev.1.bt2
-
-hg19.rev.2.bt2
+\itemize{
+\item hg19.1.bt2 
+\item hg19.2.bt2
+\item hg19.3.bt2
+\item hg19.4.bt2
+\item hg19.rev.1.bt2
+\item hg19.rev.2.bt2
+}
 
 For single end reads FASTQ files,
 The required parameters are fastqInput1 and adapter1.
@@ -93,36 +93,47 @@ Intermediate files will be save at tmpdir path (default is ./)
 ## These codes are time consuming so they will not be run and
 ## checked by bioconductor checker.
 
-# The path for genome reference data being installed to and storage
-# Change this path to an permanent path to be used in future
-refdir <- file.path(tempdir(),"ref")
-
-# create a folder that will install reference files for this example
-dir.create(refdir)
-
-# your data
-case <- c(
-    system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
-    system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
-)
-ctrl <- c(
-    system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
-    system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
-)
+# create a directory if refdir is not exist
+dir.create(file.path(tempdir(),"ref"))
 
 # call pipeline
-
 # for a quick example(only 3 motif will be processed)
 pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
 pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
-atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
-         control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]),
-         refdir = refdir, genome = "hg19", motifPWM = pwm)
+conclusion <- 
+   atacPipe2(
+       # MODIFY: Change these paths to your own case files!
+       # e.g. fastqInput1 = "your/own/data/path.fastq"
+       case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+                fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
+       # MODIFY: Change these paths to your own control files!
+       # e.g. fastqInput1 = "your/own/data/path.fastq"
+       control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+                    fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
+       # MODIFY: Change this path to an permanent path to be used in future!
+       # e.g refdir <- "your/own/reference/path"
+       refdir = file.path(tempdir(),"ref"), 
+       # MODIFY: Set the genome for your data
+       genome = "hg19",
+       motifPWM = pwm)
 
+# call pipeline
 # for overall example(all human motif in JASPAR will be processed)
-atacPipe2(case=list(fastqInput1 = case[1],fastqInput2 = case[2]),
-        control=list(fastqInput1 = ctrl[1],fastqInput2 = ctrl[2]),
-        refdir = refdir, genome = "hg19")
+conclusion <- 
+   atacPipe2(
+       # MODIFY: Change these paths to your own case files!
+       # e.g. fastqInput1 = "your/own/data/path.fastq"
+       case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+                fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
+       # MODIFY: Change these paths to your own control files!
+       # e.g. fastqInput1 = "your/own/data/path.fastq"
+       control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+                    fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
+       # MODIFY: Change this path to an permanent path to be used in future!
+       # e.g refdir <- "your/own/reference/path"
+       refdir = file.path(tempdir(),"ref"), 
+       # MODIFY: Set the genome for your data
+       genome = "hg19")
 }
 }
 \seealso{
