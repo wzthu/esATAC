@@ -211,7 +211,7 @@ setMethod(
 
 
 
-#' @name atacUnzipAndMerge
+#' @name UnzipAndMerge
 #' @aliases atacUnzipAndMerge
 #' @aliases removeAdapter
 #' @title Unzip and merge fastq files
@@ -255,7 +255,7 @@ setMethod(
 #' atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 #' dir(td)
 #' 
-#' @rdname atacUnzipAndMerge
+#' @rdname UnzipAndMerge
 #' @export
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
@@ -271,7 +271,7 @@ atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
     invisible(atacproc)
 }
 
-#' @rdname atacUnzipAndMerge
+#' @rdname UnzipAndMerge
 #' @export
 unzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,

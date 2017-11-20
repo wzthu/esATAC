@@ -281,6 +281,7 @@ setMethod(
     }
 )
 
+#' @name RMotifScanPair
 #' @title Search Motif Position in Given Regions
 #' @description
 #' Search motif position in given genome regions according PWM matrix.
@@ -338,17 +339,15 @@ setMethod(
 #' @importFrom parallel parLapply
 #' @importFrom parallel stopCluster
 
-#' @name atacMotifScanPair
-#' @export
-#' @docType methods
-#' @rdname atacMotifScanPair-methods
+
 setGeneric("atacMotifScanPair",
            function(atacProc, peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                     motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
                     n.cores = NULL, prefix = NULL, ...) standardGeneric("atacMotifScanPair"))
 
-#' @rdname atacMotifScanPair-methods
+#' @rdname RMotifScanPair
 #' @aliases atacMotifScanPair
+#' @export
 setMethod(
     f = "atacMotifScanPair",
     signature = "ATACProc",
@@ -372,7 +371,8 @@ setMethod(
     }
 )
 
-#' @rdname atacMotifScanPair-methods
+#' @rdname RMotifScanPair
+#' @aliases motifscanpair
 #' @export
 motifscanpair <- function(peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
                           motifPWM = NULL, min.score = "85%", scanO.dir = NULL,

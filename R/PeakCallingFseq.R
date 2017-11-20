@@ -121,7 +121,7 @@ setMethod(
 )
 
 
-#' @name atacPeakCalling
+#' @name PeakCallingFseq
 #' @title Use F-seq to call peak
 #' @description
 #' Use F-seq to call peak
@@ -183,10 +183,7 @@ setMethod(
 #'
 #' dir(td)
 
-#' @name atacPeakCalling
-#' @export
-#' @docType methods
-#' @rdname atacPeakCalling-methods
+
 setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,genomicReadsCount=NULL,
                                          fragmentSize=0,featureLength=NULL,bedOutput=NULL,
                                          ploidyDir=NULL,#fileformat=c("bed","wig","npf"),
@@ -194,8 +191,9 @@ setGeneric("atacPeakCalling",function(atacProc,bedInput=NULL,background=NULL,gen
 
                                          wgThresholdSet=NULL, ...) standardGeneric("atacPeakCalling"))
 
-#' @rdname atacPeakCalling-methods
+#' @rdname PeakCallingFseq
 #' @aliases atacPeakCalling
+#' @export
 setMethod(
     f = "atacPeakCalling",
     signature = "ATACProc",
@@ -212,7 +210,8 @@ setMethod(
     }
 )
 
-#' @rdname atacPeakCalling-methods
+#' @rdname PeakCallingFseq
+#' @aliases peakCalling
 #' @export
 peakCalling <- function(bedInput,background=NULL,genomicReadsCount=NULL,
                             fragmentSize=0,featureLength=NULL,bedOutput=NULL,

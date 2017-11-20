@@ -159,7 +159,7 @@ setMethod(
     }
 )
 
-#' @name atacFragLenDistr
+#' @name FragLenDistr
 #' @title Quality control for fragment length distribution
 #' @description
 #' These functions are used to generate fragment distribution plot.
@@ -208,16 +208,14 @@ setMethod(
 #' 
 #' @importFrom BiocGenerics counts 
 #' @importFrom ggplot2 geom_path ggplot geom_vline geom_line theme_bw theme annotate xlab ggsave element_blank
-#' @name atacFragLenDistr
-#' @export
-#' @docType methods
-#' @rdname atacFragLenDistr-methods
+
 
 setGeneric("atacFragLenDistr",function(atacProc,reportPrefix=NULL,bedInput=NULL, ...) standardGeneric("atacFragLenDistr"))
 
 
-#' @rdname atacFragLenDistr-methods
+#' @rdname FragLenDistr
 #' @aliases atacFragLenDistr
+#' @export
 setMethod(
     f = "atacFragLenDistr",
     signature = "ATACProc",
@@ -234,7 +232,8 @@ setMethod(
 
 
 
-#' @rdname atacFragLenDistr-methods
+#' @rdname FragLenDistr
+#' @aliases fragLenDistr
 #' @export
 
 fragLenDistr<-function(bedInput, reportPrefix=NULL, ...){

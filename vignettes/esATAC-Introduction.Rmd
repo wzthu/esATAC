@@ -21,20 +21,17 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 # Introduction
 
-The esATAC package provides a dataflow graphs organized pipeline 
+The esATAC package provides a dataflow graphs organized end-to-end pipeline 
 for quantifying and annotating ATAC-seq and DNase-seq Reads in R,
 which integrate the functionality of several R packages 
 (such as Rsamtools, ChIPpeakAnno and so on) and external softwares 
 (e.g. [AdapterRemoval](https://github.com/MikkelSchubert/adapterremoval)[1], [bowtie2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml)[2], 
 through the Rowtie2 package and 
 [Fseq](http://fureylab.web.unc.edu/software/fseq)[3]). 
-Users can call the preset pipeline functions or 
-rebuild the workflow with elements process of esATAC
-for sequence data (FASTQ, SAM, BAM, BED file) complete/partial processing 
-and analyzing easily and flexibly in a single R script.
+Users could process raw FASTQ files through preset pipeline or customize their own workflow starting from any intermediate stages easily and flexibly in a single R script.
 That will be convenient to migrate, share and reproduce all 
 details such as parameters settings, intermediate result and so on.
-Besides, a quality control report file in HTML, 
+Besides, a pretty quality control report file in HTML, 
 which is able to be viewed in web browser,
 will be created in preset pipelines.
 
@@ -56,8 +53,14 @@ printMap()
 ```
 
 Following the flowchart, related functions could be found in manual.
-For example,if you want to query "SamToBed" in the flowchart, 
-you can add "atac" prefix to query mannual like this:
+For example,if you want to query functions related to "SamToBed" in the flowchart, 
+you can query "SamToBed" directly like this:
+
+```{r querymannual0,message=FALSE,warning=FALSE}
+?SamToBed
+```
+
+If you know exactly function name, you can add "atac" prefix to query mannual like this:
 
 ```{r querymannual,message=FALSE,warning=FALSE}
 ?atacSamToBed
@@ -140,7 +143,7 @@ email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 ## Package Installation
 
 To install the latest version of esATAC, you will need to be using the
-latest version of R. esATAC is part of Bioconductor project, 
+latest version of R. esATAC is part of Bioconductor project (starting from Bioc 3.6, check your current Bioconductor version), 
 so you can install esATAC and its dependencies like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
@@ -251,104 +254,107 @@ For detail, you can read the subsequent sections.
 
 esATAC provides an easy-to-use entry, you only need to provide your ATAC-seq sequencing files (FASTQ format), and assign the spaces and genome assembly, it will do everything for you.
 
-> For Case-control Analysis
+### For Case-control Analysis
 
-Need to be prepared:
+The R scripts below are ready to run. No more edit is needed.
 
-* FASTQ files pathes (may be .gz or .bz2 zipped)
-    + case: mate 1 & mate 2 FASTQ files 
-        - caseMate1Fastq 
-        - caseMate2Fastq
-    + control: mate 1 & mate 2 FASTQ files
-        - ctrlMate1Fastq
-        - ctrlMate2Fastq
-* refdir: directory for installing genome reference and storage for reuse
-* genome: may be one of these
+Customize the code commented with "MODIFY" if you need to run on your own data.
+
+> Need to be prepared for your own data:
+
+* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
+    + case:   
+        - `fastqInput1`: mate 1 FASTQ file(s)
+        - `fastqInput2`: mate 2 FASTQ file(s)
+    + control: 
+        - `fastqInput1`: mate 1 FASTQ file(s)
+        - `fastqInput2`: mate 2 FASTQ file(s)
+* `refdir`: directory for installing genome reference and storage for reuse
+* `genome`: genome version may be one of these
     + hg19
     + hg38
     + mm9
     + mm10
     + ...
-
-The codes below are ready to run. No more edit is needed.
-
-Costumize the code commented with "MODIFY" if you need to run on your own data.
 
 ```{r casecontrol, eval=FALSE}
 library(esATAC)
 
-# MODIFY: Change these paths to your own case files!
-# e.g. caseMate1Fastq <- "your/own/data/path.fastq"
-caseMate1Fastq <- system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")
-caseMate2Fastq <- system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
-
-# MODIFY: Change these paths to your own control files!
-# e.g. ctrlMate1Fastq <- "your/own/data/path.fastq
-ctrlMate1Fastq <- system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2")
-ctrlMate2Fastq <- system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")
-
-# MODIFY: Change this path to an permanent path to be used in future!
-refdir <- file.path(tempdir(),"ref") #e.g refdir <- "your/own/reference/path"
-
-# MODIFY: Set the genome for your data
-genome <- "hg19"
-
 # create a directory if refdir is not exist
-dir.create(refdir)
+dir.create(file.path(tempdir(),"ref"))
 
 # call pipeline
 # for overall example(all human motif in JASPAR will be processed)
 conclusion <- 
-    atacPipe2(case=list(fastqInput1 = caseMate1Fastq,fastqInput2 = caseMate2Fastq), 
-              control=list(fastqInput1 = ctrlMate1Fastq,fastqInput2 = ctrlMate2Fastq),
-              refdir = refdir, genome = "hg19")
+    atacPipe2(
+# MODIFY: Change these paths to your own case files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+                  fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
+# MODIFY: Change these paths to your own control files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
+# MODIFY: Change this path to an permanent path to be used in future!
+# e.g refdir <- "your/own/reference/path"
+        refdir = file.path(tempdir(),"ref"), 
+# MODIFY: Set the genome for your data
+        genome = "hg19")
 
 ```
-[Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)
 
-> For single sample analysis
+If you run the scripts above without modification, you are able to obtain default HTML
+[example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
 
-Need to be prepared:
+If you download raw data ([GSM2356780: SRR4435490.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356780)) and ([GSM2356795: SRR4435505.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356795)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.html) for GSM2356780 and GSM2356795 data.
 
-* FASTQ files pathes (may be .gz or .bz2 zipped)
-    + mate1Fastq 
-    + mate2Fastq
-* refdir: directory for installing genome reference and storage for reuse
-* genome: may be one of these
+### For Single Sample Analysis
+
+The R scripts below are ready to run. No more edit is needed.
+
+Customize the code commented with "MODIFY" if you need to run on your own data.
+
+> Need to be prepared for your own data:
+
+* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
+    + `fastqInput1`: mate 1 FASTQ file(s)
+    + `fastqInput2`: mate 2 FASTQ file(s)
+* `refdir`: directory for installing genome reference and storage for reuse
+* `genome`: may be one of these
     + hg19
     + hg38
     + mm9
     + mm10
     + ...
 
-The codes below are ready to run. No more edit is needed.
 
-Costumize the code commented with "MODIFY" if you need to run on your own data.
 
 ```{r casesingle, eval=FALSE}
 library(esATAC)
 
-# MODIFY: Change these paths to your own case files!
-# e.g. mate1Fastq <- "your/own/data/path.fastq"
-mate1Fastq <- system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")
-mate2Fastq <- system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2")
-
-# MODIFY: Change this path to an permanent path to be used in future!
-refdir <- file.path(tempdir(),"ref") #e.g refdir <- "your/own/reference/path"
-
-# MODIFY: Set the genome for your data
-genome <- "hg19"
-
 # create a directory if refdir is not exist
-dir.create(refdir)
+dir.create(file.path(tempdir(),"ref"))
 
 # call pipeline
 # for overall example(all human motif in JASPAR will be processed)
-conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq,
-                       refdir = refdir, genome = "hg19")
+conclusion <- 
+    atacPipe(
+# MODIFY: Change these paths to your own case files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+# MODIFY: Change this path to an permanent path to be used in future!
+# e.g refdir <- "your/own/reference/path"
+        refdir = file.path(tempdir(),"ref"), 
+# MODIFY: Set the genome for your data
+        genome = "hg19")
 ```
 
-[Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+
+If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
+
+
 
 esATAC will download the genome sequence and annotation files, build bowtie2 index, mapping the reads, do the quality control analysis, find peak regions, perform GO analysis and motif enrichment analysis, etc. automatically. Finally, you will get an report file in html format included to the analysis results.
 
@@ -377,23 +383,54 @@ By default, esATAC will perform footprint analysis for all the TF motif PWM matr
 
 ```{r motifsetex,eval=FALSE}
 
+### case-control
+
 # for a quick example(only 3 motif will be processed)
 pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
 pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
 
 
 conclusion2 <- 
-    atacPipe2(case=list(fastqInput1 = caseMate1Fastq,fastqInput2 = caseMate2Fastq),
-              control=list(fastqInput1 = ctrlMate1Fastq,fastqInput2 = ctrlMate2Fastq),
-              refdir = refdir, genome = "hg19", motifPWM = pwm)
+    atacPipe2(
+# MODIFY: Change these paths to your own case files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+                  fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
+# MODIFY: Change these paths to your own control files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
+# MODIFY: Change this path to an permanent path to be used in future!
+# e.g refdir <- "your/own/reference/path"
+        refdir = file.path(tempdir(),"ref"), 
+# MODIFY: Set the genome for your data
+        genome = "hg19",
+        motifPWM = pwm)
 
-conclusion <- atacPipe(fastqInput1 = mate1Fastq, fastqInput2 = mate2Fastq,
-                       refdir = refdir, genome = "hg19", motifPWM = pwm)
+
+### single sample
+
+# for a quick example(only 3 motif will be processed)
+pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
+pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+
+conclusion <- 
+    atacPipe(
+# MODIFY: Change these paths to your own case files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+# MODIFY: Change this path to an permanent path to be used in future!
+# e.g refdir <- "your/own/reference/path"
+        refdir = file.path(tempdir(),"ref"), 
+# MODIFY: Set the genome for your data
+        genome = "hg19",
+        motifPWM = pwm)
 
 
 ```
 ## Resume Your Analysis
-To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line.
+To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
 The program will automatically check the steps that have been finished and continue the anlalysis.
 
 # Build User-defined Pipeline or Use Functions Individually
