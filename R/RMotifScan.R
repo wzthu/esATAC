@@ -262,7 +262,7 @@ motifscan <- function(peak = NULL, genome = NULL,
 
 
 
-#' @name PWMFromFile
+#' @name getMotifPWM
 #' @title Processing PFM or PWM file.
 #' @description
 #' atacMotifScan and atacMotifScanPair accept PWM in a \code{list}, this
@@ -271,6 +271,10 @@ motifscan <- function(peak = NULL, genome = NULL,
 #' @param is.PWM TRUE or FALSE. If TRUE, the input file contains PWM, do not
 #' need convert to PWM. If FALSE, the input file contains PFM, need convert
 #' to PWM. Default:FALSE.
+#' @param JASPARdb TRUE or FALSE. Whether use JASPAR database or not.
+#' @param Species Taxonomy ID. For human, it's 9606.
+#' @param Name The name of the transcription factor.
+#' @param ID The ID of the transcription factor.
 #' @details Converting a PFM or PWM file(in JASPAR format) to a list in R.
 #' @return A list contains PWM.
 #' @author Wei Zhang
@@ -278,66 +282,99 @@ motifscan <- function(peak = NULL, genome = NULL,
 #' @importFrom TFBSTools as.matrix
 #' @examples
 #'
+#' # from files(user customized)
 #' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-#' pwm_list <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+#' pwm_list <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
+#'
+#' # from JASPAR database
+#' pwm_list <- getMotifPWM(JASPARdb = TRUE, Name = "TFAP2A")
+#'
 #' @export
-PWMFromFile <- function(motif.file = NULL, is.PWM = FALSE){
+getMotifPWM <- function(motif.file = NULL, is.PWM = FALSE, JASPARdb = FALSE,
+                        Species = NULL, Name = NULL, ID = NULL){
+    if(!is.null(motif.file)){
+        PWMList <- list()
+        name.flag <- FALSE
+        A.flag <- FALSE
+        C.flag <- FALSE
+        G.flag <- FALSE
+        T.flag <- FALSE
 
-    PWMList <- list()
-    name.flag <- FALSE
-    A.flag <- FALSE
-    C.flag <- FALSE
-    G.flag <- FALSE
-    T.flag <- FALSE
+        con <- file(motif.file, "r")
+        line <- readLines(con, n = 1)
+        while( length(line) != 0 ){
 
-    con <- file(motif.file, "r")
-    line <- readLines(con, n = 1)
-    while( length(line) != 0 ){
-
-        if(substring(line, 1, 1) == ">"){
-            name_str <- unlist(strsplit(x = sub(pattern = ">", replacement = "", x = line), split = "\\s+"))
-            motif_name <- tail(name_str, n = 1)
-            name.flag <- TRUE
-        }else if(substring(line, 1, 1) == "A"){
-            A_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-            A_num <- as.numeric(unlist(A_str_num))
-            A.flag <- TRUE
-        }else if(substring(line, 1, 1) == "C"){
-            C_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-            C_num <- as.numeric(unlist(C_str_num))
-            C.flag <- TRUE
-        }else if(substring(line, 1, 1) == "G"){
-            G_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-            G_num <- as.numeric(unlist(G_str_num))
-            G.flag <- TRUE
-        }else if(substring(line, 1, 1) == "T"){
-            T_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-            T_num <- as.numeric(unlist(T_str_num))
-            T.flag <- TRUE
-        }
-
-        if(name.flag & A.flag & C.flag & G.flag & T.flag){
-            p_matrix <- matrix(data = c(A_num, C_num, G_num, T_num), nrow = 4,
-                               byrow = TRUE,  dimnames=list(c("A", "C", "G", "T")))
-
-            if(!is.PWM){
-                p_matrix <- TFBSTools::PFMatrix(profileMatrix = p_matrix)
-                p_matrix <- TFBSTools::as.matrix(TFBSTools::toPWM(p_matrix))
+            if(substring(line, 1, 1) == ">"){
+                name_str <- unlist(strsplit(x = sub(pattern = ">", replacement = "", x = line), split = "\\s+"))
+                motif_name <- tail(name_str, n = 1)
+                name.flag <- TRUE
+            }else if(substring(line, 1, 1) == "A"){
+                A_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+                A_num <- as.numeric(unlist(A_str_num))
+                A.flag <- TRUE
+            }else if(substring(line, 1, 1) == "C"){
+                C_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+                C_num <- as.numeric(unlist(C_str_num))
+                C.flag <- TRUE
+            }else if(substring(line, 1, 1) == "G"){
+                G_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+                G_num <- as.numeric(unlist(G_str_num))
+                G.flag <- TRUE
+            }else if(substring(line, 1, 1) == "T"){
+                T_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
+                T_num <- as.numeric(unlist(T_str_num))
+                T.flag <- TRUE
             }
 
-            PWMList[[motif_name]] <- p_matrix
+            if(name.flag & A.flag & C.flag & G.flag & T.flag){
+                p_matrix <- matrix(data = c(A_num, C_num, G_num, T_num), nrow = 4,
+                                   byrow = TRUE,  dimnames=list(c("A", "C", "G", "T")))
 
-            name.flag <- FALSE
-            A.flag <- FALSE
-            C.flag <- FALSE
-            G.flag <- FALSE
-            T.flag <- FALSE
+                if(!is.PWM){
+                    p_matrix <- TFBSTools::PFMatrix(profileMatrix = p_matrix)
+                    p_matrix <- TFBSTools::as.matrix(TFBSTools::toPWM(p_matrix))
+                }
+
+                PWMList[[motif_name]] <- p_matrix
+
+                name.flag <- FALSE
+                A.flag <- FALSE
+                C.flag <- FALSE
+                G.flag <- FALSE
+                T.flag <- FALSE
+            }
+
+            line <- readLines(con, n = 1)
         }
-
-        line <- readLines(con, n = 1)
+        close(con)
+        return(PWMList)
+    }else if(!is.null(JASPARdb)){
+        print("Now, JASPAR2016 database is in use!")
+        if(!is.null(Species)){
+            opts <- list()
+            opts[["species"]] <- Species
+            pwm <- TFBSTools::getMatrixSet(x = JASPAR2016::JASPAR2016, opts = opts)
+            pwm <- TFBSTools::toPWM(pwm)
+            names(pwm) <- TFBSTools::name(pwm)
+            pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
+            names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
+            return(pwm)
+        }else if(!is.null(Name)){
+            pwm <- TFBSTools::getMatrixByName(x = JASPAR2016::JASPAR2016, name = Name)
+            pwm <- TFBSTools::toPWM(pwm)
+            pwm.name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pwm), perl = TRUE)
+            PWMList <- list(pwm.name = TFBSTools::as.matrix(pwm))
+            names(PWMList) <- pwm.name
+            return(PWMList)
+        }else if(!is.null(ID)){
+            pwm <- TFBSTools::getMatrixByID(x = JASPAR2016::JASPAR2016, ID = ID)
+            pwm <- TFBSTools::toPWM(pwm)
+            pwm.name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pwm), perl = TRUE)
+            PWMList <- list(pwm.name = TFBSTools::as.matrix(pwm))
+            names(PWMList) <- pwm.name
+            return(PWMList)
+        }
     }
-    close(con)
 
-    return(PWMList)
 }
 
