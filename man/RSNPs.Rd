@@ -26,17 +26,23 @@ in given region. If from \code{\link{atacMotifScan}}, the output file would
 contain file path to the output of every motif.}
 
 \item{snp.info}{\code{Character} scalar.
-Input snp info path. The first 3 column must be chr, position, snp_name,
-e.g. chr13   39776775    rs7993214. Other columns could be other information
-about snps.}
+Input snp info path. There are two type of input files(you can specify by
+parameter withend).
+1.The first 2 column must be chr, position.
+e.g. chr13   39776775    rs7993214.
+Other columns could be other information about snps.
+2.The first 3 column must be chr, start, end.
+e.g. chr13   39776775    39776775    rs7993214.
+Other columns could be other information about snps.}
 
 \item{region.info}{\code{Character} scalar.
-Input region info path. The first 3 column must be chr, position, end.}
+Input region info path. The first 3 column must be chr, position, end. The
+standard BED format is recommended.}
 
 \item{annoOutput}{\code{Character} scalar.
 Output path.}
 
-\item{...}{Additional arguments, currently unused.}
+\item{...}{withend Your snp data has only one position column or 2.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar.
