@@ -115,9 +115,9 @@ setMethod(f = "isValidVal",
                       unlink(knownGeneFilePathlock)
                   }
                   .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
+                  blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
+                  DHSFilePath<-paste0(fileprefix,".DHS.bed")
                   if(sum(val==c("hg19","hg38","mm10","mm9"))){
-                      blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
-                      DHSFilePath<-paste0(fileprefix,".DHS.bed")
                       downloadFilePathlock<-paste0(fileprefix,".download.lock")
                       if(file.exists(downloadFilePathlock)){
                           unlink(blacklistFilePath)
@@ -138,11 +138,17 @@ setMethod(f = "isValidVal",
                           }
                           unlink(downloadFilePathlock)
                       }
-                      .Object@configList[["DHS"]]<-DHSFilePath
+                      #.Object@configList[["DHS"]]<-DHSFilePath
+                      #.Object@configList[["blacklist"]]<-blacklistFilePath
+                  }
+                  if(file.exists(blacklistFilePath)){
                       .Object@configList[["blacklist"]]<-blacklistFilePath
                   }
+                  if(file.exists(DHSFilePath)){
+                      .Object@configList[["DHS"]]<-DHSFilePath
+                  }
+                  snpFilePath<-paste0(fileprefix,".snp.txt")
                   if(val=="hg19"){
-                      snpFilePath<-paste0(fileprefix,".snp.txt")
                       downloadFilePathlock<-paste0(fileprefix,".download1.lock")
                       if(file.exists(downloadFilePathlock)){
                           unlink(downloadFilePathlock)
@@ -153,8 +159,12 @@ setMethod(f = "isValidVal",
                                         destfile = snpFilePath,method = getOption("download.file.method"))
                           unlink(downloadFilePathlock)
                       }
+                      #.Object@configList[["SNP"]]<-snpFilePath
+                  }
+                  if(file.exists(snpFilePath)){
                       .Object@configList[["SNP"]]<-snpFilePath
                   }
+                  
 
 
               }
@@ -211,10 +221,30 @@ setMethod(f = "GetOrgDb",
               }else if(genome == "mm10" || genome == "mm9"){
                   .Object@curOrgDb <- "org.Mm.eg.db"
                   base::library("org.Mm.eg.db",character.only=TRUE)
+              }else if(genome == "danRer10"){
+                  .Object@curOrgDb <- "org.Dr.eg.db"
+                  base::library("org.Dr.eg.db",character.only=TRUE)
+              }else if(genome == "galGal5" || genome == "galGal4"){
+                  .Object@curOrgDb <- "org.Gg.eg.db"
+                  base::library("org.Gg.eg.db",character.only=TRUE)
+              }else if(genome == "rheMac3" || genome == "rheMac8"){
+                  .Object@curOrgDb <- "org.Mmu.eg.db"
+                  base::library("org.Mmu.eg.db",character.only=TRUE)
+              }else if(genome == "panTro5" ){
+                  .Object@curOrgDb <- "org.Pt.eg.db"
+                  base::library("org.Pt.eg.db",character.only=TRUE)
+              }else if(genome == "rn6" || genome == "rn5"){
+                  .Object@curOrgDb <- "org.Rn.eg.db"
+                  base::library("org.Rn.eg.db",character.only=TRUE)
+              }else if(genome == "sacCer3" || genome == "sacCer2"){
+                  .Object@curOrgDb <- "org.Sc.sgd.db"
+                  base::library("org.Sc.sgd.db",character.only=TRUE)
+              }else if(genome == "susScr3"){
+                  .Object@curOrgDb <- "org.Ss.eg.db"
+                  base::library("org.Ss.eg.db",character.only=TRUE)
               }else {
-                  stop(paste0("OrgDb Annotation package does not support for ",genome))
+                  warning(paste0("OrgDb Annotation package does not support for ",genome))
               }
-
               return(.Object@curOrgDb)
           })
 
