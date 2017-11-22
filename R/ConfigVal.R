@@ -13,8 +13,8 @@ setClass(Class = ".ConfigClass",
 setMethod(f = "initialize",
           signature = ".ConfigClass",
           definition = function(.Object,...){
-              .Object@configList<-list(threads=1,tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,annoDb=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL)
-              .Object@validAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character")
+              .Object@configList<-list(threads=1,tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,annoDb=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL,SNP=NULL)
+              .Object@validAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character",SNP="character")
               .Object@validWriteAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character")
               .Object
           })
@@ -140,6 +140,20 @@ setMethod(f = "isValidVal",
                       }
                       .Object@configList[["DHS"]]<-DHSFilePath
                       .Object@configList[["blacklist"]]<-blacklistFilePath
+                  }
+                  if(val=="hg19"){
+                      snpFilePath<-paste0(fileprefix,".snp.txt")
+                      downloadFilePathlock<-paste0(fileprefix,".download1.lock")
+                      if(file.exists(downloadFilePathlock)){
+                          unlink(downloadFilePathlock)
+                      }
+                      if(!file.exists(snpFilePath)){
+                          file.create(downloadFilePathlock)
+                          download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.snp.txt",val),
+                                        destfile = snpFilePath,method = getOption("download.file.method"))
+                          unlink(downloadFilePathlock)
+                      }
+                      .Object@configList[["SNP"]]<-snpFilePath
                   }
 
 
@@ -347,7 +361,7 @@ getAllConfigure<-function(){
 }
 #' @rdname configureValue
 #' @export
-getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
+getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist","SNP")){
     .configObj <- getOption("atacConf")
     if(is.null(.configObj)){
         .configObj <- new(".ConfigClass")
@@ -393,7 +407,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     setConfigure("genome",genome)
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
+.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist","SNP")){
     .configObj <- getOption("atacConf")
     if(is.null(.configObj)){
         .configObj <- new(".ConfigClass")
