@@ -183,7 +183,7 @@ getSuffixlessFileName0 <- function(filePath){
 #' # call pipeline
 #' # for a quick example(only 3 motif will be processed)
 #' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-#' pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+#' pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
 #' conclusion <-
 #'   atacPipe(
 #'        # MODIFY: Change these paths to your own case files!
@@ -678,7 +678,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' # call pipeline
 #' # for a quick example(only 3 motif will be processed)
 #' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-#' pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+#' pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
 #' conclusion <-
 #'    atacPipe2(
 #'        # MODIFY: Change these paths to your own case files!
