@@ -14,7 +14,7 @@ atacSNPAnno(atacProc, snp.info = NULL, region.info = NULL,
 \S4method{atacSNPAnno}{ATACProc}(atacProc, snp.info = NULL,
   region.info = NULL, annoOutput = NULL, ...)
 
-snpanno(snp.info, region.info = NULL, annoOutput = NULL, ...)
+snpanno(snp.info = NULL, region.info = NULL, annoOutput = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -33,7 +33,8 @@ e.g. chr13   39776775    rs7993214.
 Other columns could be other information about snps.
 2.The first 3 column must be chr, start, end.
 e.g. chr13   39776775    39776775    rs7993214.
-Other columns could be other information about snps.}
+Other columns could be other information about snps.
+When genome is hg19, using human disease as default.}
 
 \item{region.info}{\code{Character} scalar.
 Input region info path. The first 3 column must be chr, position, end. The
