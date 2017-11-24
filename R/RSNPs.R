@@ -10,6 +10,13 @@ setMethod(
                           annoOutput = NULL, editable = FALSE){
         .Object <- init(.Object,"RSNPs",editable,list(arg1=atacProc))
 
+        param.tmp <- list(...)
+        if("withend" %in% names(param.tmp)){
+            .Object@paramlist[["withend"]] <- TRUE
+        }else{
+            .Object@paramlist[["withend"]] <- FALSE
+        }
+
         if((!is.null(atacProc)) && (class(atacProc)[1] == "PeakCallingFseq")){
             .Object@paramlist[["type"]] <- "file"
             .Object@paramlist[["region.info"]] <- atacProc$getParam("bedOutput")
@@ -23,7 +30,13 @@ setMethod(
             .Object@paramlist[["region.info"]] <- region.info
             regexProcName <- "(bed)"
         }
-        .Object@paramlist[["snp.info"]] <- snp.info
+        if(!is.null(snp.info)){
+            .Object@paramlist[["snp.info"]] <- snp.info
+        }else{
+            .Object@paramlist[["snp.info"]] <- .obtainConfigure("SNP")
+            .Object@paramlist[["withend"]] <- TRUE
+        }
+
 
         if(is.null(annoOutput)){
             prefix <- getBasenamePrefix(.Object, .Object@paramlist[["region.info"]], regexProcName)
@@ -40,12 +53,7 @@ setMethod(
             }
         }
 
-        param.tmp <- list(...)
-        if("withend" %in% names(param.tmp)){
-            .Object@paramlist[["withend"]] <- TRUE
-        }else{
-            .Object@paramlist[["withend"]] <- FALSE
-        }
+
 
         paramValidation(.Object)
         .Object
@@ -124,9 +132,6 @@ setMethod(
         if(is.null(.Object@paramlist[["region.info"]])){
             stop("Parameter region.info is required!")
         }
-        if(is.null(.Object@paramlist[["snp.info"]])){
-            stop("Parameter snp.info is required!")
-        }
     }
 )
 
@@ -161,6 +166,7 @@ setMethod(
 #' 2.The first 3 column must be chr, start, end.
 #' e.g. chr13   39776775    39776775    rs7993214.
 #' Other columns could be other information about snps.
+#' When genome is hg19, using human disease as default.
 #' @param region.info \code{Character} scalar.
 #' Input region info path. The first 3 column must be chr, position, end. The
 #' standard BED format is recommended.
@@ -208,7 +214,7 @@ setMethod(
 #' @rdname RSNPs
 #' @aliases snpanno
 #' @export
-snpanno <- function(snp.info, region.info = NULL, annoOutput = NULL, ...){
+snpanno <- function(snp.info = NULL, region.info = NULL, annoOutput = NULL, ...){
     atacproc <- new(
         "RSNPs",
         atacProc = NULL,
