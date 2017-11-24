@@ -99,7 +99,7 @@ dir.create(file.path(tempdir(),"ref"))
 # call pipeline
 # for a quick example(only 3 motif will be processed)
 pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
 conclusion <-
    atacPipe2(
        # MODIFY: Change these paths to your own case files!
