@@ -387,7 +387,7 @@ By default, esATAC will perform footprint analysis for all the TF motif PWM matr
 
 # for a quick example(only 3 motif will be processed)
 pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
 
 
 conclusion2 <- 
@@ -412,7 +412,7 @@ conclusion2 <-
 
 # for a quick example(only 3 motif will be processed)
 pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-pwm <- PWMFromFile(motif.file = pfm_file, is.PWM = FALSE)
+pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
 
 conclusion <- 
     atacPipe(
