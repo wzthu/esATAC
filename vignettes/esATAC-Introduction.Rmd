@@ -125,116 +125,29 @@ or the examples in following sections.
 
 ![Fourier Transformation Analysis of Distribution](wave.png)
 
+## Package Installation and Loading
 
-
-## Contact
-
-This package is developed and maintained by members of 
-[Xiaowo Wang Lab](http://bioinfo.au.tsinghua.edu.cn/member/xwwang)
-
-MOE Key Laboratory of Bioinformatics and Bioinformatics Division, 
-
-TNLIST / Department of Automation, Tsinghua University
-
-email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
-
-# Preparation
-
-## Package Installation
+### Download and Installation
 
 To install the latest version of esATAC, you will need to be using the
-latest version of R. esATAC is part of Bioconductor project (starting from Bioc 3.6, check your current Bioconductor version), 
-so you can install esATAC and its dependencies like this:
+latest version of R. esATAC is part of Bioconductor project 
+(starting from Bioc 3.6 built on R 3.4.2. Please check your current Bioconductor version and R version first.), 
+so you can dowload install esATAC and all its dependencies software like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
 source("http://www.bioconductor.org/biocLite.R")
 biocLite("esATAC")
 ```
 
-## Loading
+### Loading
 
-Just like other R package, 
+Just like other R packages, 
 you need to load esATAC like this each time before using the package.
 
-```{r loading0,message=FALSE}
+```{r loading00,message=FALSE}
 library(esATAC)
 ```
-If you need to use fseq, 
-we recommend to set max memory size for java (8G, 8000M in the example).
-Or rJava will use the default parameter for fseq.
 
-```{r loading1,message=FALSE}
-options(java.parameters = "-Xmx8000m")
-```
-
-## Loading Recommend Package
-
-The BSgenome package, TxDb known gene package and OrgDb annotation package
-for some functions are required. We recommend to install and
-load the specific species related packages before using the packages.
-
-```{r loadingpkg,message=FALSE}
-library(magrittr)
-library(BSgenome.Hsapiens.UCSC.hg19)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(org.Hs.eg.db)
-library(R.utils)
-```
-
-
-## Configure Other Parameters
-
-These configurations are also optional. 
-"tmpdir" is the path to save all of the temporary data and
-the default result storage path. If it is not configured,
-current work directory will be set as "tmpdir".
-"threads" is the maximum threads allowed to 
-be created for data processing.
-The default value is 1. 
-More thread will consume more memery in some processes.
-
-
-```{r loadref, eval=TRUE}
-# we use temp directiory "td" here 
-# Change it to your directiory because the intermediate file may be huge
-td<-tempdir()
-options(atacConf=setConfigure("tmpdir",td))
-options(atacConf=setConfigure("threads",8))
-```
-
-## Reference Data Installation and Loading
-
-We strongly recommend to install reference data first before using the package
-although it is optional. 
-"refdir" is the folder that will save all of the reference data.
-"genome" is the genome name like hg19, hg38, mm10, mm9 and so on.
-The program will detect the elements that have not been installed and install them.
-Some resources need to be downloaded from internet. 
-So don't forget to connect internet during installation.
-Or the installation will be failed.
-If all of the reference data was installed, 
-these two lines still need to be called 
-for configuring the reference data path and genome. 
-
-```{r config, eval=TRUE}
-#uncomment and modify to run:
-#options(atacConf=setConfigure("refdir","path/to/refdatafolder"))
-#options(atacConf=setConfigure("genome","hg19"))
-```
-
-NOTE: The installation will consume several hours for data download and
-building bowtie2 index depending on computer performance and 
-network bandwidth. 
-
-NOTE: The installation is network based. Please keep your network connection.
-But you don need to worry about disconnect. 
-The program will continue to check finished part and only build unfinish part.
-
-Genome hg19 and mm10 are supported currently. 
-More genomes will be supported in the future.
-
-WARNNING: If the reference data is not configured, 
-the related reference argument of functions has to be set manually during using. 
 
 ## Datasets
 
@@ -245,6 +158,22 @@ rebuild raw paired-end FASTQ files(file names with chr20 prefix).
 We also subsample the reads in SAM file and peak calling BED result files.
 Besides, the files in "uzmg", "adrm" and "bt2" are the test files from AdapterRemoval and Bowtie2.
 For detail, you can read the subsequent sections.
+
+## Contact
+
+This package is developed and maintained by members of 
+
+[Xiaowo Wang Lab](http://bioinfo.au.tsinghua.edu.cn/member/xwwang)
+
+Ministry of Education Key Laboratory of Bioinformatics, 
+
+Center for Synthetic and Systems Biology, 
+
+Department of Automation, 
+
+Tsinghua University, Beijing, 100084, China
+
+email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 
 
 
@@ -275,7 +204,8 @@ Customize the code commented with "MODIFY" if you need to run on your own data.
     + hg38
     + mm9
     + mm10
-    + ...
+    
+For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
 
 ```{r casecontrol, eval=FALSE}
 library(esATAC)
@@ -303,6 +233,8 @@ conclusion <-
 
 ```
 
+**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
+
 If you run the scripts above without modification, you are able to obtain default HTML
 [example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
 
@@ -325,7 +257,8 @@ Customize the code commented with "MODIFY" if you need to run on your own data.
     + hg38
     + mm9
     + mm10
-    + ...
+
+For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
 
 
 
@@ -350,9 +283,11 @@ conclusion <-
         genome = "hg19")
 ```
 
+**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
+
 If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
 
-If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
+If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modify the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
 
 
 
@@ -360,7 +295,7 @@ esATAC will download the genome sequence and annotation files, build bowtie2 ind
 
 ## Already Have Genome Bowtie2 Index
 
-Build bowtie index may take some time. If you already have bowtie2 index files or you want to [download](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
+Build2 bowtie index may take some time. If you already have bowtie2 index files or you want to [download](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
 
 Example: hg19 bowtie2 index files
 
@@ -378,7 +313,7 @@ bowtie2 index download path:
 Modify the "refdir" in [Starting from Scratch](#quickstart), you can run the example code.
 
 
-##  Search a Specific Motif Set
+##  Search a Specific Motif Set {#motifs}
 By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, you can simple do it like this:
 
 ```{r motifsetex,eval=FALSE}
@@ -430,15 +365,136 @@ conclusion <-
 
 ```
 ## Resume Your Analysis
+
 To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
 The program will automatically check the steps that have been finished and continue the anlalysis.
 
-# Build User-defined Pipeline or Use Functions Individually
+# Customized pipeline {#cuspipe}
 
 All sub-processes are available for recombine new whole pipeline or
 sub-pipeline easily and flexibly. They are also able to be called individually.
 We just show some functions and their combinations from the package.
 For detail, the users can read the manual.
+
+## Preparation
+
+### Loading
+
+Just like other R package, 
+you need to load esATAC like this each time before using the package.
+
+```{r loading0,message=FALSE}
+library(esATAC)
+```
+If you need to use fseq, 
+we recommend to set max memory size for java (8G, 8000M in the example).
+Or rJava will use the default parameter for fseq.
+
+```{r loading1,message=FALSE}
+options(java.parameters = "-Xmx8000m")
+```
+
+### Loading Recommend Package
+
+The BSgenome package, TxDb known gene package and OrgDb annotation package
+for some functions are required. We recommend to install (use `biocLite("packageName")`) and
+load the specific species related packages before using the packages.
+
+```{r loadingpkg,message=FALSE}
+library(magrittr)
+library(BSgenome.Hsapiens.UCSC.hg19)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(org.Hs.eg.db)
+library(R.utils)
+```
+
+Packages for specific genomes are shown below:
+
+| genome   | BSgenome                          | TxDb                                  | OrgDb         |
+|----------|-----------------------------------|---------------------------------------|---------------|
+| hg19     | BSgenome.Hsapiens.UCSC.hg19       | TxDb.Hsapiens.UCSC.hg19.knownGene     | org.Hs.eg.db  |
+| hg38     | BSgenome.Hsapiens.UCSC.hg38       | TxDb.Hsapiens.UCSC.hg38.knownGene     | org.Hs.eg.db  |
+| mm9      | BSgenome.Mmusculus.UCSC.mm9       | TxDb.Mmusculus.UCSC.mm9.knownGene     | org.Mm.eg.db  |
+| mm10     | BSgenome.Mmusculus.UCSC.mm10      | TxDb.Mmusculus.UCSC.mm10.knownGene    | org.Mm.eg.db  |
+| danRer10 | BSgenome.Drerio.UCSC.danRer10     | TxDb.Drerio.UCSC.danRer10.refGene     | org.Dr.eg.db  |
+| galGal5  | BSgenome.Ggallus.UCSC.galGal5     | TxDb.Ggallus.UCSC.galGal5.refGene     | org.Gg.eg.db  |
+| galGal4  | BSgenome.Ggallus.UCSC.galGal4     | TxDb.Ggallus.UCSC.galGal4.refGene     | org.Gg.eg.db  |
+| rheMac3  | BSgenome.Mmulatta.UCSC.rheMac3    | TxDb.Mmulatta.UCSC.rheMac3.refGene    | org.Mmu.eg.db |
+| rheMac8  | BSgenome.Mmulatta.UCSC.rheMac8    | TxDb.Mmulatta.UCSC.rheMac8.refGene    | org.Mmu.eg.db |
+| rn6      | BSgenome.Rnorvegicus.UCSC.rn6     | TxDb.Rnorvegicus.UCSC.rn6.refGene     | org.Rn.eg.db  |
+| rn5      | BSgenome.Rnorvegicus.UCSC.rn5     | TxDb.Rnorvegicus.UCSC.rn5.refGene     | org.Rn.eg.db  |
+| sacCer3  | BSgenome.Scerevisiae.UCSC.sacCer3 | TxDb.Scerevisiae.UCSC.sacCer3.sgdGene | org.Sc.sgd.db |
+| sacCer2  | BSgenome.Scerevisiae.UCSC.sacCer2 | TxDb.Scerevisiae.UCSC.sacCer2.sgdGene | org.Sc.sgd.db |
+| susScr3  | BSgenome.Sscrofa.UCSC.susScr3     | TxDb.Sscrofa.UCSC.susScr3.refGene     | org.Ss.eg.db  |
+
+### Configure Other Parameters
+
+These configurations are also optional. 
+"tmpdir" is the path to save all of the temporary data and
+the default result storage path. If it is not configured,
+current work directory will be set as "tmpdir".
+"threads" is the maximum threads allowed to 
+be created for data processing.
+The default value is 1. 
+More thread will consume more memery in some processes.
+
+
+```{r loadref, eval=TRUE}
+# we use temp directiory "td" here 
+# Change it to your directiory because the intermediate file may be huge
+td<-tempdir()
+options(atacConf=setConfigure("tmpdir",td))
+options(atacConf=setConfigure("threads",8))
+```
+
+### Reference Data Installation and Loading
+
+We strongly recommend to install reference data first before using the package
+although it is optional. 
+"refdir" is the folder that will save all of the reference data.
+"genome" is the genome name like hg19, hg38, mm10, mm9 and so on.
+The program will detect the elements that have not been installed and install them.
+Some resources need to be downloaded from internet. 
+So don't forget to connect internet during installation.
+Or the installation will be failed.
+If all of the reference data was installed, 
+these two lines still need to be called 
+for configuring the reference data path and genome. 
+
+```{r config, eval=TRUE}
+#uncomment and modify to run:
+#options(atacConf=setConfigure("refdir","path/to/refdatafolder"))
+#options(atacConf=setConfigure("genome","hg19"))
+```
+
+NOTE: The installation will consume several hours for data download and
+building bowtie2 index depending on computer performance and 
+network bandwidth. 
+
+NOTE: The installation is network based. Please keep your network connection.
+But you don need to worry about disconnect. 
+The program will continue to check finished part and only build unfinish part.
+
+
+WARNNING: If the reference data is not configured, 
+the related reference argument of functions has to be set manually during using. 
+
+### Already Have Genome Bowtie2 Index
+
+Build bowtie index may take some time. If you already have bowtie2 index files or you want to [download](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
+
+Example: hg19 bowtie2 index files
+
+* hg19.1.bt2
+* hg19.2.bt2
+* hg19.3.bt2
+* hg19.4.bt2
+* hg19.rev.1.bt2
+* hg19.rev.2.bt2
+
+bowtie2 index download path:
+
+<ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes>
 
 ## Preprocess
 
