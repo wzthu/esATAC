@@ -111,7 +111,11 @@ setMethod(f = "isValidVal",
                   }
                   if(!file.exists(knownGeneFilePath)){
                       file.create(knownGeneFilePathlock)
-                      saveDb(makeTxDbFromUCSC(genome=val, tablename="knownGene"), file=knownGeneFilePath)
+                      if(sum(val==c("hg19","hg38","mm10","mm9"))){
+                            saveDb(makeTxDbFromUCSC(genome=val, tablename="knownGene"), file=knownGeneFilePath)
+                      }else{
+                          saveDb(makeTxDbFromUCSC(genome=val, tablename="refGene"), file=knownGeneFilePath) 
+                      }
                       unlink(knownGeneFilePathlock)
                   }
                   .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
@@ -230,7 +234,7 @@ setMethod(f = "GetOrgDb",
               }else if(genome == "rheMac3" || genome == "rheMac8"){
                   .Object@curOrgDb <- "org.Mmu.eg.db"
                   base::library("org.Mmu.eg.db",character.only=TRUE)
-              }else if(genome == "panTro5" ){
+              }else if(genome == "panTro4" ){
                   .Object@curOrgDb <- "org.Pt.eg.db"
                   base::library("org.Pt.eg.db",character.only=TRUE)
               }else if(genome == "rn6" || genome == "rn5"){
