@@ -63,14 +63,18 @@ setMethod(f = "isValidVal",
                   val<-normalizePath(val)
               }
               if(item=="genome"){
+                  message("Reference data configuraion start ...")
+                  message("Configure bsgenome ...")
                   .Object@configList[["bsgenome"]]<-getBSgenome(val)
                   if(is.null(.Object@configList[["refdir"]])){
                       stop("'refdir' should be configured before 'genome'")
                   }
                   fileprefix<-file.path(.Object@configList[["refdir"]],val)
                   ##annoDb:orgdb
+                  message("Configure annoDb ...")
                   .Object@configList[["annoDb"]]<-GetOrgDb(.Object,val)
                   #genome fasta
+                  message("Generate genome fasta file ...")
                   fastaFilePath<-paste0(fileprefix,".fa")
                   fastaFilePathlock<-paste0(fileprefix,".fa.lock")
                   if(file.exists(fastaFilePathlock)){
@@ -84,6 +88,7 @@ setMethod(f = "isValidVal",
                   }
 
                   #bowtie2 index
+                  message("Configure bowtie2 index ...")
                   fileprefixlock<-paste0(fileprefix,".fa.bt2.lock")
                   if(file.exists(fileprefixlock)){
                       unlink(paste0(fileprefix,".1.bt2"))
@@ -97,12 +102,16 @@ setMethod(f = "isValidVal",
                   if(!(file.exists(paste0(fileprefix,".1.bt2"))&&file.exists(paste0(fileprefix,".2.bt2"))||
                        file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))||
                        file.exists(paste0(fileprefix,".rev.1.bt2"))&&file.exists(paste0(fileprefix,".rev.1.bt2")))){
+                      message("Build bowtie2 index ...")
+                      message("It may take more than one hour with single thread. Please wait.")
+                      message("Using multi-threads will be faster.")
                       file.create(fileprefixlock)
                       bowtie2_build(fastaFilePath,fileprefix,"-q","--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
                       unlink(fileprefixlock)
                   }
                   .Object@configList[["bt2Idx"]]<-fileprefix
                   #kownGene
+                  message("Configure kownGene ...")
                   knownGeneFilePath<-paste0(fileprefix,".knownGene.sqlite")
                   knownGeneFilePathlock<-paste0(fileprefix,".knownGene.sqlite.lock")
                   if(file.exists(knownGeneFilePathlock)){
@@ -119,9 +128,11 @@ setMethod(f = "isValidVal",
                       unlink(knownGeneFilePathlock)
                   }
                   .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
+                  
                   blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
                   DHSFilePath<-paste0(fileprefix,".DHS.bed")
                   if(sum(val==c("hg19","hg38","mm10","mm9"))){
+                      message("Configure blacklist and DHS ...")
                       downloadFilePathlock<-paste0(fileprefix,".download.lock")
                       if(file.exists(downloadFilePathlock)){
                           unlink(blacklistFilePath)
@@ -153,6 +164,7 @@ setMethod(f = "isValidVal",
                   }
                   snpFilePath<-paste0(fileprefix,".snp.txt")
                   if(val=="hg19"){
+                      message("Configure SNP ...")
                       downloadFilePathlock<-paste0(fileprefix,".download1.lock")
                       if(file.exists(downloadFilePathlock)){
                           unlink(downloadFilePathlock)
@@ -170,8 +182,9 @@ setMethod(f = "isValidVal",
                   }
                   
 
-
+                  message("Reference data configuraion done")
               }
+              
               .Object
           })
 
