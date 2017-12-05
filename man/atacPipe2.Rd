@@ -97,8 +97,6 @@ Intermediate files will be save at tmpdir path (default is ./)
 ## These codes are time consuming so they will not be run and
 ## checked by bioconductor checker.
 
-# create a directory if refdir is not exist
-dir.create(file.path(tempdir(),"ref"))
 
 # call pipeline
 # for a quick example(only CTCF will be processed)
@@ -112,9 +110,6 @@ conclusion <-
        # e.g. fastqInput1 = "your/own/data/path.fastq"
        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
-       # MODIFY: Change this path to an permanent path to be used in future!
-       # e.g refdir <- "your/own/reference/path"
-       refdir = file.path(tempdir(),"ref"),
        # MODIFY: Set the genome for your data
        genome = "hg19",
        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
@@ -131,9 +126,6 @@ conclusion <-
        # e.g. fastqInput1 = "your/own/data/path.fastq"
        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
-       # MODIFY: Change this path to an permanent path to be used in future!
-       # e.g refdir <- "your/own/reference/path"
-       refdir = file.path(tempdir(),"ref"),
        # MODIFY: Set the genome for your data
        genome = "hg19")
 }

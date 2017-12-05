@@ -179,9 +179,6 @@ getSuffixlessFileName0 <- function(filePath){
 #' ## These codes are time consuming so they will not be run and
 #' ## checked by bioconductor checker.
 #'
-#' # The path for genome reference data being installed to and storage
-#' # create a directory if refdir is not exist
-#' dir.create(file.path(tempdir(),"ref"))
 #'
 #' # call pipeline
 #' # for a quick example(only CTCF will be processing)
@@ -191,9 +188,6 @@ getSuffixlessFileName0 <- function(filePath){
 #'        # e.g. fastqInput1 = "your/own/data/path.fastq"
 #'        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
 #'        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
-#'        # MODIFY: Change this path to an permanent path to be used in future!
-#'        # e.g refdir <- "your/own/reference/path"
-#'        refdir = file.path(tempdir(),"ref"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
 #'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
@@ -206,9 +200,6 @@ getSuffixlessFileName0 <- function(filePath){
 #'        # e.g. fastqInput1 = "your/own/data/path.fastq"
 #'        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
 #'        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
-#'        # MODIFY: Change this path to an permanent path to be used in future!
-#'        # e.g refdir <- "your/own/reference/path"
-#'        refdir = file.path(tempdir(),"ref"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19")
 #' }
@@ -247,7 +238,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
             message(getConfigure("threads"))
         }else{
-            options(atacConf=setConfigure("threads",2))
+            options(atacConf=setConfigure("threads",2L))
         }
         if(!is.null(param.tmp[["tmpdir"]])){
             options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
@@ -695,8 +686,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' ## These codes are time consuming so they will not be run and
 #' ## checked by bioconductor checker.
 #'
-#' # create a directory if refdir is not exist
-#' dir.create(file.path(tempdir(),"ref"))
 #'
 #' # call pipeline
 #' # for a quick example(only CTCF will be processed)
@@ -710,9 +699,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'        # e.g. fastqInput1 = "your/own/data/path.fastq"
 #'        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
 #'                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
-#'        # MODIFY: Change this path to an permanent path to be used in future!
-#'        # e.g refdir <- "your/own/reference/path"
-#'        refdir = file.path(tempdir(),"ref"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
 #'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
@@ -729,9 +715,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'        # e.g. fastqInput1 = "your/own/data/path.fastq"
 #'        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
 #'                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
-#'        # MODIFY: Change this path to an permanent path to be used in future!
-#'        # e.g refdir <- "your/own/reference/path"
-#'        refdir = file.path(tempdir(),"ref"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19")
 #'}
@@ -770,7 +753,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
             options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
             message(getConfigure("threads"))
         }else{
-            options(atacConf=setConfigure("threads",2))
+            options(atacConf=setConfigure("threads",2L))
         }
         if(!is.null(param.tmp[["tmpdir"]])){
             options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
