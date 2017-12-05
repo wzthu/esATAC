@@ -229,7 +229,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     }
 
     param.tmp <- list(...)
-    if(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]]){
+    if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
         if(!is.null(param.tmp[["refdir"]])){
             options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
         }else{
@@ -756,7 +756,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
 
     param.tmp <- list(...)
-    if(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]]){
+    if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
         if(!is.null(param.tmp[["refdir"]])){
             options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
         }else{
