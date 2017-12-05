@@ -19,6 +19,222 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 ```
 
+
+# Quick Start {#quickstart}
+
+## Package Installation and Loading
+
+### Download and Installation
+
+To install the latest version of esATAC, you will need to be using the
+latest version of R. esATAC is part of Bioconductor project 
+starting from Bioc 3.6 built on R 3.4.2. Please check your current Bioconductor version and R version first. Similar to other bioconductor package,
+you can dowload install esATAC and all its dependencies software like this:
+
+```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
+source("http://www.bioconductor.org/biocLite.R")
+biocLite("esATAC")
+```
+
+### Loading
+
+Just like other R packages, 
+you need to load esATAC like this each time before using the package.
+
+```{r loading00,message=FALSE}
+library(esATAC)
+```
+
+
+## Datasets
+
+Most of the test datasets in this package (esATAC/extdata/) are generated from GEO: SRR891271 [(from GSE47753)](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE47753)[7].
+The data is ATAC-seq paired end sequencing for GM12878 cell line. 
+We random sampling 20000 mapped fragments from chr20 and 
+rebuild raw paired-end FASTQ files(file names with chr20 prefix).
+We also subsample the reads in SAM file and peak calling BED result files.
+Besides, the files in "uzmg" and "bt2" are the test files from AdapterRemoval and Bowtie2.
+For detail, you can read the subsequent sections.
+
+## Starting from Scratch
+
+esATAC provides an easy-to-use entry, you only need to provide your ATAC-seq sequencing files (FASTQ format), and assign the spaces and genome assembly, it will do everything for you.
+
+### For Case-control Analysis
+
+The R scripts below are ready to run. No more edit is needed.
+
+Customize the code commented with "MODIFY" if you need to run on your own data.
+
+> Need to be prepared for your own data:
+
+* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
+    + case:   
+        - `fastqInput1`: mate 1 FASTQ file(s)
+        - `fastqInput2`: mate 2 FASTQ file(s)
+    + control: 
+        - `fastqInput1`: mate 1 FASTQ file(s)
+        - `fastqInput2`: mate 2 FASTQ file(s)
+* `genome`: genome version may be one of these
+    + hg19
+    + hg38
+    + mm9
+    + mm10
+* `refdir`:(optional) Directory for installing genome reference and storage for reuse. Default: "./esATAC_pipeline/refdir" will be created if not exist.
+* `tmpdir`:(optional) Directory for intermediate files and results storage. Default: "./esATAC_pipeline/esATAC_result" will be created if not exist.
+* `threads`:(optional) The max threads allowed to be created. Default: 2.
+    
+For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
+
+Here, we show an simple run-able example for case-control analysis. Case and control test sample are both paired-end data. Each of them contains two gzipped FASTQ files.
+The test file paths can are obtained like this: 
+`system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")`. They are under folder path "esATAC/extdata/".
+
+```{r casecontrol, eval=FALSE}
+library(esATAC)
+
+# call pipeline
+# all human motif in JASPAR will be processed
+conclusion <- 
+    atacPipe2(
+# MODIFY: Change these paths to your own case files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+                  fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
+# MODIFY: Change these paths to your own control files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
+# MODIFY: Change this path to an permanent path to be used in future!
+#       refdir <- "./esATAC_pipeline/refdir",
+#       tmpdir = "./esATAC_pipeline/esATAC_result", 
+# MODIFY: Set the genome for your data
+        genome = "hg19")
+
+```
+
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you only want to download bowtie2 index instead, please see [section 2.2](#bt2)**
+
+**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
+
+The reference data will be installed in "./refdir/" and all of temporary data and result will be stored in "./esATAC_result". 
+
+If you run the scripts above without modification, you are able to obtain default HTML
+[example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
+
+If you download raw data ([GSM2356780: SRR4435490.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356780)) and ([GSM2356795: SRR4435505.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356795)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.html) for GSM2356780 and GSM2356795 data.
+
+### For Single Sample Analysis
+
+The R scripts below are ready to run. No more edit is needed.
+
+Customize the code commented with "MODIFY" if you need to run on your own data.
+
+> Need to be prepared for your own data:
+
+* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
+    + `fastqInput1`: mate 1 FASTQ file(s)
+    + `fastqInput2`: mate 2 FASTQ file(s)
+* `genome`: may be one of these
+    + hg19
+    + hg38
+    + mm9
+    + mm10
+* `refdir`:(optional) Directory for installing genome reference and storage for reuse. Default: "./esATAC_pipeline/refdir" will be created if not exist.
+* `tmpdir`:(optional) Directory for intermediate files and results storage. Default: "./esATAC_pipeline/esATAC_result" will be created if not exist.
+* `threads`:(optional) The max threads allowed to be created. Default: 2.
+
+For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
+
+Here, we show an simple run-able example for single sample analysis. We just use case data in case-control section.
+
+```{r casesingle, eval=FALSE}
+library(esATAC)
+
+
+
+# call pipeline
+# for overall example(all human motif in JASPAR will be processed)
+conclusion <- 
+    atacPipe(
+# MODIFY: Change these paths to your own case files!
+# e.g. fastqInput1 = "your/own/data/path.fastq"
+        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+# MODIFY: Change this path to an permanent path to be used in future!
+#       refdir <- "./esATAC_pipeline/refdir",
+#       tmpdir = "./esATAC_pipeline/esATAC_result", 
+# MODIFY: Set the genome for your data
+        genome = "hg19")
+```
+
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you only want to download bowtie2 index instead, please see [section 2.2](#bt2)**
+
+**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
+
+The reference data will be installed in "./refdir/" and all of temporary data and result will be stored in "./esATAC_result". 
+
+If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+
+If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modify the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
+
+
+
+esATAC will download the genome sequence and annotation files, build bowtie2 index, mapping the reads, do the quality control analysis, find peak regions, perform GO analysis and motif enrichment analysis, etc. automatically. Finally, you will get an report file in html format included to the analysis results.
+
+## Already Have Genome Bowtie2 Index {#bt2}
+
+Build2 bowtie index may take some time. If you already have bowtie2 index files or you want to [download](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
+
+Example: hg19 bowtie2 index files
+
+* hg19.1.bt2
+* hg19.2.bt2
+* hg19.3.bt2
+* hg19.4.bt2
+* hg19.rev.1.bt2
+* hg19.rev.2.bt2
+
+bowtie2 index download path:
+
+<ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes>
+
+Modify the "refdir" in [Starting from Scratch](#quickstart), you can run the example code.
+
+
+##  Search a Specific Motif Set {#motifs}
+By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, you can simple do it like this:
+
+```{r motifsetex,eval=FALSE}
+
+### case-control
+
+conclusion2 <- 
+    atacPipe2(
+        case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+                  fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
+        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
+                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
+        genome = "hg19",
+        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+
+###############################################################################
+### single sample
+conclusion <- 
+    atacPipe(
+        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
+        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
+        genome = "hg19",
+        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+
+
+```
+## Resume Your Analysis
+
+To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
+The program will automatically check the steps that have been finished and continue the anlalysis.
+
+
 # Introduction
 
 The esATAC package provides a dataflow graphs organized end-to-end pipeline 
@@ -125,39 +341,7 @@ or the examples in following sections.
 
 ![Fourier Transformation Analysis of Distribution](wave.png)
 
-## Package Installation and Loading
 
-### Download and Installation
-
-To install the latest version of esATAC, you will need to be using the
-latest version of R. esATAC is part of Bioconductor project 
-(starting from Bioc 3.6 built on R 3.4.2. Please check your current Bioconductor version and R version first.), 
-so you can dowload install esATAC and all its dependencies software like this:
-
-```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("esATAC")
-```
-
-### Loading
-
-Just like other R packages, 
-you need to load esATAC like this each time before using the package.
-
-```{r loading00,message=FALSE}
-library(esATAC)
-```
-
-
-## Datasets
-
-Most of the test datasets in this package (esATAC/extdata/) are generated from GEO: SRR891271 [(from GSE47753)](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE47753)[7].
-The data is ATAC-seq paired end sequencing for GM12878 cell line. 
-We random sampling 20000 mapped fragments from chr20 and 
-rebuild raw paired-end FASTQ files(file names with chr20 prefix).
-We also subsample the reads in SAM file and peak calling BED result files.
-Besides, the files in "uzmg", "adrm" and "bt2" are the test files from AdapterRemoval and Bowtie2.
-For detail, you can read the subsequent sections.
 
 ## Contact
 
@@ -177,197 +361,6 @@ email:{wei-z14,w-zhang16}(at)mails.tsinghua.edu.cn
 
 
 
-# Quick Start {#quickstart}
-
-## Starting from Scratch
-
-esATAC provides an easy-to-use entry, you only need to provide your ATAC-seq sequencing files (FASTQ format), and assign the spaces and genome assembly, it will do everything for you.
-
-### For Case-control Analysis
-
-The R scripts below are ready to run. No more edit is needed.
-
-Customize the code commented with "MODIFY" if you need to run on your own data.
-
-> Need to be prepared for your own data:
-
-* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
-    + case:   
-        - `fastqInput1`: mate 1 FASTQ file(s)
-        - `fastqInput2`: mate 2 FASTQ file(s)
-    + control: 
-        - `fastqInput1`: mate 1 FASTQ file(s)
-        - `fastqInput2`: mate 2 FASTQ file(s)
-* `refdir`: directory for installing genome reference and storage for reuse
-* `genome`: genome version may be one of these
-    + hg19
-    + hg38
-    + mm9
-    + mm10
-    
-For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
-
-```{r casecontrol, eval=FALSE}
-library(esATAC)
-
-# create a directory if refdir is not exist
-dir.create(file.path(tempdir(),"ref"))
-
-# call pipeline
-# for overall example(all human motif in JASPAR will be processed)
-conclusion <- 
-    atacPipe2(
-# MODIFY: Change these paths to your own case files!
-# e.g. fastqInput1 = "your/own/data/path.fastq"
-        case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
-                  fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
-# MODIFY: Change these paths to your own control files!
-# e.g. fastqInput1 = "your/own/data/path.fastq"
-        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
-                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
-# MODIFY: Change this path to an permanent path to be used in future!
-# e.g refdir <- "your/own/reference/path"
-        refdir = file.path(tempdir(),"ref"), 
-# MODIFY: Set the genome for your data
-        genome = "hg19")
-
-```
-
-**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
-
-If you run the scripts above without modification, you are able to obtain default HTML
-[example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
-
-If you download raw data ([GSM2356780: SRR4435490.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356780)) and ([GSM2356795: SRR4435505.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356795)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.html) for GSM2356780 and GSM2356795 data.
-
-### For Single Sample Analysis
-
-The R scripts below are ready to run. No more edit is needed.
-
-Customize the code commented with "MODIFY" if you need to run on your own data.
-
-> Need to be prepared for your own data:
-
-* FASTQ files paths (may be .gz or .bz2 zipped FASTQ files)
-    + `fastqInput1`: mate 1 FASTQ file(s)
-    + `fastqInput2`: mate 2 FASTQ file(s)
-* `refdir`: directory for installing genome reference and storage for reuse
-* `genome`: may be one of these
-    + hg19
-    + hg38
-    + mm9
-    + mm10
-
-For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
-
-
-
-```{r casesingle, eval=FALSE}
-library(esATAC)
-
-# create a directory if refdir is not exist
-dir.create(file.path(tempdir(),"ref"))
-
-# call pipeline
-# for overall example(all human motif in JASPAR will be processed)
-conclusion <- 
-    atacPipe(
-# MODIFY: Change these paths to your own case files!
-# e.g. fastqInput1 = "your/own/data/path.fastq"
-        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
-        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
-# MODIFY: Change this path to an permanent path to be used in future!
-# e.g refdir <- "your/own/reference/path"
-        refdir = file.path(tempdir(),"ref"), 
-# MODIFY: Set the genome for your data
-        genome = "hg19")
-```
-
-**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
-
-If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
-
-If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modify the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
-
-
-
-esATAC will download the genome sequence and annotation files, build bowtie2 index, mapping the reads, do the quality control analysis, find peak regions, perform GO analysis and motif enrichment analysis, etc. automatically. Finally, you will get an report file in html format included to the analysis results.
-
-## Already Have Genome Bowtie2 Index
-
-Build2 bowtie index may take some time. If you already have bowtie2 index files or you want to [download](ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes) instead of building, you can let esATAC skip the steps by renaming them following the format (genome+suffix) and put them in reference installation path (refdir).
-
-Example: hg19 bowtie2 index files
-
-* hg19.1.bt2
-* hg19.2.bt2
-* hg19.3.bt2
-* hg19.4.bt2
-* hg19.rev.1.bt2
-* hg19.rev.2.bt2
-
-bowtie2 index download path:
-
-<ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes>
-
-Modify the "refdir" in [Starting from Scratch](#quickstart), you can run the example code.
-
-
-##  Search a Specific Motif Set {#motifs}
-By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, you can simple do it like this:
-
-```{r motifsetex,eval=FALSE}
-
-### case-control
-
-# for a quick example(only 3 motif will be processed)
-pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
-
-
-conclusion2 <- 
-    atacPipe2(
-# MODIFY: Change these paths to your own case files!
-# e.g. fastqInput1 = "your/own/data/path.fastq"
-        case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
-                  fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")), 
-# MODIFY: Change these paths to your own control files!
-# e.g. fastqInput1 = "your/own/data/path.fastq"
-        control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
-                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
-# MODIFY: Change this path to an permanent path to be used in future!
-# e.g refdir <- "your/own/reference/path"
-        refdir = file.path(tempdir(),"ref"), 
-# MODIFY: Set the genome for your data
-        genome = "hg19",
-        motifPWM = pwm)
-
-
-### single sample
-
-# for a quick example(only 3 motif will be processed)
-pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
-
-conclusion <- 
-    atacPipe(
-# MODIFY: Change these paths to your own case files!
-# e.g. fastqInput1 = "your/own/data/path.fastq"
-        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
-        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
-# MODIFY: Change this path to an permanent path to be used in future!
-# e.g refdir <- "your/own/reference/path"
-        refdir = file.path(tempdir(),"ref"), 
-# MODIFY: Set the genome for your data
-        genome = "hg19",
-        motifPWM = pwm)
-
-
-```
-## Resume Your Analysis
-
-To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
-The program will automatically check the steps that have been finished and continue the anlalysis.
 
 # Customized pipeline {#cuspipe}
 
