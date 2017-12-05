@@ -376,9 +376,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Case)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -399,9 +399,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Control)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -431,9 +431,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Case specific)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -454,9 +454,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Control specific)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
