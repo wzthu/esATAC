@@ -143,6 +143,9 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param motifPWM \code{List} scalar. Motif PWM, a list.
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
+#' @param chr Which chromatin the program will processing. It must be identical
+#' with the filename of cut site information files or subset of .
+#' Default:c(1:22, "X", "Y").
 #' @param ... Configure "refdir", "genome", "threads", "tmpdir" for this function.
 #' They will overwrite global configuration.
 #' If you need to set globally, see \link{configureValue}.
@@ -181,9 +184,7 @@ getSuffixlessFileName0 <- function(filePath){
 #' dir.create(file.path(tempdir(),"ref"))
 #'
 #' # call pipeline
-#' # for a quick example(only 3 motif will be processed)
-#' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-#' pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
+#' # for a quick example(only CTCF will be processing)
 #' conclusion <-
 #'   atacPipe(
 #'        # MODIFY: Change these paths to your own case files!
@@ -195,7 +196,7 @@ getSuffixlessFileName0 <- function(filePath){
 #'        refdir = file.path(tempdir(),"ref"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
-#'        motifPWM = pwm)
+#'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
 #'
 #' # call pipeline
 #' # for overall example(all human motif in JASPAR will be processed)
@@ -214,7 +215,8 @@ getSuffixlessFileName0 <- function(filePath){
 #' @export
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL, ...){ #saveTmp = TRUE,
+                     interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL,
+                     chr = c(1:22, "X", "Y"), ...){ #saveTmp = TRUE,
 
 
 
@@ -296,12 +298,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
         }else{
             pwm <- motifPWM
-        }
-
-        if("chr" %in% names(param.tmp)){
-            chr <- param.tmp[["chr"]]
-        }else{
-            chr <- c(1:22, "X", "Y")
         }
 
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
@@ -632,6 +628,9 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
 #' @param motifPWM \code{List} scalar. Motif PWM list.
+#' @param chr Which chromatin the program will processing. It must be identical
+#' with the filename of cut site information files or subset of .
+#' Default:c(1:22, "X", "Y").
 #' @param ... Configure "refdir", "genome", "threads", "tmpdir" for this function.
 #' They will overwrite global configuration.
 #' If you need to set globally, see \link{configureValue}.
@@ -699,9 +698,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' dir.create(file.path(tempdir(),"ref"))
 #'
 #' # call pipeline
-#' # for a quick example(only 3 motif will be processed)
-#' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-#' pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
+#' # for a quick example(only CTCF will be processed)
 #' conclusion <-
 #'    atacPipe2(
 #'        # MODIFY: Change these paths to your own case files!
@@ -717,7 +714,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'        refdir = file.path(tempdir(),"ref"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
-#'        motifPWM = pwm)
+#'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
 #'
 #' # call pipeline
 #' # for overall example(all human motif in JASPAR will be processed)
@@ -741,7 +738,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, ...){ #saveTmp = TRUE,
+                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, chr = c(1:22, "X", "Y"), ...){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -789,12 +786,6 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
             }
             options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
         }
-    }
-
-    if("chr" %in% names(param.tmp)){
-        chr <- param.tmp[["chr"]]
-    }else{
-        chr <- c(1:22, "X", "Y")
     }
 
     if(is.null(motifPWM)){
