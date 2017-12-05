@@ -229,18 +229,41 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
     }
 
     param.tmp <- list(...)
-    if(!is.null(param.tmp[["refdir"]])){
-        options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
+    if(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]]){
+        if(!is.null(param.tmp[["refdir"]])){
+            options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
+        }else{
+            if(!dir.exists("esATAC_pipeline")){
+                dir.create("esATAC_pipeline")
+            }
+            if(!dir.exists(file.path("esATAC_pipeline","refdir"))){
+                dir.create(file.path("esATAC_pipeline","refdir"))
+            }
+            options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
+        }
+        if(!is.null(param.tmp[["genome"]])){
+            options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
+        }else{
+            stop("parameter genome is required")
+        }
+        if(!is.null(param.tmp[["threads"]])){
+            options(atacConf=setConfigure("threads",param.tmp[["threads"]]))
+        }else{
+            options(atacConf=setConfigure("threads",2))
+        }
+        if(!is.null(param.tmp[["tmpdir"]])){
+            options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
+        }else{
+            if(!dir.exists("esATAC_pipeline")){
+                dir.create("esATAC_pipeline")
+            }
+            if(!dir.exists(file.path("esATAC_pipeline","esATAC_result"))){
+                dir.create(file.path("esATAC_pipeline","esATAC_result"))
+            }
+            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
+        }
     }
-    if(!is.null(param.tmp[["genome"]])){
-        options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
-    }
-    if(!is.null(param.tmp[["threads"]])){
-        options(atacConf=setConfigure("threads",param.tmp[["threads"]]))
-    }
-    if(!is.null(param.tmp[["tmpdir"]])){
-        options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
-    }
+    
 
 
     unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
@@ -733,17 +756,39 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }
 
     param.tmp <- list(...)
-    if(!is.null(param.tmp[["refdir"]])){
-        options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
-    }
-    if(!is.null(param.tmp[["genome"]])){
-        options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
-    }
-    if(!is.null(param.tmp[["threads"]])){
-        options(atacConf=setConfigure("threads",param.tmp[["threads"]]))
-    }
-    if(!is.null(param.tmp[["tmpdir"]])){
-        options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
+    if(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]]){
+        if(!is.null(param.tmp[["refdir"]])){
+            options(atacConf=setConfigure("refdir",param.tmp[["refdir"]]))
+        }else{
+            if(!dir.exists("esATAC_pipeline")){
+                dir.create("esATAC_pipeline")
+            }
+            if(!dir.exists(file.path("esATAC_pipeline","refdir"))){
+                dir.create(file.path("esATAC_pipeline","refdir"))
+            }
+            options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
+        }
+        if(!is.null(param.tmp[["genome"]])){
+            options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
+        }else{
+            stop("parameter genome is required")
+        }
+        if(!is.null(param.tmp[["threads"]])){
+            options(atacConf=setConfigure("threads",param.tmp[["threads"]]))
+        }else{
+            options(atacConf=setConfigure("threads",2))
+        }
+        if(!is.null(param.tmp[["tmpdir"]])){
+            options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
+        }else{
+            if(!dir.exists("esATAC_pipeline")){
+                dir.create("esATAC_pipeline")
+            }
+            if(!dir.exists(file.path("esATAC_pipeline","esATAC_result"))){
+                dir.create(file.path("esATAC_pipeline","esATAC_result"))
+            }
+            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
+        }
     }
 
     if("chr" %in% names(param.tmp)){
@@ -760,10 +805,10 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
 
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
                adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-                createReport = FALSE, motifPWM =pwm, prefix = "CASE_all_data", chr = chr) #saveTmp = TRUE,
+                createReport = FALSE, motifPWM =pwm, prefix = "CASE_all_data", chr = chr, dontSet=TRUE) #saveTmp = TRUE,
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-                createReport = FALSE, motifPWM =pwm, prefix = "CTRL_all_data", chr = chr) #saveTmp = TRUE,
+                createReport = FALSE, motifPWM =pwm, prefix = "CTRL_all_data", chr = chr, dontSet=TRUE) #saveTmp = TRUE,
 
 
     bed.case <- getParam(caselist$atacProcs$sam2Bed, "bedOutput")
