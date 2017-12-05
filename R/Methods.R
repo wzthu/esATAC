@@ -241,11 +241,6 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             }
             options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
         }
-        if(!is.null(param.tmp[["genome"]])){
-            options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
-        }else{
-            stop("parameter genome is required")
-        }
         if(!is.null(param.tmp[["threads"]])){
             options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
             message(getConfigure("threads"))
@@ -262,6 +257,11 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                 dir.create(file.path("esATAC_pipeline","esATAC_result"))
             }
             options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
+        }
+        if(!is.null(param.tmp[["genome"]])){
+            options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
+        }else{
+            stop("parameter genome is required")
         }
     }
     
@@ -769,13 +769,9 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
             }
             options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
         }
-        if(!is.null(param.tmp[["genome"]])){
-            options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
-        }else{
-            stop("parameter genome is required")
-        }
         if(!is.null(param.tmp[["threads"]])){
-            options(atacConf=setConfigure("threads",param.tmp[["threads"]]))
+            options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
+            message(getConfigure("threads"))
         }else{
             options(atacConf=setConfigure("threads",2))
         }
@@ -789,6 +785,11 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
                 dir.create(file.path("esATAC_pipeline","esATAC_result"))
             }
             options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
+        }
+        if(!is.null(param.tmp[["genome"]])){
+            options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
+        }else{
+            stop("parameter genome is required")
         }
     }
 
