@@ -108,8 +108,8 @@ setMethod(f = "isValidVal",
                       unlink(paste0(fileprefix,".rev.2.bt2"))
                       unlink(fileprefixlock)
                   }
-                  if(!(file.exists(paste0(fileprefix,".1.bt2"))&&file.exists(paste0(fileprefix,".2.bt2"))||
-                       file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))||
+                  if(!(file.exists(paste0(fileprefix,".1.bt2"))&&file.exists(paste0(fileprefix,".2.bt2"))&&
+                       file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))&&
                        file.exists(paste0(fileprefix,".rev.1.bt2"))&&file.exists(paste0(fileprefix,".rev.1.bt2")))){
                       message("Build bowtie2 index ...")
                       message("It may take more than one hour with single thread. Please wait.")
