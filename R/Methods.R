@@ -235,7 +235,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
         }
         if(!is.null(param.tmp[["threads"]])){
-            options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
+            options(atacConf=setConfigure("threads",as.numeric(param.tmp[["threads"]])))
             message(getConfigure("threads"))
         }else{
             options(atacConf=setConfigure("threads",2L))
@@ -750,7 +750,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
             options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
         }
         if(!is.null(param.tmp[["threads"]])){
-            options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
+            options(atacConf=setConfigure("threads",as.numeric(param.tmp[["threads"]])))
             message(getConfigure("threads"))
         }else{
             options(atacConf=setConfigure("threads",2L))

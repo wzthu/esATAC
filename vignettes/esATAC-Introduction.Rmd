@@ -208,7 +208,7 @@ By default, esATAC will perform footprint analysis for all the TF motif PWM matr
 ```{r motifsetex,eval=FALSE}
 
 ### case-control
-
+library(esATAC)
 conclusion2 <- 
     atacPipe2(
         case=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),

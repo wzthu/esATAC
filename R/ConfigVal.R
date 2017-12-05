@@ -14,8 +14,8 @@ setMethod(f = "initialize",
           signature = ".ConfigClass",
           definition = function(.Object,...){
               .Object@configList<-list(threads=1,tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,annoDb=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL,SNP=NULL)
-              .Object@validAttr<-list(threads="integer",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character",SNP="character")
-              .Object@validWriteAttr<-list(threads="integer",tmpdir="character",refdir="character",genome="character")
+              .Object@validAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character",SNP="character")
+              .Object@validWriteAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character")
               .Object
           })
 
