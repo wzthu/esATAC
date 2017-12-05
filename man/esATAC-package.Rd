@@ -8,7 +8,7 @@
 \usage{
 atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   adapter2 = NULL, interleave = FALSE, createReport = TRUE,
-  motifPWM = NULL, prefix = NULL, ...)
+  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"), ...)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -38,6 +38,10 @@ interleaved paired-end sequencing data.}
 
 \item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
 when multiple pipeline generating file in the same tempdir.}
+
+\item{chr}{Which chromatin the program will processing. It must be identical
+with the filename of cut site information files or subset of .
+Default:c(1:22, "X", "Y").}
 
 \item{...}{Configure "refdir", "genome", "threads", "tmpdir" for this function.
 They will overwrite global configuration.
@@ -124,9 +128,7 @@ See packageDescription('esATAC') for package details.
 dir.create(file.path(tempdir(),"ref"))
 
 # call pipeline
-# for a quick example(only 3 motif will be processed)
-pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
-pwm <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
+# for a quick example(only CTCF will be processing)
 conclusion <-
   atacPipe(
        # MODIFY: Change these paths to your own case files!
@@ -138,7 +140,7 @@ conclusion <-
        refdir = file.path(tempdir(),"ref"),
        # MODIFY: Set the genome for your data
        genome = "hg19",
-       motifPWM = pwm)
+       motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
 
 # call pipeline
 # for overall example(all human motif in JASPAR will be processed)

@@ -102,20 +102,20 @@ setMethod(
             chr_len <- length(chr)
             data <- data.frame()  # save all matrix
             for(i in seq(1:chr_len)){
-                echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
-                print(echo_str)
+                # echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
+                # print(echo_str)
                 CutSiteInput <- paste0(.Object@paramlist[["csfile.dir"]], "_chr", chr[[i]], ".cs", collapse = "")
                 MotifInput <- normalizePath(
                     paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
                 )
                 if(!file.exists(CutSiteInput)){
-                    echo_str <- paste("There is no cut site in chr", chr[[i]], ", skip!", sep = "")
-                    print(echo_str)
+                    # echo_str <- paste("There is no cut site in chr", chr[[i]], ", skip!", sep = "")
+                    # print(echo_str)
                     next
                 }
                 if(!(MotifInput %in% motif_file_index)){
-                    echo_str <- paste("There is no motif occurance in chr", chr[[i]], ", skip!", sep = "")
-                    print(echo_str)
+                    # echo_str <- paste("There is no motif occurance in chr", chr[[i]], ", skip!", sep = "")
+                    # print(echo_str)
                     next
                 }
                 MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
@@ -128,15 +128,16 @@ setMethod(
                 }
                 data <- rbind(data, temp)
 
-                echo_str <- paste("Now, finishing chr", chr[[i]], "......", sep = "")
-                print(echo_str)
+                # echo_str <- paste("Now, finishing chr", chr[[i]], "......", sep = "")
+                # print(echo_str)
             }
             if(.Object@paramlist[["FootPrint"]]){
                 if(nrow(data) == 0){
-                    print("Can not find any cut site in motif position.")
-                    next
+                    tmp_len <- motif_length + 2 * .Object@paramlist[["strandLength"]]
+                    fp <- seq(from = 0, to = 0, length.out = tmp_len)
+                }else{
+                    fp <- apply(data, 2, sum)
                 }
-                fp <- apply(data, 2, sum)
                 footprint_data[[motif_name]] <- fp
                 pdf(file = footprint.path)
                 plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
