@@ -283,7 +283,7 @@ motifscan <- function(peak = NULL, genome = NULL,
 #' @examples
 #'
 #' # from files(user customized)
-#' pfm_file <- system.file("extdata", "motif.txt", package="esATAC")
+#' pfm_file <- system.file("extdata", "CTCF.txt", package="esATAC")
 #' pwm_list <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
 #'
 #' # from JASPAR database
