@@ -196,6 +196,7 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
+footprint_text <- paste(footprint_figure.name, "(Footprinting)", sep = "")
 ```
 
 The following figure is `r footprint_figure.name` footprint.
@@ -203,6 +204,7 @@ The following figure is `r footprint_figure.name` footprint.
 
 ```{r eval=TRUE, echo=FALSE, fig.height=7, fig.width=7, results = 'asis', warning=FALSE}
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2, 
+    main = footprint_text,
     xlab = "Relative Distance From Motif (bp)", 
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
