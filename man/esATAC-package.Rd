@@ -123,9 +123,6 @@ See packageDescription('esATAC') for package details.
 ## These codes are time consuming so they will not be run and
 ## checked by bioconductor checker.
 
-# The path for genome reference data being installed to and storage
-# create a directory if refdir is not exist
-dir.create(file.path(tempdir(),"ref"))
 
 # call pipeline
 # for a quick example(only CTCF will be processing)
@@ -135,9 +132,6 @@ conclusion <-
        # e.g. fastqInput1 = "your/own/data/path.fastq"
        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
-       # MODIFY: Change this path to an permanent path to be used in future!
-       # e.g refdir <- "your/own/reference/path"
-       refdir = file.path(tempdir(),"ref"),
        # MODIFY: Set the genome for your data
        genome = "hg19",
        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
@@ -150,9 +144,6 @@ conclusion <-
        # e.g. fastqInput1 = "your/own/data/path.fastq"
        fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
-       # MODIFY: Change this path to an permanent path to be used in future!
-       # e.g refdir <- "your/own/reference/path"
-       refdir = file.path(tempdir(),"ref"),
        # MODIFY: Set the genome for your data
        genome = "hg19")
 }
