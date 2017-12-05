@@ -249,7 +249,8 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             stop("parameter genome is required")
         }
         if(!is.null(param.tmp[["threads"]])){
-            options(atacConf=setConfigure("threads",param.tmp[["threads"]]))
+            options(atacConf=setConfigure("threads",as.integer(param.tmp[["threads"]])))
+            message(getConfigure("threads"))
         }else{
             options(atacConf=setConfigure("threads",2))
         }
