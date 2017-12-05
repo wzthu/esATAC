@@ -79,7 +79,7 @@ setMethod(f = "isValidVal",
                       message(as.character(e))
                       stop(paste("To install the package, type:",
                                 "library(\"BiocInstaller\")",
-                                sprintf("biocLite(\"%s\")",unlist(strsplit(as.character(e),"‘|’"))[2]),
+                                sprintf("biocLite(\"org.%s.eg.db\")",unlist(strsplit(as.character(e),"org\\.|\\.eg\\.db"))[2]),
                                 sep="\n"))
                   })
                   #genome fasta
