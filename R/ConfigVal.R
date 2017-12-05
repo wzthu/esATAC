@@ -72,7 +72,16 @@ setMethod(f = "isValidVal",
                   fileprefix<-file.path(.Object@configList[["refdir"]],val)
                   ##annoDb:orgdb
                   message("Configure annoDb ...")
-                  .Object@configList[["annoDb"]]<-GetOrgDb(.Object,val)
+                  tryCatch({
+                      .Object@configList[["annoDb"]]<-GetOrgDb(.Object,val)
+                  },
+                  error = function(e){
+                      message(as.character(e))
+                      stop(paste("To install the package, type:",
+                                "library(\"BiocInstaller\")",
+                                sprintf("biocLite(\"%s\")",unlist(strsplit(as.character(e),"‘|’"))[2]),
+                                sep="\n"))
+                  })
                   #genome fasta
                   message("Generate genome fasta file ...")
                   fastaFilePath<-paste0(fileprefix,".fa")
@@ -106,6 +115,7 @@ setMethod(f = "isValidVal",
                       message("It may take more than one hour with single thread. Please wait.")
                       message("Using multi-threads will be faster.")
                       file.create(fileprefixlock)
+                      message(paste("--threads",as.character(.obtainConfigure("threads"))))
                       bowtie2_build(fastaFilePath,fileprefix,"-q","--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
                       unlink(fileprefixlock)
                   }
