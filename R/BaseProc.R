@@ -208,6 +208,7 @@ setGeneric(name = "process",
 setMethod(f = "process",
           signature = "ATACProc",
           definition = function(.Object,...){
+              msgBoxBegin()
               if(.Object@editable){
                   stop("The \"processing\" method can not be call in editable result object");
               }
@@ -226,6 +227,7 @@ setMethod(f = "process",
                   .Object <- processing(.Object)
                   .Object <- setFinish(.Object)
               }
+              msgBoxDone()
               .Object
           })
 
@@ -613,16 +615,16 @@ setMethod(f = "getPathPrefix",
           })
 
 setGeneric(name = "writeLog",
-           def = function(.Object,msg,...,isWarnning=FALSE,appendLog=TRUE){
+           def = function(.Object,msg,...,isWarnning=FALSE,appendLog=TRUE,showMsg=TRUE){
                standardGeneric("writeLog")
            })
 setMethod(f = "writeLog",
           signature = "ATACProc",
-          definition = function(.Object,msg,...,isWarnning=FALSE,appendLog=TRUE){
+          definition = function(.Object,msg,...,isWarnning=FALSE,appendLog=TRUE,showMsg=TRUE){
               if(isWarnning){
                   warning(msg)
                   msg<-paste0("Warning:",msg)
-              }else{
+              }else if(showMsg){
                   message(msg)
               }
               if(appendLog){

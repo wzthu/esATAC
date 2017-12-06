@@ -63,6 +63,7 @@ setMethod(f = "isValidVal",
                   val<-normalizePath(val)
               }
               if(item=="genome"){
+                  msgBoxBegin()
                   message("Reference data configuraion start ...")
                   message("Configure bsgenome ...")
                   .Object@configList[["bsgenome"]]<-getBSgenome(val)
@@ -193,6 +194,8 @@ setMethod(f = "isValidVal",
                   
 
                   message("Reference data configuraion done")
+                  msgBoxDone()
+                  
               }
               
               .Object
@@ -482,8 +485,14 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     }
 }
 
+msgBoxBegin<-function(){
+    message(">>>>>>========================================")
+}
 
-
+msgBoxDone<-function(){
+    message("========================================<<<<<<")
+    message(" ")
+}
 
 
 
