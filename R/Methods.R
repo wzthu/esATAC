@@ -577,6 +577,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                        )
 
     if(createReport){
+        message("Begin to generate report")
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
 
@@ -592,6 +593,8 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
+        message("Generate report done")
+        message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
     }
 
     invisible(conclusion)
@@ -778,15 +781,19 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     }else{
         pwm <- motifPWM
     }
-
+    message("Begin to process case sample...")
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
                adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
                 createReport = FALSE, motifPWM =pwm, prefix = "CASE_all_data", chr = chr, dontSet=TRUE) #saveTmp = TRUE,
+    message("Case sample process done")
+    message(" ")
+    message("Begin to process control sample")
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
                 createReport = FALSE, motifPWM =pwm, prefix = "CTRL_all_data", chr = chr, dontSet=TRUE) #saveTmp = TRUE,
-
-
+    message("control sample process done")
+    message(" ")
+    message("Begin to generate summary")
     bed.case <- getParam(caselist$atacProcs$sam2Bed, "bedOutput")
     bed.ctrl <- getParam(ctrllist$atacProcs$sam2Bed, "bedOutput")
 
@@ -843,8 +850,9 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
                            Case = caselist[["filtstat"]][["Value"]],
                            Control = ctrllist[["filtstat"]][["Value"]],
                            Reference = ctrllist[["filtstat"]][["Reference"]])
-
+    message("Generate summary done")
     if(createReport){
+        message("Begin to generate Report")
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
 
@@ -860,6 +868,8 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
+        message("Generate report done")
+        message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report2.html")))
     }
 
     invisible(conclusion)
