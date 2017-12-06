@@ -130,11 +130,11 @@ setMethod(
         qcval=list();
 
         qcval[["totalUniqReads"]]<-length(readsbed)
-        writeLog(.Object,sprintf("Total Unique Reads: %d",qcval[["totalUniqReads"]]))
+        writeLog(.Object,sprintf("Total Unique Reads: %.0f",qcval[["totalUniqReads"]]))
         qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, TSS,ignore.strand = TRUE))
-        writeLog(.Object,sprintf("TSS Reads: %d",qcval[["TSSReads"]]))
+        writeLog(.Object,sprintf("TSS Reads: %.0f",qcval[["TSSReads"]]))
         qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
-        writeLog(.Object,sprintf("TSS Rate: %d",qcval[["TSSRate"]]))
+        writeLog(.Object,sprintf("TSS Rate: %.0f",qcval[["TSSRate"]]))
         qcval<-as.matrix(qcval)
 
         write.table(qcval,file = .Object@paramlist[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
