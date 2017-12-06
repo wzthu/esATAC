@@ -61,7 +61,7 @@ setMethod(
             (as.numeric(qcval[["nonMultimap"]]))
 
         unlink(paste0(.Object@paramlist[["reportOutput"]],".tmp"))
-        print(qcval)
+        print(unlist(qcval))
         print(.Object@paramlist[["reportOutput"]])
         write.table(as.data.frame(qcval),file = .Object@paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
         .Object
