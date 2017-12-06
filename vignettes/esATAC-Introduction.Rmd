@@ -36,7 +36,7 @@ source("http://www.bioconductor.org/biocLite.R")
 biocLite("esATAC")
 ```
 
-**NOTE: We recommend to use this package in RStudio. Or you have to insstall [pandoc](https://pandoc.org/) yourself if you use R terminal**
+**NOTE: We recommend to use this package in RStudio. Or you have to install [pandoc](https://pandoc.org/) yourself if you use R terminal**
 
 ### Loading
 
@@ -88,7 +88,7 @@ Customize the code commented with "MODIFY" if you need to run on your own data.
     
 For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
 
-Here, we show an simple run-able example for case-control analysis. Case and control test sample are both paired-end data. Each of them contains two gzipped FASTQ files.
+Here, we show an simple runnable example for case-control analysis. Case and control test sample are both paired-end data. Each of them contains two gzipped FASTQ files.
 The test file paths can are obtained like this: 
 `system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")`. They are under folder path "esATAC/extdata/".
 
@@ -115,11 +115,11 @@ conclusion <-
 
 ```
 
-**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you only want to download bowtie2 index instead, please see [section 2.2](#bt2)**
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you want to download bowtie2 index instead, please see [section 2.2](#bt2)**
 
 **Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
 
-The reference data will be installed in "./refdir/" and all of temporary data and result will be stored in "./esATAC_result". 
+The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored in "./esATAC_pipeline/esATAC_result". 
 
 If you run the scripts above without modification, you are able to obtain default HTML
 [example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
@@ -148,7 +148,7 @@ Customize the code commented with "MODIFY" if you need to run on your own data.
 
 For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
 
-Here, we show an simple run-able example for single sample analysis. We just use case data in case-control section.
+Here, we show an simple runnable example for single sample analysis. We just use case data in case-control section.
 
 ```{r casesingle, eval=FALSE}
 library(esATAC)
@@ -168,11 +168,11 @@ conclusion <-
         genome = "hg19")
 ```
 
-**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you only want to download bowtie2 index instead, please see [section 2.2](#bt2)**
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you want to download bowtie2 index instead, please see [section 2.2](#bt2)**
 
 **Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
 
-The reference data will be installed in "./refdir/" and all of temporary data and result will be stored in "./esATAC_result". 
+The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored in "./esATAC_pipeline/esATAC_result". 
 
 If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
 
@@ -218,7 +218,7 @@ conclusion2 <-
         genome = "hg19",
         motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
 
-###############################################################################
+#===============================================================================
 ### single sample
 library(esATAC)
 conclusion <- 
