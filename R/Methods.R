@@ -238,7 +238,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             options(atacConf=setConfigure("threads",as.numeric(param.tmp[["threads"]])))
             message(getConfigure("threads"))
         }else{
-            options(atacConf=setConfigure("threads",2L))
+            options(atacConf=setConfigure("threads",2))
         }
         if(!is.null(param.tmp[["tmpdir"]])){
             options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
@@ -753,7 +753,7 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
             options(atacConf=setConfigure("threads",as.numeric(param.tmp[["threads"]])))
             message(getConfigure("threads"))
         }else{
-            options(atacConf=setConfigure("threads",2L))
+            options(atacConf=setConfigure("threads",2))
         }
         if(!is.null(param.tmp[["tmpdir"]])){
             options(atacConf=setConfigure("tmpdir",param.tmp[["tmpdir"]]))
