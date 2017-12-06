@@ -153,8 +153,6 @@ Here, we show an simple run-able example for single sample analysis. We just use
 ```{r casesingle, eval=FALSE}
 library(esATAC)
 
-
-
 # call pipeline
 # for overall example(all human motif in JASPAR will be processed)
 conclusion <- 
