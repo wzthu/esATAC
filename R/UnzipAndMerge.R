@@ -148,9 +148,9 @@ setMethod(
     signature = "UnzipAndMerge",
     definition = function(.Object,filename,destpath,...){
         destname<-file.path(destpath,basename(filename))
-        .Object<-writeLog(.Object,paste0("processing file:"),showMsg=FALSE)
-        .Object<-writeLog(.Object,sprintf("source:%s",filename),showMsg=FALSE)
-        .Object<-writeLog(.Object,sprintf("destination:%s",destname),showMsg=FALSE)
+        .Object<-writeLog(.Object,paste0("processing file:"))
+        .Object<-writeLog(.Object,sprintf("source:%s",filename))
+        .Object<-writeLog(.Object,sprintf("destination:%s",destname))
         if(isBzipped(filename)){
             destname<-gsub(sprintf("[.]%s$", "bz2"), "", destname, ignore.case=TRUE)
             return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
@@ -173,9 +173,9 @@ setMethod(
     f = "decompress",
     signature = "UnzipAndMerge",
     definition = function(.Object,filename,destname,...){
-        .Object<-writeLog(.Object,paste0("processing file:"),showMsg=FALSE)
-        .Object<-writeLog(.Object,sprintf("source:%s",filename),showMsg=FALSE)
-        .Object<-writeLog(.Object,sprintf("destination:%s",destname),showMsg=FALSE)
+        .Object<-writeLog(.Object,paste0("processing file:"))
+        .Object<-writeLog(.Object,sprintf("source:%s",filename))
+        .Object<-writeLog(.Object,sprintf("destination:%s",destname))
         if(isBzipped(filename)){
             return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
         }else if(isGzipped(filename)){
