@@ -83,14 +83,14 @@ Customize the code commented with "MODIFY" if you need to run on your own data.
     + mm9
     + mm10
 * `refdir`:(optional) Directory for installing genome reference and storage for reuse. Default: "./esATAC_pipeline/refdir" will be created if not exist.
-* `tmpdir`:(optional) Directory for intermediate files and results storage. Default: "./esATAC_pipeline/esATAC_result" will be created if not exist.
+* `tmpdir`:(optional) Directory for intermediate files and results storage. Default: "./esATAC_pipeline/intermediate_results" will be created if not exist.
 * `threads`:(optional) The max threads allowed to be created. Default: 2.
     
 For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
 
 Here, we show an simple runnable example for case-control analysis. Case and control test sample are both paired-end data. Each of them contains two gzipped FASTQ files.
 The test file paths can are obtained like this: 
-`system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")`. They are under folder path "esATAC/extdata/".
+`system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")`. They are under folder path "R library path/esATAC/extdata/".
 
 ```{r casecontrol, eval=FALSE}
 library(esATAC)
@@ -109,7 +109,7 @@ conclusion <-
                      fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
 # MODIFY: Change this path to an permanent path to be used in future!
 #       refdir <- "./esATAC_pipeline/refdir",
-#       tmpdir = "./esATAC_pipeline/esATAC_result", 
+#       tmpdir = "./esATAC_pipeline/intermediate_results", 
 # MODIFY: Set the genome for your data
         genome = "hg19")
 
@@ -119,12 +119,12 @@ conclusion <-
 
 **Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
 
-The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored in "./esATAC_pipeline/esATAC_result". 
+The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored under "./esATAC_pipeline/intermediate_results". The final brief results like HTML report will be stored under "./esATAC_pipeline/esATAC_results"
 
 If you run the scripts above without modification, you are able to obtain default HTML
 [example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
 
-If you download raw data ([GSM2356780: SRR4435490.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356780)) and ([GSM2356795: SRR4435505.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356795)) from GEO, modif the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.html) for GSM2356780 and GSM2356795 data.
+If you download raw data ([GSM2356780: SRR4435490.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356780)) and ([GSM2356795: SRR4435505.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356795)) from GEO, modify the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.html) for GSM2356780 and GSM2356795 data.
 
 ### For Single Sample Analysis
 
@@ -143,7 +143,7 @@ Customize the code commented with "MODIFY" if you need to run on your own data.
     + mm9
     + mm10
 * `refdir`:(optional) Directory for installing genome reference and storage for reuse. Default: "./esATAC_pipeline/refdir" will be created if not exist.
-* `tmpdir`:(optional) Directory for intermediate files and results storage. Default: "./esATAC_pipeline/esATAC_result" will be created if not exist.
+* `tmpdir`:(optional) Directory for intermediate files and results storage. Default: "./esATAC_pipeline/intermediate_results" will be created if not exist.
 * `threads`:(optional) The max threads allowed to be created. Default: 2.
 
 For other genomes, you can built your own pipeline through [Customized Pipeline](#cuspipe) presently. More genome will be supported in the future.
@@ -163,7 +163,7 @@ conclusion <-
         fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
 # MODIFY: Change this path to an permanent path to be used in future!
 #       refdir <- "./esATAC_pipeline/refdir",
-#       tmpdir = "./esATAC_pipeline/esATAC_result", 
+#       tmpdir = "./esATAC_pipeline/intermediate_results", 
 # MODIFY: Set the genome for your data
         genome = "hg19")
 ```
@@ -172,7 +172,7 @@ conclusion <-
 
 **Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
 
-The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored in "./esATAC_pipeline/esATAC_result". 
+The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored under "./esATAC_pipeline/intermediate_results". The final brief results like HTML report will be stored under "./esATAC_pipeline/esATAC_results"
 
 If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
 
@@ -205,9 +205,10 @@ Modify the "refdir" in [Starting from Scratch](#quickstart), you can run the exa
 ##  Search a Specific Motif Set {#motifs}
 By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, you can simple do it like this:
 
-```{r motifsetex,eval=FALSE}
+### Case-control
+```{r eval=FALSE}
 
-### case-control
+### 
 library(esATAC)
 conclusion2 <- 
     atacPipe2(
@@ -217,9 +218,11 @@ conclusion2 <-
                      fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
         genome = "hg19",
         motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+```
 
-#===============================================================================
 ### single sample
+```{r eval=FALSE}
+
 library(esATAC)
 conclusion <- 
     atacPipe(
@@ -508,7 +511,103 @@ bowtie2 index download path:
 
 <ftp://ftp.ccb.jhu.edu/pub/data/bowtie2_indexes>
 
-## Preprocess
+
+## An Customized Pipeline Example
+
+Example: a simplified `atacPipe` from single sample (FASTQ) to library quality control and peak calling
+
+```{r  warning = FALSE,eval=FALSE, results = 'hide', message = FALSE}
+library(esATAC)
+library(magrittr)
+
+
+dir.create("./esATAC_pipeline")
+dir.create("./esATAC_pipeline/refdir")
+dir.create("./esATAC_pipeline/result")
+
+#configure reference path, result path, the max number of threads, genome
+options(atacConf=setConfigure("refdir","esATAC_pipeline/refdir"))
+options(atacConf=setConfigure("tmpdir","esATAC_pipeline/result"))
+options(atacConf=setConfigure("threads",2))
+options(atacConf=setConfigure("genome","hg19"))
+
+#raw reads
+fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")
+fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz") 
+
+#pipeline           
+atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2) %T>%
+atacQCReport %>%
+atacRenamer %>%
+atacRemoveAdapter %>%
+atacBowtie2Mapping %T>% 
+atacLibComplexQC %>% 
+atacSamToBed(maxFragLen = 2000) %T>%
+atacBedToBigWig %T>% 
+atacFragLenDistr %>%
+atacBedUtils(maxFragLen = 100, chrFilterList = NULL) %>%
+atacPeakCalling
+```
+
+
+### Configuration Details
+
+There are 4 configurable parameters ("refdir","tmpdir","threads","genome") in this package.
+None of them is required because users can also pass them to the function as arguments based on needs.
+For convenience, by configuring them in advance, these arguments for functions will not need to be set repeatedly. Users can focus more on data flow pipeline implementation rather than dependency. 
+These are the details for the parameters:
+
+"genome", the genome like "hg19","mm10", etc.
+
+"refdir", the path for genome reference and annotation data storage. 
+
+"tmpdir", the path for intermediate files and result storage. Default, "./", current working directory
+
+"threads", the max number of threads allowed to be created. Default, 1
+
+
+```{r  warning = FALSE,eval=FALSE, results = 'hide', message = FALSE}
+dir.create("./esATAC_pipeline")
+dir.create("./esATAC_pipeline/refdir")
+dir.create("./esATAC_pipeline/result")
+
+#configure reference path, result path, the max number of threads, genome
+options(atacConf=setConfigure("refdir","esATAC_pipeline/refdir"))
+options(atacConf=setConfigure("tmpdir","esATAC_pipeline/result"))
+options(atacConf=setConfigure("threads",2))
+options(atacConf=setConfigure("genome","hg19"))
+```
+
+In this example, we create folder "./esATAC_pipeline/refdir" for "refdir"  and "./esATAC_pipeline/result" for "tmpdir". Two threads are allowed. Genome reference and annotations will be install under "./esATAC_pipeline/refdir" if they are not complete.
+
+
+### Traverse the Dataflow Subgraph
+
+Pipe operator in R (%>% and %T>%) may help users build pipeline more easily. Parameters are passed seamlessly between upstream and downstream unit.
+
+```{r  warning = FALSE,eval=FALSE, results = 'hide', message = FALSE}
+#raw reads
+fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")
+fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz") 
+
+#pipeline           
+atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2) %T>%
+atacQCReport %>%
+atacRenamer %>%
+atacRemoveAdapter %>%
+atacBowtie2Mapping %T>% 
+atacLibComplexQC %>% 
+atacSamToBed(maxFragLen = 2000) %T>%
+atacBedToBigWig %T>% 
+atacFragLenDistr %>%
+atacBedUtils(maxFragLen = 100, chrFilterList = NULL) %>%
+atacPeakCalling
+```
+
+
+## Call Functions Individually
+
+### Preprocess
 
 Users can use %>% to build a pipeline to obtain merged, renamed and
 adapter removed clean reads fastq file(s) that is ready for mapping.
@@ -538,7 +637,7 @@ library(Rbowtie2)
 adapterremoval_usage()
 ```
 
-## Mapping
+### Mapping
 
 If the reference has not been configured, the bowtie2 index should be built first.
 Then bowtie2 mapping functions could used to map reads to reference genome.
@@ -574,7 +673,7 @@ you have to refer to Rbowtie2 package:
 library(Rbowtie2)
 bowtie2_usage()
 ```
-## Convert SAM File to BED File
+### Convert SAM File to BED File
 
 The mapping results are stored in a SAM file. 
 SamToBed functions can covert it into BED file.
@@ -593,7 +692,7 @@ bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 samToBed(samInput = samfile) 
 ```
 
-## Filtering Reads and Calling
+### Filtering Reads and Calling
 
 Filter the nucleosome free reads(<100bp) for peak calling.
 
@@ -613,7 +712,7 @@ atacPeakCalling
 
 
 
-## ATAC-seq Peak Annotation
+### ATAC-seq Peak Annotation
 
 ATAC-seq peak locate at open chromatin regions. Annotating these peak could find whether they locate at functional regions(such as promoter and enhancer). 
 
@@ -668,7 +767,7 @@ peakanno <- subset(peakanno, select=c("chromatin", "start", "end",
 knitr::kable(peakanno[1:5, ])
 ```
 
-## Go Analysis
+### Go Analysis
 
 GO analysis is performing enrichment analysis on gene sets. It establishes the relationship between gene sets and functions, and report the most significant function to users.
 
@@ -705,7 +804,7 @@ knitr::kable(go_data[1:5, ])
 ```
 
 
-## Motif Scan
+### Motif Scan
 
 This function search motif occurrence in the given regions.
 
@@ -757,7 +856,7 @@ CTCF.df <- data.frame(chromatin = c("chr20", "chr20", "chr20", "chr20"),
 knitr::kable(CTCF.df)
 ```
 
-## Plot Footprint
+### Plot Footprint
 
 The interaction between TF and DNA would leave a "footprint" in motif position, but it is not evident in a single site, so integrated footprint is necessary.
 In addition, we only consider Tn5 cut site.
@@ -884,7 +983,7 @@ The value of specific report item can be get like this:
 library(esATAC)
 ```
 
-```{r getReport2,message=FALSE}
+```{r getReport2,message=FALSE, results = 'hide'}
 #query a parameter value
 getReportVal(samToBedProc,"report")
 
