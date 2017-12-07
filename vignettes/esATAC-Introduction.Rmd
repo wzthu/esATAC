@@ -264,6 +264,7 @@ esATAC supports analysis of both single end reads and paired-end reads ATAC-seq 
 If you do not know where to start with ATAC-seq or DNase-seq data,
 you can print flowchart like this:
 
+
 ```{r flowchart,message=FALSE,warning=FALSE}
 library(esATAC)
 printMap()
@@ -272,6 +273,9 @@ printMap()
 Following the flowchart, related functions could be found in manual.
 For example,if you want to query functions related to "SamToBed" in the flowchart, 
 you can query "SamToBed" directly like this:
+```{r loadingx3,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r querymannual0,message=FALSE,warning=FALSE}
 ?SamToBed
@@ -279,11 +283,19 @@ you can query "SamToBed" directly like this:
 
 If you know exactly function name, you can add "atac" prefix to query mannual like this:
 
+```{r loadingx4,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r querymannual,message=FALSE,warning=FALSE}
 ?atacSamToBed
 ```
 
 or use the lowercase of the initial letter
+
+```{r loadingx5,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r querymannual1,message=FALSE,warning=FALSE}
 ?samToBed
@@ -432,6 +444,9 @@ be created for data processing.
 The default value is 1. 
 More thread will consume more memery in some processes.
 
+```{r loadingx6,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r loadref, eval=TRUE}
 # we use temp directiory "td" here 
@@ -455,10 +470,13 @@ If all of the reference data was installed,
 these two lines still need to be called 
 for configuring the reference data path and genome. 
 
-```{r config, eval=TRUE}
-#uncomment and modify to run:
-#options(atacConf=setConfigure("refdir","path/to/refdatafolder"))
-#options(atacConf=setConfigure("genome","hg19"))
+```{r loadingx7,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
+```{r config, eval=FALSE}
+options(atacConf=setConfigure("refdir","path/to/refdatafolder"))
+options(atacConf=setConfigure("genome","hg19"))
 ```
 
 NOTE: The installation will consume several hours for data download and
@@ -495,6 +513,9 @@ bowtie2 index download path:
 Users can use %>% to build a pipeline to obtain merged, renamed and
 adapter removed clean reads fastq file(s) that is ready for mapping.
 
+```{r loadingx8,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r Preprocess, warning = FALSE, results = 'hide', message = FALSE}
 # Identify adapters
@@ -511,7 +532,8 @@ atacRenamer %>% atacRemoveAdapter
 If you want to modify the parameters of AdapterRemoval,
 you have to refer to Rbowtie2 package:
 
-```{r adrmhelp}
+
+```{r adrmhelp,results='hide'}
 library(Rbowtie2)
 adapterremoval_usage()
 ```
@@ -520,6 +542,10 @@ adapterremoval_usage()
 
 If the reference has not been configured, the bowtie2 index should be built first.
 Then bowtie2 mapping functions could used to map reads to reference genome.
+
+```{r loadingx9,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r Mapping, warning = FALSE, results = 'hide', message = FALSE}
 ## Building a bowtie2 index
@@ -544,7 +570,7 @@ if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
 If you want to modify the parameters of bowtie2,
 you have to refer to Rbowtie2 package:
 
-```{r bt2help}
+```{r bt2help,results='hide'}
 library(Rbowtie2)
 bowtie2_usage()
 ```
@@ -554,6 +580,11 @@ The mapping results are stored in a SAM file.
 SamToBed functions can covert it into BED file.
 During converting, the operation like sorting, shifting, filtering chromosome and so on
 can also be set to do in the meantime.
+
+
+```{r loadingx10,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r Convert, warning = FALSE, results = 'hide', message = FALSE}
 sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
@@ -565,6 +596,10 @@ samToBed(samInput = samfile)
 ## Filtering Reads and Calling
 
 Filter the nucleosome free reads(<100bp) for peak calling.
+
+```{r loadingx11,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r FiltCalling, warning = FALSE, results = 'hide', message = FALSE}
 bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
@@ -588,6 +623,11 @@ Function "atacPeakAnno" and "peakanno" accept a bed file path as an input, users
 
 The following example is to exhibit how to annotate a UCSC bed file.
 
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r echo = TRUE, results = 'hide', message = FALSE}
 ## extract example peak file from package "esATAC"
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -599,6 +639,11 @@ AnnoInfo <- peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.know
 ```
 
 The output contains a pie chart in pdf format like below. It reports the percentage of peaks located in different functional regions.
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r eval = TRUE, echo = FALSE, warning = FALSE, results = 'hide', message = FALSE}
 library(ChIPseeker)
 ```
@@ -609,6 +654,11 @@ plotAnnoPie(x = peakanno)
 
 The function also generate a file(with suffix .df) contains annotation for all peaks. It is converted from dataframe in R, and users could open it with text editor or excel.
 Below is a part of the output.
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r eval = TRUE, echo = FALSE, warning = FALSE}
 peakanno <- as.data.frame(peakanno)
 colnames(peakanno)[1] <- "chromatin"
@@ -628,6 +678,10 @@ The function need gene Id set as input. User could choose different GO terms(mol
 
 The following example is to exhibit how to do GO analysis on a gene set.
 
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r eval = TRUE, echo = TRUE, results = 'hide', message = FALSE}
 ## extract gene ID
 library(clusterProfiler)
@@ -638,6 +692,10 @@ goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID",
 ```
 
 The output file(suffix .df) contains the GO term sorted by p-value, below is a part of the output.
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r eval = TRUE, echo = FALSE, warning = FALSE}
 go_path <- getReportVal(goAna, "goOutput")
@@ -657,6 +715,10 @@ Multi-motif is supported, and the output file is named by your input PWM list. f
 
 The input motif PWM matrix is stored in a list like below.
 
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r eval=TRUE, echo=TRUE, warning=FALSE}
 pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
 
@@ -664,6 +726,10 @@ pwm
 ```
 
 Using "motifscan" function to search motif in given genome regions, UCSC bed file is recommended.
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
 sample.path <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="esATAC")
@@ -675,6 +741,10 @@ motifPWM = pwm, prefix = "test")
 ```
 
 This function reports the exact motif position in the given genome like below(motif: CTCF).
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r eval = TRUE, echo = FALSE, warning = FALSE}
 CTCF.df <- data.frame(chromatin = c("chr20", "chr20", "chr20", "chr20"),
@@ -695,6 +765,10 @@ This function is based on the motif scan.
 
 First, collecting all cut site from the bed file(Note: every line in the bed file is a DNA fragment) and save them.
 
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
 ## extract cut site position from bed file
 fra_path <- system.file("extdata", "chr20.50000.bed.bz2", package="esATAC")
@@ -707,6 +781,11 @@ cs.data <- extractcutsite(bedInput = frag, prefix = "ATAC")
 Next, plot footprint for different motifs. 
 
 In the motif scan, we get a variable named "motif.data", is contains multi-motif information. In order to plot footprint of these motif in a single procedure, we will use the output of function motifscan, here is "motif.data".
+
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r eval=FALSE, echo=TRUE, warning=FALSE, results='hide', message=FALSE}
 fp <- atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
@@ -726,6 +805,9 @@ Note: we only using a small part of the chromatin 20 as example.
 esATAC is organized in data flow graph. Except for referring manual, 
 the user may print the map to know workflow order.
 
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r printmap, warning=FALSE, message=FALSE}
 bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
@@ -747,12 +829,22 @@ what preprocess has been done before.
 
 It is easy to query the parameters set for the process with ATACProc objects.
 You can query available parameters like this:
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r qpara, warning=FALSE, message=FALSE}
 #query all of available parameters
 getParamItems(peakproc)
 ```
 
 The value of a specific parameter can be obtain like this:
+
+```{r loadingx19,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r getpara, warning=FALSE, message=FALSE}
 #query a parameter value
 getParam(peakproc,"fragmentSize")
@@ -762,6 +854,11 @@ getParam(peakproc,"fragmentSize")
 
 ## Report Value
 Similarly, it is also easy to query the report value calculated by the process with ATACProc objects
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r getReport, warning=FALSE, results='hide', message=FALSE}
 sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
@@ -772,11 +869,21 @@ samToBedProc<-samToBed(samInput = samfile)
 When the ATACProc objects are obtained,
 you can query all of available report items.
 
+
+```{r loadingx21,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r getReport1,message=FALSE}
 getReportItems(samToBedProc)
 ```
 
 The value of specific report item can be get like this:
+
+```{r eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
+
 ```{r getReport2,message=FALSE}
 #query a parameter value
 getReportVal(samToBedProc,"report")
@@ -787,6 +894,10 @@ getReportVal(samToBedProc,"report")
 If the user call a process function that was called last time and finished, 
 the process function will not redo the process. So if users need to redo the process,
 they have to clear the cache like this:
+
+```{r loadingx2,eval=TRUE,echo=FALSE,message=FALSE}
+library(esATAC)
+```
 
 ```{r clearcache, warning=FALSE, results='hide', message=FALSE}
 clearProcCache(peakproc)
