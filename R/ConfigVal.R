@@ -5,7 +5,8 @@ setClass(Class = ".ConfigClass",
              configList = "list",
              validAttr = "list",
              validWriteAttr = "list",
-             curOrgDb = "character"
+             curOrgDb = "character",
+             curTxDb = "character"
              )
          )
 
@@ -83,6 +84,18 @@ setMethod(f = "isValidVal",
                                 sprintf("biocLite(\"org.%s.eg.db\")",unlist(strsplit(as.character(e),"org\\.|\\.eg\\.db"))[2]),
                                 sep="\n"))
                   })
+                  message("Configure knownGene ...")
+                  tryCatch({
+                      .Object@configList[["knownGene"]]<-GetTxDb(.Object,val)
+                  },
+                  error = function(e){
+                      message(as.character(e))
+                      stop(paste("To install the package, type:",
+                                 "library(\"BiocInstaller\")",
+                                 sprintf("biocLite(\"TxDb.%sGene\")",unlist(strsplit(as.character(e),"TxDb\\.|Gene"))[2]),
+                                 sep="\n"))
+                  })
+                  
                   #genome fasta
                   message("Generate genome fasta file ...")
                   fastaFilePath<-paste0(fileprefix,".fa")
@@ -122,23 +135,23 @@ setMethod(f = "isValidVal",
                   }
                   .Object@configList[["bt2Idx"]]<-fileprefix
                   #kownGene
-                  message("Configure kownGene ...")
-                  knownGeneFilePath<-paste0(fileprefix,".knownGene.sqlite")
-                  knownGeneFilePathlock<-paste0(fileprefix,".knownGene.sqlite.lock")
-                  if(file.exists(knownGeneFilePathlock)){
-                      unlink(knownGeneFilePath)
-                      unlink(knownGeneFilePathlock)
-                  }
-                  if(!file.exists(knownGeneFilePath)){
-                      file.create(knownGeneFilePathlock)
-                      if(sum(val==c("hg19","hg38","mm10","mm9"))){
-                            saveDb(makeTxDbFromUCSC(genome=val, tablename="knownGene"), file=knownGeneFilePath)
-                      }else{
-                          saveDb(makeTxDbFromUCSC(genome=val, tablename="refGene"), file=knownGeneFilePath) 
-                      }
-                      unlink(knownGeneFilePathlock)
-                  }
-                  .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
+                  # message("Configure knownGene ...")
+                  # knownGeneFilePath<-paste0(fileprefix,".knownGene.sqlite")
+                  # knownGeneFilePathlock<-paste0(fileprefix,".knownGene.sqlite.lock")
+                  # if(file.exists(knownGeneFilePathlock)){
+                  #     unlink(knownGeneFilePath)
+                  #     unlink(knownGeneFilePathlock)
+                  # }
+                  # if(!file.exists(knownGeneFilePath)){
+                  #     file.create(knownGeneFilePathlock)
+                  #     if(sum(val==c("hg19","hg38","mm10","mm9"))){
+                  #           saveDb(makeTxDbFromUCSC(genome=val, tablename="knownGene"), file=knownGeneFilePath)
+                  #     }else{
+                  #         saveDb(makeTxDbFromUCSC(genome=val, tablename="refGene"), file=knownGeneFilePath) 
+                  #     }
+                  #     unlink(knownGeneFilePathlock)
+                  # }
+                  # .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
                   
                   blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
                   DHSFilePath<-paste0(fileprefix,".DHS.bed")
@@ -237,6 +250,74 @@ setMethod(f = "BSgenomeSeqToFasta",
               return(outFile)
           })
 
+setGeneric(name = "GetTxDb",
+           def = function(.Object,genome,...){
+               standardGeneric("GetTxDb")
+           })
+setMethod(f = "GetTxDb",
+          signature = ".ConfigClass",
+          definition = function(.Object,genome,...){
+              if(genome == "hg19"){
+                  .Object@curTxDb <- "TxDb.Hsapiens.UCSC.hg19.knownGene"
+                  base::library("TxDb.Hsapiens.UCSC.hg19.knownGene",character.only=TRUE)
+                  return(TxDb.Hsapiens.UCSC.hg19.knownGene)
+              }else if(genome == "hg38"){
+                  .Object@curTxDb <- "TxDb.Hsapiens.UCSC.hg38.knownGene"
+                  base::library("TxDb.Hsapiens.UCSC.hg38.knownGene",character.only=TRUE)
+                  return(TxDb.Hsapiens.UCSC.hg38.knownGene)
+              }else if(genome == "mm9"){
+                  .Object@curTxDb <- "TxDb.Mmusculus.UCSC.mm9.knownGene"
+                  base::library("TxDb.Mmusculus.UCSC.mm9.knownGene",character.only=TRUE)
+                  return(TxDb.Mmusculus.UCSC.mm9.knownGene)
+              }else if(genome == "mm10"){
+                  .Object@curTxDb <- "TxDb.Mmusculus.UCSC.mm10.knownGene"
+                  base::library("TxDb.Mmusculus.UCSC.mm10.knownGene",character.only=TRUE)
+                  return(TxDb.Mmusculus.UCSC.mm10.knownGene)
+              }else if(genome == "danRer10"){
+                  .Object@curTxDb <- "TxDb.Drerio.UCSC.danRer10.refGene"
+                  base::library("TxDb.Drerio.UCSC.danRer10.refGene",character.only=TRUE)
+                  return(TxDb.Drerio.UCSC.danRer10.refGene)
+              }else if(genome == "galGal5"){
+                  .Object@curTxDb <- "TxDb.Ggallus.UCSC.galGal5.refGene"
+                  base::library("TxDb.Ggallus.UCSC.galGal5.refGene",character.only=TRUE)
+                  return(TxDb.Ggallus.UCSC.galGal5.refGene)
+              }else if(genome == "galGal4"){
+                  .Object@curTxDb <- "TxDb.Ggallus.UCSC.galGal4.refGene"
+                  base::library("TxDb.Ggallus.UCSC.galGal4.refGene",character.only=TRUE)
+                  return(TxDb.Ggallus.UCSC.galGal4.refGene)
+              }else if(genome == "rheMac3"){
+                  .Object@curTxDb <- "TxDb.Mmulatta.UCSC.rheMac3.refGene"
+                  base::library("TxDb.Mmulatta.UCSC.rheMac3.refGene",character.only=TRUE)
+                  return(TxDb.Mmulatta.UCSC.rheMac3.refGene)
+              }else if(genome == "rheMac8"){
+                  .Object@curTxDb <- "TxDb.Mmulatta.UCSC.rheMac8.refGene"
+                  base::library("TxDb.Mmulatta.UCSC.rheMac8.refGene",character.only=TRUE)
+                  return(TxDb.Mmulatta.UCSC.rheMac8.refGene)
+              }else if(genome == "rn5"){
+                  .Object@curTxDb <- "TxDb.Rnorvegicus.UCSC.rn5.refGene"
+                  base::library("TxDb.Rnorvegicus.UCSC.rn5.refGene",character.only=TRUE)
+                  return(TxDb.Rnorvegicus.UCSC.rn5.refGene)
+              }else if(genome == "rn6"){
+                  .Object@curTxDb <- "TxDb.Rnorvegicus.UCSC.rn6.refGene"
+                  base::library("TxDb.Rnorvegicus.UCSC.rn6.refGene",character.only=TRUE)
+                  return(TxDb.Rnorvegicus.UCSC.rn6.refGene)
+              }else if(genome == "sacCer3"){
+                  .Object@curTxDb <- "TxDb.Scerevisiae.UCSC.sacCer3.sgdGene"
+                  base::library("TxDb.Scerevisiae.UCSC.sacCer3.sgdGene",character.only=TRUE)
+                  return(TxDb.Scerevisiae.UCSC.sacCer3.sgdGene)
+              }else if(genome == "sacCer2"){
+                  .Object@curTxDb <- "TxDb.Scerevisiae.UCSC.sacCer2.sgdGene"
+                  base::library("TxDb.Scerevisiae.UCSC.sacCer2.sgdGene",character.only=TRUE)
+                  return(TxDb.Scerevisiae.UCSC.sacCer2.sgdGene)
+              }else if(genome == "susScr3"){
+                  .Object@curTxDb <- "TxDb.Sscrofa.UCSC.susScr3.refGene"
+                  base::library("TxDb.Sscrofa.UCSC.susScr3.refGene",character.only=TRUE)
+                  return(TxDb.Sscrofa.UCSC.susScr3.refGene)
+              }else {
+                  warning(paste0("TxDb Annotation package does not support for ",genome))
+              }
+              return(NULL)
+          })
 
 setGeneric(name = "GetOrgDb",
            def = function(.Object,genome,...){
