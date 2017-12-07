@@ -122,9 +122,9 @@ conclusion <-
 The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored under "./esATAC_pipeline/intermediate_results". The final brief results like HTML report will be stored under "./esATAC_pipeline/esATAC_results"
 
 If you run the scripts above without modification, you are able to obtain default HTML
-[example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html).
+[example report](https://wzthu.github.io/esATAC/example/pkgcasectrl/Report2.html).
 
-If you download raw data ([GSM2356780: SRR4435490.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356780)) and ([GSM2356795: SRR4435505.sra](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM2356795)) from GEO, modify the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM2.html) for GSM2356780 and GSM2356795 data.
+If you download raw data from GEO(assertion number  [GSE88987](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE88987) - [GSM2356780: SRR4435490.sra](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP091/SRP091863/SRR4435490/SRR4435490.sra)) and ([GSM2356795: SRR4435505.sra](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP091/SRP091863/SRR4435505/SRR4435505.sra))).And then, Use [NCBI SRA Toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software) to extract fastq files with command like `fastq-dump --split-3 SRR44354XX.sra`. Four files will be generated (SRR4435490_1.fastq, SRR4435490_2.fastq, SRR4435505_1.fastq, SRR4435505_2.fastq). Modify and run the scripts above like this [example scripts](https://wzthu.github.io/esATAC/example/casectrl/GSM2.R), you will obtain HTML [report](https://wzthu.github.io/esATAC/example/casectrl/Report.html).
 
 ### For Single Sample Analysis
 
@@ -174,9 +174,9 @@ conclusion <-
 
 The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored under "./esATAC_pipeline/intermediate_results". The final brief results like HTML report will be stored under "./esATAC_pipeline/esATAC_results"
 
-If you run the scripts above without modification, you are able to obtain default HTML [Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report.html)
+If you run the scripts above without modification, you are able to obtain default HTML [Example report](https://wzthu.github.io/esATAC/example/pkgsingle/Report.html)
 
-If you download raw data ([GSM1155957(SRR891268.sra)](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM1155957)) from GEO, modify the scripts above like this [example scripts](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.R), you will obtain HTML [report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/GSM.html) for GSM1155957 data.
+If you download raw data from GEO (assersion number [GSE47753](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE47753) - [GSM1155957(SRR891268.sra)](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP024/SRP024293/SRR891268/SRR891268.sra)).And then, Use [NCBI SRA Toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software) to extract fastq files with command like `fastq-dump --split-3 SRR8912XX.sra`. Two files will be generated (SRR891268_1.fastq, SRR891268_2.fastq). Modify the scripts above like this [example scripts](https://wzthu.github.io/esATAC/example/single/GSM.R), you will obtain HTML [report](https://wzthu.github.io/esATAC/example/single/Report.html) for GSM1155957 data.
 
 
 
@@ -322,7 +322,7 @@ The ready-use reads in BED file may call peak by "PeakCallingFseq"
 function atacPeakCallingFseq.
 
 For preset pipeline (see [Quick Start](#quickstart)), 
-several summary tables will be shown in an HTML file([Example report](http://bioinfo.au.tsinghua.edu.cn/member/zwei/example/Report2.html)) like this:
+several summary tables will be shown in an HTML file([Example report](https://wzthu.github.io/esATAC/example/Report2.html)) like this:
 
 |    Item                                               |    Case     |    Control      | Reference|
 |:-----------------------------------------------------|:------------|:-----------|:-----------|
