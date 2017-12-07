@@ -246,16 +246,18 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
             if(!dir.exists("esATAC_pipeline")){
                 dir.create("esATAC_pipeline")
             }
-            if(!dir.exists(file.path("esATAC_pipeline","esATAC_result"))){
-                dir.create(file.path("esATAC_pipeline","esATAC_result"))
+            if(!dir.exists(file.path("esATAC_pipeline","intermediate_results"))){
+                dir.create(file.path("esATAC_pipeline","intermediate_results"))
             }
-            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
+            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","intermediate_results")))
         }
         if(!is.null(param.tmp[["genome"]])){
             options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
         }else{
             stop("parameter genome is required")
         }
+        esATAC_result<-file.path(dirname(.obtainConfigure("tmpdir")),"esATAC_result")
+        dir.create(esATAC_result)
     }
     
 
@@ -594,7 +596,15 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
         message("Generate report done")
-        message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
+        
+        if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_result)
+            file.copy(getReportVal(atacQc,"pdf"),esATAC_result)
+            file.copy(getReportVal(goAna,"goOutput"),esATAC_result)
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_result,"Report.html")))
+        }else{
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
+        }
     }
 
     invisible(conclusion)
@@ -764,16 +774,18 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
             if(!dir.exists("esATAC_pipeline")){
                 dir.create("esATAC_pipeline")
             }
-            if(!dir.exists(file.path("esATAC_pipeline","esATAC_result"))){
-                dir.create(file.path("esATAC_pipeline","esATAC_result"))
+            if(!dir.exists(file.path("esATAC_pipeline","intermediate_results"))){
+                dir.create(file.path("esATAC_pipeline","intermediate_results"))
             }
-            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","esATAC_result")))
+            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","intermediate_results")))
         }
         if(!is.null(param.tmp[["genome"]])){
             options(atacConf=setConfigure("genome",param.tmp[["genome"]]))
         }else{
             stop("parameter genome is required")
         }
+        esATAC_result<-file.path(dirname(.obtainConfigure("tmpdir")),"esATAC_result")
+        dir.create(esATAC_result)
     }
 
     if(is.null(motifPWM)){
@@ -869,7 +881,14 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
         message("Generate report done")
-        message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report2.html")))
+        if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_result)
+            file.copy(getReportVal(atacQc,"pdf"),esATAC_result)
+            file.copy(getReportVal(goAna,"goOutput"),esATAC_result)
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_result,"Report.html")))
+        }else{
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report2.html")))
+        }
     }
 
     invisible(conclusion)
