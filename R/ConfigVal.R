@@ -167,13 +167,15 @@ setMethod(f = "isValidVal",
                           file.create(downloadFilePathlock)
                           #DHS
                           if(!file.exists(blacklistFilePath)){
-                              download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.DHS.bed",val),
-                                            destfile = DHSFilePath,method = getOption("download.file.method"))
+                              download.file(url = sprintf("https://wzthu.github.io/esATAC/refdata/%s.DHS.bed.gz",val),
+                                            destfile = paste0(DHSFilePath,".gz"),method = getOption("download.file.method"))
+                              gunzip(paste0(DHSFilePath,".gz"),destname=DHSFilePath,overwrite=TRUE)
                           }
                           #blacklist
                           if(!file.exists(blacklistFilePath)){
-                              download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.blacklist.bed",val),
-                                            destfile = blacklistFilePath,method = getOption("download.file.method"))
+                              download.file(url = sprintf("https://wzthu.github.io/esATAC/refdata/%s.blacklist.bed.gz",val),
+                                            destfile = paste0(blacklistFilePath,".gz"),method = getOption("download.file.method"))
+                              gunzip(paste0(blacklistFilePath,".gz"),destname=blacklistFilePath,overwrite=TRUE)
                           }
                           unlink(downloadFilePathlock)
                       }
@@ -195,8 +197,9 @@ setMethod(f = "isValidVal",
                       }
                       if(!file.exists(snpFilePath)){
                           file.create(downloadFilePathlock)
-                          download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.snp.txt",val),
-                                        destfile = snpFilePath,method = getOption("download.file.method"))
+                          download.file(url = sprintf("https://wzthu.github.io/esATAC/refdata/%s.snp.txt.gz",val),
+                                        destfile = paste0(snpFilePath,".gz"),method = getOption("download.file.method"))
+                          gunzip(paste0(snpFilePath,".gz"),destname=snpFilePath,overwrite=TRUE)
                           unlink(downloadFilePathlock)
                       }
                       #.Object@configList[["SNP"]]<-snpFilePath
