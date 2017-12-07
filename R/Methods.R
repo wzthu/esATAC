@@ -599,7 +599,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         
         if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
             file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_result)
-            file.copy(getReportVal(atacQc,"pdf"),esATAC_result)
+            file.copy(getReportVal(atacQC,"pdf"),esATAC_result)
             file.copy(getReportVal(goAna,"goOutput"),esATAC_result)
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_result,"Report.html")))
         }else{
@@ -882,10 +882,12 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
         message("Generate report done")
         if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
-            file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_result)
-            file.copy(getReportVal(atacQc,"pdf"),esATAC_result)
-            file.copy(getReportVal(goAna,"goOutput"),esATAC_result)
-            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_result,"Report.html")))
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report2.html"),esATAC_result)
+            file.copy(getReportVal(caselist$atacProcs$atacQC,"pdf"),esATAC_result)
+            file.copy(getReportVal(ctrllist$atacProcs$atacQC,"pdf"),esATAC_result)
+            file.copy(getReportVal(caselist$atacProcs$goAna,"goOutput"),esATAC_result)
+            file.copy(getReportVal(ctrllist$atacProcs$goAna,"goOutput"),esATAC_result)
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_result,"Report2.html")))
         }else{
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report2.html")))
         }
