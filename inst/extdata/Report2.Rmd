@@ -70,9 +70,9 @@ QC_path1 <- getReportVal(caselist$atacProcs$atacQC,"pdf")
 QC_path2 <- getReportVal(ctrllist$atacProcs$atacQC,"pdf")
 ```
 
-[Click to Visit Report for case](`r QC_path1`)
+[Click to Visit Report for case](`r basename(QC_path1)`)
 
-[Click to Visit Report for control](`r QC_path2`)
+[Click to Visit Report for control](`r basename(QC_path2)`)
 
 ## Remove adapter
 
@@ -298,7 +298,7 @@ if(nrow(go_data) < 15){
 }
 ```
 
-[Click to Visit Case Differential Go Analysis file](`r go_path`)
+[Click to Visit Case Differential Go Analysis file](`r basename(go_path)`)
 
 ## Significant GO terms of genes associated with  control specific peaks
 
@@ -317,7 +317,7 @@ if(nrow(go_data) < 15){
 }
 ```
 
-[Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
+[Click to Visit Ctrl Differential Go Analysis file](`r basename(go_path)`)
 
 # Motif Enrichment Analysis
 
@@ -473,15 +473,6 @@ ctrlsp.dir <- getReportVal(comp_result$footprint.ctrl, "pdf.dir")
 ```
 
 All motif footprint figures are saved as pdf files.
-
-[Click to Visit Case Footprint file](`r case.dir`)
-
-[Click to Visit Ctrl Footprint file](`r ctrl.dir`)
-
-[Click to Visit Case Specific Footprint file](`r casesp.dir`)
-
-[Click to Visit Ctrl Specific Footprint file](`r ctrlsp.dir`)
-
 
 
 # Annotation of Items in Table 
