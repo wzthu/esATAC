@@ -52,7 +52,7 @@ Quality control for the sequence data
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
 QC_path <- getReportVal(atacProcs$atacQC,"pdf")
 ```
-[Click to Visit Report](`r QC_path`)
+[Click to Visit Report](`r basename(QC_path)`)
 
 ## Remove adapter
 
@@ -180,7 +180,7 @@ if(nrow(go_data) < 15){
 }
 ```
 
-[Click to Visit Go Analysis file](`r go_path`)
+[Click to Visit Go Analysis file](`r basename(go_path)`)
 
 # Footprint Analysis
 
@@ -222,7 +222,6 @@ pdf.dir <- getReportVal(atacProcs$footprint,"pdf.dir")
 ```
 
 All motif footprint figures are saved as pdf files.
-[Click to Visit Footprint file](`r pdf.dir`)
 
 
 # Annotation of items in table 
