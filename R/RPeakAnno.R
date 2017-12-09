@@ -140,8 +140,10 @@ setMethod(
     definition = function(.Object, item, ...){
         if(item == "annoOutput.rds"){
             peakAnno <- readRDS(.Object@paramlist[["annoOutput.rds"]])
-            return(peakAnno)
+        }else if(item == "annoOutput"){
+            peakAnno <- .Object@paramlist[["annoOutput.df"]]
         }
+        return(peakAnno)
     }
 )
 
@@ -150,7 +152,7 @@ setMethod(
     f = "getReportItemsImp",
     signature = "RPeakAnno",
     definition = function(.Object, ...){
-        return(c("annoOutput.rds"))
+        return(c("annoOutput.rds", "annoOutput"))
     }
 )
 
@@ -195,7 +197,7 @@ setMethod(
 #'
 #' @examples
 #'
-#' 
+#'
 #' library(R.utils)
 #' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 #' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -204,7 +206,7 @@ setMethod(
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 #' #peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.knownGene,
 #' #annoDb = 'org.Hs.eg.db')
-#' 
+#'
 #' @references Guangchuang Yu, Li-Gen Wang, Qing-Yu He. ChIPseeker: an
 #' R/Bioconductor package for ChIP peak annotation, comparison and
 #' visualization. Bioinformatics 2015, 31(14):2382-2383

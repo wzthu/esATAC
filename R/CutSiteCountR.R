@@ -42,6 +42,12 @@ setMethod(
                 .Object@paramlist[["prefix"]],
                 sep = ""
             )
+            .Object@paramlist[["fp_pdf.dir"]] <- paste(
+                .Object@paramlist[["matrixfile.dir"]],
+                "/FP_PDF_",
+                .Object@paramlist[["prefix"]],
+                sep = ""
+            )
             .Object@paramlist[["footprint.data"]] <- paste(
                 .Object@paramlist[["matrixfile.dir"]], "/Footprint_",
                 .Object@paramlist[["prefix"]],
@@ -50,6 +56,12 @@ setMethod(
             )
         }else{
             .Object@paramlist[["matrixfile.dir"]] <- matrixOutput
+            .Object@paramlist[["fp_pdf.dir"]] <- paste(
+                .Object@paramlist[["matrixfile.dir"]],
+                "/FP_PDF_",
+                .Object@paramlist[["prefix"]],
+                sep = ""
+            )
             .Object@paramlist[["footprint.data"]] <- paste(
                 .Object@paramlist[["matrixfile.dir"]],
                 "/Footprint_",
@@ -59,7 +71,7 @@ setMethod(
             )
         }
         dir.create(.Object@paramlist[["matrixfile.dir"]])
-
+        dir.create(.Object@paramlist[["fp_pdf.dir"]])
         paramValidation(.Object)
         .Object
     }
@@ -81,13 +93,13 @@ setMethod(
             matrixsave.dir <- file.path(.Object@paramlist[["matrixfile.dir"]], motif_name)
             dir.create(matrixsave.dir)
             footprint.path <- file.path(
-                .Object@paramlist[["matrixfile.dir"]],
+                .Object@paramlist[["fp_pdf.dir"]],
                 paste(.Object@paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
             )
             # start!
             .Object <- writeLog(.Object, sprintf("Start Processing %s", motif_name))
             .Object <- writeLog(.Object, sprintf("Matrix Destination:%s", matrixsave.dir))
-            .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", matrixsave.dir))
+            .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", .Object@paramlist[["fp_pdf.dir"]]))
             tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
             # using tmp dir to save temp data
             dir.create(tmp_dir, FALSE, TRUE, "0700")
@@ -188,7 +200,7 @@ setMethod(
             fp <- readRDS(.Object@paramlist[["footprint.data"]])
             return(fp)
         }else if(item == "pdf.dir"){
-            return(.Object@paramlist[["matrixfile.dir"]])
+            return(.Object@paramlist[["fp_pdf.dir"]])
         }
     }
 )
