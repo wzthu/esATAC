@@ -95,7 +95,7 @@ knitr::kable(x = filtstat)
 
 ## Fragment size distribution
 
-```{r fegdist, eval=TRUE}
+```{r fegdist, eval=TRUE,message=FALSE,warning=FALSE}
 library(ggplot2)
 load("Report.Rdata")
 readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
@@ -155,7 +155,7 @@ knitr::kable(x = getReportVal(atacProcs$fripQC,"report"))
 
 ## Peak Annotation
 
-```{r eval=TRUE, echo=FALSE, warning=FALSE}
+```{r eval=TRUE, echo=FALSE, message=FALSE,warning=FALSE}
 library(ChIPseeker)
 peakanno <- getReportVal(atacProcs$Peakanno,"annoOutput.rds")
 plotAnnoPie(x = peakanno)
