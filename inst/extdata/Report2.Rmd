@@ -46,7 +46,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 
 * Case
 
-```{r eval=TRUE,echo=FALSE}
+```{r eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(caselist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
@@ -54,7 +54,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 * Control
 
-```{r eval=TRUE,echo=FALSE}
+```{r eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(ctrllist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
