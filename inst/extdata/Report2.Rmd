@@ -80,25 +80,24 @@ The adapter sequence are shown below. For paired end reads, if adapters were not
 
 * Adapter for case 
 
-```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 knitr::kable(getReportVal(caselist$atacProcs$removeAdapter,"adapters"))
 
 ```
 
 * Adapter for control
 
-```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 knitr::kable(getReportVal(ctrllist$atacProcs$removeAdapter,"adapters"))
 
 ```
 
 The statistic of adapter removing are show below. 
 
-```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 
 casetb<-getReportVal(caselist$atacProcs$removeAdapter,"statistics")
 ctrltb<-getReportVal(ctrllist$atacProcs$removeAdapter,"statistics")
-cbind()
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
@@ -146,7 +145,7 @@ knitr::kable(x = filtstat)
 
 ## Fragment size distribution
 
-```{r fegdist, eval=TRUE}
+```{r fegdist, eval=TRUE,message=FALSE,warning=FALSE}
 library(ggplot2)
 library(stats)
 load("Report2.Rdata")
