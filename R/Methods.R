@@ -600,14 +600,14 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         message("Generate report done")
 
         if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
-            file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_report)
-            file.copy(getReportVal(atacQC,"pdf"),esATAC_report)
-            file.copy(getReportVal(goAna,"goOutput"),esATAC_report)
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(atacQC,"pdf"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(goAna,"goOutput"),esATAC_report, overwrite = TRUE)
             dir.create(file.path(esATAC_result,"peak"))
-            file.copy(getParam(peakCalling,"bedOutput"),file.path(esATAC_result,"peak"))
-            file.copy(getReportVal(Peakanno,"annoOutput"),esATAC_result)
+            file.copy(getParam(peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
+            file.copy(getReportVal(Peakanno,"annoOutput"),esATAC_result, overwrite = TRUE)
             file.copy(from = getReportVal(atacProcs$footprint,"pdf.dir"),
-                      to = esATAC_result, overwrite = T, recursive = T)
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Report.html")))
         }else{
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
@@ -893,28 +893,28 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
         message("Generate report done")
         if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
-            file.copy(file.path(.obtainConfigure("tmpdir"),"Report2.html"),esATAC_report)
-            file.copy(getReportVal(caselist$atacProcs$atacQC,"pdf"),esATAC_report)
-            file.copy(getReportVal(ctrllist$atacProcs$atacQC,"pdf"),esATAC_report)
-            file.copy(getReportVal(caselist$atacProcs$goAna,"goOutput"),esATAC_report)
-            file.copy(getReportVal(ctrllist$atacProcs$goAna,"goOutput"),esATAC_report)
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report2.html"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(caselist$atacProcs$atacQC,"pdf"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(ctrllist$atacProcs$atacQC,"pdf"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(caselist$atacProcs$goAna,"goOutput"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(ctrllist$atacProcs$goAna,"goOutput"),esATAC_report, overwrite = TRUE)
             dir.create(file.path(esATAC_result,"peak"))
-            file.copy(getParam(caselist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"))
-            file.copy(getParam(ctrllist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"))
+            file.copy(getParam(caselist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
+            file.copy(getParam(ctrllist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
 
-            file.copy(getReportVal(caselist$atacProcs$Peakanno,"annoOutput"), esATAC_result)
-            file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result)
-            file.copy(getReportVal(comp_result$Peakanno.case,"annoOutput"), esATAC_result)
-            file.copy(getReportVal(comp_result$Peakanno.ctrl,"annoOutput"), esATAC_result)
+            file.copy(getReportVal(caselist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
+            file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
+            file.copy(getReportVal(comp_result$Peakanno.case,"annoOutput"), esATAC_result, overwrite = TRUE)
+            file.copy(getReportVal(comp_result$Peakanno.ctrl,"annoOutput"), esATAC_result, overwrite = TRUE)
 
             file.copy(from = getReportVal(caselist$atacProcs$footprint, "pdf.dir"),
-                      to = esATAC_result, overwrite = T, recursive = T)
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             file.copy(from = getReportVal(ctrllist$atacProcs$footprint, "pdf.dir"),
-                      to = esATAC_result, overwrite = T, recursive = T)
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             file.copy(from = getReportVal(comp_result$footprint.case, "pdf.dir"),
-                      to = esATAC_result, overwrite = T, recursive = T)
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             file.copy(from = getReportVal(comp_result$footprint.ctrl, "pdf.dir"),
-                      to = esATAC_result, overwrite = T, recursive = T)
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             # generate motif enrichment file
             motif_enrich.case <- getReportVal(comp_result$mout, "rdsOutput.peak1")
             motif_enrich.case <- motif_enrich.case[, c(1, 3, 4)]
