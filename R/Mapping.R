@@ -100,7 +100,7 @@ setMethod(
         .Object<-writeLog(.Object,paste0("fastqInput1:",.Object@paramlist[["fastqInput1"]]))
         .Object<-writeLog(.Object,paste0("fastqInput2:",.Object@paramlist[["fastqInput2"]]))
         .Object<-writeLog(.Object,paste0("other parameters:",paste(.Object@paramlist[["paramList"]],collapse = " ")))
-        if(length(paramList>0)){
+        if(length(paramList)>0){
             rs<-bowtie2(bt2Index = .Object@paramlist[["bt2Idx"]],
                         samOutput = .Object@paramlist[["samOutput"]],
                         seq1 = .Object@paramlist[["fastqInput1"]],
