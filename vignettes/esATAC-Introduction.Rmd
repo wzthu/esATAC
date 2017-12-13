@@ -798,7 +798,7 @@ peakanno <- getReportVal(AnnoInfo, "annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
-The function also generate a file(with suffix .df) contains annotation for all peaks. It is converted from dataframe in R, and users could open it with text editor or excel.
+The function also generate a file(with suffix .txt) contains annotation for all peaks. It is converted from dataframe in R, and users could open it with text editor or excel.
 Below is a part of the output.
 
 ```{r eval=TRUE,echo=FALSE,message=FALSE}
@@ -837,7 +837,7 @@ geneId <- names(geneList)[1:100]
 goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
 ```
 
-The output file(suffix .df) contains the GO term sorted by p-value, below is a part of the output.
+The output file(suffix .txt) contains the GO term sorted by p-value, below is a part of the output.
 
 ```{r eval=TRUE,echo=FALSE,message=FALSE}
 library(esATAC)
