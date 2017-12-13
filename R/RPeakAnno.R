@@ -48,8 +48,8 @@ setMethod(
                                         paste0(prefix, ".", getProcName(.Object)))
             .Object@paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
                                                            ".pdf", sep = "")
-            .Object@paramlist[["annoOutput.df"]] <- paste(annoOutput.dir,
-                                                          ".df", sep = "")
+            .Object@paramlist[["annoOutput.txt"]] <- paste(annoOutput.dir,
+                                                          ".txt", sep = "")
             .Object@paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
                                                            ".rds", sep = "")
         }else{
@@ -57,11 +57,11 @@ setMethod(
             suffix <- tail(name_split, 1)
             name_split <- head(name_split, -1)
             if(suffix == "df"){
-                .Object@paramlist[["annoOutput.df"]] <- annoOutput
+                .Object@paramlist[["annoOutput.txt"]] <- annoOutput
                 .Object@paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
                 .Object@paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
             }else{
-                .Object@paramlist[["annoOutput.df"]] <- paste(annoOutput, "df", sep = ".")
+                .Object@paramlist[["annoOutput.txt"]] <- paste(annoOutput, "df", sep = ".")
                 .Object@paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
                 .Object@paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
             }
@@ -79,7 +79,7 @@ setMethod(
     definition = function(.Object,...){
         .Object <- writeLog(.Object,paste0("processing file:"))
         .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["peakInput"]]))
-        .Object <- writeLog(.Object,sprintf("dataframe destination:%s",.Object@paramlist[["annoOutput.df"]]))
+        .Object <- writeLog(.Object,sprintf("dataframe destination:%s",.Object@paramlist[["annoOutput.txt"]]))
         .Object <- writeLog(.Object,sprintf("Image destination:%s",.Object@paramlist[["annoOutput.pdf"]]))
 
         peakGRange <- rtracklayer::import(con = .Object@paramlist[["peakInput"]], format = "bed")
@@ -103,7 +103,7 @@ setMethod(
         dev.off()
         tmp_file <- as.data.frame(peakAn)
         colnames(tmp_file)[1] <- "chromatin"
-        write.table(x = tmp_file, file = .Object@paramlist[["annoOutput.df"]],
+        write.table(x = tmp_file, file = .Object@paramlist[["annoOutput.txt"]],
                     quote = FALSE, row.names = FALSE, sep = "\t",
                     col.names = TRUE, append = FALSE)
         .Object
@@ -127,7 +127,7 @@ setMethod(
     signature = "RPeakAnno",
     definition = function(.Object,...){
         checkFileExist(.Object,.Object@paramlist[["peakInput"]])
-        checkPathExist(.Object,.Object@paramlist[["annoOutput.df"]])
+        checkPathExist(.Object,.Object@paramlist[["annoOutput.txt"]])
         checkPathExist(.Object,.Object@paramlist[["annoOutput.pdf"]])
         checkPathExist(.Object,.Object@paramlist[["annoOutput.rds"]])
     }
@@ -141,7 +141,7 @@ setMethod(
         if(item == "annoOutput.rds"){
             peakAnno <- readRDS(.Object@paramlist[["annoOutput.rds"]])
         }else if(item == "annoOutput"){
-            peakAnno <- .Object@paramlist[["annoOutput.df"]]
+            peakAnno <- .Object@paramlist[["annoOutput.txt"]]
         }
         return(peakAnno)
     }

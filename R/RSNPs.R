@@ -41,7 +41,7 @@ setMethod(
         if(is.null(annoOutput)){
             prefix <- getBasenamePrefix(.Object, .Object@paramlist[["region.info"]], regexProcName)
             .Object@paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                           paste0(prefix, ".", getProcName(.Object), ".df"))
+                                                           paste0(prefix, ".", getProcName(.Object), ".txt"))
         }else{
             name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
             suffix <- tail(name_split, 1)
@@ -96,7 +96,7 @@ setMethod(
             motif_info <- readRDS(.Object@paramlist[["region.info"]])
             motif_num <- nrow(motif_info)
             names(motif_info) <- c("name", "path", "length")
-            file_name.df <- data.frame()
+            file_name.txt <- data.frame()
             for(i in seq(motif_num)){
                 motif_df <- read.table(motif_info$path[i],
                                        col.names = c("chr", "start", "end", "strand", "score", "sequence"))
@@ -114,9 +114,9 @@ setMethod(
                                        paste(motif_info$name[i], "_snps", sep = ""))
                 write.table(x = output, file = file_name, quote = FALSE,
                             sep = "\t", row.names = FALSE, col.names = FALSE)
-                file_name.df[i, 1] <- file_name
+                file_name.txt[i, 1] <- file_name
             }
-            write.table(x = file_name.df, file = .Object@paramlist[["annoOutput"]],
+            write.table(x = file_name.txt, file = .Object@paramlist[["annoOutput"]],
                         quote = FALSE, sep = "\t", row.names = FALSE,
                         col.names = FALSE)
         }
