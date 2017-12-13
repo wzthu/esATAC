@@ -98,7 +98,6 @@ setMethod(
                                            overlap = .Object@paramlist[["overlap"]])
         saveRDS(peakAn, .Object@paramlist[["annoOutput.rds"]])
         pdf(file = .Object@paramlist[["annoOutput.pdf"]])
-        print(.Object@paramlist[["annoOutput.pdf"]])
         ChIPseeker::plotAnnoPie(x = peakAn)
         dev.off()
         tmp_file <- as.data.frame(peakAn)

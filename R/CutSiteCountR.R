@@ -97,9 +97,9 @@ setMethod(
                 paste(.Object@paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
             )
             # start!
-            .Object <- writeLog(.Object, sprintf("Start Processing %s", motif_name))
-            .Object <- writeLog(.Object, sprintf("Matrix Destination:%s", matrixsave.dir))
-            .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", .Object@paramlist[["fp_pdf.dir"]]))
+            .Object <- writeLog(.Object, sprintf("Generating footprint for %s......", motif_name))
+            # .Object <- writeLog(.Object, sprintf("Matrix Destination:%s", matrixsave.dir))
+            # .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", .Object@paramlist[["fp_pdf.dir"]]))
             tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
             # using tmp dir to save temp data
             dir.create(tmp_dir, FALSE, TRUE, "0700")
