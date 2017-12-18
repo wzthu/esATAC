@@ -184,8 +184,6 @@ if(nrow(go_data) < 15){
 
 # Footprint Analysis
 
-The following figure is CTCF footprint.
-
 ```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
 footprint_data <- getReportVal(atacProcs$footprint, "footprint.data")
 if("CTCF" %in% names(footprint_data)){
@@ -200,7 +198,6 @@ footprint_text <- paste(footprint_figure.name, "(Footprinting)", sep = "")
 ```
 
 The following figure is `r footprint_figure.name` footprint.
-
 
 ```{r eval=TRUE, echo=FALSE, fig.height=7, fig.width=7, results = 'asis', warning=FALSE}
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2, 
@@ -221,7 +218,8 @@ pdf.dir <- getReportVal(atacProcs$footprint,"pdf.dir")
 
 ```
 
-All motif footprint figures are saved as pdf files.
+All motif footprint figures are saved as pdf files. The absolute path is `r R.utils::getAbsolutePath(pdf.dir)`.
+
 
 
 # Annotation of items in table 

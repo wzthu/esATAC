@@ -416,6 +416,10 @@ case.dir <- getReportVal(caselist$atacProcs$footprint, "pdf.dir")
 ctrl.dir <- getReportVal(ctrllist$atacProcs$footprint, "pdf.dir")
 ```
 
+For all footprint of case sample, The absolute path is `r R.utils::getAbsolutePath(case.dir)`.
+
+For all footprint of control sample, The absolute path is `r R.utils::getAbsolutePath(ctrl.dir)`.
+
 The following is the footprint for motif occurance of case&control specific peaks.
 
 ```{r eval=TRUE, echo=FALSE, fig.height=4, fig.width=9, results = 'asis', warning=FALSE, message=FALSE}
@@ -471,7 +475,9 @@ casesp.dir <- getReportVal(comp_result$footprint.case, "pdf.dir")
 ctrlsp.dir <- getReportVal(comp_result$footprint.ctrl, "pdf.dir")
 ```
 
-All motif footprint figures are saved as pdf files.
+For all footprint of case specific, The absolute path is `r R.utils::getAbsolutePath(casesp.dir)`.
+
+For all footprint of control specific, The absolute path is `r R.utils::getAbsolutePath(ctrlsp.dir)`.
 
 
 # Annotation of Items in Table 
