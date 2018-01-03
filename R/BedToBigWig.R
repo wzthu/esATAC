@@ -56,7 +56,7 @@ setMethod(
         ans <- GRanges(cov)
         ans <- subset(ans, score > 0)
         if(.Object@paramlist[["toWig"]]){
-            export.wig(ans,.Object@paramlist[["bwOutput"]])
+            export.wig(as(ans, "UCSCData"),.Object@paramlist[["bwOutput"]])
         }else{
             export.bw(ans,.Object@paramlist[["bwOutput"]])
         }

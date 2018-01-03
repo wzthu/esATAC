@@ -563,7 +563,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
         val<-.configObj@configList[[item]]
     }
     if(is.null(val)){
-        stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))
+        stop(paste(item,sprintf("has not been configured yet! Please call 'options(atacConf=setConfigure(\"%s\",\"set your value here\"))' to configure first",item)))
     }else{
         return(val)
     }
