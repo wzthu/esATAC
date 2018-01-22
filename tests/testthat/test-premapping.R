@@ -17,7 +17,7 @@ test_that("Unzip and merge FASTQ files, remove adapter",{
     atacproc <-
     atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
     atacRenamer %>% atacRemoveAdapter
-    
+
     expect_true(file.exists(file.path(td,"reads_1.fastq.1.UnzipAndMerge.fq")))
     expect_true(file.exists(file.path(td,"reads_1.RemoveAdapter.fq")))
     expect_true(file.exists(file.path(td,"reads_1.RemoveAdapter.report.adapter1")))
@@ -44,7 +44,7 @@ test_that("test bowtie2 mapping",{
     dir.create(file.path(td,"map"))
     td<-file.path(td,"map")
     options(atacConf=setConfigure("tmpdir",td))
-    
+
     ## Building a bowtie2 index
     library("Rbowtie2")
     refs <- dir(system.file(package="esATAC", "extdata", "bt2","refs"),
@@ -58,24 +58,24 @@ test_that("test bowtie2 mapping",{
     "reads_2.fastq")
     expect_true(file.exists(reads_1))
     expect_true(file.exists(reads_2))
-    
+
     expect_true(file.exists(file.path(td, "lambda_virus.1.bt2")))
     expect_true(file.exists(file.path(td, "lambda_virus.2.bt2")))
     expect_true(file.exists(file.path(td, "lambda_virus.3.bt2")))
     expect_true(file.exists(file.path(td, "lambda_virus.4.bt2")))
     expect_true(file.exists(file.path(td, "lambda_virus.rev.1.bt2")))
     expect_true(file.exists(file.path(td, "lambda_virus.rev.2.bt2")))
-    
+
     bowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
        samOutput = file.path(td, "result.sam"),
        fastqInput1=reads_1,fastqInput2=reads_2,threads=3)
-    
+
     expect_true(file.exists(file.path(td, "result.sam")))
     expect_true(file.exists(file.path(td, "reads_1.Bowtie2Mapping.report")))
-    
+
     Bowtie2MappingLog <- dir(td)[grepl(pattern = "Bowtie2Mapping\\..*\\.log",dir(td))]
     expect_true(file.exists(file.path(td,Bowtie2MappingLog)))
-    
+
 })
 
 
@@ -95,8 +95,7 @@ test_that("test fastqc",{
     ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
     qcreport(input_file = c(fq1, fq2))
     expect_true(file.exists(file.path(td, "chr20_1_FastQC.pdf")))
-    
+
     FastQCLog <- dir(td)[grepl(pattern = "FastQC\\..*\\.log",dir(td))]
     expect_true(file.exists(file.path(td,FastQCLog)))
 })
-         
