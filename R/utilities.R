@@ -8,6 +8,27 @@
 ##                                                                            ##
 ##                                                                            ##
 ################################################################################
+#' @importFrom ShortRead FastqSampler
+#' @importFrom ShortRead yield
+#' @importFrom ShortRead readFasta
+#' @importFrom ShortRead sread
+#' @importFrom ShortRead alphabetByCycle
+#' @importFrom tools file_ext
+#' @importFrom IRanges width
+#' @importFrom graphics strwidth
+#' @importFrom BiocGenerics which
+#' @importFrom S4Vectors runValue
+#' @importFrom S4Vectors runLength
+#' @importFrom Biostrings alphabetFrequency
+#' @importFrom graphics layout
+#' @importFrom ShortRead tables
+#' @importFrom graphics par
+#' @importFrom graphics box
+#' @importFrom graphics strheight
+#' @importFrom graphics text
+#' @importFrom graphics matplot
+#' @importFrom graphics rect
+#' @importFrom grDevices dev.new
 qQCReport <- function(input, pdfFilename=NULL, chunkSize=1e6L, useSampleNames=FALSE, ...){
     if(is.character(input)){
         filetype <- unique(consolidateFileExtensions(input, compressed=TRUE))
@@ -179,7 +200,7 @@ plotQualByCycle <- function(qcdata, lmat=matrix(1:12, nrow=6, byrow=TRUE)) {
     })
     names(qtilesL) <- rownames(qtiles)
 
-    layout(lmat)
+    graphics::layout(lmat)
     for(i in 1:ns) {
         xn <- length(qtilesL[[i]]$names)
         ym <- max(35,max(qtilesL[[i]]$stats))
@@ -235,7 +256,7 @@ plotNuclByCycle <- function(qcdata, lmat=matrix(1:12, nrow=6, byrow=TRUE)) {
     nfreqL[is.na.data.frame(nfreqL)] <- 0
 
     mycols <- c("#5050ff","#e00000","#00c000","#e6e600","darkgray")
-    layout(lmat)
+    graphics::layout(lmat)
     for(i in 1:ns) {
         xn <- ncol(nfreqL[[i]])
         ym <- max(50,ceiling(max(nfreqL[[i]], na.rm = TRUE) /5) *5 +5)
@@ -271,14 +292,14 @@ plotDuplicated <- function(qcdata, breaks=c(1:10), lmat=matrix(1:6, nrow=3, byro
     }))
     dimnames(bocc) <- list(sampleName=rownames(nocc), duplicationLevel=breakNames)
 
-    layout(lmat)
+    graphics::layout(lmat)
     for(i in 1:ns) {
         nm <- rownames(nocc)[i]
         fs <- qcdata[['frequentSequences']]
         fs <- fs[ fs$lane==nm, ]
         xn <- length(breaks)-1
         ym <- max(50,ceiling(max(bocc[i,]) /5) *5)
-        par(mar=c(5-1,4-1,4-4,2-1)+.1, mgp=c(3-1,1-0.25,0))
+        graphics::par(mar=c(5-1,4-1,4-4,2-1)+.1, mgp=c(3-1,1-0.25,0))
         plot(1:xn, bocc[i,], type="o", xlab="Sequence duplication level", ylab="Percent of unique sequences",
              xlim=c(0,xn)+0.5, xaxs="i", ylim=c(0,ym), lwd=2, lty=1, pch=20, cex=0.6, axes=FALSE,
              panel.first=abline(h=0, lty=2, col="gray"))
@@ -324,7 +345,7 @@ plotDuplicated <- function(qcdata, breaks=c(1:10), lmat=matrix(1:6, nrow=3, byro
     alf <- Biostrings::alphabetFrequency(ShortRead::sread(obj), baseOnly=TRUE, collapse=TRUE)
     #     bqtbl <- alphabetFrequency(quality(obj), collapse=TRUE)
     #     rqs <- .qa_qdensity(quality(obj))
-    freqtbl <- tables(ShortRead::sread(obj))
+    freqtbl <- ShortRead::tables(ShortRead::sread(obj))
     abc <- ShortRead::alphabetByCycle(obj)
     names(dimnames(abc)) <- c("base", "cycle")
     dimnames(abc)$cycle <- as.character(1:dim(abc)[2])

@@ -32,7 +32,7 @@ setMethod(
 
         if(is.null(output_file)){
             output_name <- paste(basename(tools::file_path_sans_ext(.Object@paramlist[["Input"]][1])),
-                                 "_QC.pdf", sep = "")
+                                 "_FastQC.pdf", sep = "")
             .Object@paramlist[["Output"]] <- file.path(.obtainConfigure("tmpdir"), output_name)
         }else{
             .Object@paramlist[["Output"]] <- output_file
