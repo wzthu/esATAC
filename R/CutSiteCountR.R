@@ -11,9 +11,7 @@ setMethod(
                           strandLength = NULL, FootPrint = TRUE, prefix = NULL, editable = FALSE){
         .Object <- init(.Object, "CutSiteCountR", editable, list(arg1 = atacProcCutSite, arg2 = atacProcMotifScan))
 
-
         # necessary parameters
-
         if(!is.null(atacProcCutSite)){
             .Object@paramlist[["csfile.dir"]] <- getParam(atacProcCutSite, "csfile.dir");
         }else{

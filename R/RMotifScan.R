@@ -2,7 +2,6 @@ setClass(Class = "RMotifScan",
          contains = "ATACProc"
 )
 
-
 setMethod(
     f = "initialize",
     signature = "RMotifScan",
@@ -48,7 +47,6 @@ setMethod(
             "RMotifScan.rds",
             sep = ""
         )
-
         if(is.null(n.cores)){
             .Object@paramlist[["n.cores"]] <- .obtainConfigure("threads")
         }else{
