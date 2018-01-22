@@ -17,9 +17,9 @@ Description: This package provides a framework and complete preset pipeline for
     starting from any intermediate stages with esATAC functions easily and flexibly. 
 Depends:
     R (>= 3.4.1),
-    QuasR,
     Rsamtools,
-    GenomicRanges
+    GenomicRanges,
+    ShortRead
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -100,6 +100,7 @@ Collate:
     UnzipAndMerge.R
     onLoad.R
     RMotifScanPair.R
+    utilities.R
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
