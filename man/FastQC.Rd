@@ -19,14 +19,13 @@ qcreport(input_file, output_file = NULL, ...)
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacUnzipAndMerge}},
-\code{\link{atacRenamer}},
-\code{\link{atacSam2Bam}}.}
+\code{\link{atacRenamer}}}
 
 \item{input_file}{\code{Character} scalar.
-Input file path. One or two(\code{vector}) fastq/a or a bam file path.}
+Input file path. One or more(\code{vector}) fastq file path.}
 
 \item{output_file}{\code{Character} scalar.
-output file path. Defult:"input_file_FastQC.pdf" in the same
+output file path. Defult:"input_file_QC.pdf" in the same
 folder as your input file.}
 
 \item{...}{Additional arguments, currently unused.}
@@ -36,7 +35,7 @@ An invisible \code{\link{ATACProc-class}} object scalar for downstream
 analysis.
 }
 \description{
-Generate quality control plots from fastq/fasta/bam of ATAC-seq data.
+Generate quality control plots from fastq of ATAC-seq data.
 }
 \details{
 Every highthroughput sequencing need quality control analysis, this
@@ -59,8 +58,7 @@ qcreport(input_file = c(fq1, fq2))
 }
 \seealso{
 \code{\link{atacUnzipAndMerge}},
-\code{\link{atacRenamer}},
-\code{\link{atacSam2Bam}}.
+\code{\link{atacRenamer}}
 }
 \author{
 Wei Zhang
