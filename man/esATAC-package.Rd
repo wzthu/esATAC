@@ -8,7 +8,8 @@
 \usage{
 atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
   adapter2 = NULL, interleave = FALSE, createReport = TRUE,
-  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"), ...)
+  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
+  min.score = "90\%", use.SavedPWM = NULL, ...)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -42,6 +43,14 @@ when multiple pipeline generating file in the same tempdir.}
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
+
+\item{min.score}{The minimum score for counting a match. Can be given as a
+character string containing a percentage (default: "90%") of the highest
+possible score or as a single number.}
+
+\item{use.SavedPWM}{use local motif position information. This data is
+download or generate by users. it must be a rds file and the information
+saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.}
 
 \item{...}{Configure "refdir", "genome", "threads", "tmpdir" for this function.
 They will overwrite global configuration.
