@@ -146,6 +146,12 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
+#' @param min.score The minimum score for counting a match. Can be given as a
+#' character string containing a percentage (default: "90%") of the highest
+#' possible score or as a single number.
+#' @param use.SavedPWM use local motif position information. This data is
+#' download or generate by users. it must be a rds file and the information
+#' saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.
 #' @param ... Configure "refdir", "genome", "threads", "tmpdir" for this function.
 #' They will overwrite global configuration.
 #' If you need to set globally, see \link{configureValue}.
@@ -207,9 +213,7 @@ getSuffixlessFileName0 <- function(filePath){
 
 atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = NULL,
                      interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL,
-                     chr = c(1:22, "X", "Y"), ...){ #saveTmp = TRUE,
-
-
+                     chr = c(1:22, "X", "Y"), min.score = "90%", use.SavedPWM = NULL, ...){ #saveTmp = TRUE,
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
@@ -288,17 +292,22 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
-
-
-        if(is.null(motifPWM)){
-            pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
-        }else{
-            pwm <- motifPWM
-        }
-
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = "85%", prefix = prefix)
+
+        if(is.null(use.SavedPWM)){
+            if(is.null(motifPWM)){
+                pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
+            }else{
+                pwm <- motifPWM
+            }
+            output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = min.score, prefix = prefix)
+        }else{
+            output_motifscan <- atacMotifScan(atacProc = peakCalling, use.SavedPWM = use.SavedPWM, prefix = prefix)
+        }
+
+
+
         cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
                                       strandLength = 100, prefix = prefix, chr = chr)
@@ -318,7 +327,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
         filelist <- data.frame(`File(s)`=fastqInput1)
     }else{
         filelist <- data.frame(`Mate1 files`=fastqInput1,
-                          `Mate2 files`=fastqInput2)
+                               `Mate2 files`=fastqInput2)
     }
     if(is.null(fastqInput2)&&!interleave){
         wholesummary = data.frame(Item=c("Sequence Files Type",
@@ -472,15 +481,15 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                                       getVMRShow(getReportVal(sam2Bed,"total"),
                                                  getReportVal(removeAdapter,"statisticslist")[[1]]),
                                       getVMShow(getReportVal(libComplexQC,"total")),
-                                                 #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                      #sam2Bed$getReportVal("non-mitochondrial-multimap")),
                                       getVMShow(getReportVal(libComplexQC,"nonMultimap")),
                                       #getf(libComplexQC$getReportVal("NRF")),
                                       getRshow(getReportVal(libComplexQC,"total"),
                                                getReportVal(libComplexQC,"nonMultimap")),
                                       getVMShow(getReportVal(libComplexQC,"one")),
-                                                 #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                      #sam2Bed$getReportVal("non-mitochondrial-multimap")),
                                       getVMShow(getReportVal(libComplexQC,"two")),
-                                                 #sam2Bed$getReportVal("non-mitochondrial-multimap")),
+                                      #sam2Bed$getReportVal("non-mitochondrial-multimap")),
                                       #getf(libComplexQC$getReportVal("PBC1")),
                                       getRshow(getReportVal(libComplexQC,"one"),
                                                getReportVal(libComplexQC,"total")),
@@ -500,7 +509,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                                       getPer(getReportVal(DHSQC,"qcbedRate")),
                                       getPer(getReportVal(blacklistQC,"qcbedRate")),
                                       getPer(getReportVal(fripQC,"FRiP")))
-                                      ,
+                              ,
                               `Reference`=c("SE / PE",
                                             "",
                                             ">99%",
@@ -531,27 +540,27 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                "-- Non-mitochondrial reads (ratio)",
                "-- -- Unique mapped reads (ratio)",
                "-- -- -- Duplicate removed reads (ratio final for use)"
-               ),
-         Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                 getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
-                            getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                 getVMRShow(getReportVal(sam2Bed,"total"),
-                            getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                 getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
-                            getReportVal(sam2Bed,"total"),TRUE),
-                 getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
-                            getReportVal(sam2Bed,"total"),TRUE),
-                 getVMRShow(getReportVal(sam2Bed,"save"),
-                            getReportVal(sam2Bed,"total"),TRUE)
-         ),
-         `Reference`=c("",
-                       ">99%",
-                       ">95%",
-                       ">70%",
-                       ">60%",
-                       ">25M,>60%"
-                       )
-)
+        ),
+        Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
+                getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
+                           getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
+                getVMRShow(getReportVal(sam2Bed,"total"),
+                           getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
+                getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
+                           getReportVal(sam2Bed,"total"),TRUE),
+                getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
+                           getReportVal(sam2Bed,"total"),TRUE),
+                getVMRShow(getReportVal(sam2Bed,"save"),
+                           getReportVal(sam2Bed,"total"),TRUE)
+        ),
+        `Reference`=c("",
+                      ">99%",
+                      ">95%",
+                      ">70%",
+                      ">60%",
+                      ">25M,>60%"
+        )
+    )
     atacProcs=list(unzipAndMerge = unzipAndMerge,
                    renamer = renamer,
                    removeAdapter = removeAdapter,
@@ -578,7 +587,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
                        wholesummary = wholesummary,
                        atacProcs = atacProcs,
                        filtstat = filtstat
-                       )
+    )
 
     if(createReport){
         message("Begin to generate report")
@@ -643,6 +652,12 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
+#' @param min.score The minimum score for counting a match. Can be given as a
+#' character string containing a percentage (default: "90%") of the highest
+#' possible score or as a single number.
+#' @param use.SavedPWM use local motif position information. This data is
+#' download or generate by users. it must be a rds file and the information
+#' saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.
 #' @param ... Configure "refdir", "genome", "threads", "tmpdir" for this function.
 #' They will overwrite global configuration.
 #' If you need to set globally, see \link{configureValue}.
@@ -742,7 +757,8 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #'
 atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, chr = c(1:22, "X", "Y"), ...){ #saveTmp = TRUE,
+                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, chr = c(1:22, "X", "Y"), min.score = "90%",
+                      use.SavedPWM = NULL,  ...){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -797,21 +813,42 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
         dir.create(esATAC_report)
     }
 
-    if(is.null(motifPWM)){
-        pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
-    }else{
-        pwm <- motifPWM
+    if(is.null(use.SavedPWM)){
+        if(is.null(motifPWM)){
+            pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
+        }else{
+            pwm <- motifPWM
+        }
     }
+
     message("Begin to process case sample...")
-    caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
-               adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-                createReport = FALSE, motifPWM =pwm, prefix = "Case_data", chr = chr, dontSet=TRUE) #saveTmp = TRUE,
+    if(is.null(use.SavedPWM)){
+        caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
+                             adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
+                             createReport = FALSE, motifPWM =pwm, prefix = "Case_data", chr = chr,
+                             min.score = min.score, dontSet=TRUE) #saveTmp = TRUE,
+    }else{
+        caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
+                             adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
+                             createReport = FALSE, prefix = "Case_data", chr = chr, use.SavedPWM = use.SavedPWM,
+                             dontSet=TRUE) #saveTmp = TRUE,
+    }
+
     message("Case sample process done")
     message(" ")
     message("Begin to process control sample")
-    ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
-               adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-                createReport = FALSE, motifPWM =pwm, prefix = "Control_data", chr = chr, dontSet=TRUE) #saveTmp = TRUE,
+    if(is.null(use.SavedPWM)){
+        ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
+                             adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
+                             createReport = FALSE, motifPWM =pwm, prefix = "Control_data", chr = chr,
+                             min.score = min.score, dontSet=TRUE) #saveTmp = TRUE,
+    }else{
+        ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
+                             adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
+                             createReport = FALSE, prefix = "Control_data", chr = chr, use.SavedPWM = use.SavedPWM,
+                             dontSet=TRUE) #saveTmp = TRUE,
+    }
+
     message("control sample process done")
     message(" ")
     message("Begin to generate summary")
@@ -833,8 +870,13 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     # for ctrl
     Peakanno.ctrl <- peakanno(peakInput = ctrl_specific.peak)
     goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
+    if(is.null(use.SavedPWM)){
+        mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = min.score)
+    }else{
+        mout <- atacMotifScanPair(atacProc = peakCom, use.SavedPWM = use.SavedPWM)
+    }
 
-    mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = "90%")
+
     cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
     cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CONTROL")
 
@@ -858,14 +900,14 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
     )
 
     wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
-                          Case = caselist[["wholesummary"]][["Value"]],
-                          Control = ctrllist[["wholesummary"]][["Value"]],
-                          Reference = ctrllist[["wholesummary"]][["Reference"]])
+                               Case = caselist[["wholesummary"]][["Value"]],
+                               Control = ctrllist[["wholesummary"]][["Value"]],
+                               Reference = ctrllist[["wholesummary"]][["Reference"]])
 
     conclusion <- list(caselist = caselist,
                        ctrllist = ctrllist,
                        wholesummary = wholesummary
-                )
+    )
     casefilelist <- caselist[["filelist"]]
     ctrlfilelist <- ctrllist[["filelist"]]
 
