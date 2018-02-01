@@ -21,6 +21,7 @@ setMethod(f = "initialize",
                   "UnzipAndMerge", "FastQC",
                   "UnzipAndMerge", "RemoveAdapter",
                   "Renamer", "RemoveAdapter",
+                  "RemoveAdapter", "FastQC",
                   "Renamer", "FastQC",
                   "SamToBam", "Rsortbam",
                   "SamToBam", "BamToBed",
@@ -56,8 +57,8 @@ setMethod(f = "initialize",
                   "RMotifScan", "CutSiteCountR",
                   "RPeakAnno", "RGo",
                   "RMotifScan", "RSNPs",
-                  "RPeakComp", "RMotifScanPair"
-
+                  "RPeakComp", "RMotifScanPair",
+                  "RMotifScanPair",  "CutSiteCountR"
               )
               #edges1<-sapply(edges1,function(x) x$classname)
 

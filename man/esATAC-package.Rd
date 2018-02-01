@@ -35,7 +35,7 @@ interleaved paired-end sequencing data.}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifPWM}{\code{List} scalar. Motif PWM, a list.}
+\item{motifPWM}{\code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).}
 
 \item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
 when multiple pipeline generating file in the same tempdir.}
