@@ -140,7 +140,7 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifPWM \code{List} scalar. Motif PWM, a list.
+#' @param motifPWM \code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
 #' @param chr Which chromatin the program will processing. It must be identical
@@ -297,7 +297,13 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 
         if(is.null(use.SavedPWM)){
             if(is.null(motifPWM)){
-                pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
+                opts <- list()
+                opts[["tax_group"]] <- "vertebrates"
+                pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+                pwm <- TFBSTools::toPWM(pwm)
+                names(pwm) <- TFBSTools::name(pwm)
+                pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
+                names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
             }else{
                 pwm <- motifPWM
             }
@@ -648,7 +654,7 @@ atacPipe <- function(fastqInput1,fastqInput2=NULL, adapter1 = NULL, adapter2 = N
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifPWM \code{List} scalar. Motif PWM list.
+#' @param motifPWM \code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
@@ -815,7 +821,14 @@ atacPipe2 <- function(case = list(fastqInput1="paths/To/fastq1",fastqInput2="pat
 
     if(is.null(use.SavedPWM)){
         if(is.null(motifPWM)){
-            pwm <- getMotifPWM(JASPARdb = TRUE, Species = "9606")
+            opts <- list()
+            opts[["tax_group"]] <- "vertebrates"
+            pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+            pwm <- TFBSTools::toPWM(pwm)
+            names(pwm) <- TFBSTools::name(pwm)
+            pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
+            names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
+            pwm <- pwm[1:4]
         }else{
             pwm <- motifPWM
         }
