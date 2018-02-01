@@ -27,7 +27,7 @@ interleaved paired-end sequencing data.}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifPWM}{\code{List} scalar. Motif PWM list.}
+\item{motifPWM}{\code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).}
 
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
