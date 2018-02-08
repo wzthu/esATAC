@@ -42,7 +42,7 @@ For single end data, it is requied.}
 \item{interleave}{\code{Logical} scalar. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
 
-\item{basicAnalysis}{\code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps 
+\item{basicAnalysis}{\code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps
 like GO annoation and motif analysis}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}

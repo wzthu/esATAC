@@ -19,7 +19,7 @@ it contains sequence file paths.
 For paired-end sequencing, it can be file paths with #1 mates paired
 with file paths in fastqInput2
 And it can also be interleaved file paths when argument
-interleaved=\code{TRUE}. 
+interleaved=\code{TRUE}.
 Each element in the caseFastqInput1 \code{List} is for a replicate
 It can be a \code{Character} vector of FASTQ files paths to be merged.}
 
@@ -37,7 +37,7 @@ it contains sequence file paths.
 For paired-end sequencing, it can be file paths with #1 mates paired
 with file paths in ctrlFastqInput2
 And it can also be interleaved file paths when argument
-interleaved=\code{TRUE}. 
+interleaved=\code{TRUE}.
 Each element in the ctrlFastqInput1 \code{List} is for a replicate
 It can be a \code{Character} vector of FASTQ files paths to be merged.}
 
