@@ -148,6 +148,8 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param adapter2 \code{Character} scalar. It is an adapter sequence for file2.
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param basicAnalysis \code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps 
+#' like GO annoation and motif analysis
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
 #' @param motifPWM \code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
@@ -211,7 +213,7 @@ getSuffixlessFileName0 <- function(filePath){
 #' @export
 
 atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=NULL, threads=2, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL,
+                     interleave = FALSE,  basicAnalysis = FALSE, createReport = TRUE, motifPWM = NULL, prefix = NULL,
                      chr = c(1:22, "X", "Y"), min.score = "90%", use.SavedPWM = NULL, ...){ #saveTmp = TRUE,
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
@@ -318,30 +320,31 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
 
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
-        goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-
-        if(is.null(use.SavedPWM)){
-            if(is.null(motifPWM)){
-                opts <- list()
-                opts[["tax_group"]] <- "vertebrates"
-                pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
-                pwm <- TFBSTools::toPWM(pwm)
-                names(pwm) <- TFBSTools::name(pwm)
-                pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
-                names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
+        if(!basicAnalysis){
+            goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
+            if(is.null(use.SavedPWM)){
+                if(is.null(motifPWM)){
+                    opts <- list()
+                    opts[["tax_group"]] <- "vertebrates"
+                    pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+                    pwm <- TFBSTools::toPWM(pwm)
+                    names(pwm) <- TFBSTools::name(pwm)
+                    pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
+                    names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
+                }else{
+                    pwm <- motifPWM
+                }
+                output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = min.score, prefix = prefix)
             }else{
-                pwm <- motifPWM
+                output_motifscan <- atacMotifScan(atacProc = peakCalling, use.SavedPWM = use.SavedPWM, prefix = prefix)
             }
-            output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = min.score, prefix = prefix)
-        }else{
-            output_motifscan <- atacMotifScan(atacProc = peakCalling, use.SavedPWM = use.SavedPWM, prefix = prefix)
+    
+    
+    
+            cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
+            footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
+                                          strandLength = 100, prefix = prefix, chr = chr)
         }
-
-
-
-        cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
-        footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
-                                      strandLength = 100, prefix = prefix, chr = chr)
     }
 
     if(interleave){
@@ -592,28 +595,50 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
                       ">25M,>60%"
         )
     )
-    atacProcs=list(unzipAndMerge = unzipAndMerge,
-                   renamer = renamer,
-                   removeAdapter = removeAdapter,
-                   bowtie2Mapping = bowtie2Mapping,
-                   libComplexQC = libComplexQC,
-                   sam2Bed = sam2Bed,
-                   bedToBigWig = bedToBigWig,
-                   tssqc100 = tssqc100,
-                   tssqc180_247 = tssqc180_247,
-                   fragLenDistr = fragLenDistr,
-                   peakCalling = peakCalling,
-                   DHSQC = DHSQC,
-                   blacklistQC = blacklistQC,
-                   fripQC = fripQC,
-                   shortBed = shortBed,
-                   Peakanno = Peakanno,
-                   goAna = goAna,
-                   output_motifscan = output_motifscan,
-                   cs_output = cs_output,
-                   footprint = footprint,
-                   atacQC = atacQC
-    )
+    if(!basicAnalysis){
+        atacProcs=list(unzipAndMerge = unzipAndMerge,
+                       renamer = renamer,
+                       removeAdapter = removeAdapter,
+                       bowtie2Mapping = bowtie2Mapping,
+                       libComplexQC = libComplexQC,
+                       sam2Bed = sam2Bed,
+                       bedToBigWig = bedToBigWig,
+                       tssqc100 = tssqc100,
+                       tssqc180_247 = tssqc180_247,
+                       fragLenDistr = fragLenDistr,
+                       peakCalling = peakCalling,
+                       DHSQC = DHSQC,
+                       blacklistQC = blacklistQC,
+                       fripQC = fripQC,
+                       shortBed = shortBed,
+                       Peakanno = Peakanno,
+                       atacQC = atacQC
+        ) 
+    }else{
+        atacProcs=list(unzipAndMerge = unzipAndMerge,
+                       renamer = renamer,
+                       removeAdapter = removeAdapter,
+                       bowtie2Mapping = bowtie2Mapping,
+                       libComplexQC = libComplexQC,
+                       sam2Bed = sam2Bed,
+                       bedToBigWig = bedToBigWig,
+                       tssqc100 = tssqc100,
+                       tssqc180_247 = tssqc180_247,
+                       fragLenDistr = fragLenDistr,
+                       peakCalling = peakCalling,
+                       DHSQC = DHSQC,
+                       blacklistQC = blacklistQC,
+                       fripQC = fripQC,
+                       shortBed = shortBed,
+                       Peakanno = Peakanno,
+                       goAna = goAna,
+                       output_motifscan = output_motifscan,
+                       cs_output = cs_output,
+                       footprint = footprint,
+                       atacQC = atacQC
+        )
+    }
+    
     conclusion <- list(filelist=filelist,
                        wholesummary = wholesummary,
                        atacProcs = atacProcs,
@@ -625,7 +650,12 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
 
-        rmdfile<-system.file(package="esATAC", "extdata", "Report.Rmd")
+        if(basicAnalysis){
+            rmdfile<-system.file(package="esATAC", "extdata", "basicReport.Rmd")
+        }else{
+            rmdfile<-system.file(package="esATAC", "extdata", "Report.Rmd")
+        }
+        
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
 
@@ -646,8 +676,10 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
             dir.create(file.path(esATAC_result,"peak"))
             file.copy(getParam(peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
             file.copy(getReportVal(Peakanno,"annoOutput"),esATAC_result, overwrite = TRUE)
-            file.copy(from = getReportVal(atacProcs$footprint,"pdf.dir"),
-                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
+            if(!basicAnalysis){
+                file.copy(from = getReportVal(atacProcs$footprint,"pdf.dir"),
+                          to = esATAC_result, overwrite = TRUE, recursive = TRUE)
+            }
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Report.html")))
         }else{
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
@@ -1273,13 +1305,13 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
             dir.create(file.path(esATAC_report,sprintf("replicate%d",n)))
             conclusions[[n]]<-atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
                                        tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
-                                        interleave = interleave,  createReport = createReport, motifPWM = motifPWM, prefix = prefix,
+                                        interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, motifPWM = motifPWM, prefix = prefix,
                                         chr = chr, dontSet=TRUE,esATAC_result=normalizePath(file.path(esATAC_result,sprintf("replicate%d",n))),
                                        esATAC_report=normalizePath(file.path(esATAC_report,sprintf("replicate%d",n))),...)
         }else{
             conclusions[[n]]<-atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
                                        tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
-                                       interleave = interleave,  createReport = createReport, motifPWM = motifPWM, prefix = prefix,
+                                       interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, motifPWM = motifPWM, prefix = prefix,
                                        chr = chr, dontSet=TRUE,...)
         }
     }

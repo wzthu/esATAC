@@ -8,9 +8,9 @@
 \usage{
 atacPipe(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
   tmpdir = NULL, threads = 2, adapter1 = NULL, adapter2 = NULL,
-  interleave = FALSE, createReport = TRUE, motifPWM = NULL,
-  prefix = NULL, chr = c(1:22, "X", "Y"), min.score = "90\%",
-  use.SavedPWM = NULL, ...)
+  interleave = FALSE, basicAnalysis = FALSE, createReport = TRUE,
+  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
+  min.score = "90\%", use.SavedPWM = NULL, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -41,6 +41,9 @@ For single end data, it is requied.}
 
 \item{interleave}{\code{Logical} scalar. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
+
+\item{basicAnalysis}{\code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps 
+like GO annoation and motif analysis}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
