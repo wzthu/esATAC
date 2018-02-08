@@ -1073,7 +1073,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
 
 checkFilePathExist <- function(afilePaths){
     if(FALSE %in% file.exists(afilePaths)){
-        stop(sprintf("file '%s' does not exist",afilePath))
+        stop(sprintf("file '%s' does not exist",afilePaths))
     }
 }
 
@@ -1473,12 +1473,14 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
     
 }
 
+#' @importFrom GenomeInfoDb seqlengths
+#' @importFrom rtracklayer import.bed
 
 getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
     abedfile <- import.bed(con = bedInput)
     chrominfo<-seqinfo(bsgenome)
     chroms <- seqnames(chrominfo)
-    chromsize <- seqlengths(chrominfo)
+    chromsize <- GenomeInfoDb::seqlengths(chrominfo)
     binnumb <- as.integer(chromsize/binsize)+1
     readsCountsList <- list()
     pos<-as.integer((end(ranges(abedfile))+start(ranges(abedfile)))/2/binsize) + 1
@@ -1657,7 +1659,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
         checkFilePathExist(caseFastqInput1[[n]])
     }
     if(!is.null(caseAdapter1)){
-        if(length(caseaAdapter1)!=length(caseFastqInput1)){
+        if(length(caseAdapter1)!=length(caseFastqInput1)){
             stop("the number of adapters in caseAdapter1 do not match the number of replicates in caseFastqInput1")
         }
     }
@@ -1687,7 +1689,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
         checkFilePathExist(ctrlFastqInput1[[n]])
     }
     if(!is.null(ctrlAdapter1)){
-        if(length(ctrlaAdapter1)!=length(ctrlFastqInput1)){
+        if(length(ctrlAdapter1)!=length(ctrlFastqInput1)){
             stop("the number of adapters in ctrlAdapter1 do not match the number of replicates in ctrlFastqInput1")
         }
     }
