@@ -108,4 +108,6 @@ VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
+URL: https://github.com/wzthu/esATAC
+BugReports: https://github.com/wzthu/esATAC/issues
 
