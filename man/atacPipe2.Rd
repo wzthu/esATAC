@@ -2,15 +2,18 @@
 % Please edit documentation in R/Methods.R
 \name{atacPipe2}
 \alias{atacPipe2}
-\title{Pipeline for case-control paired-end sequencing data}
+\title{Pipeline for single replicate case-control paired-end sequencing data}
 \usage{
-atacPipe2(case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
+atacPipe2(genome, case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
   "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
   control = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
-  "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL), interleave = FALSE,
-  createReport = TRUE, motifPWM = NULL, chr = c(1:22, "X", "Y"), ...)
+  "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL), refdir = NULL,
+  tmpdir = NULL, threads = 2, interleave = FALSE, createReport = TRUE,
+  motifPWM = NULL, chr = c(1:22, "X", "Y"), ...)
 }
 \arguments{
+\item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
+
 \item{case}{\code{List} scalar. Input for case sample. \code{fastqInput1},
 the path(s) of the mate 1 fastq file(s), is required. \code{fastqInput2},
 the path(s) of the mate 2 fastq file(s), is required, when \code{interleave=FALSE}.
@@ -20,6 +23,12 @@ the path(s) of the mate 2 fastq file(s), is required, when \code{interleave=FALS
 the path(s) of the mate 1 fastq file(s), is required. \code{fastqInput2},
 the path(s) of the mate 2 fastq file(s), is required, when \code{interleave=FALSE}.
 \code{adapter1} and \code{adapter2} are optional.}
+
+\item{refdir}{\code{Character} scalar. The path for reference data being installed to and storage.}
+
+\item{tmpdir}{\code{Character} scalar. The temporary file storage path.}
+
+\item{threads}{\code{Integer} scalar. The max threads allowed to be created.}
 
 \item{interleave}{\code{Logical} scalar. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
@@ -32,19 +41,7 @@ interleaved paired-end sequencing data.}
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
-\item{...}{Configure "refdir", "genome", "threads", "tmpdir" for this function.
-They will overwrite global configuration.
-If you need to set globally, see \link{configureValue}.
-\describe{
-  \item{refdir}{\code{Character} scalar, the path for reference data being installed to and storage.}
-  \item{genome}{\code{Character} scalar, the genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
-  \item{tmpdir}{\code{Character} scalar, the temporary file storage path}
-  \item{threads}{\code{Integer} scalar, the max threads allowed to be created}
-}
-Parameter "chr", which chromatin the program will processing.
-\describe{
-   \item{chr}{\code{Character} scalar, It must be identical with the filename of cut site information files or a subset. Default:c(1:22, "X", "Y").}
-}}
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 \code{List} scalar. It is a list that save the result of the pipeline.
