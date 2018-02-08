@@ -350,7 +350,8 @@ setMethod(f = "GetOrgDb",
                   BiocInstaller::biocLite(.Object@curOrgDb)
                   library(.Object@curOrgDb,character.only = TRUE)
               })
-              return(get0(.Object@curOrgDb))
+              #return(get0(.Object@curOrgDb))
+              return(.Object@curOrgDb)
           })
 
 
