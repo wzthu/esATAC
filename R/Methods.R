@@ -672,11 +672,11 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
         if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
             file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_report, overwrite = TRUE)
             file.copy(getReportVal(atacQC,"pdf"),esATAC_report, overwrite = TRUE)
-            file.copy(getReportVal(goAna,"goOutput"),esATAC_report, overwrite = TRUE)
             dir.create(file.path(esATAC_result,"peak"))
             file.copy(getParam(peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
             file.copy(getReportVal(Peakanno,"annoOutput"),esATAC_result, overwrite = TRUE)
             if(!basicAnalysis){
+                file.copy(getReportVal(goAna,"goOutput"),esATAC_report, overwrite = TRUE)
                 file.copy(from = getReportVal(atacProcs$footprint,"pdf.dir"),
                           to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             }
