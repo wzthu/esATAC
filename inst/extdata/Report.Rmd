@@ -40,7 +40,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
-ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")+ labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
@@ -99,7 +99,7 @@ knitr::kable(x = filtstat)
 library(ggplot2)
 load("Report.Rdata")
 readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
-ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 
 library(stats)
 strength<-Mod(fft(readsCounts$counts))/length(readsCounts$counts)
@@ -111,9 +111,9 @@ rs2<-as.data.frame(cbind(periodx[periodx<400&periodx>2],strength[periodx<400&per
 rs<-rbind(rs1,rs2)
 colnames(rs)<-c("period","strength","check")
 
-g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")
+g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength") + labs(title = "the Pitch of the DNA Helix") + theme(plot.title = element_text(hjust = 0.5))
 
-g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
+g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength") + labs(title = "Nucleosome") + theme(plot.title = element_text(hjust = 0.5))
 library(gridExtra)
 grid.arrange(g1, g2, ncol=2)
 ```
@@ -125,9 +125,9 @@ The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enri
 library(ggplot2)
 load("Report.Rdata")
 df<-getReportVal(atacProcs$tssqc100,"tss")
-g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Nucleosome Free Reads") + theme(plot.title = element_text(hjust = 0.5))
 df<-getReportVal(atacProcs$tssqc180_247,"tss")
-g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Monnucleosome Span Reads") + theme(plot.title = element_text(hjust = 0.5))
 grid.arrange(g1, g2, ncol=2)
 ```
 
