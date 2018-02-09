@@ -1453,6 +1453,20 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
             
 
             if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
+                
+                #generate html index file
+                replicateNum <- paste0("replicate ",1:length(fastqInput1))
+                urllink <- paste0("<a href='./replicate",1:length(fastqInput1),"/Report.html'>","replicate ",1:length(fastqInput1)," report link</a>")
+                singleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
+                
+                mergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
+                save(singleRep,mergeConRep,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
+                rmdidxfile<-system.file(package="esATAC", "extdata", "Rep_Report_Index.Rmd")
+                file.copy(rmdidxfile,.obtainConfigure("tmpdir"))
+                render(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.Rmd"))
+                file.copy(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.html"),file.path(esATAC_report,"Report.html"))
+                
+                ## copy other files
                 esATAC_report <- file.path(esATAC_report,"rep_concord_merge")
                 esATAC_result <- file.path(esATAC_result,"rep_concord_merge")
                 dir.create(esATAC_report)
@@ -1466,17 +1480,7 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
                           to = esATAC_result, overwrite = TRUE, recursive = TRUE)
                 
                 
-                #generate html index file
-                replicateNum <- paste0("replicate ",1:length(fastqInput1))
-                urllink <- paste0("<a href='./replicate",1:length(fastqInput1),"/Report.html'>","replicate ",1:length(fastqInput1)," report link</a>")
-                singleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
                 
-                mergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
-                save(singleRep,mergeConRep,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
-                rmdidxfile<-system.file(package="esATAC", "extdata", "Rep_Report_Index.Rmd")
-                file.copy(rmdidxfile,.obtainConfigure("tmpdir"))
-                render(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.Rmd"))
-                file.copy(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.html"),file.path(esATAC_report,"Report.html"))
                 
                 message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Report.html")))
             }else{
@@ -1896,6 +1900,26 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
         message("Generate report done")
         if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
+            #generate report index
+            replicateNum <- paste0("replicate ",1:length(caseFastqInput1))
+            urllink <- paste0("<a href='./case/replicate",1:length(caseFastqInput1),"/Report.html'>","replicate ",1:length(caseFastqInput1)," report link</a>")
+            caseSingleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
+            caseMergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./case/rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
+            
+            replicateNum <- paste0("replicate ",1:length(ctrlFastqInput1))
+            urllink <- paste0("<a href='./control/replicate",1:length(ctrlFastqInput1),"/Report.html'>","replicate ",1:length(ctrlFastqInput1)," report link</a>")
+            ctrlSingleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
+            ctrlMergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./control/rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
+            
+            case_control <- data.frame(Report_Name="case and control",link="<a href='./case_control/Rep_Report2.html'>case and control analysis report link</a>")
+            save(caseSingleRep,caseMergeConRep,ctrlSingleRep,ctrlMergeConRep,case_control,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
+            
+            rmdidxfile<-system.file(package="esATAC", "extdata", "Report_Index.Rmd")
+            file.copy(rmdidxfile,.obtainConfigure("tmpdir"))
+            render(file.path(.obtainConfigure("tmpdir"),"Report_Index.Rmd"))
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report_Index.html"),file.path(esATAC_report,"Report.html"))
+            
+            # copy other files
             esATAC_report <- file.path(esATAC_report,"case_control")
             esATAC_result <- file.path(esATAC_result,"case_control")
             dir.create(esATAC_report)
@@ -1938,24 +1962,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             motif_enrich.ctrl_file <- paste(esATAC_result, "/motif_enrichment_Control.txt", sep = "")
             write.table(x = motif_enrich.ctrl, file = motif_enrich.ctrl_file, sep = "\t",
                         row.names = TRUE, col.names = TRUE)
-            #generate report index
-            replicateNum <- paste0("replicate ",1:length(caseFastqInput1))
-            urllink <- paste0("<a href='./case/replicate",1:length(caseFastqInput1),"/Report.html'>","replicate ",1:length(caseFastqInput1)," report link</a>")
-            caseSingleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
-            caseMergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./case/rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
             
-            replicateNum <- paste0("replicate ",1:length(ctrlFastqInput1))
-            urllink <- paste0("<a href='./control/replicate",1:length(ctrlFastqInput1),"/Report.html'>","replicate ",1:length(ctrlFastqInput1)," report link</a>")
-            ctrlSingleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
-            ctrlMergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./control/rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
-            
-            case_control <- data.frame(Report_Name="case and control",link="<a href='./case_control/Rep_Report2.html'>case and control analysis report link</a>")
-            save(caseSingleRep,caseMergeConRep,ctrlSingleRep,ctrlMergeConRep,case_control,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
-            
-            rmdidxfile<-system.file(package="esATAC", "extdata", "Report_Index.Rmd")
-            file.copy(rmdidxfile,.obtainConfigure("tmpdir"))
-            render(file.path(.obtainConfigure("tmpdir"),"Report_Index.Rmd"))
-            file.copy(file.path(.obtainConfigure("tmpdir"),"Report_Index.html"),file.path(esATAC_report,"Report.html"))
             
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Rep_Report.html")))
         }else{
