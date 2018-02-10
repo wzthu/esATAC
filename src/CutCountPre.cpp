@@ -38,7 +38,7 @@ Rcpp::StringVector CutCountPre::EXCutCount()
   // initialization
   if(!readsifile.getline(line, sizeof(line)))
   {
-    cout << "Warning: the input file is empty!" <<endl;
+    cout << "WARNING: the input file is empty!" <<endl;
     return file_name;
   }
   string chr(strtok(line, sep));
