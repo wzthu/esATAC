@@ -1389,7 +1389,7 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
     message("the correlation matrix:")
     print(correlation)
     
-    pdf(filename="corrplot.pdf")
+    pdf(file="corrplot.pdf")
     corrplot(correlation, method = "color", addCoef.col = "grey")
     dev.off()
     
