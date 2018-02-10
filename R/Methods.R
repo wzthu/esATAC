@@ -1385,7 +1385,7 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
         binsList<-cbind(binsList, getBinsReadsCount(bedInput = getParam(conclusions[[n]][["atacProcs"]][["sam2Bed"]],"bedOutput"),
                                                     bsgenome = .obtainConfigure("bsgenome"),binsize = 1000))
     }
-    colnames(binsList) <- paste0("replicate_",1:length(fastqInput1))
+    colnames(binsList) <- paste0("replicate",1:length(fastqInput1))
     correlation <- cor(binsList)
     message("the correlation matrix:")
     print(correlation)
