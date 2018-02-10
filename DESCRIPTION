@@ -57,14 +57,14 @@ Imports:
     stats, 
     utils,
     parallel,
+    corrplot,    
     BiocInstaller
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     org.Hs.eg.db,
     DiagrammeRsvg,
-    testthat, 
-    corrplot,
+    testthat,
     webshot
 LinkingTo: Rcpp
 SystemRequirements: C++11
