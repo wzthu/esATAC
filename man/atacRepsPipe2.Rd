@@ -8,7 +8,8 @@ atacRepsPipe2(genome, caseFastqInput1, caseFastqInput2, ctrlFastqInput1,
   ctrlFastqInput2, caseAdapter1 = NULL, caseAdapter2 = NULL,
   ctrlAdapter1 = NULL, ctrlAdapter2 = NULL, refdir = NULL,
   tmpdir = NULL, threads = 2, interleave = FALSE, createReport = TRUE,
-  motifPWM = NULL, chr = c(1:22, "X", "Y"), ...)
+  motifPWM = NULL, chr = c(1:22, "X", "Y"), min.score = "90\%",
+  use.SavedPWM = NULL, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -73,6 +74,14 @@ interleaved paired-end sequencing data.}
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
+
+\item{min.score}{The minimum score for counting a match. Can be given as a
+character string containing a percentage (default: "90%") of the highest
+possible score or as a single number.}
+
+\item{use.SavedPWM}{use local motif position information. This data is
+download or generate by users. it must be a rds file and the information
+saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.}
 
 \item{...}{Additional arguments, currently unused.}
 }
