@@ -49,7 +49,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 ```{r eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(caselist$atacProcs$fragLenDistr,"readsCounts")
-ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2") + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 * Control
@@ -57,7 +57,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 ```{r eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(ctrllist$atacProcs$fragLenDistr,"readsCounts")
-ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
+ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2") + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 ```
 
 
@@ -163,15 +163,15 @@ getFsdG1G2 <- function(readsCounts){
     rs<-rbind(rs1,rs2)
     colnames(rs)<-c("period","strength","check")
     
-    g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")
+    g1<-ggplot(rs[rs["check"]==0,]) + geom_vline(xintercept = 10.4, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), label = "10.4bp") +xlab("period") + ylab("strength")+ labs(title = "the Pitch of the DNA Helix") + theme(plot.title = element_text(hjust = 0.5))
     
-    g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")
+    g2<-ggplot(rs[rs["check"]==1,]) + geom_vline(xintercept = 186, linetype=2)+ geom_line(aes(x=period,y=strength),color="Red")+ theme_bw() + theme(panel.grid =element_blank()) + annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), label = "186bp") +xlab("period") + ylab("strength")+ labs(title = "Nucleosome") + theme(plot.title = element_text(hjust = 0.5))
     return(list(g1,g2))
 }
 readsCounts1<-getReportVal(caselist$atacProcs$fragLenDistr,"readsCounts")
 readsCounts2<-getReportVal(ctrllist$atacProcs$fragLenDistr,"readsCounts")
-ggplot(readsCounts1[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
-ggplot(readsCounts2[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
+ggplot(readsCounts1[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
+ggplot(readsCounts2[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 g112<-getFsdG1G2(readsCounts1)
 g212<-getFsdG1G2(readsCounts2)
 
@@ -188,14 +188,14 @@ library(ggplot2)
 library(gridExtra)
 load("Report2.Rdata")
 df<-getReportVal(caselist$atacProcs$tssqc100,"tss")
-g11<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+g11<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Nucleosome Free Reads") + theme(plot.title = element_text(hjust = 0.5))
 df<-getReportVal(caselist$atacProcs$tssqc180_247,"tss")
-g12<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+g12<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Monnucleosome Span Reads") + theme(plot.title = element_text(hjust = 0.5))
 
 df<-getReportVal(caselist$atacProcs$tssqc100,"tss")
-g21<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+g21<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Nucleosome Free Reads") + theme(plot.title = element_text(hjust = 0.5))
 df<-getReportVal(caselist$atacProcs$tssqc180_247,"tss")
-g22<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank())
+g22<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Monnucleosome Span Reads") + theme(plot.title = element_text(hjust = 0.5))
 grid.arrange(g11, g21, ncol=2)
 grid.arrange(g12, g22, ncol=2)
 ```
