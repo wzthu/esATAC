@@ -1170,6 +1170,7 @@ checkFilePathExist <- function(afilePaths){
 #' }
 #' @importFrom VennDiagram venn.diagram
 #' @importFrom corrplot corrplot
+#' @importFrom grDevices colorRampPalette
 #' @export
 #'
 atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpdir=NULL, threads=2, adapter1 = NULL, adapter2 = NULL,
@@ -1389,8 +1390,10 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
     message("the correlation matrix:")
     print(correlation)
     
+    
+    coltable <- colorRampPalette(c("red", "white", "blue")) 
     pdf(file=file.path(.obtainConfigure("tmpdir"),"corrplot.pdf"))
-    corrplot(correlation, method = "color", addCoef.col = "grey")
+    corrplot(correlation, method = "color", type = "lower",addCoef.col = "grey", cl.lim = c(0, 1),col = coltable(100))
     dev.off()
     
     mergedReadsBed <- file.path(.obtainConfigure("tmpdir"),"mergedReads.bed")

@@ -40,7 +40,8 @@ if(length(fastqInput1)>5){
 
 ```{r echo=FALSE,message=FALSE}
 library(corrplot)
-corrplot(correlation, method = "color", addCoef.col = "grey")
+coltable <- colorRampPalette(c("red", "white", "blue")) 
+corrplot(correlation, method = "color", type = "lower",addCoef.col = "grey", cl.lim = c(0, 1),col = coltable(100))
 ```
 
 # Reads Alignment Statistics
