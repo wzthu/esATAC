@@ -1393,7 +1393,7 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
     
     coltable <- colorRampPalette(c("red", "white", "blue")) 
     pdf(file=file.path(.obtainConfigure("tmpdir"),"corrplot.pdf"))
-    corrplot(correlation, method = "color", type = "lower",addCoef.col = "grey", cl.lim = c(0, 1),col = coltable(100))
+    corrplot(correlation, method = "color", type = "upper",addCoef.col = "grey", cl.lim = c(0, 1),col = coltable(100))
     dev.off()
     
     mergedReadsBed <- file.path(.obtainConfigure("tmpdir"),"mergedReads.bed")
