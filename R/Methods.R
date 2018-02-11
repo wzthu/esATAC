@@ -1502,9 +1502,9 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
                 mergeConRep <- data.frame(Report_Name="concordance and merge",link="<a href='./rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
                 save(singleRep,mergeConRep,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
                 rmdidxfile<-system.file(package="esATAC", "extdata", "Rep_Report_Index.Rmd")
-                file.copy(rmdidxfile,.obtainConfigure("tmpdir"))
+                file.copy(rmdidxfile,.obtainConfigure("tmpdir"), overwrite = TRUE)
                 render(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.Rmd"))
-                file.copy(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.html"),file.path(esATAC_report,"Report.html"))
+                file.copy(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.html"),file.path(esATAC_report,"Report.html"), overwrite = TRUE)
                 
                 ## copy other files
                 esATAC_report <- file.path(esATAC_report,"rep_concord_merge")
@@ -2003,9 +2003,9 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             save(caseSingleRep,caseMergeConRep,ctrlSingleRep,ctrlMergeConRep,case_control,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
             
             rmdidxfile<-system.file(package="esATAC", "extdata", "Report_Index.Rmd")
-            file.copy(rmdidxfile,.obtainConfigure("tmpdir"))
+            file.copy(rmdidxfile,.obtainConfigure("tmpdir"), overwrite = TRUE)
             render(file.path(.obtainConfigure("tmpdir"),"Report_Index.Rmd"))
-            file.copy(file.path(.obtainConfigure("tmpdir"),"Report_Index.html"),file.path(esATAC_report,"Report.html"))
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report_Index.html"),file.path(esATAC_report,"Report.html"), overwrite = TRUE)
             
             # copy other files
             esATAC_report <- file.path(esATAC_report,"case_control")
