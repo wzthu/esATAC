@@ -522,6 +522,7 @@ getMotifPWM <- function(motif.file = NULL, is.PWM = FALSE, JASPARdb = FALSE,
             return(PWMList)
         }
     }
+    return(NULL)
 
 }
 
