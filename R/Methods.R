@@ -2013,14 +2013,14 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             dir.create(esATAC_report)
             dir.create(esATAC_result)
             file.copy(file.path(.obtainConfigure("tmpdir"),"Rep_Report2.html"),esATAC_report, overwrite = TRUE)
-            file.copy(getReportVal(caselist$atacProcs$goAna,"goOutput"),esATAC_report, overwrite = TRUE)
-            file.copy(getReportVal(ctrllist$atacProcs$goAna,"goOutput"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(goAna.case,"goOutput"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(goAna.ctrl,"goOutput"),esATAC_report, overwrite = TRUE)
             dir.create(file.path(esATAC_result,"peak"))
-            file.copy(getParam(caselist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
-            file.copy(getParam(ctrllist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
-            
-            file.copy(getReportVal(caselist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
-            file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
+            #file.copy(getParam(caselist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
+            #file.copy(getParam(ctrllist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
+            #file.copy(getParam(peakCom,"bedOutput")[1],file.path(esATAC_result,"peak"), overwrite = TRUE)peakCom
+            #file.copy(getReportVal(caselist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
+            #file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(comp_result$Peakanno.case,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(comp_result$Peakanno.ctrl,"annoOutput"), esATAC_result, overwrite = TRUE)
             
