@@ -305,7 +305,7 @@ The program will automatically check the steps that have been finished and conti
 
 We collect some representative ATAC-seq datasets and process them with matched pipelines.
 
-The R scripts and reports are shown at [https://github.com/wzthu/wzthu.github.io/tree/master/esATAC/example](https://github.com/wzthu/wzthu.github.io/tree/master/esATAC/example)
+The R scripts and reports are shown at [https://wzthu.github.io/esATAC/example/](https://wzthu.github.io/esATAC/example/)
 
 
 
