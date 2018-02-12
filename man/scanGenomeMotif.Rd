@@ -21,6 +21,9 @@ possible score or as a single number.}
 
 \item{output}{Where to save the result, please with suffix ".rds".}
 }
+\value{
+the result of saveRDS
+}
 \description{
 Scan motif position from the given genome.
 }
