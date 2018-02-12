@@ -130,7 +130,9 @@ setMethod(
 #' fq2 <- as.vector(bunzip2(filename = fra_path,
 #' destname = file.path(getwd(), "chr20_2.fq"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' \dontrun{
 #' qcreport(input_file = c(fq1, fq2))
+#' }
 #'
 #'
 #' @seealso

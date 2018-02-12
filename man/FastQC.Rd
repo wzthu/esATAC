@@ -52,7 +52,9 @@ fra_path <- system.file("extdata", "chr20_2.2.fq.bz2", package="esATAC")
 fq2 <- as.vector(bunzip2(filename = fra_path,
 destname = file.path(getwd(), "chr20_2.fq"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+\dontrun{
 qcreport(input_file = c(fq1, fq2))
+}
 
 
 }
