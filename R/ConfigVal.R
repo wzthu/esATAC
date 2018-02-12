@@ -2,6 +2,7 @@
 #' @importFrom Biostrings masks DNAStringSet injectHardMask
 #' @importFrom BSgenome available.genomes
 #' @importFrom BSgenome installed.genomes
+#' @importFrom BiocInstaller biocLite
 setClass(Class = ".ConfigClass",
          slots = list(
              configList = "list",
