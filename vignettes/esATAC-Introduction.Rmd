@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 To install the latest version of esATAC, you will need to be using the
 latest version of R. esATAC is part of Bioconductor project 
-starting from Bioc 3.6 built on R 3.4.2. Please check your current Bioconductor version and R version first. Similar to other bioconductor package,
+starting from Bioc 3.6 built on R 3.4. Please check your current Bioconductor version and R version first. Similar to other bioconductor package,
 you can download install esATAC and all its dependencies software like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
@@ -258,6 +258,60 @@ conclusion <-
 
 
 ```
+
+
+## How to use Preset motif data for esATAC
+
+Motif scan is a time-consuming step in ATAC-seq data analysis. We provide functions and data for accelerate this step. We provide Vertebrata motifs from [JASPAR database](http://www.bioconductor.org/packages/release/data/experiment/html/JASPAR2016.html) and use "scanGenomeMotif" function to scan motif information in the genome. Users can use these data to plot footprint. [Click here for download.](https://github.com/A1dnoah/esATAC_preset_motif_data)
+
+The following is the tutorial about how to use esATAC to build preset motif information data and use this data to run ATAC-seq data analysis pipeline.
+
+### How to generate motif data of hg19
+
+```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
+# get motif PWM from JASPAR2016 and change motif ID to motif name
+library(JASPAR2016)
+library(TFBSTools)
+library(esATAC)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+opts <- list()
+opts[["tax_group"]] <- "vertebrates"  # using vertebrates
+pwm <- getMatrixSet(JASPAR2016, opts)
+pwm <- TFBSTools::toPWM(pwm)  # convert PFM to PWM
+names(pwm) <- TFBSTools::name(pwm)
+pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
+names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)  # remove special characters
+scanGenomeMotif(motifPWM = pwm, refgenome = BSgenome.Hsapiens.UCSC.hg19,
+                min.score = "90%", n.core = 12, output = "JASPAR_verteb_hg19.rds")
+```
+
+Of course, if you want to use another PWM and genome, just change the parameters in "scanGenomeMotif". For more information, please see [*esATAC Reference Manual*](http://www.bioconductor.org/packages/release/bioc/manuals/esATAC/man/esATAC.pdf). 
+
+### How to use this data when analysis ATAC-seq data
+
+```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
+options(java.parameters = "-Xmx8192m")  # set Java parameter
+library(esATAC)
+
+# ATAC-seq data, case&control analysis
+case = list(fastqInput1="ntest1_1.fastq.bz2",fastqInput2="ntest1_2.fastq.bz2",
+            adapter1 = NULL, adapter2 = NULL)
+control =list(fastqInput1="ntest2_1.fastq.bz2",fastqInput2="ntest2_2.fastq.bz2",
+              adapter1 = NULL, adapter2 = NULL)
+              
+results <- atacPipe2(case = case,
+                     control = control,
+                     refdir = "path_to_bowtie2_index",
+                     genome = "hg19",
+                     tmpdir = "path_to_save_temp_data",
+                     threads = 4,
+                     chr = c(1:22, "X", "Y"), use.SavedPWM = "JASPAR_verteb_hg19.rds")
+```
+
+
+
+
 
 ## Use "Conclusion" for Further Analysis
 
