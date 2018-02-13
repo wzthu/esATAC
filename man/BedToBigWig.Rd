@@ -62,12 +62,14 @@ options(atacConf=setConfigure("tmpdir",td))
 
 bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
+\dontrun{
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 
 library(BSgenome.Hsapiens.UCSC.hg19)
 bedToBigWig(bedfile, BSgenome.Hsapiens.UCSC.hg19)
 
 dir(td)
+}
 }
 \seealso{
 \code{\link{atacSamToBed}}
