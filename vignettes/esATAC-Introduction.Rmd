@@ -38,6 +38,21 @@ biocLite("esATAC")
 
 **NOTE: We recommend to use this package in RStudio. Or you have to install [pandoc](https://pandoc.org/) yourself if you use R terminal**
 
+Acquiring more installation detail information for Linux, Windows and macOS,  you can visit [esATAC Installation Tutorial](https://github.com/wzthu/esATAC/wiki/esATAC-Installation-Tutorial).
+
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index, which may take several hours with single thread. If you want to download or use your own bowtie2 index instead, please see [section 2.2](#bt2)**
+
+**NOTE: Annotation Packages for specific genomes are shown below:**
+
+| genome   | BSgenome                          | TxDb                                  | OrgDb         |
+|----------|-----------------------------------|---------------------------------------|---------------|
+| hg19     | BSgenome.Hsapiens.UCSC.hg19       | TxDb.Hsapiens.UCSC.hg19.knownGene     | org.Hs.eg.db  |
+| hg38     | BSgenome.Hsapiens.UCSC.hg38       | TxDb.Hsapiens.UCSC.hg38.knownGene     | org.Hs.eg.db  |
+| mm9      | BSgenome.Mmusculus.UCSC.mm9       | TxDb.Mmusculus.UCSC.mm9.knownGene     | org.Mm.eg.db  |
+| mm10     | BSgenome.Mmusculus.UCSC.mm10      | TxDb.Mmusculus.UCSC.mm10.knownGene    | org.Mm.eg.db  |
+
+They will not be downloaded and installed during executing `biocLite("esATAC")` because these package file are very big. They will be downloaded and installed according to the `genome` parameter when calling the preset pipeline for the first time.
+
 ### Loading
 
 Just like other R packages, 
@@ -283,7 +298,19 @@ Slot `atacProcs` is also an list. Similarly, use `$` to access them: ``conclusio
 ## Resume Your Analysis
 
 To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
-The program will automatically check the steps that have been finished and continue the anlalysis.
+The program will automatically check the steps that have been finished and continue the analysis.
+
+
+## Gallery for Analysis Result of Real ATAC-seq Dataset
+
+We collect some representative ATAC-seq datasets and process them with matched pipelines.
+
+The R scripts and reports are shown at [https://wzthu.github.io/esATAC/example/](https://wzthu.github.io/esATAC/example/)
+
+
+
+
+
 
 
 # Introduction

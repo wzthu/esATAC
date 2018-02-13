@@ -1,7 +1,7 @@
 Package: esATAC
 Type: Package
 Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
-Version: 1.0.15
+Version: 1.0.16
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
@@ -16,7 +16,7 @@ Description: This package provides a framework and complete preset pipeline for
     quality control and preliminary statistical results, or customize workflow 
     starting from any intermediate stages with esATAC functions easily and flexibly. 
 Depends:
-    R (>= 3.4.1),
+    R (>= 3.4),
     Rsamtools,
     GenomicRanges,
     ShortRead
@@ -57,14 +57,14 @@ Imports:
     stats, 
     utils,
     parallel,
+    corrplot,    
     BiocInstaller
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     org.Hs.eg.db,
     DiagrammeRsvg,
-    testthat, 
-    corrplot,
+    testthat,
     webshot
 LinkingTo: Rcpp
 SystemRequirements: C++11

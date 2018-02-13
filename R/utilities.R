@@ -522,6 +522,7 @@ getMotifPWM <- function(motif.file = NULL, is.PWM = FALSE, JASPARdb = FALSE,
             return(PWMList)
         }
     }
+    return(NULL)
 
 }
 
@@ -544,6 +545,7 @@ getMotifPWM <- function(motif.file = NULL, is.PWM = FALSE, JASPARdb = FALSE,
 #' @param n.core How many core to run this function.
 #' @param output Where to save the result, please with suffix ".rds".
 #' @details Scan motif position from the given genome.
+#' @return the result of saveRDS 
 #' @author Wei Zhang
 #' @importFrom parallel makeCluster
 #' @importFrom parallel parLapply

@@ -16,19 +16,19 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-```{r}
+```{r echo=FALSE}
 load("ReportIdx.Rdata")
 ```
 # Single Replicates Analysis
 
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(singleRep)
 ```
 
 # Concordance and Merge Analysis
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(mergeConRep)
 ```
 

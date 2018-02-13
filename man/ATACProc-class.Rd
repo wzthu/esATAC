@@ -113,7 +113,9 @@ rather than use ATACProc S4 class to generate object yourself.
 }
 \examples{
 
-\dontrun{
+
+
+
 library(magrittr)
 td <- tempdir()
 options(atacConf=setConfigure("tmpdir",td))
@@ -145,7 +147,7 @@ getReportVal(atacproc,ritems[1])
 clearProcCache(atacproc)
 
 process(atacproc)
-}
+
 }
 \seealso{
 \code{\link{atacPipe}}

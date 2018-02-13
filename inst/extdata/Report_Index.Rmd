@@ -27,13 +27,13 @@ load("ReportIdx.Rdata")
 ## Single Replicates Analysis
 
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(caseSingleRep)
 ```
 
 ## Concordance and Merge Analysis
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(caseMergeConRep)
 ```
 
@@ -43,18 +43,18 @@ knitr::kable(caseMergeConRep)
 ## Single Replicates Analysis
 
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(ctrlSingleRep)
 ```
 
 ## Concordance and Merge Analysis
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(ctrlMergeConRep)
 ```
 
 # Case and Control Analysis
 
-```{r}
+```{r echo=FALSE}
 knitr::kable(case_control)
 ```
