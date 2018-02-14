@@ -59,7 +59,9 @@ go_data$pvalue <- signif(go_data$pvalue, digits = 3)
 go_data$pvalue <- as.character(go_data$pvalue)
 go_data$qvalue <- signif(go_data$qvalue, digits = 3)
 go_data$qvalue <- as.character(go_data$qvalue)
-if(nrow(go_data) < 15){
+if(nrow(go_data)==0){
+    print("No GO terms found: empty table")
+}else if(nrow(go_data) < 15){
     knitr::kable(go_data, align = "l")
 }else{
     knitr::kable(go_data[1:15, ], align = "l")
@@ -78,7 +80,9 @@ go_data$pvalue <- signif(go_data$pvalue, digits = 3)
 go_data$pvalue <- as.character(go_data$pvalue)
 go_data$qvalue <- signif(go_data$qvalue, digits = 3)
 go_data$qvalue <- as.character(go_data$qvalue)
-if(nrow(go_data) < 15){
+if(nrow(go_data)==0){
+    print("No GO terms found: empty table")
+}else if(nrow(go_data) < 15){
     knitr::kable(go_data, align = "l")
 }else{
     knitr::kable(go_data[1:15, ], align = "l")
@@ -121,7 +125,9 @@ rownames(motif_enrich.ctrl) <- seq(nrow(motif_enrich.ctrl))
 motif_enrich.ctrl$p_value <- signif(motif_enrich.ctrl$p_value, digits = 3)
 motif_enrich.ctrl$p_value[motif_enrich.ctrl$p_value < 1e-300] <- 0
 motif_enrich.ctrl$p_value <- as.character(motif_enrich.ctrl$p_value)
-if(nrow(motif_enrich.ctrl) < 15){
+if(nrow(motif_enrich.ctrl)==0){
+    print("No motif found: empty table")
+}else if(nrow(motif_enrich.ctrl) < 15){
     knitr::kable(motif_enrich.ctrl, align = "l")
 }else{
     knitr::kable(motif_enrich.ctrl[1:15, ], align = "l")
