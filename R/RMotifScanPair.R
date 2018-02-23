@@ -227,7 +227,13 @@ setMethod(
             WriteMotifOrder <- 1
             for(i in seq(thisGroup.motifnum)){
                 # processing motif scan
+                num_flag <- length(sitesetList[[i]])
                 motif_name <- names(sitesetList[i])
+                if(num_flag == 0){
+                    messg <- paste("No motif occurrence found! Factor: ", motif_name, ".", sep = "")
+                    print(messg)
+                    next
+                }
                 motif_name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = motif_name, perl = TRUE)
                 motif_len <- GenomicRanges::end(sitesetList[[i]][1]) - GenomicRanges::start(sitesetList[[i]][1]) + 1
                 # for case
@@ -401,7 +407,7 @@ setMethod(
 #'
 #' @examples
 #'
-#' 
+#'
 #' library(R.utils)
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")

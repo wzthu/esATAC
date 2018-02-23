@@ -161,8 +161,15 @@ setMethod(
             sitesetList <- readRDS(file = .Object@paramlist[["use.SavedPWM"]])
             print("Now, processing motif sites......")
             motif_num <- length(sitesetList)
+            WriteMotifOrder <- 1
             for(i in seq(motif_num)){
+                num_flag <- length(sitesetList[[i]])
                 motif_name <- names(sitesetList[i])
+                if(num_flag == 0){
+                    messg <- paste("No motif occurrence found! Factor: ", motif_name, ".", sep = "")
+                    print(messg)
+                    next
+                }
                 motif_name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = motif_name, perl = TRUE)
                 output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
                                                          ranges = peak,
@@ -174,11 +181,12 @@ setMethod(
                                      "/", .Object@paramlist[["prefix"]], "_",
                                      motif_name, sep = "")
                 motif_len <- GenomicRanges::end(sitesetList[[i]][1]) - GenomicRanges::start(sitesetList[[i]][1]) + 1
-                save_info[i, 1] <- motif_name
-                save_info[i, 2] <- R.utils::getAbsolutePath(output_path)
-                save_info[i, 3] <- motif_len
+                save_info[WriteMotifOrder, 1] <- motif_name
+                save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
+                save_info[WriteMotifOrder, 3] <- motif_len
                 write.table(x = output_data, file = output_path, row.names = FALSE,
                             col.names = FALSE, quote = FALSE)
+                WriteMotifOrder <- WriteMotifOrder + 1
             }
             saveRDS(object = save_info, file = .Object@paramlist[["rdsOutput"]])
         }
