@@ -162,7 +162,13 @@ setMethod(
             print("Now, processing motif sites......")
             motif_num <- length(sitesetList)
             for(i in seq(motif_num)){
+                num_flag <- length(sitesetList[[i]])
                 motif_name <- names(sitesetList[i])
+                if(num_flag == 0){
+                    messg <- paste("No motif occurrence found! Factor: ", motif_name, ".", sep = "")
+                    print(messg)
+                    next
+                }
                 motif_name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = motif_name, perl = TRUE)
                 output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
                                                          ranges = peak,
