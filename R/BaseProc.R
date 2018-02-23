@@ -55,7 +55,7 @@
 #'
 #' subclassname<-getProcName(atacproc)
 #'
-#' printMap(subclassname)
+# printMap(subclassname)
 #'
 #' (pitems<-getParamItems(atacproc))
 #' getParam(atacproc,pitems[1])
