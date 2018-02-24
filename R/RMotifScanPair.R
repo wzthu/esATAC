@@ -40,7 +40,9 @@ setMethod(
         }
 
         if(is.null(scanO.dir)){
-            pre_prefix <- paste(.Object@paramlist[["prefix"]], sep = "", collapse = "_")
+            tmp_pre1 <- gsub("\\..*","", base::basename(.Object@paramlist[["peak1"]]))
+            tmp_pre2 <- gsub("\\..*","", base::basename(.Object@paramlist[["peak2"]]))
+            pre_prefix <- paste(tmp_pre1, "_and_", tmp_pre2, sep = "")
             .Object@paramlist[["scanO.dir"]] <- paste(dirname(.Object@paramlist[["peak1"]]),
                                                       "/",
                                                       pre_prefix,
@@ -222,7 +224,10 @@ setMethod(
             saveRDS(object = ctrl_save_info, file = .Object@paramlist[["rdsOutput.peak2"]])
             saveRDS(object = backg_save_info, file = .Object@paramlist[["rdsOutput.background"]])
         }else{
+
+            print("Now, loading motif position information......")
             sitesetList <- readRDS(file = .Object@paramlist[["use.SavedPWM"]])
+            print("Now, processing motif sites......")
             thisGroup.motifnum <- length(sitesetList)
             WriteMotifOrder <- 1
             for(i in seq(thisGroup.motifnum)){
@@ -246,6 +251,7 @@ setMethod(
                 output_path <- paste(.Object@paramlist[["scanO.dir"]],
                                      "/", .Object@paramlist[["prefix"]][1], "_",
                                      motif_name, sep = "")
+                # print(output_path)
                 case_save_info[WriteMotifOrder, 1] <- motif_name
                 case_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
                 case_save_info[WriteMotifOrder, 3] <- motif_len
@@ -261,6 +267,7 @@ setMethod(
                 output_path <- paste(.Object@paramlist[["scanO.dir"]],
                                      "/", .Object@paramlist[["prefix"]][2], "_",
                                      motif_name, sep = "")
+                # print(output_path)
                 ctrl_save_info[WriteMotifOrder, 1] <- motif_name
                 ctrl_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
                 ctrl_save_info[WriteMotifOrder, 3] <- motif_len
@@ -276,12 +283,13 @@ setMethod(
                 output_path <- paste(.Object@paramlist[["scanO.dir"]],
                                      "/", .Object@paramlist[["prefix"]][3], "_",
                                      motif_name, sep = "")
+                # print(output_path)
                 backg_save_info[WriteMotifOrder, 1] <- motif_name
                 backg_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
                 backg_save_info[WriteMotifOrder, 3] <- motif_len
+
                 write.table(x = output_data, file = output_path, row.names = FALSE,
                             col.names = FALSE, quote = FALSE)
-
                 # processing motif enrichment
                 case_overlap <- GenomicRanges::findOverlaps(query = case_mid.peak,
                                                             subject = sitesetList[[i]],
