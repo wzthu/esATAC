@@ -51,45 +51,53 @@ printMap(atacProc = NULL, preProc = FALSE, nextProc = TRUE,
 \S4method{getReportItems}{ATACProc}(.Object, ...)
 }
 \arguments{
+\item{atacProc}{Character scalar. The ATACProc subclass name 
+for \code{printMap}.(Default: NULL). For \code{atacPrintMap}, see \code{.Object}}
+
 \item{preProc}{\code{Logitcal} scalar.
-show the available upstream processes if TRUE}
+show the available upstream processes if TRUE.(Default: FALSE)}
 
 \item{nextProc}{\code{Logitcal} scalar.
-show the available downstream processes if TRUE}
+show the available downstream processes if TRUE. (Default: TRUE)}
 
 \item{curProc}{\code{Logitcal} scalar.
-show the current process of parameter \code{.Object} if TRUE}
+show the current process of parameter \code{.Object} if TRUE. (Default: TRUE)}
 
 \item{display}{\code{Logitcal} scalar.
-Save to pdf file if FALSE.}
+Save to pdf file if FALSE. (Default: TRUE)}
 
-\item{.Object, atacProc}{ATACProc object return by functions or Character scalar.}
+\item{.Object}{ATACProc object scalar. 
+ATACProc object return by process functions.}
 
-\item{...}{ignored
-The parameters name}
+\item{...}{Additional arguments, currently unused.}
 
-\item{item}{\code{Characters} scalar}
+\item{item}{\code{Characters} scalar. 
+The items in parameter list or report list.}
 }
 \value{
-The value return by object methods.
+the function and result of functions:
 
-the function and result of functions
+\item{atacPrintMap}{Print map to locate the atacProc object in charflow}
+
+\item{printMap}{Print map to locate the atacProc name in charflow}
 
 \item{process}{Call this function to redo processing }
 
-\item{getProcName}{get atacProc Characher name}
+\item{getProcName}{get ATACProc object Characher name}
 
-\item{getParam}{Get parameter value setted by process function}
+\item{getParam}{Get parameter value set by process function. 
+See \code{getParamItems} to obtain valid item for query.}
 
 \item{getParamItems}{Get parameter name list}
 
-\item{isReady}{Is the process ready}
+\item{isReady}{Is the process ready for downstream process}
 
 \item{clearProcCache}{Clear cache of atacProc object}
 
 \item{isSingleEnd}{Single end data if TRUE else FALSE}
 
-\item{getReportVal}{Get report value of item}
+\item{getReportVal}{Get report value of item. 
+See \code{getReportItems} to obtain valid item for query.}
 
 \item{getReportItems}{Get all items that can be reported}
 }

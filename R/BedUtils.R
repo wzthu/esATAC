@@ -117,7 +117,7 @@ setMethod(
     }
 )
 
-#' @name  atacBedUtils
+#' @name  BedUtils
 #' @title process bed file with limit memory
 #' @description
 #' This function is used to
@@ -195,16 +195,14 @@ setMethod(
 #' atacproc<-samToBed(samInput = samfile) %>%
 #' atacBedUtils(maxFragLen = 100, chrFilterList = NULL)
 #'
-#' @name atacBedUtils
-#' @export
-#' @docType methods
-#' @rdname atacBedUtils-methods
+
 setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
                                   posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
                                   sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...) standardGeneric("atacBedUtils"))
 
-#' @rdname atacBedUtils-methods
+#' @rdname BedUtils
 #' @aliases atacBedUtils
+#' @export
 setMethod(
     f = "atacBedUtils",
     signature = "ATACProc",
@@ -230,7 +228,8 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacBedUtils-methods
+#' @rdname BedUtils
+#' @aliases bedUtils
 #' @export
 bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,reportOutput = NULL,
                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,

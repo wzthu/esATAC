@@ -117,13 +117,13 @@ setMethod(
         paramList <- paste(c(threadparam, .Object@paramlist[["paramList"]]), collapse = " ")
         if(.Object@singleEnd){
             .Object <- writeLog(.Object,"begin to remove adapter")
-            .Object <- writeLog(.Object,"source:")
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput1"]])
+            .Object <- writeLog(.Object,"source:",showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput1"]],showMsg=FALSE)
             .Object <- writeLog(.Object,paste0("Adapter1:",.Object@paramlist[["adapter1"]]))
-            .Object <- writeLog(.Object,"Destination:")
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput1"]])
-            .Object <- writeLog(.Object,.Object@paramlist[["reportPrefix"]])
-            .Object <- writeLog(.Object,paste0("other parameters:",.obtainConfigure("threads")))
+            .Object <- writeLog(.Object,"Destination:",showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput1"]],showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["reportPrefix"]],showMsg=FALSE)
+            .Object <- writeLog(.Object,paste0("other parameters:",.obtainConfigure("threads")),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
             #                                    paramlist=private$paramlist[["paramList"]])
@@ -203,16 +203,16 @@ setMethod(
                 adapter2 <- adapters[2]
             }
             .Object <- writeLog(.Object,"begin to remove adapter")
-            .Object <- writeLog(.Object,"source:")
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput1"]])
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput2"]])
+            .Object <- writeLog(.Object,"source:",showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput1"]],showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput2"]],showMsg=FALSE)
             .Object <- writeLog(.Object,paste0("Adapter1:",adapter1))
             .Object <- writeLog(.Object,paste0("Adapter2:",adapter2))
-            .Object <- writeLog(.Object,"Destination:")
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput1"]])
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput2"]])
-            .Object <- writeLog(.Object,.Object@paramlist[["reportPrefix"]])
-            .Object <- writeLog(.Object,paste0("Threads:",.obtainConfigure("threads")))
+            .Object <- writeLog(.Object,"Destination:",showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput1"]],showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput2"]],showMsg=FALSE)
+            .Object <- writeLog(.Object,.Object@paramlist[["reportPrefix"]],showMsg=FALSE)
+            .Object <- writeLog(.Object,paste0("Threads:",.obtainConfigure("threads")),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=adapter1,
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
             #                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=adapter2,
@@ -420,7 +420,7 @@ listToFrame <- function(a){
 
 
 
-#' @name atacRemoveAdapter
+#' @name RemoveAdapter
 #' @title Use AdapterRemoval to remove adapters
 #' @description
 #' Use AdapterRemoval to remove adapters
@@ -509,17 +509,15 @@ listToFrame <- function(a){
 #' @importFrom Rbowtie2 remove_adapters
 
 
-#' @name atacRemoveAdapter
-#' @export
-#' @docType methods
-#' @rdname atacRemoveAdapter-methods
+
 setGeneric("atacRemoveAdapter",function(atacProc,adapter1=NULL,adapter2=NULL,
                                         fastqOutput1=NULL,reportPrefix=NULL,
                                         fastqOutput2=NULL,fastqInput1=NULL,
                                         fastqInput2=NULL,interleave=FALSE,
                                         paramList= NULL,findParamList=NULL, ...) standardGeneric("atacRemoveAdapter"))
-#' @rdname atacRemoveAdapter-methods
+#' @rdname RemoveAdapter
 #' @aliases atacRemoveAdapter
+#' @export
 setMethod(
     f = "atacRemoveAdapter",
     signature = "ATACProc",
@@ -539,7 +537,8 @@ setMethod(
     }
 )
 
-#' @rdname atacRemoveAdapter-methods
+#' @rdname RemoveAdapter
+#' @aliases removeAdapter
 #' @export
 removeAdapter <- function(fastqInput1, fastqInput2=NULL,
                               adapter1=NULL,adapter2=NULL,

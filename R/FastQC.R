@@ -103,7 +103,7 @@ setMethod(
 
 
 
-
+#' @name FastQC
 #' @title Quality control for ATAC-seq data.
 #' @description
 #' Generate quality control plots from fastq/fasta/bam of ATAC-seq data.
@@ -142,17 +142,16 @@ setMethod(
 #' \code{\link{atacRenamer}},
 #' \code{\link{atacSam2Bam}}.
 #' @importFrom QuasR qQCReport
-#' @name atacQCReport
-#' @export
-#' @docType methods
-#' @rdname atacQCReport-methods
+
+
 setGeneric("atacQCReport",function(atacProc,
                                    input_file = NULL,
                                    output_file = NULL, ...) standardGeneric("atacQCReport"))
 
 
-#' @rdname atacQCReport-methods
+#' @rdname FastQC
 #' @aliases atacQCReport
+#' @export
 setMethod(
     f = "atacQCReport",
     signature = "ATACProc",
@@ -170,7 +169,8 @@ setMethod(
 )
 
 
-#' @rdname atacQCReport-methods
+#' @rdname FastQC
+#' @aliases qcreport
 #' @export
 qcreport <- function(input_file, output_file = NULL, ...){
     atacproc <- new(

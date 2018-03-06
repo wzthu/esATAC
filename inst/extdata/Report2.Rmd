@@ -46,7 +46,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 
 * Case
 
-```{r eval=TRUE,echo=FALSE}
+```{r eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(caselist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
@@ -54,7 +54,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 * Control
 
-```{r eval=TRUE,echo=FALSE}
+```{r eval=TRUE,echo=FALSE,message=FALSE,warning=FALSE}
 library(ggplot2)
 readsCounts<-getReportVal(ctrllist$atacProcs$fragLenDistr,"readsCounts")
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")
@@ -70,9 +70,9 @@ QC_path1 <- getReportVal(caselist$atacProcs$atacQC,"pdf")
 QC_path2 <- getReportVal(ctrllist$atacProcs$atacQC,"pdf")
 ```
 
-[Click to Visit Report for case](`r QC_path1`)
+[Click to Visit Report for case](`r basename(QC_path1)`)
 
-[Click to Visit Report for control](`r QC_path2`)
+[Click to Visit Report for control](`r basename(QC_path2)`)
 
 ## Remove adapter
 
@@ -80,25 +80,24 @@ The adapter sequence are shown below. For paired end reads, if adapters were not
 
 * Adapter for case 
 
-```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 knitr::kable(getReportVal(caselist$atacProcs$removeAdapter,"adapters"))
 
 ```
 
 * Adapter for control
 
-```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 knitr::kable(getReportVal(ctrllist$atacProcs$removeAdapter,"adapters"))
 
 ```
 
 The statistic of adapter removing are show below. 
 
-```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
+```{r cols.print=2, s.print=20, eval=TRUE, echo=FALSE,message=FALSE,warning=FALSE}
 
 casetb<-getReportVal(caselist$atacProcs$removeAdapter,"statistics")
 ctrltb<-getReportVal(ctrllist$atacProcs$removeAdapter,"statistics")
-cbind()
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
@@ -146,7 +145,7 @@ knitr::kable(x = filtstat)
 
 ## Fragment size distribution
 
-```{r fegdist, eval=TRUE}
+```{r fegdist, eval=TRUE,message=FALSE,warning=FALSE}
 library(ggplot2)
 library(stats)
 load("Report2.Rdata")
@@ -298,7 +297,7 @@ if(nrow(go_data) < 15){
 }
 ```
 
-[Click to Visit Case Differential Go Analysis file](`r go_path`)
+[Click to Visit Case Differential Go Analysis file](`r basename(go_path)`)
 
 ## Significant GO terms of genes associated with  control specific peaks
 
@@ -317,7 +316,7 @@ if(nrow(go_data) < 15){
 }
 ```
 
-[Click to Visit Ctrl Differential Go Analysis file](`r go_path`)
+[Click to Visit Ctrl Differential Go Analysis file](`r basename(go_path)`)
 
 # Motif Enrichment Analysis
 
@@ -376,9 +375,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Case)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -399,9 +398,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Control)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -431,9 +430,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Case specific)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -454,9 +453,9 @@ if("CTCF" %in% names(footprint_data)){
     footprint_figure.data <- as.vector(footprint_data[[1]])
 }
 footprint_figure.length <- length(footprint_figure.data) - 200
-
+footprint_text <- paste(footprint_figure.name, "(Control specific)", sep = "")
 plot(footprint_figure.data, type = "l", col = "blue", lwd = 2,
-     main = "Footprint In Case",
+     main = footprint_text,
     xlab = "Relative Distance From Motif (bp)",
     ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
 axis(1, at = seq(1, 100, len = 3),
@@ -473,15 +472,6 @@ ctrlsp.dir <- getReportVal(comp_result$footprint.ctrl, "pdf.dir")
 ```
 
 All motif footprint figures are saved as pdf files.
-
-[Click to Visit Case Footprint file](`r case.dir`)
-
-[Click to Visit Ctrl Footprint file](`r ctrl.dir`)
-
-[Click to Visit Case Specific Footprint file](`r casesp.dir`)
-
-[Click to Visit Ctrl Specific Footprint file](`r ctrlsp.dir`)
-
 
 
 # Annotation of Items in Table 

@@ -61,7 +61,7 @@ setMethod(
             (as.numeric(qcval[["nonMultimap"]]))
 
         unlink(paste0(.Object@paramlist[["reportOutput"]],".tmp"))
-        print(qcval)
+        print(unlist(qcval))
         print(.Object@paramlist[["reportOutput"]])
         write.table(as.data.frame(qcval),file = .Object@paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
         .Object
@@ -144,7 +144,7 @@ setMethod(
     }
 )
 
-#' @name atacLibComplexQC
+#' @name LibComplexQC
 #' @title Quality control for library complexity
 #' @description
 #' The function calculate the nonredundant fraction of reads (NRF).
@@ -193,15 +193,13 @@ setMethod(
 #' bunzip2(sambzfile,destname=samfile,overwrite=TRUE,remove=FALSE)
 #' atacproc<-libComplexQC(samInput = samfile)
 #'
-#' @name atacLibComplexQC
-#' @export
-#' @docType methods
-#' @rdname atacLibComplexQC-methods
+
 setGeneric("atacLibComplexQC",function(atacProc,reportOutput=NULL,samInput=NULL,
                                   singleEnd = FALSE,subsampleSize=Inf, ...) standardGeneric("atacLibComplexQC"))
 
-#' @rdname atacLibComplexQC-methods
+#' @rdname LibComplexQC
 #' @aliases atacLibComplexQC
+#' @export
 setMethod(
     f = "atacLibComplexQC",
     signature = "ATACProc",
@@ -218,7 +216,8 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacLibComplexQC-methods
+#' @rdname LibComplexQC
+#' @aliases libComplexQC
 #' @export
 libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsampleSize=Inf, ...){
     atacproc <- new(

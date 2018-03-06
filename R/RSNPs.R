@@ -6,9 +6,16 @@ setClass(Class = "RSNPs",
 setMethod(
     f = "initialize",
     signature = "RSNPs",
-    definition = function(.Object,atacProc,..., snp.info = NULL, region.info = NULL,
+    definition = function(.Object, atacProc, ..., snp.info = NULL, region.info = NULL,
                           annoOutput = NULL, editable = FALSE){
         .Object <- init(.Object,"RSNPs",editable,list(arg1=atacProc))
+
+        param.tmp <- list(...)
+        if("withend" %in% names(param.tmp)){
+            .Object@paramlist[["withend"]] <- TRUE
+        }else{
+            .Object@paramlist[["withend"]] <- FALSE
+        }
 
         if((!is.null(atacProc)) && (class(atacProc)[1] == "PeakCallingFseq")){
             .Object@paramlist[["type"]] <- "file"
@@ -23,7 +30,13 @@ setMethod(
             .Object@paramlist[["region.info"]] <- region.info
             regexProcName <- "(bed)"
         }
-        .Object@paramlist[["snp.info"]] <- snp.info
+        if(!is.null(snp.info)){
+            .Object@paramlist[["snp.info"]] <- snp.info
+        }else{
+            .Object@paramlist[["snp.info"]] <- .obtainConfigure("SNP")
+            .Object@paramlist[["withend"]] <- TRUE
+        }
+
 
         if(is.null(annoOutput)){
             prefix <- getBasenamePrefix(.Object, .Object@paramlist[["region.info"]], regexProcName)
@@ -39,6 +52,9 @@ setMethod(
                 .Object@paramlist[["annoOutput"]] <- paste(annoOutput, "df", sep = ".")
             }
         }
+
+
+
         paramValidation(.Object)
         .Object
 
@@ -55,9 +71,14 @@ setMethod(
         .Object <- writeLog(.Object,sprintf("Region source:%s",.Object@paramlist[["region.info"]]))
         .Object <- writeLog(.Object,sprintf("Destination:%s",.Object@paramlist[["annoOutput"]]))
 
-        SNP_info <- read.table(file = .Object@paramlist[["snp.info"]],
+        SNP_info <- read.delim(file = .Object@paramlist[["snp.info"]],
                                header = FALSE)
-        snp_gr <- with(SNP_info, GRanges(SNP_info[, 1], IRanges(SNP_info[, 2] - 1, SNP_info[, 2])))
+        if(.Object@paramlist[["withend"]]){
+            snp_gr <- with(SNP_info, GRanges(SNP_info[, 1], IRanges(SNP_info[, 2] - 1, SNP_info[, 3])))
+        }else{
+            snp_gr <- with(SNP_info, GRanges(SNP_info[, 1], IRanges(SNP_info[, 2] - 1, SNP_info[, 2])))
+        }
+
         if(.Object@paramlist[["type"]] == "file"){
             peak_info <- read.table(file = .Object@paramlist[["region.info"]],
                                     header = FALSE)
@@ -111,9 +132,6 @@ setMethod(
         if(is.null(.Object@paramlist[["region.info"]])){
             stop("Parameter region.info is required!")
         }
-        if(is.null(.Object@paramlist[["snp.info"]])){
-            stop("Parameter snp.info is required!")
-        }
     }
 )
 
@@ -127,7 +145,7 @@ setMethod(
     }
 )
 
-
+#' @name RSNPs
 #' @title Find whether snps are in the given regions.
 #' @description
 #' Find snps(user providing) in given regions.
@@ -140,14 +158,21 @@ setMethod(
 #' in given region. If from \code{\link{atacMotifScan}}, the output file would
 #' contain file path to the output of every motif.
 #' @param snp.info \code{Character} scalar.
-#' Input snp info path. The first 3 column must be chr, position, snp_name,
-#' e.g. chr13   39776775    rs7993214. Other columns could be other information
-#' about snps.
+#' Input snp info path. There are two type of input files(you can specify by
+#' parameter withend).
+#' 1.The first 2 column must be chr, position.
+#' e.g. chr13   39776775    rs7993214.
+#' Other columns could be other information about snps.
+#' 2.The first 3 column must be chr, start, end.
+#' e.g. chr13   39776775    39776775    rs7993214.
+#' Other columns could be other information about snps.
+#' When genome is hg19, using human disease as default.
 #' @param region.info \code{Character} scalar.
-#' Input region info path. The first 3 column must be chr, position, end.
+#' Input region info path. The first 3 column must be chr, position, end. The
+#' standard BED format is recommended.
 #' @param annoOutput \code{Character} scalar.
 #' Output path.
-#' @param ... Additional arguments, currently unused.
+#' @param ... withend Your snp data has only one position column or 2.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar.
 #' @author Wei Zhang
 #' @examples
@@ -163,16 +188,14 @@ setMethod(
 #' @seealso
 #' \code{\link{atacPeakCalling}}
 #' \code{\link{atacMotifScan}}
+#' @importFrom  utils read.delim
 
-#' @name atacSNPAnno
-#' @export
-#' @docType methods
-#' @rdname atacSNPAnno-methods
 setGeneric("atacSNPAnno",function(atacProc, snp.info = NULL, region.info = NULL,
                                   annoOutput = NULL, ...) standardGeneric("atacSNPAnno"))
 
-#' @rdname atacSNPAnno-methods
+#' @rdname RSNPs
 #' @aliases atacSNPAnno
+#' @export
 setMethod(
     f = "atacSNPAnno",
     signature = "ATACProc",
@@ -188,9 +211,10 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacSNPAnno-methods
+#' @rdname RSNPs
+#' @aliases snpanno
 #' @export
-snpanno <- function(snp.info, region.info = NULL, annoOutput = NULL, ...){
+snpanno <- function(snp.info = NULL, region.info = NULL, annoOutput = NULL, ...){
     atacproc <- new(
         "RSNPs",
         atacProc = NULL,

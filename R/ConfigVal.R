@@ -5,7 +5,8 @@ setClass(Class = ".ConfigClass",
              configList = "list",
              validAttr = "list",
              validWriteAttr = "list",
-             curOrgDb = "character"
+             curOrgDb = "character",
+             curTxDb = "character"
              )
          )
 
@@ -13,8 +14,8 @@ setClass(Class = ".ConfigClass",
 setMethod(f = "initialize",
           signature = ".ConfigClass",
           definition = function(.Object,...){
-              .Object@configList<-list(threads=1,tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,annoDb=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL)
-              .Object@validAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character")
+              .Object@configList<-list(threads=1,tmpdir=".",refdir=NULL,genome=NULL,knownGene=NULL,bsgenome=NULL,annoDb=NULL,bt2Idx=NULL,DHS=NULL,blacklist=NULL,SNP=NULL)
+              .Object@validAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character",knownGene="TxDb",bsgenome="BSgenome",annoDb="OrgDb",bt2Idx="character",DHS="character",blacklist="character",SNP="character")
               .Object@validWriteAttr<-list(threads="numeric",tmpdir="character",refdir="character",genome="character")
               .Object
           })
@@ -63,14 +64,40 @@ setMethod(f = "isValidVal",
                   val<-normalizePath(val)
               }
               if(item=="genome"){
+                  msgBoxBegin()
+                  message("Reference data configuraion start ...")
+                  message("Configure bsgenome ...")
                   .Object@configList[["bsgenome"]]<-getBSgenome(val)
                   if(is.null(.Object@configList[["refdir"]])){
                       stop("'refdir' should be configured before 'genome'")
                   }
                   fileprefix<-file.path(.Object@configList[["refdir"]],val)
                   ##annoDb:orgdb
-                  .Object@configList[["annoDb"]]<-GetOrgDb(.Object,val)
+                  message("Configure annoDb ...")
+                  tryCatch({
+                      .Object@configList[["annoDb"]]<-GetOrgDb(.Object,val)
+                  },
+                  error = function(e){
+                      message(as.character(e))
+                      stop(paste("To install the package, type:",
+                                "library(\"BiocInstaller\")",
+                                sprintf("biocLite(\"org.%s.eg.db\")",unlist(strsplit(as.character(e),"org\\.|\\.eg\\.db"))[2]),
+                                sep="\n"))
+                  })
+                  message("Configure knownGene ...")
+                  tryCatch({
+                      .Object@configList[["knownGene"]]<-GetTxDb(.Object,val)
+                  },
+                  error = function(e){
+                      message(as.character(e))
+                      stop(paste("To install the package, type:",
+                                 "library(\"BiocInstaller\")",
+                                 sprintf("biocLite(\"TxDb.%sGene\")",unlist(strsplit(as.character(e),"TxDb\\.|Gene"))[2]),
+                                 sep="\n"))
+                  })
+                  
                   #genome fasta
+                  message("Generate genome fasta file ...")
                   fastaFilePath<-paste0(fileprefix,".fa")
                   fastaFilePathlock<-paste0(fileprefix,".fa.lock")
                   if(file.exists(fastaFilePathlock)){
@@ -84,6 +111,7 @@ setMethod(f = "isValidVal",
                   }
 
                   #bowtie2 index
+                  message("Configure bowtie2 index ...")
                   fileprefixlock<-paste0(fileprefix,".fa.bt2.lock")
                   if(file.exists(fileprefixlock)){
                       unlink(paste0(fileprefix,".1.bt2"))
@@ -94,30 +122,41 @@ setMethod(f = "isValidVal",
                       unlink(paste0(fileprefix,".rev.2.bt2"))
                       unlink(fileprefixlock)
                   }
-                  if(!(file.exists(paste0(fileprefix,".1.bt2"))&&file.exists(paste0(fileprefix,".2.bt2"))||
-                       file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))||
+                  if(!(file.exists(paste0(fileprefix,".1.bt2"))&&file.exists(paste0(fileprefix,".2.bt2"))&&
+                       file.exists(paste0(fileprefix,".3.bt2"))&&file.exists(paste0(fileprefix,".4.bt2"))&&
                        file.exists(paste0(fileprefix,".rev.1.bt2"))&&file.exists(paste0(fileprefix,".rev.1.bt2")))){
+                      message("Build bowtie2 index ...")
+                      message("It may take more than one hour with single thread. Please wait.")
+                      message("Using multi-threads will be faster.")
                       file.create(fileprefixlock)
-                      bowtie2_build(fastaFilePath,fileprefix,"--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
+                      message(paste("--threads",as.character(.obtainConfigure("threads"))))
+                      bowtie2_build(fastaFilePath,fileprefix,"-q","--threads",as.character(.obtainConfigure("threads")),overwrite=TRUE)
                       unlink(fileprefixlock)
                   }
                   .Object@configList[["bt2Idx"]]<-fileprefix
                   #kownGene
-                  knownGeneFilePath<-paste0(fileprefix,".knownGene.sqlite")
-                  knownGeneFilePathlock<-paste0(fileprefix,".knownGene.sqlite.lock")
-                  if(file.exists(knownGeneFilePathlock)){
-                      unlink(knownGeneFilePath)
-                      unlink(knownGeneFilePathlock)
-                  }
-                  if(!file.exists(knownGeneFilePath)){
-                      file.create(knownGeneFilePathlock)
-                      saveDb(makeTxDbFromUCSC(genome=val, tablename="knownGene"), file=knownGeneFilePath)
-                      unlink(knownGeneFilePathlock)
-                  }
-                  .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
+                  # message("Configure knownGene ...")
+                  # knownGeneFilePath<-paste0(fileprefix,".knownGene.sqlite")
+                  # knownGeneFilePathlock<-paste0(fileprefix,".knownGene.sqlite.lock")
+                  # if(file.exists(knownGeneFilePathlock)){
+                  #     unlink(knownGeneFilePath)
+                  #     unlink(knownGeneFilePathlock)
+                  # }
+                  # if(!file.exists(knownGeneFilePath)){
+                  #     file.create(knownGeneFilePathlock)
+                  #     if(sum(val==c("hg19","hg38","mm10","mm9"))){
+                  #           saveDb(makeTxDbFromUCSC(genome=val, tablename="knownGene"), file=knownGeneFilePath)
+                  #     }else{
+                  #         saveDb(makeTxDbFromUCSC(genome=val, tablename="refGene"), file=knownGeneFilePath) 
+                  #     }
+                  #     unlink(knownGeneFilePathlock)
+                  # }
+                  # .Object@configList[["knownGene"]]<-loadDb(knownGeneFilePath)
+                  
+                  blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
+                  DHSFilePath<-paste0(fileprefix,".DHS.bed")
                   if(sum(val==c("hg19","hg38","mm10","mm9"))){
-                      blacklistFilePath<-paste0(fileprefix,".blacklist.bed")
-                      DHSFilePath<-paste0(fileprefix,".DHS.bed")
+                      message("Configure blacklist and DHS ...")
                       downloadFilePathlock<-paste0(fileprefix,".download.lock")
                       if(file.exists(downloadFilePathlock)){
                           unlink(blacklistFilePath)
@@ -128,22 +167,53 @@ setMethod(f = "isValidVal",
                           file.create(downloadFilePathlock)
                           #DHS
                           if(!file.exists(blacklistFilePath)){
-                              download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.DHS.bed",val),
-                                            destfile = DHSFilePath,method = getOption("download.file.method"))
+                              download.file(url = sprintf("https://wzthu.github.io/esATAC/refdata/%s.DHS.bed.gz",val),
+                                            destfile = paste0(DHSFilePath,".gz"),method = getOption("download.file.method"))
+                              gunzip(paste0(DHSFilePath,".gz"),destname=DHSFilePath,overwrite=TRUE)
                           }
                           #blacklist
                           if(!file.exists(blacklistFilePath)){
-                              download.file(url = sprintf("http://bioinfo.au.tsinghua.edu.cn/member/zwei/refdata/%s.blacklist.bed",val),
-                                            destfile = blacklistFilePath,method = getOption("download.file.method"))
+                              download.file(url = sprintf("https://wzthu.github.io/esATAC/refdata/%s.blacklist.bed.gz",val),
+                                            destfile = paste0(blacklistFilePath,".gz"),method = getOption("download.file.method"))
+                              gunzip(paste0(blacklistFilePath,".gz"),destname=blacklistFilePath,overwrite=TRUE)
                           }
                           unlink(downloadFilePathlock)
                       }
-                      .Object@configList[["DHS"]]<-DHSFilePath
+                      #.Object@configList[["DHS"]]<-DHSFilePath
+                      #.Object@configList[["blacklist"]]<-blacklistFilePath
+                  }
+                  if(file.exists(blacklistFilePath)){
                       .Object@configList[["blacklist"]]<-blacklistFilePath
                   }
+                  if(file.exists(DHSFilePath)){
+                      .Object@configList[["DHS"]]<-DHSFilePath
+                  }
+                  snpFilePath<-paste0(fileprefix,".snp.txt")
+                  if(val=="hg19"){
+                      message("Configure SNP ...")
+                      downloadFilePathlock<-paste0(fileprefix,".download1.lock")
+                      if(file.exists(downloadFilePathlock)){
+                          unlink(downloadFilePathlock)
+                      }
+                      if(!file.exists(snpFilePath)){
+                          file.create(downloadFilePathlock)
+                          download.file(url = sprintf("https://wzthu.github.io/esATAC/refdata/%s.snp.txt.gz",val),
+                                        destfile = paste0(snpFilePath,".gz"),method = getOption("download.file.method"))
+                          gunzip(paste0(snpFilePath,".gz"),destname=snpFilePath,overwrite=TRUE)
+                          unlink(downloadFilePathlock)
+                      }
+                      #.Object@configList[["SNP"]]<-snpFilePath
+                  }
+                  if(file.exists(snpFilePath)){
+                      .Object@configList[["SNP"]]<-snpFilePath
+                  }
+                  
 
-
+                  message("Reference data configuraion done")
+                  msgBoxDone()
+                  
               }
+              
               .Object
           })
 
@@ -183,6 +253,74 @@ setMethod(f = "BSgenomeSeqToFasta",
               return(outFile)
           })
 
+setGeneric(name = "GetTxDb",
+           def = function(.Object,genome,...){
+               standardGeneric("GetTxDb")
+           })
+setMethod(f = "GetTxDb",
+          signature = ".ConfigClass",
+          definition = function(.Object,genome,...){
+              if(genome == "hg19"){
+                  .Object@curTxDb <- "TxDb.Hsapiens.UCSC.hg19.knownGene"
+                  base::library("TxDb.Hsapiens.UCSC.hg19.knownGene",character.only=TRUE)
+                  return(TxDb.Hsapiens.UCSC.hg19.knownGene)
+              }else if(genome == "hg38"){
+                  .Object@curTxDb <- "TxDb.Hsapiens.UCSC.hg38.knownGene"
+                  base::library("TxDb.Hsapiens.UCSC.hg38.knownGene",character.only=TRUE)
+                  return(TxDb.Hsapiens.UCSC.hg38.knownGene)
+              }else if(genome == "mm9"){
+                  .Object@curTxDb <- "TxDb.Mmusculus.UCSC.mm9.knownGene"
+                  base::library("TxDb.Mmusculus.UCSC.mm9.knownGene",character.only=TRUE)
+                  return(TxDb.Mmusculus.UCSC.mm9.knownGene)
+              }else if(genome == "mm10"){
+                  .Object@curTxDb <- "TxDb.Mmusculus.UCSC.mm10.knownGene"
+                  base::library("TxDb.Mmusculus.UCSC.mm10.knownGene",character.only=TRUE)
+                  return(TxDb.Mmusculus.UCSC.mm10.knownGene)
+              }else if(genome == "danRer10"){
+                  .Object@curTxDb <- "TxDb.Drerio.UCSC.danRer10.refGene"
+                  base::library("TxDb.Drerio.UCSC.danRer10.refGene",character.only=TRUE)
+                  return(TxDb.Drerio.UCSC.danRer10.refGene)
+              }else if(genome == "galGal5"){
+                  .Object@curTxDb <- "TxDb.Ggallus.UCSC.galGal5.refGene"
+                  base::library("TxDb.Ggallus.UCSC.galGal5.refGene",character.only=TRUE)
+                  return(TxDb.Ggallus.UCSC.galGal5.refGene)
+              }else if(genome == "galGal4"){
+                  .Object@curTxDb <- "TxDb.Ggallus.UCSC.galGal4.refGene"
+                  base::library("TxDb.Ggallus.UCSC.galGal4.refGene",character.only=TRUE)
+                  return(TxDb.Ggallus.UCSC.galGal4.refGene)
+              }else if(genome == "rheMac3"){
+                  .Object@curTxDb <- "TxDb.Mmulatta.UCSC.rheMac3.refGene"
+                  base::library("TxDb.Mmulatta.UCSC.rheMac3.refGene",character.only=TRUE)
+                  return(TxDb.Mmulatta.UCSC.rheMac3.refGene)
+              }else if(genome == "rheMac8"){
+                  .Object@curTxDb <- "TxDb.Mmulatta.UCSC.rheMac8.refGene"
+                  base::library("TxDb.Mmulatta.UCSC.rheMac8.refGene",character.only=TRUE)
+                  return(TxDb.Mmulatta.UCSC.rheMac8.refGene)
+              }else if(genome == "rn5"){
+                  .Object@curTxDb <- "TxDb.Rnorvegicus.UCSC.rn5.refGene"
+                  base::library("TxDb.Rnorvegicus.UCSC.rn5.refGene",character.only=TRUE)
+                  return(TxDb.Rnorvegicus.UCSC.rn5.refGene)
+              }else if(genome == "rn6"){
+                  .Object@curTxDb <- "TxDb.Rnorvegicus.UCSC.rn6.refGene"
+                  base::library("TxDb.Rnorvegicus.UCSC.rn6.refGene",character.only=TRUE)
+                  return(TxDb.Rnorvegicus.UCSC.rn6.refGene)
+              }else if(genome == "sacCer3"){
+                  .Object@curTxDb <- "TxDb.Scerevisiae.UCSC.sacCer3.sgdGene"
+                  base::library("TxDb.Scerevisiae.UCSC.sacCer3.sgdGene",character.only=TRUE)
+                  return(TxDb.Scerevisiae.UCSC.sacCer3.sgdGene)
+              }else if(genome == "sacCer2"){
+                  .Object@curTxDb <- "TxDb.Scerevisiae.UCSC.sacCer2.sgdGene"
+                  base::library("TxDb.Scerevisiae.UCSC.sacCer2.sgdGene",character.only=TRUE)
+                  return(TxDb.Scerevisiae.UCSC.sacCer2.sgdGene)
+              }else if(genome == "susScr3"){
+                  .Object@curTxDb <- "TxDb.Sscrofa.UCSC.susScr3.refGene"
+                  base::library("TxDb.Sscrofa.UCSC.susScr3.refGene",character.only=TRUE)
+                  return(TxDb.Sscrofa.UCSC.susScr3.refGene)
+              }else {
+                  warning(paste0("TxDb Annotation package does not support for ",genome))
+              }
+              return(NULL)
+          })
 
 setGeneric(name = "GetOrgDb",
            def = function(.Object,genome,...){
@@ -193,14 +331,34 @@ setMethod(f = "GetOrgDb",
           definition = function(.Object,genome,...){
               if(genome == "hg19"||genome == "hg38"){
                   .Object@curOrgDb <- "org.Hs.eg.db"
-                  base::require("org.Hs.eg.db",character.only=TRUE)
+                  base::library("org.Hs.eg.db",character.only=TRUE)
               }else if(genome == "mm10" || genome == "mm9"){
                   .Object@curOrgDb <- "org.Mm.eg.db"
-                  base::require("org.Mm.eg.db",character.only=TRUE)
+                  base::library("org.Mm.eg.db",character.only=TRUE)
+              }else if(genome == "danRer10"){
+                  .Object@curOrgDb <- "org.Dr.eg.db"
+                  base::library("org.Dr.eg.db",character.only=TRUE)
+              }else if(genome == "galGal5" || genome == "galGal4"){
+                  .Object@curOrgDb <- "org.Gg.eg.db"
+                  base::library("org.Gg.eg.db",character.only=TRUE)
+              }else if(genome == "rheMac3" || genome == "rheMac8"){
+                  .Object@curOrgDb <- "org.Mmu.eg.db"
+                  base::library("org.Mmu.eg.db",character.only=TRUE)
+              }else if(genome == "panTro4" ){
+                  .Object@curOrgDb <- "org.Pt.eg.db"
+                  base::library("org.Pt.eg.db",character.only=TRUE)
+              }else if(genome == "rn6" || genome == "rn5"){
+                  .Object@curOrgDb <- "org.Rn.eg.db"
+                  base::library("org.Rn.eg.db",character.only=TRUE)
+              }else if(genome == "sacCer3" || genome == "sacCer2"){
+                  .Object@curOrgDb <- "org.Sc.sgd.db"
+                  base::library("org.Sc.sgd.db",character.only=TRUE)
+              }else if(genome == "susScr3"){
+                  .Object@curOrgDb <- "org.Ss.eg.db"
+                  base::library("org.Ss.eg.db",character.only=TRUE)
               }else {
-                  stop(paste0("OrgDb Annotation package does not support for ",genome))
+                  warning(paste0("OrgDb Annotation package does not support for ",genome))
               }
-
               return(.Object@curOrgDb)
           })
 
@@ -218,9 +376,26 @@ setMethod(f = "GetOrgDb",
 #' "threads","tmpdir","refdir","genome" are setable
 #' and getable. While the others are readable only.
 #' You should consider to configure these parameters
-#' before starting the workflow
+#' before starting the workflow.
+#' 
+#' For get \code{getConfigure} and \code{setConfigure}:
+#' \describe{
+#'   \item{"refdir"}{\code{Character} scalar, the path for reference data being installed to and storage.} 
+#'   \item{"genome"}{\code{Character} scalar, the genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.} 
+#'   \item{"tmpdir"}{\code{Character} scalar, the temporary file storage path} 
+#'   \item{"threads"}{\code{Integer} scalar, the max threads allowed to be created} 
+#' }
+#' 
+#' For get \code{getConfigure} only:
+#' \describe{
+#'   \item{"knownGene"}{\code{TxDb} scalar, known gene TxDb object} 
+#'   \item{"bsgenome"}{\code{BSGenome} scalar, BSGenome object}
+#'   \item{"bt2Idx"}{\code{Character} scalar, bowtie2 index path prefix} 
+#'   \item{"DHS"}{\code{Character} scalar, DHS BED file path}
+#'   \item{"blacklist"}{\code{Character} scalar, blacklist BED file path}  
+#' }
 #' @param item \code{Character} scalar.
-#' The items that are setable or gettable including
+#' The items that are setable or getable including
 #' "threads","tmpdir","refdir","genome","knownGene",
 #' "bsgenome","bt2Idx","DHS" and "blacklist".
 #' @param val \code{Character} or \code{Integer} scalar.
@@ -330,7 +505,7 @@ getAllConfigure<-function(){
 }
 #' @rdname configureValue
 #' @export
-getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
+getConfigure <- function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist","SNP")){
     .configObj <- getOption("atacConf")
     if(is.null(.configObj)){
         .configObj <- new(".ConfigClass")
@@ -376,7 +551,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     setConfigure("genome",genome)
 }
 
-.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist")){
+.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist","SNP")){
     .configObj <- getOption("atacConf")
     if(is.null(.configObj)){
         .configObj <- new(".ConfigClass")
@@ -394,8 +569,14 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
     }
 }
 
+msgBoxBegin<-function(){
+    message(">>>>>>========================================")
+}
 
-
+msgBoxDone<-function(){
+    message("========================================<<<<<<")
+    message(" ")
+}
 
 
 

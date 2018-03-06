@@ -81,7 +81,7 @@ setMethod(
 )
 
 
-
+#' @name SamToBam
 #' @title Convert sam format to bam format.
 #' @description
 #' This function convert a sam file into a bam file.
@@ -113,14 +113,12 @@ setMethod(
 #' \code{\link{atacBam2Bed}}
 #' \code{\link{atacBamSort}}
 
-#' @name atacSam2Bam
-#' @export
-#' @docType methods
-#' @rdname atacSam2Bam-methods
+
 setGeneric("atacSam2Bam",function(atacProc,
                                   samInput = NULL, bamOutput = NULL, ...) standardGeneric("atacSam2Bam"))
-#' @rdname atacSam2Bam-methods
+#' @rdname SamToBam
 #' @aliases atacSam2Bam
+#' @export
 setMethod(
     f = "atacSam2Bam",
     signature = "ATACProc",
@@ -135,7 +133,8 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacSam2Bam-methods
+#' @rdname SamToBam
+#' @aliases sam2bam
 #' @export
 sam2bam <- function(samInput, bamOutput = NULL, ...){
     atacproc <- new(

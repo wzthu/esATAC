@@ -140,8 +140,10 @@ setMethod(
     definition = function(.Object, item, ...){
         if(item == "annoOutput.rds"){
             peakAnno <- readRDS(.Object@paramlist[["annoOutput.rds"]])
-            return(peakAnno)
+        }else if(item == "annoOutput"){
+            peakAnno <- .Object@paramlist[["annoOutput.df"]]
         }
+        return(peakAnno)
     }
 )
 
@@ -150,13 +152,13 @@ setMethod(
     f = "getReportItemsImp",
     signature = "RPeakAnno",
     definition = function(.Object, ...){
-        return(c("annoOutput.rds"))
+        return(c("annoOutput.rds", "annoOutput"))
     }
 )
 
 
 
-
+#' @name RPeakAnno
 #' @title Annotate ATAC-seq Peak
 #' @description
 #' This function annotates ATAC-seq peak by a given annotation database.
@@ -195,7 +197,7 @@ setMethod(
 #'
 #' @examples
 #'
-#' 
+#'
 #' library(R.utils)
 #' library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 #' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -204,7 +206,7 @@ setMethod(
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 #' #peakanno(peakInput = peak1_path, TxDb = TxDb.Hsapiens.UCSC.hg19.knownGene,
 #' #annoDb = 'org.Hs.eg.db')
-#' 
+#'
 #' @references Guangchuang Yu, Li-Gen Wang, Qing-Yu He. ChIPseeker: an
 #' R/Bioconductor package for ChIP peak annotation, comparison and
 #' visualization. Bioinformatics 2015, 31(14):2382-2383
@@ -215,10 +217,7 @@ setMethod(
 #' @importFrom ChIPseeker plotAnnoPie
 
 
-#' @name atacPeakAnno
-#' @export
-#' @docType methods
-#' @rdname atacPeakAnno-methods
+
 setGeneric("atacPeakAnno",function(atacProc, peakInput = NULL, tssRegion = c(-1000, 1000),
                                   TxDb = NULL, level = "transcript",
                                   genomicAnnotationPriority = c("Promoter", "5UTR",
@@ -231,8 +230,9 @@ setGeneric("atacPeakAnno",function(atacProc, peakInput = NULL, tssRegion = c(-10
                                   annoOutput = NULL, ...) standardGeneric("atacPeakAnno"))
 
 
-#' @rdname atacPeakAnno-methods
+#' @rdname RPeakAnno
 #' @aliases atacPeakAnno
+#' @export
 setMethod(
     f = "atacPeakAnno",
     signature = "ATACProc",
@@ -268,7 +268,8 @@ setMethod(
     }
 )
 
-#' @rdname atacPeakAnno-methods
+#' @rdname RPeakAnno
+#' @aliases peakanno
 #' @export
 peakanno <- function(peakInput, tssRegion = c(-1000, 1000),
                      TxDb = NULL, level = "transcript",

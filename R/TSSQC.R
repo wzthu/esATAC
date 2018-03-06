@@ -130,11 +130,11 @@ setMethod(
         qcval=list();
 
         qcval[["totalUniqReads"]]<-length(readsbed)
-        print(qcval[["totalUniqReads"]])
+        writeLog(.Object,sprintf("Total Unique Reads: %.0f",qcval[["totalUniqReads"]]))
         qcval[["TSSReads"]]<-length(subsetByOverlaps(readsbed, TSS,ignore.strand = TRUE))
-        print(qcval[["TSSReads"]])
+        writeLog(.Object,sprintf("TSS Reads: %.0f",qcval[["TSSReads"]]))
         qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
-        print(qcval[["TSSRate"]])
+        writeLog(.Object,sprintf("TSS Rate: %f",qcval[["TSSRate"]]))
         qcval<-as.matrix(qcval)
 
         write.table(qcval,file = .Object@paramlist[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
@@ -191,7 +191,7 @@ setMethod(
 
 
 
-#' @name atacTSSQC
+#' @name TSSQC
 #' @title Quality control for transcription start site(TSS) reads enrichment
 #' @description
 #' These functions are used to generate the reads coverage plot around TSS.
@@ -244,16 +244,14 @@ setMethod(
 #' dir(td)
 #' @importFrom BiocGenerics strand
 
-#' @name atacTSSQC
-#' @export
-#' @docType methods
-#' @rdname atacTSSQC-methods
+
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                                   reportPrefix=NULL,bedInput = NULL,
                                   fragLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
 
-#' @rdname atacTSSQC-methods
+#' @rdname TSSQC
 #' @aliases atacTSSQC
+#' @export
 setMethod(
     f = "atacTSSQC",
     signature = "ATACProc",
@@ -277,7 +275,8 @@ setMethod(
 
 
 
-#' @rdname atacTSSQC-methods
+#' @rdname TSSQC
+#' @aliases tssQC
 #' @export
 tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
     atacproc <- new(

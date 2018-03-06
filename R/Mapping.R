@@ -81,6 +81,10 @@ setMethod(
     f = "processing",
     signature = "Bowtie2Mapping",
     definition = function(.Object,...){
+        paramList <- NULL
+        if(!is.null(.Object@paramlist[["paramList"]])){
+            paramList <- paste(.Object@paramlist[["paramList"]],collapse = " ")
+        }
         if(!is.null(.Object@paramlist[["threads"]])){
             if(.Object@paramlist[["threads"]]>1){
                 paramList<-paste(c("-p",as.character(.Object@paramlist[["threads"]]),.Object@paramlist[["paramList"]]),collapse = " ")
@@ -96,7 +100,7 @@ setMethod(
         .Object<-writeLog(.Object,paste0("fastqInput1:",.Object@paramlist[["fastqInput1"]]))
         .Object<-writeLog(.Object,paste0("fastqInput2:",.Object@paramlist[["fastqInput2"]]))
         .Object<-writeLog(.Object,paste0("other parameters:",paste(.Object@paramlist[["paramList"]],collapse = " ")))
-        if(length(paramList>0)){
+        if(length(paramList)>0){
             rs<-bowtie2(bt2Index = .Object@paramlist[["bt2Idx"]],
                         samOutput = .Object@paramlist[["samOutput"]],
                         seq1 = .Object@paramlist[["fastqInput1"]],
@@ -175,7 +179,7 @@ setMethod(
     }
 )
 
-#' @name atacBowtie2Mapping
+#' @name Bowtie2Mapping
 #' @importFrom Rbowtie2 bowtie2
 #' @title Use bowtie2 aligner to map reads to reference genome
 #' @description
@@ -263,17 +267,15 @@ setMethod(
 #'     head(readLines(file.path(td, "result.sam")))
 #' }
 
-#' @name atacBowtie2Mapping
-#' @export
-#' @docType methods
-#' @rdname atacBowtie2Mapping-methods
+
 
 setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...) standardGeneric("atacBowtie2Mapping"))
 
 
 
-#' @rdname atacBowtie2Mapping-methods
+#' @rdname Bowtie2Mapping
 #' @aliases atacBowtie2Mapping
+#' @export
 setMethod(
     f = "atacBowtie2Mapping",
     signature = "ATACProc",
@@ -285,7 +287,8 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname atacBowtie2Mapping-methods
+#' @rdname Bowtie2Mapping
+#' @aliases bowtie2Mapping
 #' @export
 bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
     atacproc<-new("Bowtie2Mapping",atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
