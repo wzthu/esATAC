@@ -2,7 +2,7 @@ setClass(Class = "BedToBigWig",
          contains = "ATACProc"
 )
 
-setMethod(fbbrtbtyntebbe
+setMethod(
     f = "initialize",
     signature = "BedToBigWig",
     definition = function(.Object,atacProc, ..., bedInput = NULL, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, editable=FALSE){
@@ -85,7 +85,7 @@ setMethod(
 )
 
 
-#' @name BedToBigWig
+#' @name atacBedToBigWig
 #' @title generate BigWig file from BED file
 #' @description
 #' This function is used to generate BigWig file
@@ -135,15 +135,17 @@ setMethod(
 #' dir(td)
 #' @importFrom rtracklayer export.wig export.bw
 
-
+#' @name atacBedToBigWig
+#' @export
+#' @docType methods
+#' @rdname atacBedToBigWig-methods
 setGeneric("atacBedToBigWig",function(atacProc, bedInput = NULL,
                                       bsgenome = NULL, bwOutput = NULL,
                                       toWig = FALSE, ...) standardGeneric("atacBedToBigWig"))
 
 
-#' @rdname BedToBigWig
+#' @rdname atacBedToBigWig-methods
 #' @aliases atacBedToBigWig
-#' @export
 setMethod(
     f = "atacBedToBigWig",
     signature = "ATACProc",
@@ -162,8 +164,7 @@ setMethod(
         invisible(atacproc)
     }
 )
-#' @rdname BedToBigWig
-#' @aliases bedToBigWig
+#' @rdname atacBedToBigWig-methods
 #' @export
 bedToBigWig <- function(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, ...){
     atacproc <- new(
