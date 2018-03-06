@@ -2,7 +2,7 @@ setClass(Class = "BedToBigWig",
          contains = "ATACProc"
 )
 
-setMethod(fbbrtbtyntebbe
+setMethod(
     f = "initialize",
     signature = "BedToBigWig",
     definition = function(.Object,atacProc, ..., bedInput = NULL, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, editable=FALSE){
