@@ -133,6 +133,7 @@ atacRenamer \%>\% atacRemoveAdapter
 
 subclassname<-getProcName(atacproc)
 
+printMap(subclassname)
 
 (pitems<-getParamItems(atacproc))
 getParam(atacproc,pitems[1])

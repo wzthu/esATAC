@@ -301,10 +301,10 @@ setMethod(f = "getGraph",
               )
 
               gph<-create_graph(nodes_df = ndf,edges_df = edf)%>%
-                  set_global_graph_attrs(attr_type = "graph",attr = "layout",value = "dot")
-              #set_global_graph_attrs(attr_type = "node",attr = "fontname",value = "Helvetica")%>%
-              #set_global_graph_attrs(attr_type = "node",attr = "shape",value = "circle")%>%
-              #set_global_graph_attrs(attr_type = "node",attr = "fixedsize",value = "true")
+                  add_global_graph_attrs(attr_type = "graph",attr = "layout",value = "dot")
+              #add_global_graph_attrs(attr_type = "node",attr = "fontname",value = "Helvetica")%>%
+              #add_global_graph_attrs(attr_type = "node",attr = "shape",value = "circle")%>%
+              #add_global_graph_attrs(attr_type = "node",attr = "fixedsize",value = "true")
               return(gph)
           })
 

@@ -444,7 +444,7 @@ setMethod(f = "GetOrgDb",
 #' @importFrom DiagrammeR create_node_df
 #' @importFrom DiagrammeR create_edge_df
 #' @importFrom DiagrammeR create_graph
-#' @importFrom DiagrammeR set_global_graph_attrs
+#' @importFrom DiagrammeR add_global_graph_attrs
 #' @importFrom DiagrammeR export_graph
 #' @importFrom magrittr %>%
 #' @importFrom digest digest
