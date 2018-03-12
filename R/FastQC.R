@@ -23,12 +23,9 @@ setMethod(
                 .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
                                                   as.vector(unlist(getParam(atacProc, "fastqOutput2"))))
             }
-        }else if((!is.null(atacProc)) && (class(atacProc)[1] == "SamToBam")){
-            .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "bamOutput"))))
         }else if(((!is.null(atacProc)) && (class(atacProc)[1] != "UnzipAndMerge")) ||
-                 ((!is.null(atacProc)) && (class(atacProc)[1] != "Renamer")) ||
-                 ((!is.null(atacProc)) && (class(atacProc)[1] != "SamToBam"))){
-            stop("Input class must be got from 'UnzipAndMerge' or 'Renamer' or 'SamToBam'!")
+                 ((!is.null(atacProc)) && (class(atacProc)[1] != "Renamer"))){
+            stop("Input class must be got from 'UnzipAndMerge' or 'Renamer'!")
         }else{
             .Object@paramlist[["Input"]] <- input_file
         }
@@ -54,7 +51,7 @@ setMethod(
         .Object <- writeLog(.Object,paste0("processing file:"))
         .Object <- writeLog(.Object,sprintf("source:%s", .Object@paramlist[["Input"]]))
         .Object <- writeLog(.Object,sprintf("destination:%s", .Object@paramlist[["Output"]]))
-        QuasR::qQCReport(input = .Object@paramlist[["Input"]], pdfFilename = .Object@paramlist[["Output"]])
+        qQCReport(input = .Object@paramlist[["Input"]], pdfFilename = .Object@paramlist[["Output"]])
         .Object
     }
 )
@@ -106,16 +103,15 @@ setMethod(
 #' @name FastQC
 #' @title Quality control for ATAC-seq data.
 #' @description
-#' Generate quality control plots from fastq/fasta/bam of ATAC-seq data.
+#' Generate quality control plots from fastq of ATAC-seq data.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacUnzipAndMerge}},
-#' \code{\link{atacRenamer}},
-#' \code{\link{atacSam2Bam}}.
+#' \code{\link{atacRenamer}}
 #' @param input_file \code{Character} scalar.
-#' Input file path. One or two(\code{vector}) fastq/a or a bam file path.
+#' Input file path. One or more(\code{vector}) fastq file path.
 #' @param output_file \code{Character} scalar.
-#' output file path. Defult:"input_file_FastQC.pdf" in the same
+#' output file path. Defult:"input_file_QC.pdf" in the same
 #' folder as your input file.
 #' @param ... Additional arguments, currently unused.
 #' @details Every highthroughput sequencing need quality control analysis, this
@@ -134,14 +130,14 @@ setMethod(
 #' fq2 <- as.vector(bunzip2(filename = fra_path,
 #' destname = file.path(getwd(), "chr20_2.fq"),
 #' ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
+#' \dontrun{
 #' qcreport(input_file = c(fq1, fq2))
+#' }
 #'
 #'
 #' @seealso
 #' \code{\link{atacUnzipAndMerge}},
-#' \code{\link{atacRenamer}},
-#' \code{\link{atacSam2Bam}}.
-#' @importFrom QuasR qQCReport
+#' \code{\link{atacRenamer}}
 
 
 setGeneric("atacQCReport",function(atacProc,

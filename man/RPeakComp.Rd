@@ -60,6 +60,7 @@ according to the parameter "operation".
 library(R.utils)
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
 p2bz <- system.file("extdata", "Example_peak2.bed.bz2", package="esATAC")
+\dontrun{
 peak1_path <- as.vector(bunzip2(filename = p1bz,
 destname = file.path(getwd(), "Example_peak1.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE , remove = FALSE))
@@ -68,7 +69,7 @@ destname = file.path(getwd(), "Example_peak2.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
 output <- peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
 olap.rate = 0.1)
-
+}
 }
 \seealso{
 \code{\link{atacPeakCalling}}

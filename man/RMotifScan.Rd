@@ -10,15 +10,15 @@
 \usage{
 atacMotifScan(atacProc, peak = NULL, genome = NULL, motifPWM = NULL,
   min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL,
-  ...)
+  use.SavedPWM = NULL, ...)
 
 \S4method{atacMotifScan}{ATACProc}(atacProc, peak = NULL, genome = NULL,
   motifPWM = NULL, min.score = "85\%", scanO.dir = NULL, n.cores = NULL,
-  prefix = NULL, ...)
+  prefix = NULL, use.SavedPWM = NULL, ...)
 
 motifscan(peak = NULL, genome = NULL, motifPWM = NULL,
   min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL,
-  ...)
+  use.SavedPWM = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -48,6 +48,11 @@ the file name to save the motif position information in separate files.}
 Default: from \code{\link{setConfigure}}.}
 
 \item{prefix}{prefix for Output file.}
+
+\item{use.SavedPWM}{use local motif position information. This data is
+download or generate by users. it must be a rds file and the information
+saved as GRanges. Once this parameter is used, parameters "genome", "motifPWM",
+"min.score", "n.cores" will be set to NULL.}
 
 \item{...}{Additional arguments, currently unused.}
 }

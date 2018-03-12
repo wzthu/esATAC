@@ -1,5 +1,3 @@
-
-
 #include <string>
 #include <iostream>
 #include "renamer.h"
@@ -333,6 +331,9 @@ int CutSiteCount_wrapper(Rcpp::List argvs)
 
   // CutSite is the class name
   CutSiteCount CutSite(readsfile, motiffile, matrixfile, motif_len, strand_len);
-  return CutSite.DoCutSiteCount();
+  int tmp_k;
+  tmp_k = CutSite.DoCutSiteCount();
+  // cout << tmp_k << endl;
+  return 0;
 }
 

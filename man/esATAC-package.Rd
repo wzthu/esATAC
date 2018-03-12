@@ -6,11 +6,15 @@
 \alias{atacPipe}
 \title{An Easy-to-use Systematic pipeline for ATACseq data analysis}
 \usage{
-atacPipe(fastqInput1, fastqInput2 = NULL, adapter1 = NULL,
-  adapter2 = NULL, interleave = FALSE, createReport = TRUE,
-  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"), ...)
+atacPipe(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
+  tmpdir = NULL, threads = 2, adapter1 = NULL, adapter2 = NULL,
+  interleave = FALSE, basicAnalysis = FALSE, createReport = TRUE,
+  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
+  min.score = "90\%", use.SavedPWM = NULL, ...)
 }
 \arguments{
+\item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
+
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
 it contains sequence file paths.
 For paired-end sequencing, it can be file paths with #1 mates paired
@@ -24,6 +28,12 @@ For single-end sequencing files and interleaved paired-end sequencing
 files(argument interleaved=\code{TRUE}),
 it must be \code{NULL}.}
 
+\item{refdir}{\code{Character} scalar. The path for reference data being installed to and storage.}
+
+\item{tmpdir}{\code{Character} scalar. The temporary file storage path.}
+
+\item{threads}{\code{Integer} scalar. The max threads allowed to be created.}
+
 \item{adapter1}{\code{Character} scalar. It is an adapter sequence for file1.
 For single end data, it is requied.}
 
@@ -32,9 +42,12 @@ For single end data, it is requied.}
 \item{interleave}{\code{Logical} scalar. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
 
+\item{basicAnalysis}{\code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps
+like GO annoation and motif analysis}
+
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifPWM}{\code{List} scalar. Motif PWM, a list.}
+\item{motifPWM}{\code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).}
 
 \item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
 when multiple pipeline generating file in the same tempdir.}
@@ -43,19 +56,15 @@ when multiple pipeline generating file in the same tempdir.}
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
-\item{...}{Configure "refdir", "genome", "threads", "tmpdir" for this function.
-They will overwrite global configuration.
-If you need to set globally, see \link{configureValue}.
-\describe{
-  \item{refdir}{\code{Character} scalar, the path for reference data being installed to and storage.}
-  \item{genome}{\code{Character} scalar, the genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
-  \item{tmpdir}{\code{Character} scalar, the temporary file storage path}
-  \item{threads}{\code{Integer} scalar, the max threads allowed to be created}
-}
-Parameter "chr", which chromatin the program will processing.
-\describe{
-   \item{chr}{\code{Character} scalar, It must be identical with the filename of cut site information files or a subset. Default:c(1:22, "X", "Y").}
-}}
+\item{min.score}{The minimum score for counting a match. Can be given as a
+character string containing a percentage (default: "90%") of the highest
+possible score or as a single number.}
+
+\item{use.SavedPWM}{use local motif position information. This data is
+download or generate by users. it must be a rds file and the information
+saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 \code{List} scalar. It is a list that save the result of the pipeline.
@@ -76,8 +85,13 @@ through end-to-end preset pipeline which produces a pretty HTML report for
 quality control and preliminary statistical results, or customize workflow
 starting from any intermediate stages with esATAC functions easily and flexibly.
 
-Preset pipeline for case study is shown below.
-For case-control study, see \code{\link{atacPipe2}}.
+Preset pipeline for single replicate case study is shown below.
+
+For multi-replicates case study, see \code{\link{atacRepsPipe}}.
+
+For single replicate case-control study, see \code{\link{atacPipe2}}.
+
+For multi-replicates case-control study, see \code{\link{atacRepsPipe2}}.
 
 
 NOTE:
@@ -155,7 +169,9 @@ conclusion <-
 \code{\link{atacRemoveAdapter}},
 \code{\link{atacBowtie2Mapping}},
 \code{\link{atacPeakCalling}},
-\code{\link{atacMotifScan}}
+\code{\link{atacMotifScan}},
+\code{\link{atacRepsPipe}},
+\code{\link{atacRepsPipe2}}
 }
 \author{
 Zheng Wei and Wei Zhang

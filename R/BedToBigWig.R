@@ -56,7 +56,7 @@ setMethod(
         ans <- GRanges(cov)
         ans <- subset(ans, score > 0)
         if(.Object@paramlist[["toWig"]]){
-            export.wig(ans,.Object@paramlist[["bwOutput"]])
+            export.wig(as(ans, "UCSCData"),.Object@paramlist[["bwOutput"]])
         }else{
             export.bw(ans,.Object@paramlist[["bwOutput"]])
         }
@@ -127,12 +127,14 @@ setMethod(
 #'
 #' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
+#' \dontrun{
 #' bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 #'
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' bedToBigWig(bedfile, BSgenome.Hsapiens.UCSC.hg19)
 #'
 #' dir(td)
+#' }
 #' @importFrom rtracklayer export.wig export.bw
 
 

@@ -12,7 +12,7 @@ setMethod(
         .Object <- init(.Object, "RGo", editable, list(arg1 = atacProc))
 
         if(!is.null(atacProc)){
-            tmp <- read.table(file = getParam(atacProc, "annoOutput.df"), header = TRUE,
+            tmp <- read.table(file = getParam(atacProc, "annoOutput.txt"), header = TRUE,
                               sep = "\t", quote = "")
             # .Object@paramlist[["gene"]] <- as.character(base::unique(tmp$geneId))
             .Object@paramlist[["gene"]] <- as.character(tmp$geneId)
@@ -28,12 +28,12 @@ setMethod(
 
         if(is.null(goOutput)){
             if(!is.null(atacProc)){
-                prefix <- getBasenamePrefix(.Object, getParam(atacProc, "annoOutput.df"), regexProcName)
+                prefix <- getBasenamePrefix(.Object, getParam(atacProc, "annoOutput.txt"), regexProcName)
                 .Object@paramlist[["goOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                             paste(prefix, ".", getProcName(.Object), ".df", sep = ""))
+                                                             paste(prefix, ".", getProcName(.Object), ".txt", sep = ""))
             }else{
                 .Object@paramlist[["goOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                             paste("GOanalysis.", getProcName(.Object), ".df", sep = ""))
+                                                             paste("GOanalysis.", getProcName(.Object), ".txt", sep = ""))
             }
         }else{
             name_split <- unlist(base::strsplit(x = goOutput, split = ".", fixed = TRUE))
@@ -41,7 +41,7 @@ setMethod(
             if(suffix == "df"){
                 .Object@paramlist[["goOutput"]] <- goOutput
             }else{
-                .Object@paramlist[["goOutput"]] <- paste(goOutput, ".df", sep = "")
+                .Object@paramlist[["goOutput"]] <- paste(goOutput, ".txt", sep = "")
             }
 
         }

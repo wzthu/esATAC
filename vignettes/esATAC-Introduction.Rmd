@@ -28,7 +28,7 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 To install the latest version of esATAC, you will need to be using the
 latest version of R. esATAC is part of Bioconductor project 
-starting from Bioc 3.6 built on R 3.4.2. Please check your current Bioconductor version and R version first. Similar to other bioconductor package,
+starting from Bioc 3.6 built on R 3.4. Please check your current Bioconductor version and R version first. Similar to other bioconductor package,
 you can download install esATAC and all its dependencies software like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
@@ -37,6 +37,21 @@ biocLite("esATAC")
 ```
 
 **NOTE: We recommend to use this package in RStudio. Or you have to install [pandoc](https://pandoc.org/) yourself if you use R terminal**
+
+Acquiring more installation detail information for Linux, Windows and macOS,  you can visit [esATAC Installation Tutorial](https://github.com/wzthu/esATAC/wiki/esATAC-Installation-Tutorial).
+
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index, which may take several hours with single thread. If you want to download or use your own bowtie2 index instead, please see [section 1.4](#bt2)**
+
+**NOTE: Annotation Packages for specific genomes are shown below:**
+
+| genome   | BSgenome                          | TxDb                                  | OrgDb         |
+|----------|-----------------------------------|---------------------------------------|---------------|
+| hg19     | BSgenome.Hsapiens.UCSC.hg19       | TxDb.Hsapiens.UCSC.hg19.knownGene     | org.Hs.eg.db  |
+| hg38     | BSgenome.Hsapiens.UCSC.hg38       | TxDb.Hsapiens.UCSC.hg38.knownGene     | org.Hs.eg.db  |
+| mm9      | BSgenome.Mmusculus.UCSC.mm9       | TxDb.Mmusculus.UCSC.mm9.knownGene     | org.Mm.eg.db  |
+| mm10     | BSgenome.Mmusculus.UCSC.mm10      | TxDb.Mmusculus.UCSC.mm10.knownGene    | org.Mm.eg.db  |
+
+They will not be downloaded and installed during executing `biocLite("esATAC")` because these package file are very big. They will be downloaded and installed according to the `genome` parameter when calling the preset pipeline for the first time.
 
 ### Loading
 
@@ -115,18 +130,20 @@ conclusion <-
 
 ```
 
-**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you want to download bowtie2 index instead, please see [section 2.2](#bt2)**
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you want to download bowtie2 index instead, please see [section 1.4](#bt2)**
 
-**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
+**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 1.5](#motifs)**
+
+**Note: For replicates sample, see [section 1.8](#gallery): Gallery for Analysis Result of Real ATAC-seq Dataset**
 
 The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored under "./esATAC_pipeline/intermediate_results". The final brief results like HTML report will be stored under "./esATAC_pipeline/esATAC_results" and "./esATAC_pipeline/esATAC_report"
 
 If you run the scripts above without modification, you are able to obtain default HTML
-[example report](https://wzthu.github.io/esATAC/example/pkgcasectrl/Report2.html).
+[example report](https://wzthu.github.io/esATAC/example/pkgCC/esATAC_report/Report2.html).
 
 > Real data test
 
-Download raw data from GEO(assertion number  [GSE88987](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE88987) - [GSM2356780: SRR4435490.sra](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP091/SRP091863/SRR4435490/SRR4435490.sra)) and ([GSM2356795: SRR4435505.sra](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP091/SRP091863/SRR4435505/SRR4435505.sra))).And then, Use [NCBI SRA Toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software) to extract fastq files with command like `fastq-dump --split-3 SRR44354XX.sra`. Four files will be generated (SRR4435490_1.fastq, SRR4435490_2.fastq, SRR4435505_1.fastq, SRR4435505_2.fastq). Modify and run the scripts above like this [example scripts](https://wzthu.github.io/esATAC/example/casectrl/GSM2.R), you will obtain HTML [report](https://wzthu.github.io/esATAC/example/casectrl/Report2.html).
+Download raw data from GEO(assertion number  [GSE88987](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE88987) - [GSM2356780: SRR4435490.sra](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP091/SRP091863/SRR4435490/SRR4435490.sra)) and ([GSM2356795: SRR4435505.sra](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP091/SRP091863/SRR4435505/SRR4435505.sra))).And then, Use [NCBI SRA Toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software) to extract fastq files with command like `fastq-dump --split-3 SRR44354XX.sra`. Four files will be generated (SRR4435490_1.fastq, SRR4435490_2.fastq, SRR4435505_1.fastq, SRR4435505_2.fastq). Modify and run the scripts above like this [example scripts](https://wzthu.github.io/esATAC/example/mm10CC/script.R), you will obtain HTML [report](https://wzthu.github.io/esATAC/example/mm10CC/esATAC_report/Report2.html).
 
 ### For Single Sample Analysis
 
@@ -170,19 +187,21 @@ conclusion <-
         genome = "hg19")
 ```
 
-**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you want to download bowtie2 index instead, please see [section 2.2](#bt2)**
+**Note: By default, esATAC will build bowtie2 index if there is no bowtie2 index under the path set by argument `refdir`, which may take several hours. If you want to download bowtie2 index instead, please see [section 1.4](#bt2)**
 
-**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 2.3](#motifs)**
+**Note: By default, esATAC will perform footprint analysis for all the TF motif PWM matrix in JASPAR database. This step may take a few hours to 2-days for human genome analysis depends on your hardware. If you only want to analyze a specific motif or your own PWMs, please see [section 1.5](#motifs)**
+
+**Note: For replicates sample, see [section 1.8](#gallery): Gallery for Analysis Result of Real ATAC-seq Dataset**
 
 The reference data will be installed in "./esATAC_pipeline/refdir/" and all of temporary data and result will be stored under "./esATAC_pipeline/intermediate_results". The final brief results like HTML report will be stored under "./esATAC_pipeline/esATAC_results", "./esATAC_pipeline/esATAC_report"
 
 
 
-If you run the scripts above without modification, you are able to obtain default HTML [Example report](https://wzthu.github.io/esATAC/example/pkgsingle/Report.html)
+If you run the scripts above without modification, you are able to obtain default HTML [Example report](https://wzthu.github.io/esATAC/example/pkgC/esATAC_report/Report.html)
 
 > Real data test
 
-Download raw data from GEO (assersion number [GSE47753](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE47753) - [GSM1155957(SRR891268.sra)](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP024/SRP024293/SRR891268/SRR891268.sra)). And then, Use [NCBI SRA Toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software) to extract fastq files with command like `fastq-dump --split-3 SRR8912XX.sra`. Two files will be generated (SRR891268_1.fastq, SRR891268_2.fastq). Modify the scripts above like this [example scripts](https://wzthu.github.io/esATAC/example/single/GSM.R), you will obtain HTML [report](https://wzthu.github.io/esATAC/example/single/Report.html) for GSM1155957 data.
+Download raw data from GEO (assersion number [GSE47753](http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE47753) - [GSM1155957(SRR891268.sra)](ftp://ftp-trace.ncbi.nlm.nih.gov/sra/sra-instant/reads/ByStudy/sra/SRP/SRP024/SRP024293/SRR891268/SRR891268.sra)). And then, Use [NCBI SRA Toolkit](https://trace.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?cmd=show&f=software&m=software&s=software) to extract fastq files with command like `fastq-dump --split-3 SRR8912XX.sra`. Two files will be generated (SRR891268_1.fastq, SRR891268_2.fastq). Modify the scripts above like this [example scripts](https://wzthu.github.io/esATAC/example/hg19C/script.R), you will obtain HTML [report](https://wzthu.github.io/esATAC/example/hg19C/esATAC_report/Report.html) for GSM1155957 data.
 
 
 
@@ -240,6 +259,60 @@ conclusion <-
 
 ```
 
+
+## How to use Preset motif data for esATAC
+
+Motif scan is a time-consuming step in ATAC-seq data analysis. We provide functions and data for accelerate this step. We provide Vertebrata motifs from [JASPAR database](http://www.bioconductor.org/packages/release/data/experiment/html/JASPAR2016.html) and use "scanGenomeMotif" function to scan motif information in the genome. Users can use these data to plot footprint. [Click here for download.](https://github.com/A1dnoah/esATAC_preset_motif_data)
+
+The following is the tutorial about how to use esATAC to build preset motif information data and use this data to run ATAC-seq data analysis pipeline.
+
+### How to generate motif data of hg19
+
+```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
+# get motif PWM from JASPAR2016 and change motif ID to motif name
+library(JASPAR2016)
+library(TFBSTools)
+library(esATAC)
+library(BSgenome.Hsapiens.UCSC.hg19)
+
+opts <- list()
+opts[["tax_group"]] <- "vertebrates"  # using vertebrates
+pwm <- getMatrixSet(JASPAR2016, opts)
+pwm <- TFBSTools::toPWM(pwm)  # convert PFM to PWM
+names(pwm) <- TFBSTools::name(pwm)
+pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
+names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)  # remove special characters
+scanGenomeMotif(motifPWM = pwm, refgenome = BSgenome.Hsapiens.UCSC.hg19,
+                min.score = "90%", n.core = 12, output = "JASPAR_verteb_hg19.rds")
+```
+
+Of course, if you want to use another PWM and genome, just change the parameters in "scanGenomeMotif". For more information, please see [*esATAC Reference Manual*](http://www.bioconductor.org/packages/release/bioc/manuals/esATAC/man/esATAC.pdf). 
+
+### How to use this data when analysis ATAC-seq data
+
+```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
+options(java.parameters = "-Xmx8192m")  # set Java parameter
+library(esATAC)
+
+# ATAC-seq data, case&control analysis
+case = list(fastqInput1="ntest1_1.fastq.bz2",fastqInput2="ntest1_2.fastq.bz2",
+            adapter1 = NULL, adapter2 = NULL)
+control =list(fastqInput1="ntest2_1.fastq.bz2",fastqInput2="ntest2_2.fastq.bz2",
+              adapter1 = NULL, adapter2 = NULL)
+              
+results <- atacPipe2(case = case,
+                     control = control,
+                     refdir = "path_to_bowtie2_index",
+                     genome = "hg19",
+                     tmpdir = "path_to_save_temp_data",
+                     threads = 4,
+                     chr = c(1:22, "X", "Y"), use.SavedPWM = "JASPAR_verteb_hg19.rds")
+```
+
+
+
+
+
 ## Use "Conclusion" for Further Analysis
 
 The `conclusion` returned by `atacPipe` or `atacPipe2` contains all configuration and result information generated by the pipeline.
@@ -283,7 +356,27 @@ Slot `atacProcs` is also an list. Similarly, use `$` to access them: ``conclusio
 ## Resume Your Analysis
 
 To run the whole pipeline for a typical ATACseq data set of human sample may take ~2 days on a personal computer with single thread. If your thread or R has been stopped during the process. You can simplely resume the analysis by retyping your command line in [Starting from Scratch](#quickstart).
-The program will automatically check the steps that have been finished and continue the anlalysis.
+The program will automatically check the steps that have been finished and continue the analysis.
+
+
+## Gallery for Analysis Result of Datasets {#gallery}
+
+We collect some representative ATAC-seq datasets and process them with matched pipelines. The datasets cover 4 pipelines:
+
+(1) atacPipe, the case sample without replicate; 
+
+(2) atacPipe2, the case-control sample without replicate;
+
+(3) atacRepsPipe, the case sample with replicates;
+
+(4) atacRepsPipe2, the case-control sample with replicates.
+
+The R scripts and reports are shown at [https://wzthu.github.io/esATAC/example/](https://wzthu.github.io/esATAC/example/)
+
+
+
+
+
 
 
 # Introduction
@@ -369,7 +462,7 @@ The ready-use reads in BED file may call peak by "PeakCallingFseq"
 function atacPeakCallingFseq.
 
 For preset pipeline (see [Quick Start](#quickstart)), 
-several summary tables will be shown in an HTML file([Example report](https://wzthu.github.io/esATAC/example/Report2.html)) like this:
+several summary tables will be shown in an HTML file([Example report](https://wzthu.github.io/esATAC/example/)) like this:
 
 |    Item                                               |    Case     |    Control      | Reference|
 |:-----------------------------------------------------|:------------|:-----------|:-----------|
@@ -798,7 +891,7 @@ peakanno <- getReportVal(AnnoInfo, "annoOutput.rds")
 plotAnnoPie(x = peakanno)
 ```
 
-The function also generate a file(with suffix .df) contains annotation for all peaks. It is converted from dataframe in R, and users could open it with text editor or excel.
+The function also generate a file(with suffix .txt) contains annotation for all peaks. It is converted from dataframe in R, and users could open it with text editor or excel.
 Below is a part of the output.
 
 ```{r eval=TRUE,echo=FALSE,message=FALSE}
@@ -837,7 +930,7 @@ geneId <- names(geneList)[1:100]
 goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
 ```
 
-The output file(suffix .df) contains the GO term sorted by p-value, below is a part of the output.
+The output file(suffix .txt) contains the GO term sorted by p-value, below is a part of the output.
 
 ```{r eval=TRUE,echo=FALSE,message=FALSE}
 library(esATAC)

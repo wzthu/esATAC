@@ -16,10 +16,10 @@ Description: This package provides a framework and complete preset pipeline for
     quality control and preliminary statistical results, or customize workflow 
     starting from any intermediate stages with esATAC functions easily and flexibly. 
 Depends:
-    R (>= 3.4.1),
-    QuasR,
+    R (>= 3.4),
     Rsamtools,
-    GenomicRanges
+    GenomicRanges,
+    ShortRead
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -56,13 +56,16 @@ Imports:
     graphics,
     stats, 
     utils,
-    parallel
+    parallel,
+    corrplot,    
+    BiocInstaller
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     org.Hs.eg.db,
     DiagrammeRsvg,
-    testthat
+    testthat,
+    webshot
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
@@ -100,10 +103,13 @@ Collate:
     UnzipAndMerge.R
     onLoad.R
     RMotifScanPair.R
+    utilities.R
 biocViews: Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
 RoxygenNote: 6.0.1
 NeedsCompilation: yes
+URL: https://github.com/wzthu/esATAC
+BugReports: https://github.com/wzthu/esATAC/issues
 

@@ -1,0 +1,35 @@
+---
+title: "esATAC Report Index for Replicates"
+author: "Zheng Wei and Wei Zhang"
+date: "`r Sys.Date()`"
+output: 
+    html_document:
+        df_print: paged
+        toc: true
+        toc_float: true
+        number_sections: true
+        fig_height: 3.5
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r echo=FALSE}
+load("ReportIdx.Rdata")
+```
+# Single Replicates Analysis
+
+
+```{r echo=FALSE}
+knitr::kable(singleRep)
+```
+
+# Concordance and Merge Analysis
+
+```{r echo=FALSE}
+knitr::kable(mergeConRep)
+```
+
+

@@ -1,5 +1,8 @@
 #' @importFrom Rbowtie2 bowtie2_build
 #' @importFrom Biostrings masks DNAStringSet injectHardMask
+#' @importFrom BSgenome available.genomes
+#' @importFrom BSgenome installed.genomes
+#' @importFrom BiocInstaller biocLite
 setClass(Class = ".ConfigClass",
          slots = list(
              configList = "list",
@@ -67,6 +70,16 @@ setMethod(f = "isValidVal",
                   msgBoxBegin()
                   message("Reference data configuraion start ...")
                   message("Configure bsgenome ...")
+                  bsgenomename<- BSgenome::available.genomes()[grepl(paste0(val,"$"),available.genomes())]
+                  if(length(bsgenomename)==0){
+                      stop("bsgenome not")
+                  }
+                  
+                  bsgenomeinstall <- BSgenome::installed.genomes()[grepl(paste0(val,"$"),installed.genomes())]
+                  
+                  if(length(bsgenomeinstall)==0){
+                      BiocInstaller::biocLite(bsgenomename)
+                  }
                   .Object@configList[["bsgenome"]]<-getBSgenome(val)
                   if(is.null(.Object@configList[["refdir"]])){
                       stop("'refdir' should be configured before 'genome'")
@@ -262,64 +275,44 @@ setMethod(f = "GetTxDb",
           definition = function(.Object,genome,...){
               if(genome == "hg19"){
                   .Object@curTxDb <- "TxDb.Hsapiens.UCSC.hg19.knownGene"
-                  base::library("TxDb.Hsapiens.UCSC.hg19.knownGene",character.only=TRUE)
-                  return(TxDb.Hsapiens.UCSC.hg19.knownGene)
               }else if(genome == "hg38"){
                   .Object@curTxDb <- "TxDb.Hsapiens.UCSC.hg38.knownGene"
-                  base::library("TxDb.Hsapiens.UCSC.hg38.knownGene",character.only=TRUE)
-                  return(TxDb.Hsapiens.UCSC.hg38.knownGene)
               }else if(genome == "mm9"){
                   .Object@curTxDb <- "TxDb.Mmusculus.UCSC.mm9.knownGene"
-                  base::library("TxDb.Mmusculus.UCSC.mm9.knownGene",character.only=TRUE)
-                  return(TxDb.Mmusculus.UCSC.mm9.knownGene)
               }else if(genome == "mm10"){
                   .Object@curTxDb <- "TxDb.Mmusculus.UCSC.mm10.knownGene"
-                  base::library("TxDb.Mmusculus.UCSC.mm10.knownGene",character.only=TRUE)
-                  return(TxDb.Mmusculus.UCSC.mm10.knownGene)
               }else if(genome == "danRer10"){
                   .Object@curTxDb <- "TxDb.Drerio.UCSC.danRer10.refGene"
-                  base::library("TxDb.Drerio.UCSC.danRer10.refGene",character.only=TRUE)
-                  return(TxDb.Drerio.UCSC.danRer10.refGene)
               }else if(genome == "galGal5"){
                   .Object@curTxDb <- "TxDb.Ggallus.UCSC.galGal5.refGene"
-                  base::library("TxDb.Ggallus.UCSC.galGal5.refGene",character.only=TRUE)
-                  return(TxDb.Ggallus.UCSC.galGal5.refGene)
               }else if(genome == "galGal4"){
                   .Object@curTxDb <- "TxDb.Ggallus.UCSC.galGal4.refGene"
-                  base::library("TxDb.Ggallus.UCSC.galGal4.refGene",character.only=TRUE)
-                  return(TxDb.Ggallus.UCSC.galGal4.refGene)
               }else if(genome == "rheMac3"){
                   .Object@curTxDb <- "TxDb.Mmulatta.UCSC.rheMac3.refGene"
-                  base::library("TxDb.Mmulatta.UCSC.rheMac3.refGene",character.only=TRUE)
-                  return(TxDb.Mmulatta.UCSC.rheMac3.refGene)
               }else if(genome == "rheMac8"){
                   .Object@curTxDb <- "TxDb.Mmulatta.UCSC.rheMac8.refGene"
-                  base::library("TxDb.Mmulatta.UCSC.rheMac8.refGene",character.only=TRUE)
-                  return(TxDb.Mmulatta.UCSC.rheMac8.refGene)
               }else if(genome == "rn5"){
                   .Object@curTxDb <- "TxDb.Rnorvegicus.UCSC.rn5.refGene"
-                  base::library("TxDb.Rnorvegicus.UCSC.rn5.refGene",character.only=TRUE)
-                  return(TxDb.Rnorvegicus.UCSC.rn5.refGene)
               }else if(genome == "rn6"){
                   .Object@curTxDb <- "TxDb.Rnorvegicus.UCSC.rn6.refGene"
-                  base::library("TxDb.Rnorvegicus.UCSC.rn6.refGene",character.only=TRUE)
-                  return(TxDb.Rnorvegicus.UCSC.rn6.refGene)
               }else if(genome == "sacCer3"){
                   .Object@curTxDb <- "TxDb.Scerevisiae.UCSC.sacCer3.sgdGene"
-                  base::library("TxDb.Scerevisiae.UCSC.sacCer3.sgdGene",character.only=TRUE)
-                  return(TxDb.Scerevisiae.UCSC.sacCer3.sgdGene)
               }else if(genome == "sacCer2"){
                   .Object@curTxDb <- "TxDb.Scerevisiae.UCSC.sacCer2.sgdGene"
-                  base::library("TxDb.Scerevisiae.UCSC.sacCer2.sgdGene",character.only=TRUE)
-                  return(TxDb.Scerevisiae.UCSC.sacCer2.sgdGene)
               }else if(genome == "susScr3"){
                   .Object@curTxDb <- "TxDb.Sscrofa.UCSC.susScr3.refGene"
-                  base::library("TxDb.Sscrofa.UCSC.susScr3.refGene",character.only=TRUE)
-                  return(TxDb.Sscrofa.UCSC.susScr3.refGene)
               }else {
                   warning(paste0("TxDb Annotation package does not support for ",genome))
+                  return(NULL)
               }
-              return(NULL)
+              tryCatch({
+                  library(.Object@curTxDb,character.only = TRUE)
+              },
+              error = function(e){
+                  BiocInstaller::biocLite(.Object@curTxDb)
+                  library(.Object@curTxDb,character.only = TRUE)
+              })
+              return(get0(.Object@curTxDb))
           })
 
 setGeneric(name = "GetOrgDb",
@@ -331,34 +324,34 @@ setMethod(f = "GetOrgDb",
           definition = function(.Object,genome,...){
               if(genome == "hg19"||genome == "hg38"){
                   .Object@curOrgDb <- "org.Hs.eg.db"
-                  base::library("org.Hs.eg.db",character.only=TRUE)
               }else if(genome == "mm10" || genome == "mm9"){
                   .Object@curOrgDb <- "org.Mm.eg.db"
-                  base::library("org.Mm.eg.db",character.only=TRUE)
               }else if(genome == "danRer10"){
                   .Object@curOrgDb <- "org.Dr.eg.db"
-                  base::library("org.Dr.eg.db",character.only=TRUE)
               }else if(genome == "galGal5" || genome == "galGal4"){
                   .Object@curOrgDb <- "org.Gg.eg.db"
-                  base::library("org.Gg.eg.db",character.only=TRUE)
               }else if(genome == "rheMac3" || genome == "rheMac8"){
                   .Object@curOrgDb <- "org.Mmu.eg.db"
-                  base::library("org.Mmu.eg.db",character.only=TRUE)
               }else if(genome == "panTro4" ){
                   .Object@curOrgDb <- "org.Pt.eg.db"
-                  base::library("org.Pt.eg.db",character.only=TRUE)
               }else if(genome == "rn6" || genome == "rn5"){
                   .Object@curOrgDb <- "org.Rn.eg.db"
-                  base::library("org.Rn.eg.db",character.only=TRUE)
               }else if(genome == "sacCer3" || genome == "sacCer2"){
                   .Object@curOrgDb <- "org.Sc.sgd.db"
-                  base::library("org.Sc.sgd.db",character.only=TRUE)
               }else if(genome == "susScr3"){
                   .Object@curOrgDb <- "org.Ss.eg.db"
-                  base::library("org.Ss.eg.db",character.only=TRUE)
               }else {
                   warning(paste0("OrgDb Annotation package does not support for ",genome))
+                  return(NULL)
               }
+              tryCatch({
+                  library(.Object@curOrgDb,character.only = TRUE)
+              },
+              error = function(e){
+                  BiocInstaller::biocLite(.Object@curOrgDb)
+                  library(.Object@curOrgDb,character.only = TRUE)
+              })
+              #return(get0(.Object@curOrgDb))
               return(.Object@curOrgDb)
           })
 
@@ -451,7 +444,7 @@ setMethod(f = "GetOrgDb",
 #' @importFrom DiagrammeR create_node_df
 #' @importFrom DiagrammeR create_edge_df
 #' @importFrom DiagrammeR create_graph
-#' @importFrom DiagrammeR set_global_graph_attrs
+#' @importFrom DiagrammeR add_global_graph_attrs
 #' @importFrom DiagrammeR export_graph
 #' @importFrom magrittr %>%
 #' @importFrom digest digest
@@ -563,7 +556,7 @@ setAllConfigure<-function(threads=NULL,tmpdir=NULL,refdir=NULL,genome=NULL){
         val<-.configObj@configList[[item]]
     }
     if(is.null(val)){
-        stop(paste(item,"has not been configured yet! Please call 'setConfigure' to configure first"))
+        stop(paste(item,sprintf("has not been configured yet! Please call 'options(atacConf=setConfigure(\"%s\",\"set your value here\"))' to configure first",item)))
     }else{
         return(val)
     }

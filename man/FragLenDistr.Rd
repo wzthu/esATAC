@@ -58,8 +58,10 @@ options(atacConf=setConfigure("tmpdir",td))
 
 bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
+\dontrun{
 bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 fragLenDistr(bedfile)
+}
 
 dir(td)
 

@@ -37,7 +37,7 @@ Rcpp::StringVector ChrInfoDivi::DoDivi()
   // initialization
   if(!readsifile.getline(line, sizeof(line)))
   {
-    cout<<"ERROR: the input file is empty!"<<endl;
+    cout<<"WARNING: the input file is empty!"<<endl;
     return file_name;
   }
   string tmp_line = line;

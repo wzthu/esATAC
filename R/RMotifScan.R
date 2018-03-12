@@ -2,60 +2,94 @@ setClass(Class = "RMotifScan",
          contains = "ATACProc"
 )
 
-
 setMethod(
     f = "initialize",
     signature = "RMotifScan",
     definition = function(.Object, atacProc, ..., peak = NULL, genome = NULL,
                           motifPWM = NULL, min.score = NULL,
                           scanO.dir = NULL, n.cores = NULL,
-                          prefix = NULL, editable = FALSE){
+                          prefix = NULL, use.SavedPWM = NULL, editable = FALSE){
         .Object <- init(.Object, "RMotifScan", editable, list(arg1 = atacProc))
 
-        # necessary parameters
-        if(!is.null(atacProc)){
-            .Object@paramlist[["peak"]] <- getParam(atacProc, "bedOutput");
-        }else{
-            .Object@paramlist[["peak"]] <- peak
-        }
-        if(!is.null(genome)){
-            .Object@paramlist[["genome"]] <- genome
-        }else{
-            .Object@paramlist[["genome"]] <- .obtainConfigure("bsgenome")
-        }
-        .Object@paramlist[["motifPWM"]] <- motifPWM
-        .Object@paramlist[["motifPWM.len"]] <- lapply(X = .Object@paramlist[["motifPWM"]], FUN = ncol)
-        .Object@paramlist[["min.score"]] <- min.score
-        if(is.null(prefix)){
-            .Object@paramlist[["prefix"]] <- "motifscan"
-        }else{
-            .Object@paramlist[["prefix"]] <- prefix
-        }
-        # unnecessary parameters
-        if(is.null(scanO.dir)){
-            .Object@paramlist[["scanO.dir"]] <- paste(tools::file_path_sans_ext(.Object@paramlist[["peak"]]),
-                                                      "_",
-                                                      .Object@paramlist[["prefix"]],
-                                                      "_MotifScanOutput",
-                                                      sep = "")
-            dir.create(.Object@paramlist[["scanO.dir"]])
-        }else{
-            .Object@paramlist[["scanO.dir"]] <- scanO.dir
-        }
-        .Object@paramlist[["rdsOutput"]] <- paste(
-            .Object@paramlist[["scanO.dir"]],
-            "/", .Object@paramlist[["prefix"]], "_",
-            "RMotifScan.rds",
-            sep = ""
-        )
+        .Object@paramlist[["use.SavedPWM"]] <- use.SavedPWM
+        # if use.SavedPWM == NULL, scan motif
+        if(is.null(.Object@paramlist[["use.SavedPWM"]])){
+            # necessary parameters
+            if(!is.null(atacProc)){
+                .Object@paramlist[["peak"]] <- getParam(atacProc, "bedOutput");
+            }else{
+                .Object@paramlist[["peak"]] <- peak
+            }
+            if(!is.null(genome)){
+                .Object@paramlist[["genome"]] <- genome
+            }else{
+                .Object@paramlist[["genome"]] <- .obtainConfigure("bsgenome")
+            }
+            .Object@paramlist[["motifPWM"]] <- motifPWM
+            .Object@paramlist[["motifPWM.len"]] <- lapply(X = .Object@paramlist[["motifPWM"]], FUN = ncol)
+            .Object@paramlist[["min.score"]] <- min.score
+            if(is.null(prefix)){
+                .Object@paramlist[["prefix"]] <- "motifscan"
+            }else{
+                .Object@paramlist[["prefix"]] <- prefix
+            }
+            # unnecessary parameters
+            if(is.null(scanO.dir)){
+                .Object@paramlist[["scanO.dir"]] <- paste(tools::file_path_sans_ext(.Object@paramlist[["peak"]]),
+                                                          "_",
+                                                          .Object@paramlist[["prefix"]],
+                                                          "_MotifScanOutput",
+                                                          sep = "")
+                dir.create(.Object@paramlist[["scanO.dir"]])
+            }else{
+                .Object@paramlist[["scanO.dir"]] <- scanO.dir
+            }
+            .Object@paramlist[["rdsOutput"]] <- paste(
+                .Object@paramlist[["scanO.dir"]],
+                "/", .Object@paramlist[["prefix"]], "_",
+                "RMotifScan.rds",
+                sep = ""
+            )
+            if(is.null(n.cores)){
+                .Object@paramlist[["n.cores"]] <- .obtainConfigure("threads")
+            }else{
+                .Object@paramlist[["n.cores"]] <- n.cores
+            }
 
-        if(is.null(n.cores)){
-            .Object@paramlist[["n.cores"]] <- .obtainConfigure("threads")
-        }else{
-            .Object@paramlist[["n.cores"]] <- n.cores
+            paramValidation(.Object)
+        }else{  # if use.SavedPWM != NULL, use user's data(just do overlap)
+            # necessary parameters
+            if(!is.null(atacProc)){
+                .Object@paramlist[["peak"]] <- getParam(atacProc, "bedOutput");
+            }else{
+                .Object@paramlist[["peak"]] <- peak
+            }
+            if(is.null(prefix)){
+                .Object@paramlist[["prefix"]] <- "motifscan"
+            }else{
+                .Object@paramlist[["prefix"]] <- prefix
+            }
+
+            if(is.null(scanO.dir)){
+                .Object@paramlist[["scanO.dir"]] <- paste(tools::file_path_sans_ext(.Object@paramlist[["peak"]]),
+                                                          "_",
+                                                          .Object@paramlist[["prefix"]],
+                                                          "_MotifScanOutput",
+                                                          sep = "")
+                dir.create(.Object@paramlist[["scanO.dir"]])
+            }else{
+                .Object@paramlist[["scanO.dir"]] <- scanO.dir
+            }
+            .Object@paramlist[["rdsOutput"]] <- paste(
+                .Object@paramlist[["scanO.dir"]],
+                "/", .Object@paramlist[["prefix"]], "_",
+                "RMotifScan.rds",
+                sep = ""
+            )
+
+            paramValidation(.Object)
         }
 
-        paramValidation(.Object)
         .Object
     }
 )
@@ -73,33 +107,70 @@ setMethod(
         peak <- rtracklayer::import(.Object@paramlist[["peak"]])
         save_info <- data.frame()
 
-        # processing 2*n.core motifs in each turn
-        k <- .Object@paramlist[["n.cores"]] * 2
-        n_motif <- length(.Object@paramlist[["motifPWM"]])
-        motif_in_group <- split(.Object@paramlist[["motifPWM"]],
-                                rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
-        n_group <- length(motif_in_group)
+        # if use.SavedPWM == NULL, scan motif
+        if(is.null(.Object@paramlist[["use.SavedPWM"]])){
+            # processing 2*n.core motifs in each turn
+            k <- .Object@paramlist[["n.cores"]] * 2
+            n_motif <- length(.Object@paramlist[["motifPWM"]])
+            motif_in_group <- split(.Object@paramlist[["motifPWM"]],
+                                    rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
+            n_group <- length(motif_in_group)
 
-        # write order(motif index) while writing save_info
-        WriteMotifOrder <- 1
-        cl <- parallel::makeCluster(.Object@paramlist[["n.cores"]])
-        for(i in seq(n_group)){
-            thisGroup.motif <- motif_in_group[[i]]
-            thisGroup.motifname <- names(thisGroup.motif)
-            thisGroup.motifnum <- length(thisGroup.motif)
-            thisGroup.motifinfo <- paste("Now, processing the following motif: ",
-                                         paste(thisGroup.motifname, collapse = ","),
-                                         sep = "")
-            print(thisGroup.motifinfo)
-            sitesetList <- parLapply(cl = cl,
-                                     X = thisGroup.motif,
-                                     fun = Biostrings::matchPWM,
-                                     subject = .Object@paramlist[["genome"]],
-                                     min.score = .Object@paramlist[["min.score"]],
-                                     with.score = TRUE)
+            # write order(motif index) while writing save_info
+            WriteMotifOrder <- 1
+            cl <- parallel::makeCluster(.Object@paramlist[["n.cores"]])
+            for(i in seq(n_group)){
+                thisGroup.motif <- motif_in_group[[i]]
+                thisGroup.motifname <- names(thisGroup.motif)
+                thisGroup.motifnum <- length(thisGroup.motif)
+                thisGroup.motifinfo <- paste("Now, processing the following motif: ",
+                                             paste(thisGroup.motifname, collapse = ","),
+                                             sep = "")
+                print(thisGroup.motifinfo)
+                sitesetList <- parLapply(cl = cl,
+                                         X = thisGroup.motif,
+                                         fun = Biostrings::matchPWM,
+                                         subject = .Object@paramlist[["genome"]],
+                                         min.score = .Object@paramlist[["min.score"]],
+                                         with.score = TRUE)
 
-            for(i in seq(thisGroup.motifnum)){
+                for(i in seq(thisGroup.motifnum)){
+                    motif_name <- names(sitesetList[i])
+                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
+                                                             ranges = peak,
+                                                             ignore.strand = TRUE)
+                    output_data <- sort(x = output_data, ignore.strand = TRUE)
+                    output_data <- as.data.frame(output_data)
+                    output_data <- within(output_data, rm(width))
+                    output_path <- paste(.Object@paramlist[["scanO.dir"]],
+                                         "/", .Object@paramlist[["prefix"]], "_",
+                                         motif_name, sep = "")
+                    motif_len <- .Object@paramlist[["motifPWM.len"]][[motif_name]]
+                    save_info[WriteMotifOrder, 1] <- motif_name
+                    save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
+                    save_info[WriteMotifOrder, 3] <- motif_len
+                    WriteMotifOrder <- WriteMotifOrder + 1
+                    write.table(x = output_data, file = output_path, row.names = FALSE,
+                                col.names = FALSE, quote = FALSE)
+                }
+            }
+            stopCluster(cl)
+            saveRDS(object = save_info, file = .Object@paramlist[["rdsOutput"]])
+        }else{  # if use.SavedPWM != NULL, use user's data(just do overlap)
+            print("Now, loading motif position information......")
+            sitesetList <- readRDS(file = .Object@paramlist[["use.SavedPWM"]])
+            print("Now, processing motif sites......")
+            motif_num <- length(sitesetList)
+            WriteMotifOrder <- 1
+            for(i in seq(motif_num)){
+                num_flag <- length(sitesetList[[i]])
                 motif_name <- names(sitesetList[i])
+                if(num_flag == 0){
+                    messg <- paste("No motif occurrence found! Factor: ", motif_name, ".", sep = "")
+                    print(messg)
+                    next
+                }
+                motif_name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = motif_name, perl = TRUE)
                 output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
                                                          ranges = peak,
                                                          ignore.strand = TRUE)
@@ -109,18 +180,17 @@ setMethod(
                 output_path <- paste(.Object@paramlist[["scanO.dir"]],
                                      "/", .Object@paramlist[["prefix"]], "_",
                                      motif_name, sep = "")
-                motif_len <- .Object@paramlist[["motifPWM.len"]][[motif_name]]
+                motif_len <- GenomicRanges::end(sitesetList[[i]][1]) - GenomicRanges::start(sitesetList[[i]][1]) + 1
                 save_info[WriteMotifOrder, 1] <- motif_name
                 save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
                 save_info[WriteMotifOrder, 3] <- motif_len
-                WriteMotifOrder <- WriteMotifOrder + 1
                 write.table(x = output_data, file = output_path, row.names = FALSE,
                             col.names = FALSE, quote = FALSE)
+                WriteMotifOrder <- WriteMotifOrder + 1
             }
+            saveRDS(object = save_info, file = .Object@paramlist[["rdsOutput"]])
         }
-        stopCluster(cl)
 
-        saveRDS(object = save_info, file = .Object@paramlist[["rdsOutput"]])
         .Object
     }
 )
@@ -133,10 +203,13 @@ setMethod(
         if(is.null(.Object@paramlist[["peak"]])){
             stop("Parameter peak is required!")
         }
-        if(is.null(.Object@paramlist[["motifPWM"]])){
-            stop("Parameter motifPWM is required!")
-            if(!is.list(.Object@paramlist[["motifPWM"]])){
-                stop("Parameter motifPWM must be a list!")
+        # when use.SavedPWM == NULL, motifPWM must not be NULL
+        if(is.null(.Object@paramlist[["use.SavedPWM"]])){
+            if(is.null(.Object@paramlist[["motifPWM"]])){
+                stop("Parameter motifPWM is required!")
+                if(!is.list(.Object@paramlist[["motifPWM"]])){
+                    stop("Parameter motifPWM must be a list!")
+                }
             }
         }
     }
@@ -177,6 +250,10 @@ setMethod(
 #' @param n.cores How many core to run this function.
 #' Default: from \code{\link{setConfigure}}.
 #' @param prefix prefix for Output file.
+#' @param use.SavedPWM use local motif position information. This data is
+#' download or generate by users. it must be a rds file and the information
+#' saved as GRanges. Once this parameter is used, parameters "genome", "motifPWM",
+#' "min.score", "n.cores" will be set to NULL.
 #' @param ... Additional arguments, currently unused.
 #' @details This function scan motif position in a given genome regions.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
@@ -212,7 +289,7 @@ setMethod(
 setGeneric("atacMotifScan",
            function(atacProc, peak = NULL, genome = NULL,
                     motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                    n.cores = NULL, prefix = NULL, ...) standardGeneric("atacMotifScan"))
+                    n.cores = NULL, prefix = NULL, use.SavedPWM = NULL, ...) standardGeneric("atacMotifScan"))
 
 
 
@@ -224,7 +301,7 @@ setMethod(
     signature = "ATACProc",
     function(atacProc, peak = NULL, genome = NULL,
              motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-             n.cores = NULL, prefix = NULL, ...){
+             n.cores = NULL, prefix = NULL, use.SavedPWM = NULL, ...){
         atacproc <- new(
             "RMotifScan",
             atacProc = atacProc,
@@ -234,7 +311,8 @@ setMethod(
             min.score = min.score,
             scanO.dir = scanO.dir,
             n.cores = n.cores,
-            prefix = prefix)
+            prefix = prefix,
+            use.SavedPWM = use.SavedPWM)
         atacproc <- process(atacproc)
         invisible(atacproc)
     }
@@ -245,7 +323,7 @@ setMethod(
 #' @export
 motifscan <- function(peak = NULL, genome = NULL,
                       motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                      n.cores = NULL, prefix = NULL, ...){
+                      n.cores = NULL, prefix = NULL, use.SavedPWM = NULL, ...){
     atacproc <- new(
         "RMotifScan",
         atacProc = NULL,
@@ -255,126 +333,10 @@ motifscan <- function(peak = NULL, genome = NULL,
         min.score = min.score,
         scanO.dir = scanO.dir,
         n.cores = n.cores,
-        prefix = prefix)
+        prefix = prefix,
+        use.SavedPWM = use.SavedPWM)
     atacproc <- process(atacproc)
     invisible(atacproc)
 }
 
-
-
-#' @name getMotifPWM
-#' @title Processing PFM or PWM file.
-#' @description
-#' atacMotifScan and atacMotifScanPair accept PWM in a \code{list}, this
-#' function convert a PFM or PWM file(in JASPAR format) to a list in R.
-#' @param motif.file PFM or PWM file.
-#' @param is.PWM TRUE or FALSE. If TRUE, the input file contains PWM, do not
-#' need convert to PWM. If FALSE, the input file contains PFM, need convert
-#' to PWM. Default:FALSE.
-#' @param JASPARdb TRUE or FALSE. Whether use JASPAR database or not.
-#' @param Species Taxonomy ID. For human, it's 9606.
-#' @param Name The name of the transcription factor.
-#' @param ID The ID of the transcription factor.
-#' @details Converting a PFM or PWM file(in JASPAR format) to a list in R.
-#' @return A list contains PWM.
-#' @author Wei Zhang
-#' @importFrom TFBSTools PFMatrix
-#' @importFrom TFBSTools as.matrix
-#' @examples
-#'
-#' # from files(user customized)
-#' pfm_file <- system.file("extdata", "CTCF.txt", package="esATAC")
-#' pwm_list <- getMotifPWM(motif.file = pfm_file, is.PWM = FALSE)
-#'
-#' # from JASPAR database
-#' pwm_list <- getMotifPWM(JASPARdb = TRUE, Name = "TFAP2A")
-#'
-#' @export
-getMotifPWM <- function(motif.file = NULL, is.PWM = FALSE, JASPARdb = FALSE,
-                        Species = NULL, Name = NULL, ID = NULL){
-    if(!is.null(motif.file)){
-        PWMList <- list()
-        name.flag <- FALSE
-        A.flag <- FALSE
-        C.flag <- FALSE
-        G.flag <- FALSE
-        T.flag <- FALSE
-
-        con <- file(motif.file, "r")
-        line <- readLines(con, n = 1)
-        while( length(line) != 0 ){
-
-            if(substring(line, 1, 1) == ">"){
-                name_str <- unlist(strsplit(x = sub(pattern = ">", replacement = "", x = line), split = "\\s+"))
-                motif_name <- tail(name_str, n = 1)
-                name.flag <- TRUE
-            }else if(substring(line, 1, 1) == "A"){
-                A_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-                A_num <- as.numeric(unlist(A_str_num))
-                A.flag <- TRUE
-            }else if(substring(line, 1, 1) == "C"){
-                C_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-                C_num <- as.numeric(unlist(C_str_num))
-                C.flag <- TRUE
-            }else if(substring(line, 1, 1) == "G"){
-                G_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-                G_num <- as.numeric(unlist(G_str_num))
-                G.flag <- TRUE
-            }else if(substring(line, 1, 1) == "T"){
-                T_str_num <- regmatches(line, gregexpr("[[:digit:]]+", line))
-                T_num <- as.numeric(unlist(T_str_num))
-                T.flag <- TRUE
-            }
-
-            if(name.flag & A.flag & C.flag & G.flag & T.flag){
-                p_matrix <- matrix(data = c(A_num, C_num, G_num, T_num), nrow = 4,
-                                   byrow = TRUE,  dimnames=list(c("A", "C", "G", "T")))
-
-                if(!is.PWM){
-                    p_matrix <- TFBSTools::PFMatrix(profileMatrix = p_matrix)
-                    p_matrix <- TFBSTools::as.matrix(TFBSTools::toPWM(p_matrix))
-                }
-
-                PWMList[[motif_name]] <- p_matrix
-
-                name.flag <- FALSE
-                A.flag <- FALSE
-                C.flag <- FALSE
-                G.flag <- FALSE
-                T.flag <- FALSE
-            }
-
-            line <- readLines(con, n = 1)
-        }
-        close(con)
-        return(PWMList)
-    }else if(!is.null(JASPARdb)){
-        print("Now, JASPAR2016 database is in use!")
-        if(!is.null(Species)){
-            opts <- list()
-            opts[["species"]] <- Species
-            pwm <- TFBSTools::getMatrixSet(x = JASPAR2016::JASPAR2016, opts = opts)
-            pwm <- TFBSTools::toPWM(pwm)
-            names(pwm) <- TFBSTools::name(pwm)
-            pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
-            names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
-            return(pwm)
-        }else if(!is.null(Name)){
-            pwm <- TFBSTools::getMatrixByName(x = JASPAR2016::JASPAR2016, name = Name)
-            pwm <- TFBSTools::toPWM(pwm)
-            pwm.name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pwm), perl = TRUE)
-            PWMList <- list(pwm.name = TFBSTools::as.matrix(pwm))
-            names(PWMList) <- pwm.name
-            return(PWMList)
-        }else if(!is.null(ID)){
-            pwm <- TFBSTools::getMatrixByID(x = JASPAR2016::JASPAR2016, ID = ID)
-            pwm <- TFBSTools::toPWM(pwm)
-            pwm.name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pwm), perl = TRUE)
-            PWMList <- list(pwm.name = TFBSTools::as.matrix(pwm))
-            names(PWMList) <- pwm.name
-            return(PWMList)
-        }
-    }
-
-}
 
