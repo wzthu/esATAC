@@ -922,10 +922,8 @@ library(esATAC)
 ```
 
 ```{r eval = TRUE, echo = TRUE, results = 'hide', message = FALSE}
-## extract gene ID
-library(clusterProfiler)
-data(geneList)
-geneId <- names(geneList)[1:100]
+## generate simulated geneID
+geneId <- as.character(sample(seq(10000), 100))
 ## do GO analysis
 goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
 ```
