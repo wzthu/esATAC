@@ -161,9 +161,9 @@ setMethod(
 #' @examples
 #'
 #' \dontrun{
-#' library(clusterProfiler)
-#' data(geneList)
-#' geneId <- names(geneList)[1:100]
+#' library(org.Hs.eg.db)
+#' # generate simulated geneID
+#' geneId <- as.character(sample(seq(10000), 100))
 #' goanalysis(gene = geneId, OrgDb = 'org.Hs.eg.db')
 #' }
 #'
