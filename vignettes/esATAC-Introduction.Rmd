@@ -242,7 +242,7 @@ conclusion2 <-
         control=list(fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.2.fq.bz2"),
                      fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
         genome = "hg19",
-        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+        motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 ```
 
 ### single sample
@@ -254,63 +254,8 @@ conclusion <-
         fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz"),
         fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
         genome = "hg19",
-        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
-
-
+        motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 ```
-
-
-## How to use Preset motif data for esATAC
-
-Motif scan is a time-consuming step in ATAC-seq data analysis. We provide functions and data for accelerate this step. We provide Vertebrata motifs from [JASPAR database](http://www.bioconductor.org/packages/release/data/experiment/html/JASPAR2016.html) and use "scanGenomeMotif" function to scan motif information in the genome. Users can use these data to plot footprint. [Click here for download.](https://github.com/A1dnoah/esATAC_preset_motif_data)
-
-The following is the tutorial about how to use esATAC to build preset motif information data and use this data to run ATAC-seq data analysis pipeline.
-
-### How to generate motif data of hg19
-
-```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
-# get motif PWM from JASPAR2016 and change motif ID to motif name
-library(JASPAR2016)
-library(TFBSTools)
-library(esATAC)
-library(BSgenome.Hsapiens.UCSC.hg19)
-
-opts <- list()
-opts[["tax_group"]] <- "vertebrates"  # using vertebrates
-pwm <- getMatrixSet(JASPAR2016, opts)
-pwm <- TFBSTools::toPWM(pwm)  # convert PFM to PWM
-names(pwm) <- TFBSTools::name(pwm)
-pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
-names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)  # remove special characters
-scanGenomeMotif(motifPWM = pwm, refgenome = BSgenome.Hsapiens.UCSC.hg19,
-                min.score = "90%", n.core = 12, output = "JASPAR_verteb_hg19.rds")
-```
-
-Of course, if you want to use another PWM and genome, just change the parameters in "scanGenomeMotif". For more information, please see [*esATAC Reference Manual*](http://www.bioconductor.org/packages/release/bioc/manuals/esATAC/man/esATAC.pdf). 
-
-### How to use this data when analysis ATAC-seq data
-
-```{r eval = FALSE, echo = TRUE, warning = FALSE, results = 'hide', message = FALSE}
-options(java.parameters = "-Xmx8192m")  # set Java parameter
-library(esATAC)
-
-# ATAC-seq data, case&control analysis
-case = list(fastqInput1="ntest1_1.fastq.bz2",fastqInput2="ntest1_2.fastq.bz2",
-            adapter1 = NULL, adapter2 = NULL)
-control =list(fastqInput1="ntest2_1.fastq.bz2",fastqInput2="ntest2_2.fastq.bz2",
-              adapter1 = NULL, adapter2 = NULL)
-              
-results <- atacPipe2(case = case,
-                     control = control,
-                     refdir = "path_to_bowtie2_index",
-                     genome = "hg19",
-                     tmpdir = "path_to_save_temp_data",
-                     threads = 4,
-                     chr = c(1:22, "X", "Y"), use.SavedPWM = "JASPAR_verteb_hg19.rds")
-```
-
-
-
 
 
 ## Use "Conclusion" for Further Analysis
@@ -922,8 +867,10 @@ library(esATAC)
 ```
 
 ```{r eval = TRUE, echo = TRUE, results = 'hide', message = FALSE}
-## generate simulated geneID
-geneId <- as.character(sample(seq(10000), 100))
+## extract gene ID
+library(clusterProfiler)
+data(geneList)
+geneId <- names(geneList)[1:100]
 ## do GO analysis
 goAna <- goanalysis(gene = geneId, OrgDb = "org.Hs.eg.db", keytype = "ENTREZID", ont = "MF")
 ```
@@ -946,21 +893,9 @@ knitr::kable(go_data[1:5, ])
 
 This function search motif occurrence in the given regions.
 
-Function "atacMotifScan" and "motifscan" use  function "matchPWM" in package "Biostrings", for more parameters and usage, [click here](http://www.bioconductor.org/packages/release/bioc/html/Biostrings.html)[6].
+Function "atacMotifScan" and "motifscan" use  function "matchMotifs" in package "motifmatchr", for more parameters and usage, [click here](http://www.bioconductor.org/packages/release/bioc/vignettes/motifmatchr/inst/doc/motifmatchr.html)[6].
 
-Multi-motif is supported, and the output file is named by your input PWM list. for Multi-motif, we offer  parallel computing method for accelerating. Users could specify the parameter "n.cores" to accelerate the program.
-
-The input motif PWM matrix is stored in a list like below.
-
-```{r eval=TRUE,echo=FALSE,message=FALSE}
-library(esATAC)
-```
-
-```{r eval=TRUE, echo=TRUE, warning=FALSE}
-pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
-
-pwm
-```
+Multi-motif is supported, and the output file is named by your input motif list. The input could be PFMatrix, PFMatrixList, PWMatrix, PWMatrixList from [TFBSTools](http://www.bioconductor.org/packages/release/bioc/manuals/TFBSTools/man/TFBSTools.pdf).
 
 Using "motifscan" function to search motif in given genome regions, UCSC bed file is recommended.
 
@@ -973,8 +908,10 @@ sample.path <- system.file("extdata", "chr20_sample_peak.bed.bz2", package="esAT
 sample.path <- as.vector(bunzip2(filename = sample.path,
 destname = file.path(getwd(), "chr20_sample_peak.bed"),
 ext="bz2", FUN=bzfile, overwrite=TRUE, remove = FALSE))
-motif.data <- motifscan(peak = sample.path, genome = BSgenome.Hsapiens.UCSC.hg19,
-motifPWM = pwm, prefix = "test")
+
+motif <- readRDS(system.file("extdata", "MotifPFM.rds", package="esATAC"))
+
+motif.data <- motifscan(peak = sample.path, genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
 ```
 
 This function reports the exact motif position in the given genome like below(motif: CTCF).
@@ -1159,7 +1096,7 @@ and Kui Hua for providing package testing on Macbook.
 
 [5] Yu G, Wang L, Han Y and He Q (2012). “clusterProfiler: an R package for comparing biological themes among gene clusters.” OMICS: A Journal of Integrative Biology, 16(5), pp. 284-287. doi: 10.1089/omi.2011.0118.
 
-[6] Pagès H, Aboyoun P, Gentleman R and DebRoy S (2017). Biostrings: String objects representing biological sequences, and matching algorithms. R package version 2.44.2.
+[6] Schep A (2017). motifmatchr: Fast Motif Matching in R. R package version 1.0.1.
 
 [7] Buenrostro, J. D., Giresi, P. G., Zaba, L. C., Chang, H. Y., & Greenleaf, W. J. (2013). Transposition of native chromatin for fast and sensitive epigenomic profiling of open chromatin, DNA-binding proteins and nucleosome position. Nature methods, 10(12), 1213-1218.
 
