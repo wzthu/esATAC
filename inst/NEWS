@@ -4,3 +4,7 @@ INITIAL RELEASE
 Preset pipelines are available for case study and case-control study.
 All basic elements in preset pipeline are available for building customized pipeline. 
 
+2018.04.18
+Using the new method to scan motif inthe genome, remove preset motif data. The new method 
+is from package "motifmatchr", it cost less than 2mins for a sample(test sample: SRR891268; 
+of course, depend on your computer performance).

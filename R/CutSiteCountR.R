@@ -229,7 +229,7 @@ setMethod(
 #' \code{\link{atacMotifScan}}.
 #' @param csInput Your cut site information file(from atacExtractCutSite
 #' function, separated by chromatin name and all cut site are sorted) path
-#' with prefix. e.g. "/your_cut_site_information_path/prefix"
+#' with prefix. e.g. "/your_cut_site_information_path/prefix".
 #' @param motif_info A rds file from function \code{\link{atacMotifScan}}.
 #' In the rds file, it saves 3 column information(motif, motif exact position
 #' information file path and motif length).
@@ -272,9 +272,8 @@ setMethod(
 #' peak1_path <- as.vector(bunzip2(filename = p1bz,
 #' destname = file.path(getwd(), "Example_peak1.bed"),
 #' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
-#' # pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
-#' # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
-#' # motifPWM = pwm, prefix = "test")
+#' # motif <- readRDS(system.file("extdata", "MotifPFM.rds", package="esATAC"))
+#' # motif.data <- motifscan(peak = peak.path, genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
 #'
 #' ## plot footprint
 #' # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)

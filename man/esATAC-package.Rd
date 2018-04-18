@@ -9,8 +9,8 @@
 atacPipe(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
   tmpdir = NULL, threads = 2, adapter1 = NULL, adapter2 = NULL,
   interleave = FALSE, basicAnalysis = FALSE, createReport = TRUE,
-  motifPWM = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
-  min.score = "90\%", use.SavedPWM = NULL, ...)
+  motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
+  p.cutoff = 1e-04, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -47,7 +47,8 @@ like GO annoation and motif analysis}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifPWM}{\code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).}
+\item{motifs}{either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+\link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.}
 
 \item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
 when multiple pipeline generating file in the same tempdir.}
@@ -56,13 +57,7 @@ when multiple pipeline generating file in the same tempdir.}
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
-\item{min.score}{The minimum score for counting a match. Can be given as a
-character string containing a percentage (default: "90%") of the highest
-possible score or as a single number.}
-
-\item{use.SavedPWM}{use local motif position information. This data is
-download or generate by users. it must be a rds file and the information
-saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.}
+\item{p.cutoff}{p-value cutoff for returning motifs, default:0.0001.}
 
 \item{...}{Additional arguments, currently unused.}
 }
@@ -139,7 +134,7 @@ See packageDescription('esATAC') for package details.
 
 
 # call pipeline
-# for a quick example(only CTCF will be processing)
+# for a quick example(only CTCF and BATF3 will be processing)
 conclusion <-
   atacPipe(
        # MODIFY: Change these paths to your own case files!
@@ -148,10 +143,10 @@ conclusion <-
        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
        # MODIFY: Set the genome for your data
        genome = "hg19",
-       motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+       motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 
 # call pipeline
-# for overall example(all human motif in JASPAR will be processed)
+# for overall example(all vertebrates motif in JASPAR will be processed)
 conclusion <-
   atacPipe(
        # MODIFY: Change these paths to your own case files!

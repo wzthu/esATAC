@@ -8,17 +8,14 @@
 \alias{motifscan}
 \title{Search Motif Position in Given Regions}
 \usage{
-atacMotifScan(atacProc, peak = NULL, genome = NULL, motifPWM = NULL,
-  min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL,
-  use.SavedPWM = NULL, ...)
+atacMotifScan(atacProc, peak = NULL, genome = NULL, motifs = NULL,
+  p.cutoff = 1e-04, scanO.dir = NULL, prefix = NULL, ...)
 
 \S4method{atacMotifScan}{ATACProc}(atacProc, peak = NULL, genome = NULL,
-  motifPWM = NULL, min.score = "85\%", scanO.dir = NULL, n.cores = NULL,
-  prefix = NULL, use.SavedPWM = NULL, ...)
+  motifs = NULL, p.cutoff = 1e-04, scanO.dir = NULL, prefix = NULL, ...)
 
-motifscan(peak = NULL, genome = NULL, motifPWM = NULL,
-  min.score = "85\%", scanO.dir = NULL, n.cores = NULL, prefix = NULL,
-  use.SavedPWM = NULL, ...)
+motifscan(peak = NULL, genome = NULL, motifs = NULL, p.cutoff = 1e-04,
+  scanO.dir = NULL, prefix = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -30,29 +27,18 @@ Input region path. UCSC bed file is recommented. Other file should be able
 to import as \link[GenomicRanges]{GRanges} objects through
 \link[rtracklayer]{import}.}
 
-\item{genome}{A DNAString object.}
+\item{genome}{BSgenome object, Default: from \code{\link{setConfigure}}.}
 
-\item{motifPWM}{\code{list} scalar. Default: from \code{\link{setConfigure}}.
-Every element in the \code{list} contains a motif PWM matrix.
-e.g. pwm <- list("CTCF" = CTCF_PWMmatrix)}
+\item{motifs}{either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+\link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}.}
 
-\item{min.score}{The minimum score for counting a match. Can be given as a
-character string containing a percentage (e.g. "85%") of the highest
-possible score or as a single number.}
+\item{p.cutoff}{p-value cutoff for returning motifs.}
 
 \item{scanO.dir}{\code{Character} scalar.
-the output file directory. This function will use the index in motifPWM as
+the output file directory. This function will use the name in motifs as
 the file name to save the motif position information in separate files.}
 
-\item{n.cores}{How many core to run this function.
-Default: from \code{\link{setConfigure}}.}
-
 \item{prefix}{prefix for Output file.}
-
-\item{use.SavedPWM}{use local motif position information. This data is
-download or generate by users. it must be a rds file and the information
-saved as GRanges. Once this parameter is used, parameters "genome", "motifPWM",
-"min.score", "n.cores" will be set to NULL.}
 
 \item{...}{Additional arguments, currently unused.}
 }
@@ -61,30 +47,29 @@ An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{
-Search motif position in given genome regions according PWM matrix.
+Search motif position in genome according thr given motif and peak information.
 }
 \details{
 This function scan motif position in a given genome regions.
 }
 \examples{
 
-library(BSgenome.Hsapiens.UCSC.hg19)
+\dontrun{
 library(R.utils)
-p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
-peak1_path <- as.vector(bunzip2(filename = p1bz,
-destname = file.path(getwd(), "Example_peak1.bed"),
-ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
-pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
-#motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19,
-#motifPWM = pwm, prefix = "test")
+library(BSgenome.Hsapiens.UCSC.hg19)
+peak.path <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
+peak.path <- as.vector(bunzip2(filename = peak.path, destname = file.path(getwd(), "Example_peak1.bed"), ext="bz2", FUN=bzfile, overwrite=TRUE , remove = FALSE))
+
+motif <- readRDS(system.file("extdata", "MotifPFM.rds", package="esATAC"))
+
+motifscan(peak = peak.path, genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
+}
 
 
 }
 \seealso{
 \code{\link{atacPeakCalling}}
 \code{\link{atacCutSiteCount}}
-\link[Biostrings]{matchPWM}
-\link[IRanges]{subsetByOverlaps}
 }
 \author{
 Wei Zhang

@@ -58,7 +58,8 @@ Imports:
     utils,
     parallel,
     corrplot,    
-    BiocInstaller
+    BiocInstaller,
+    motifmatchr
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
