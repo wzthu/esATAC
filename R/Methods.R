@@ -23,7 +23,7 @@ getVMShow <- function(readSize,detail = FALSE){
     }else{
         return(sprintf("%.1fM",vm[2]))
     }
-    
+
 }
 getVMRShow <- function(readSize,total,detail = FALSE){
     vmr <- getVMR(readSize,total)
@@ -33,7 +33,7 @@ getVMRShow <- function(readSize,total,detail = FALSE){
     }else{
         return(sprintf("%.1fM (%.2f%s)",vmr[2],vmr[3],"%"))
     }
-    
+
 }
 getRshow <- function(readSize,total,detail = FALSE){
     vmr <- getVMR(readSize,total)
@@ -43,7 +43,7 @@ getRshow <- function(readSize,total,detail = FALSE){
     }else{
         return(sprintf("%.2f",vmr[3]/100))
     }
-    
+
 }
 
 
@@ -151,18 +151,14 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param basicAnalysis \code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps
 #' like GO annoation and motif analysis
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifPWM \code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).
+#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param min.score The minimum score for counting a match. Can be given as a
-#' character string containing a percentage (default: "90%") of the highest
-#' possible score or as a single number.
-#' @param use.SavedPWM use local motif position information. This data is
-#' download or generate by users. it must be a rds file and the information
-#' saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.
+#' @param p.cutoff p-value cutoff for returning motifs, default:0.0001.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "filelist": the input file paths.
@@ -188,7 +184,7 @@ getSuffixlessFileName0 <- function(filePath){
 #'
 #'
 #' # call pipeline
-#' # for a quick example(only CTCF will be processing)
+#' # for a quick example(only CTCF and BATF3 will be processing)
 #' conclusion <-
 #'   atacPipe(
 #'        # MODIFY: Change these paths to your own case files!
@@ -197,10 +193,10 @@ getSuffixlessFileName0 <- function(filePath){
 #'        fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz"),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
-#'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+#'        motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 #'
 #' # call pipeline
-#' # for overall example(all human motif in JASPAR will be processed)
+#' # for overall example(all vertebrates motif in JASPAR will be processed)
 #' conclusion <-
 #'   atacPipe(
 #'        # MODIFY: Change these paths to your own case files!
@@ -213,9 +209,9 @@ getSuffixlessFileName0 <- function(filePath){
 #' @export
 
 atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=NULL, threads=2, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE,  basicAnalysis = FALSE, createReport = TRUE, motifPWM = NULL, prefix = NULL,
-                     chr = c(1:22, "X", "Y"), min.score = "90%", use.SavedPWM = NULL, ...){ #saveTmp = TRUE,
-    
+                     interleave = FALSE,  basicAnalysis = FALSE, createReport = TRUE, motifs = NULL, prefix = NULL,
+                     chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){ #saveTmp = TRUE,
+
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
     }
@@ -225,7 +221,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
     if(!is.null(fastqInput2)){
         fastqInput2 = normalizePath(fastqInput2)
     }
-    
+
     esATAC_result <- NULL
     esATAC_report <- NULL
     param.tmp <- list(...)
@@ -294,7 +290,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
     message(esATAC_result)
     message("final esATAC_report")
     message(esATAC_report)
-    
+
     unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
     atacQC <- atacQCReport(atacProc = unzipAndMerge)
     renamer <- atacRenamer(unzipAndMerge)
@@ -304,7 +300,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
     sam2Bed <-atacSamToBed(bowtie2Mapping,maxFragLen = 2000)
     bedToBigWig <- atacBedToBigWig(sam2Bed)
     tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc100")),fragLenRange = c(0,100))
-    
+
     if(is.null(fastqInput2)&&!interleave){
         peakCalling <- atacPeakCalling(sam2Bed)
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
@@ -318,35 +314,30 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
-        
+
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         if(!basicAnalysis){
+            # GO term
             goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-            if(is.null(use.SavedPWM)){
-                if(is.null(motifPWM)){
-                    opts <- list()
-                    opts[["tax_group"]] <- "vertebrates"
-                    pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
-                    pwm <- TFBSTools::toPWM(pwm)
-                    names(pwm) <- TFBSTools::name(pwm)
-                    pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
-                    names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
-                }else{
-                    pwm <- motifPWM
-                }
-                output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = min.score, prefix = prefix)
+
+            # set default motif
+            if(is.null(motifs)){
+                opts <- list()
+                opts[["tax_group"]] <- "vertebrates"
+                pfm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+                names(pfm) <- TFBSTools::name(pfm)
+                names(pfm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pfm), perl = TRUE)
             }else{
-                output_motifscan <- atacMotifScan(atacProc = peakCalling, use.SavedPWM = use.SavedPWM, prefix = prefix)
+                pfm <- motifs
             }
-            
-            
-            
+            output_motifscan <- atacMotifScan(atacProc = peakCalling, motifs = pfm, p.cutoff = p.cutoff, prefix = prefix)
+
             cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
             footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
                                           strandLength = 100, prefix = prefix, chr = chr)
         }
     }
-    
+
     if(interleave){
         seqtype <- "paired end (PE,interleave)"
         frag <- 2
@@ -382,7 +373,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
                                          "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
                                          "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
                                          "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
-                                  
+
                                   Value=c(seqtype,
                                           getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
                                           getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
@@ -486,7 +477,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
         )
         return(conclusion)
     }
-    
+
     wholesummary = data.frame(Item=c("Sequence Files Type",
                                      "Original total reads",
                                      "-- Reads after adapter removing (ratio)",
@@ -507,7 +498,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
                                      "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
                                      "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
                                      "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
-                              
+
                               Value=c(seqtype,
                                       getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
                                       getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
@@ -638,37 +629,37 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
                        atacQC = atacQC
         )
     }
-    
+
     conclusion <- list(filelist=filelist,
                        wholesummary = wholesummary,
                        atacProcs = atacProcs,
                        filtstat = filtstat
     )
-    
+
     if(createReport){
         message("Begin to generate report")
         filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         filename <- basename(filename)
-        
+
         if(basicAnalysis){
             rmdfile<-system.file(package="esATAC", "extdata", "basicReport.Rmd")
         }else{
             rmdfile<-system.file(package="esATAC", "extdata", "Report.Rmd")
         }
-        
+
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
-        
+
         workdir <- getwd()
         save(filelist,wholesummary,filtstat,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
-        
+
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
         #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
         #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
         message("Generate report done")
-        
+
         if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
             file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_report, overwrite = TRUE)
             file.copy(getReportVal(atacQC,"pdf"),esATAC_report, overwrite = TRUE)
@@ -685,11 +676,11 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
         }
     }
-    
+
     invisible(conclusion)
-    
-    
-    
+
+
+
 }
 
 
@@ -715,16 +706,12 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifPWM \code{List} scalar. Motif PWM, a list, default:vertebrates(JASPAR).
+#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param min.score The minimum score for counting a match. Can be given as a
-#' character string containing a percentage (default: "90%") of the highest
-#' possible score or as a single number.
-#' @param use.SavedPWM use local motif position information. This data is
-#' download or generate by users. it must be a rds file and the information
-#' saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.
+#' @param p.cutoff p-value cutoff for returning motifs, default: 0.0001.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "wholesummary": a dataframe for quality control summary of  case and control data
@@ -769,7 +756,6 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 #' \code{\link{atacPipe}}
 #' @import JASPAR2016
 #' @importFrom TFBSTools getMatrixSet
-#' @importFrom TFBSTools toPWM
 #' @importFrom TFBSTools name
 #' @examples
 #' \dontrun{
@@ -778,7 +764,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 #'
 #'
 #' # call pipeline
-#' # for a quick example(only CTCF will be processed)
+#' # for a quick example(only CTCF and BATF3 will be processed)
 #' conclusion <-
 #'    atacPipe2(
 #'        # MODIFY: Change these paths to your own case files!
@@ -791,10 +777,10 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 #'                     fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
-#'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+#'        motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 #'
 #' # call pipeline
-#' # for overall example(all human motif in JASPAR will be processed)
+#' # for overall example(all vertebrates motif in JASPAR will be processed)
 #' conclusion <-
 #'    atacPipe2(
 #'        # MODIFY: Change these paths to your own case files!
@@ -812,9 +798,8 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 #'
 atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      refdir=NULL, tmpdir=NULL, threads=2,
-                      interleave = FALSE, createReport = TRUE, motifPWM = NULL, chr = c(1:22, "X", "Y"), min.score = "90%",
-                      use.SavedPWM = NULL,  ...){ #saveTmp = TRUE,
+                      refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
+                      chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -827,7 +812,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
     if(!interleave && (control[["fastqInput2"]]=="paths/To/fastq2"||is.null(control[["fastqInput2"]]))){
         stop("fastqInput2 for control can not be NULL")
     }
-    
+
     param.tmp <- list(...)
     if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
         if(!is.null(refdir)){
@@ -890,88 +875,66 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
             esATAC_report <- param.tmp[["esATAC_report"]]
         }
     }
-    
-    if(is.null(use.SavedPWM)){
-        if(is.null(motifPWM)){
-            opts <- list()
-            opts[["tax_group"]] <- "vertebrates"
-            pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
-            pwm <- TFBSTools::toPWM(pwm)
-            names(pwm) <- TFBSTools::name(pwm)
-            pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
-            names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
-        }else{
-            pwm <- motifPWM
-        }
+
+    if(is.null(motifs)){
+        opts <- list()
+        opts[["tax_group"]] <- "vertebrates"
+        pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+        names(pwm) <- TFBSTools::name(pwm)
+        names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
+    }else{
+        pwm <- motifs
     }
-    
+
     message("Begin to process case sample...")
-    if(is.null(use.SavedPWM)){
-        caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
-                             adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-                             createReport = FALSE, motifPWM =pwm, prefix = "Case_data", chr = chr,
-                             min.score = min.score, dontSet=TRUE) #saveTmp = TRUE,
-    }else{
-        caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
-                             adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-                             createReport = FALSE, prefix = "Case_data", chr = chr, use.SavedPWM = use.SavedPWM,
-                             dontSet=TRUE) #saveTmp = TRUE,
-    }
-    
+    caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
+                         adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
+                         createReport = FALSE, motifs = pwm, prefix = "Case_data", chr = chr,
+                         p.cutoff = p.cutoff, dontSet = TRUE) #saveTmp = TRUE,
     message("Case sample process done")
+
     message(" ")
+
     message("Begin to process control sample")
-    if(is.null(use.SavedPWM)){
-        ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
-                             adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-                             createReport = FALSE, motifPWM =pwm, prefix = "Control_data", chr = chr,
-                             min.score = min.score, dontSet=TRUE) #saveTmp = TRUE,
-    }else{
-        ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
-                             adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-                             createReport = FALSE, prefix = "Control_data", chr = chr, use.SavedPWM = use.SavedPWM,
-                             dontSet=TRUE) #saveTmp = TRUE,
-    }
-    
+    ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
+                         adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
+                         createReport = FALSE, motifs = pwm, prefix = "Control_data", chr = chr,
+                         p.cutoff = p.cutoff, dontSet = TRUE) #saveTmp = TRUE,
     message("control sample process done")
+
     message(" ")
+
     message("Begin to generate summary")
     bed.case <- getParam(caselist$atacProcs$sam2Bed, "bedOutput")
     bed.ctrl <- getParam(ctrllist$atacProcs$sam2Bed, "bedOutput")
-    
+
     case.peak <- getParam(caselist$atacProcs$peakCalling, "bedOutput")
     ctrl.peak <- getParam(ctrllist$atacProcs$peakCalling,"bedOutput")
-    
+
     peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak)
     case_specific.peak <- getParam(peakCom, "bedOutput")[1]
     ctrl_specific.peak <- getParam(peakCom, "bedOutput")[2]
     overlap.peak <- getParam(peakCom, "bedOutput")[3]
-    
+
     # for case
     Peakanno.case <- peakanno(peakInput = case_specific.peak)
     goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
-    
+
     # for ctrl
     Peakanno.ctrl <- peakanno(peakInput = ctrl_specific.peak)
     goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
-    if(is.null(use.SavedPWM)){
-        mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = min.score)
-    }else{
-        mout <- atacMotifScanPair(atacProc = peakCom, use.SavedPWM = use.SavedPWM)
-    }
-    
-    
+
+    # motif analysis
+    mout <- atacMotifScanPair(atacProc = peakCom, motifs = pwm, p.cutoff = p.cutoff)
     cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
     cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CONTROL")
-    
     footprint.case <- atacCutSiteCount(atacProcCutSite = cs_case,
                                        motif_info = getParam(mout, "rdsOutput.peak1"),
                                        strandLength = 100, prefix = "Case_specific", chr = chr)
-    
     footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_ctrl,
                                        motif_info = getParam(mout, "rdsOutput.peak2"),
                                        strandLength = 100, prefix = "Control_specific", chr = chr)
-    
+
     comp_result <- list(
         Peakanno.case = Peakanno.case,
         Peakanno.ctrl = Peakanno.ctrl,
@@ -982,19 +945,19 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
         footprint.case = footprint.case,
         footprint.ctrl = footprint.ctrl
     )
-    
+
     wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
                                Case = caselist[["wholesummary"]][["Value"]],
                                Control = ctrllist[["wholesummary"]][["Value"]],
                                Reference = ctrllist[["wholesummary"]][["Reference"]])
-    
+
     conclusion <- list(caselist = caselist,
                        ctrllist = ctrllist,
                        wholesummary = wholesummary
     )
     casefilelist <- caselist[["filelist"]]
     ctrlfilelist <- ctrllist[["filelist"]]
-    
+
     filtstat <- data.frame(Item = caselist[["filtstat"]][["Item"]],
                            Case = caselist[["filtstat"]][["Value"]],
                            Control = ctrllist[["filtstat"]][["Value"]],
@@ -1004,14 +967,14 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
         message("Begin to generate Report")
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
-        
+
         rmdfile<-system.file(package="esATAC", "extdata", "Report2.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
-        
+
         workdir <- getwd()
         save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
-        
+
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
@@ -1027,12 +990,12 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
             dir.create(file.path(esATAC_result,"peak"))
             file.copy(getParam(caselist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
             file.copy(getParam(ctrllist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
-            
+
             file.copy(getReportVal(caselist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(comp_result$Peakanno.case,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(comp_result$Peakanno.ctrl,"annoOutput"), esATAC_result, overwrite = TRUE)
-            
+
             file.copy(from = getReportVal(caselist$atacProcs$footprint, "pdf.dir"),
                       to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             file.copy(from = getReportVal(ctrllist$atacProcs$footprint, "pdf.dir"),
@@ -1050,7 +1013,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
             motif_enrich.case_file <- paste(esATAC_result, "/motif_enrichment_Case.txt", sep = "")
             write.table(x = motif_enrich.case, file = motif_enrich.case_file, sep = "\t",
                         row.names = TRUE, col.names = TRUE)
-            
+
             motif_enrich.ctrl <- getReportVal(comp_result$mout, "rdsOutput.peak2")
             motif_enrich.ctrl <- motif_enrich.ctrl[, c(1, 3, 4)]
             colnames(motif_enrich.ctrl) <- c("motif", "motif length", "p_value")
@@ -1064,9 +1027,9 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report2.html")))
         }
     }
-    
+
     invisible(conclusion)
-    
+
 }
 
 
@@ -1107,18 +1070,14 @@ checkFilePathExist <- function(afilePaths){
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifPWM \code{List} scalar. Motif PWM, a list.
+#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param min.score The minimum score for counting a match. Can be given as a
-#' character string containing a percentage (default: "90%") of the highest
-#' possible score or as a single number.
-#' @param use.SavedPWM use local motif position information. This data is
-#' download or generate by users. it must be a rds file and the information
-#' saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.
+#' @param p.cutoff p-value cutoff for returning motifs, default:0.0001.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "filelist": the input file paths.
@@ -1142,7 +1101,7 @@ checkFilePathExist <- function(afilePaths){
 #'
 #'
 #' # call pipeline
-#' # for a quick example(only CTCF will be processing)
+#' # for a quick example(only CTCF and BATF3 will be processing)
 #' conclusion <-
 #'   atacRepsPipe(
 #'        # MODIFY: Change these paths to your own case files!
@@ -1153,10 +1112,10 @@ checkFilePathExist <- function(afilePaths){
 #'                           system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
 #'        # MODIFY: Set the genome for your data
 #'        genome = "hg19",
-#'        motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+#'        motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 #'
 #' # call pipeline
-#' # for overall example(all human motif in JASPAR will be processed)
+#' # for overall example(all vertebrates motif in JASPAR will be processed)
 #' conclusion <-
 #'   atacRepsPipe(
 #'        # MODIFY: Change these paths to your own case files!
@@ -1173,9 +1132,9 @@ checkFilePathExist <- function(afilePaths){
 #' @importFrom grDevices colorRampPalette
 #' @export
 #'
-atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpdir=NULL, threads=2, adapter1 = NULL, adapter2 = NULL,
-                         interleave = FALSE,  createReport = TRUE, motifPWM = NULL, prefix = NULL,
-                         chr = c(1:22, "X", "Y"), min.score = "90%", use.SavedPWM = NULL, ...){
+atacRepsPipe <- function(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL, tmpdir = NULL, threads = 2,
+                         adapter1 = NULL, adapter2 = NULL, interleave = FALSE,  createReport = TRUE,
+                         motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
     }
@@ -1193,11 +1152,11 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
         }else{
             stop("fastqInput1 must be a list")
         }
-        
+
     }else{
         stop("fastqInput1 is required!")
     }
-    
+
     if(!is.null(fastqInput2)){
         if(class(fastqInput2)=="list"){
             if(length(fastqInput1)!=length(fastqInput2)){
@@ -1219,19 +1178,17 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
             stop("fastqInput2 must be a list")
         }
     }
-    
-    if(is.null(motifPWM)){
+
+    if(is.null(motifs)){
         opts <- list()
         opts[["tax_group"]] <- "vertebrates"
         pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
-        pwm <- TFBSTools::toPWM(pwm)
         names(pwm) <- TFBSTools::name(pwm)
-        pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
         names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
     }else{
-        pwm <- motifPWM
+        pwm <- motifs
     }
-    
+
     param.tmp <- list(...)
     if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
         if(!is.null(refdir)){
@@ -1295,10 +1252,10 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
         }
     }
     tmpdir <- .obtainConfigure("tmpdir")
-    
-    
+
+
     conclusions <- list()
-    
+
     for(n in 1:length(fastqInput1)){
         if(!dir.exists(file.path(tmpdir,sprintf("replicate%d",n)))){
             dir.create(file.path(tmpdir,sprintf("replicate%d",n)))
@@ -1322,40 +1279,24 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
         if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
             dir.create(file.path(esATAC_result,sprintf("replicate%d",n)))
             dir.create(file.path(esATAC_report,sprintf("replicate%d",n)))
-            if(is.null(use.SavedPWM)){
-                conclusions[[n]]<-atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
-                                           tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
-                                           interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, motifPWM = motifPWM, prefix = prefix,
-                                           chr = chr, min.score = min.score, dontSet=TRUE,
-                                           esATAC_result=normalizePath(file.path(esATAC_result,sprintf("replicate%d",n))),
-                                           esATAC_report=normalizePath(file.path(esATAC_report,sprintf("replicate%d",n))),...)
-            }else{
-                conclusions[[n]]<-atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
-                                           tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
-                                           interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, prefix = prefix,
-                                           chr = chr, use.SavedPWM = use.SavedPWM, dontSet=TRUE,
-                                           esATAC_result=normalizePath(file.path(esATAC_result,sprintf("replicate%d",n))),
-                                           esATAC_report=normalizePath(file.path(esATAC_report,sprintf("replicate%d",n))),...)
-            }
-            
+            conclusions[[n]] <- atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
+                                         tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
+                                         interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, motifs = motifs,
+                                         prefix = prefix, chr = chr, p.cutoff = p.cutoff, dontSet = TRUE,
+                                         esATAC_result = normalizePath(file.path(esATAC_result,sprintf("replicate%d",n))),
+                                         esATAC_report = normalizePath(file.path(esATAC_report,sprintf("replicate%d",n))),...)
+
         }else{
-            if(is.null(use.SavedPWM)){
-                conclusions[[n]]<-atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
-                                           tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
-                                           interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, motifPWM = motifPWM, prefix = prefix,
-                                           chr = chr, min.score = min.score, dontSet=TRUE,...)
-            }else{
-                conclusions[[n]]<-atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
-                                           tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
-                                           interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, prefix = prefix,
-                                           chr = chr, use.SavedPWM = use.SavedPWM, dontSet=TRUE,...)
-            }
+            conclusions[[n]] <- atacPipe(genome = genome, fastqInput1 = fastqInput1[[n]],fastqInput2 = fastqInput2n, refdir = refdir,
+                                         tmpdir = tmpdir, threads = threads, adapter1 = adapter1n, adapter2 = adapter2n,
+                                         interleave = interleave,  basicAnalysis = TRUE, createReport = createReport, motifs = motifs,
+                                         prefix = prefix, chr = chr, p.cutoff = p.cutoff, dontSet=TRUE,...)
         }
     }
     if(!dir.exists(file.path(tmpdir,"rep_concord_merge"))){
         dir.create(file.path(tmpdir,"rep_concord_merge"))
     }
-    
+
     unionPeak <- GRanges()
     genome <- seqinfo(.obtainConfigure("bsgenome"))
     peaklist <- list()
@@ -1379,7 +1320,7 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
     }else{
         venn.diagram(x = peaknumset,filename = file.path(.obtainConfigure("tmpdir"),"vennDiagram.tiff"))
     }
-    
+
     binsList <- NULL
     for(n in 1:length(fastqInput1)){
         binsList<-cbind(binsList, getBinsReadsCount(bedInput = getParam(conclusions[[n]][["atacProcs"]][["sam2Bed"]],"bedOutput"),
@@ -1389,13 +1330,13 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
     correlation <- cor(binsList)
     message("the correlation matrix:")
     print(correlation)
-    
-    
-    coltable <- colorRampPalette(c("red", "white", "blue")) 
+
+
+    coltable <- colorRampPalette(c("red", "white", "blue"))
     pdf(file=file.path(.obtainConfigure("tmpdir"),"corrplot.pdf"))
     corrplot(correlation, method = "color", type = "upper",addCoef.col = "grey", cl.lim = c(0, 1),col = coltable(100))
     dev.off()
-    
+
     mergedReadsBed <- file.path(.obtainConfigure("tmpdir"),"mergedReads.bed")
     file.create(mergedReadsBed)
     if(!is.null(fastqInput2)){
@@ -1406,28 +1347,27 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
         sortedReadsBed <- bedUtils(bedInput = mergedReadsBed, bedOutput = paste0(mergedReadsBed,".sorted.bed"), chrFilterList = NULL,sortBed = TRUE)
         shortBed <- atacBedUtils(sortedReadsBed, maxFragLen = 100, chrFilterList = NULL)
         peakCalling <- atacPeakCalling(shortBed)
-        
-        
+
+
         bedToBigWig <- atacBedToBigWig(shortBed)
         tssqc100 <-atacTSSQC(sortedReadsBed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(mergedReadsBed),".tssqc100")),fragLenRange = c(0,100))
         tssqc180_247 <-atacTSSQC(sortedReadsBed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(mergedReadsBed),".tssqc180_247")),fragLenRange = c(180,247))
         fragLenDistr <- atacFragLenDistr(sortedReadsBed)
-        
+
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(mergedReadsBed),".DHSQC")))
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(mergedReadsBed),".blacklistQC")))
         fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
-        
+
+        # peak annotation and GO analysis
         Peakanno <- atacPeakAnno(atacProc = peakCalling)
         goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-        if(is.null(use.SavedPWM)){
-            output_motifscan <- atacMotifScan(atacProc = peakCalling, motifPWM = pwm, min.score = min.score, prefix = prefix)
-        }else{
-            output_motifscan <- atacMotifScan(atacProc = peakCalling, use.SavedPWM = use.SavedPWM, prefix = prefix)
-        }
+
+        # motif analysis
+        output_motifscan <- atacMotifScan(atacProc = peakCalling, motifs = pwm, p.cutoff = p.cutoff, prefix = prefix)
         cs_output <- atacExtractCutSite(atacProc = sortedReadsBed, prefix = prefix)
         footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
                                       strandLength = 100, prefix = prefix, chr = chr)
-        
+
         if(interleave){
             seqtype <- "paired end (PE,interleave)"
             frag <- 2
@@ -1444,9 +1384,9 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
             filelist <- data.frame(`Mate1 files`=fastqInput1,
                                    `Mate2 files`=fastqInput2)
         }
-        
-        
-        
+
+
+
         atacProcs=list(
             bedToBigWig = bedToBigWig,
             tssqc100 = tssqc100,
@@ -1470,42 +1410,42 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
             correlation = correlation,
             binsList = binsList,
             atacProcs = atacProcs)
-        
+
         if(createReport){
             message("Begin to generate report")
-            
-            
+
+
             rmdfile<-system.file(package="esATAC", "extdata", "Rep_Report.Rmd")
             rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
             #rmdtext<-sprintf(rmdtext,filename)
-            
+
             workdir <- getwd()
             save(atacProcs,peaknumset,correlation,binsList,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
-            
+
             writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Rep_Report.Rmd"),useBytes = TRUE)
             render(file.path(.obtainConfigure("tmpdir"),"Rep_Report.Rmd"))
             #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
             #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
             #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
             message("Generate report done")
-            
-            
-            
-            
+
+
+
+
             if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
-                
+
                 #generate html index file
                 replicateNum <- paste0("replicate ",1:length(fastqInput1))
                 urllink <- paste0("<a href='./replicate",1:length(fastqInput1),"/Report.html'>","replicate ",1:length(fastqInput1)," report link</a>")
                 singleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
-                
+
                 mergeConRep <- data.frame(Report_Name="concordance and merge",Link="<a href='./rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
                 save(singleRep,mergeConRep,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
                 rmdidxfile<-system.file(package="esATAC", "extdata", "Rep_Report_Index.Rmd")
                 file.copy(rmdidxfile,.obtainConfigure("tmpdir"), overwrite = TRUE)
                 render(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.Rmd"))
                 file.copy(file.path(.obtainConfigure("tmpdir"),"Rep_Report_Index.html"),file.path(esATAC_report,"Report.html"), overwrite = TRUE)
-                
+
                 ## copy other files
                 esATAC_report <- file.path(esATAC_report,"rep_concord_merge")
                 esATAC_result <- file.path(esATAC_result,"rep_concord_merge")
@@ -1518,20 +1458,20 @@ atacRepsPipe <- function(genome, fastqInput1,fastqInput2=NULL, refdir=NULL, tmpd
                 file.copy(getReportVal(Peakanno,"annoOutput"),esATAC_result, overwrite = TRUE)
                 file.copy(from = getReportVal(atacProcs$footprint,"pdf.dir"),
                           to = esATAC_result, overwrite = TRUE, recursive = TRUE)
-                
-                
-                
-                
+
+
+
+
                 message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Report.html")))
             }else{
                 message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
             }
         }
     }
-    
-    
+
+
     invisible(conclusion)
-    
+
 }
 
 #' @importFrom GenomeInfoDb seqlengths
@@ -1606,16 +1546,12 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifPWM \code{List} scalar. Motif PWM list.
+#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param min.score The minimum score for counting a match. Can be given as a
-#' character string containing a percentage (default: "90%") of the highest
-#' possible score or as a single number.
-#' @param use.SavedPWM use local motif position information. This data is
-#' download or generate by users. it must be a rds file and the information
-#' saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.
+#' @param p.cutoff p-value cutoff for returning motifs, default: 0.0001.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "caselist" and "ctrlist": Each of them is a list that save the result for case or control data.
@@ -1685,7 +1621,7 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 #'                           system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
 #'      # MODIFY: Set the genome for your data
 #'      genome = "hg19",
-#'      motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+#'      motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 #'
 #'
 #' # call pipeline
@@ -1716,9 +1652,9 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 #'
 atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInput1, ctrlFastqInput2,
                           caseAdapter1 = NULL, caseAdapter2 = NULL, ctrlAdapter1 = NULL, ctrlAdapter2 = NULL,
-                          refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifPWM = NULL,
-                          chr = c(1:22, "X", "Y"), min.score = "90%", use.SavedPWM = NULL, ...){ #saveTmp = TRUE,
-    
+                          refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
+                          chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){ #saveTmp = TRUE,
+
     stopifnot(is.list(caseFastqInput1))
     stopifnot(length(caseFastqInput1)>0)
     for(n in 1:length(caseFastqInput1)){
@@ -1730,7 +1666,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             stop("the number of adapters in caseAdapter1 do not match the number of replicates in caseFastqInput1")
         }
     }
-    
+
     stopifnot(is.list(caseFastqInput2))
     stopifnot(length(caseFastqInput2)>0)
     if(length(caseFastqInput1)!=length(caseFastqInput2)){
@@ -1748,7 +1684,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             stop("the number of adapters in caseAdapter2 do not match the number of replicates in caseFastqInput2")
         }
     }
-    
+
     stopifnot(is.list(ctrlFastqInput1))
     stopifnot(length(ctrlFastqInput1)>1)
     for(n in 1:length(ctrlFastqInput1)){
@@ -1760,7 +1696,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             stop("the number of adapters in ctrlAdapter1 do not match the number of replicates in ctrlFastqInput1")
         }
     }
-    
+
     stopifnot(is.list(ctrlFastqInput2))
     stopifnot(length(ctrlFastqInput2)>1)
     if(length(ctrlFastqInput1)!=length(ctrlFastqInput2)){
@@ -1778,9 +1714,9 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             stop("the number of adapters in ctrlAdapter2 do not match the number of replicates in ctrlFastqInput2")
         }
     }
-    
-    
-    
+
+
+
     param.tmp <- list(...)
     if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
         if(!is.null(refdir)){
@@ -1843,113 +1779,86 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             esATAC_report <- param.tmp[["esATAC_report"]]
         }
     }
-    
-    if(is.null(use.SavedPWM)){
-        if(is.null(motifPWM)){
-            opts <- list()
-            opts[["tax_group"]] <- "vertebrates"
-            pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
-            pwm <- TFBSTools::toPWM(pwm)
-            names(pwm) <- TFBSTools::name(pwm)
-            pwm <- lapply(X = pwm, FUN = TFBSTools::as.matrix)
-            names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
-            pwm <- pwm[1:4]
-        }else{
-            pwm <- motifPWM
-        }
+
+    if(is.null(motifs)){
+        opts <- list()
+        opts[["tax_group"]] <- "vertebrates"
+        pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+        names(pwm) <- TFBSTools::name(pwm)
+        names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
+    }else{
+        pwm <- motifs
     }
-    
+
     message("Begin to process case sample...")
     tmpdir <- .obtainConfigure("tmpdir")
     dir.create(file.path(tmpdir,"case"))
     dir.create(file.path(esATAC_report,"case"))
     dir.create(file.path(esATAC_result,"case"))
     options(atacConf=setConfigure("tmpdir",file.path(tmpdir,"case")))
-    
-    
-    if(is.null(use.SavedPWM)){
-        caselist <- atacRepsPipe(genome = genome, fastqInput1 = caseFastqInput1,fastqInput2 = caseFastqInput2,
-                                 adapter1 = caseAdapter1, adapter2 = caseAdapter2,interleave = interleave,
-                                 createReport = TRUE, motifPWM =pwm, prefix = "Case_data", chr = chr, dontSet=TRUE, min.score = min.score,
-                                 esATAC_report = file.path(esATAC_report,"case"), esATAC_result = file.path(esATAC_result,"case")) #saveTmp = TRUE,
-    }else{
-        caselist <- atacRepsPipe(genome = genome, fastqInput1 = caseFastqInput1,fastqInput2 = caseFastqInput2,
-                                 adapter1 = caseAdapter1, adapter2 = caseAdapter2,interleave = interleave,
-                                 createReport = TRUE, prefix = "Case_data", chr = chr, dontSet=TRUE, use.SavedPWM = use.SavedPWM,
-                                 esATAC_report = file.path(esATAC_report,"case"), esATAC_result = file.path(esATAC_result,"case")) #saveTmp = TRUE,
-    }
-    
+
+    caselist <- atacRepsPipe(genome = genome, fastqInput1 = caseFastqInput1, fastqInput2 = caseFastqInput2,
+                             adapter1 = caseAdapter1, adapter2 = caseAdapter2, interleave = interleave,
+                             createReport = TRUE, motifs = pwm, prefix = "Case_data", chr = chr, dontSet = TRUE, p.cutoff = p.cutoff,
+                             esATAC_report = file.path(esATAC_report,"case"), esATAC_result = file.path(esATAC_result,"case")) #saveTmp = TRUE,
     message("Case sample process done")
+
     message(" ")
+
     message("Begin to process control sample")
     dir.create(file.path(tmpdir,"control"))
     dir.create(file.path(esATAC_report,"control"))
     dir.create(file.path(esATAC_result,"control"))
     options(atacConf=setConfigure("tmpdir",file.path(tmpdir,"control")))
-    
-    
-    if(is.null(use.SavedPWM)){
-        ctrllist <- atacRepsPipe(genome = genome, fastqInput1 = ctrlFastqInput1,fastqInput2 = ctrlFastqInput2,
-                                 adapter1 = ctrlAdapter1, adapter2 = ctrlAdapter2,interleave = interleave,
-                                 createReport = TRUE, motifPWM =pwm, prefix = "Control_data", chr = chr, dontSet=TRUE, min.score = min.score,
-                                 esATAC_report = file.path(esATAC_report,"control"), esATAC_result = file.path(esATAC_result,"control")) #saveTmp = TRUE,
-    }else{
-        ctrllist <- atacRepsPipe(genome = genome, fastqInput1 = ctrlFastqInput1,fastqInput2 = ctrlFastqInput2,
-                                 adapter1 = ctrlAdapter1, adapter2 = ctrlAdapter2,interleave = interleave,
-                                 createReport = TRUE, prefix = "Control_data", chr = chr, dontSet=TRUE, use.SavedPWM = use.SavedPWM,
-                                 esATAC_report = file.path(esATAC_report,"control"), esATAC_result = file.path(esATAC_result,"control")) #saveTmp = TRUE,
-    }
-    
+
+    ctrllist <- atacRepsPipe(genome = genome, fastqInput1 = ctrlFastqInput1, fastqInput2 = ctrlFastqInput2,
+                             adapter1 = ctrlAdapter1, adapter2 = ctrlAdapter2, interleave = interleave,
+                             createReport = TRUE, motifs =pwm, prefix = "Control_data", chr = chr, dontSet = TRUE, p.cutoff = p.cutoff,
+                             esATAC_report = file.path(esATAC_report,"control"), esATAC_result = file.path(esATAC_result,"control")) #saveTmp = TRUE,
     message("control sample process done")
+
     message(" ")
+
     message("Begin to generate case_control summary")
-    
     dir.create(file.path(tmpdir,"case_control"))
     options(atacConf=setConfigure("tmpdir",file.path(tmpdir,"case_control")))
-    
+
     bed.case <- getParam(caselist$atacProcs$sortedReadsBed, "bedOutput")
     bed.ctrl <- getParam(ctrllist$atacProcs$sortedReadsBed, "bedOutput")
-    
+
     case.peak <- getParam(caselist$atacProcs$peakCalling, "bedOutput")
     ctrl.peak <- getParam(ctrllist$atacProcs$peakCalling, "bedOutput")
-    
+
     CaseControlPeakCompPath <- paste(file.path(tmpdir,"case_control"), "/",
                                      c("Case_mergedReads_specific.bed", "Control_mergedReads_specific.bed", "overlap_mergedReads.bed"),
                                      sep = "")
-    
+
     peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak, bedOutput = CaseControlPeakCompPath)
     case_specific.peak <- getParam(peakCom, "bedOutput")[1]
     ctrl_specific.peak <- getParam(peakCom, "bedOutput")[2]
     overlap.peak <- getParam(peakCom, "bedOutput")[3]
-    
+
     # for case
     Peakanno.case <- peakanno(peakInput = case_specific.peak)
     goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
-    
+
     # for ctrl
     Peakanno.ctrl <- peakanno(peakInput = ctrl_specific.peak)
     goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
-    
-    if(is.null(use.SavedPWM)){
-        print(case_specific.peak)
-        print(ctrl_specific.peak)
-        print(overlap.peak)
-        mout <- atacMotifScanPair(atacProc = peakCom, motifPWM = pwm, min.score = min.score)
-    }else{
-        mout <- atacMotifScanPair(atacProc = peakCom, use.SavedPWM = use.SavedPWM)
-    }
-    
+
+    mout <- atacMotifScanPair(atacProc = peakCom, motifs = pwm, p.cutoff = p.cutoff)
+
     cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
     cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CONTROL")
-    
+
     footprint.case <- atacCutSiteCount(atacProcCutSite = cs_case,
                                        motif_info = getParam(mout, "rdsOutput.peak1"),
                                        strandLength = 100, prefix = "Case_specific", chr = chr)
-    
+
     footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_ctrl,
                                        motif_info = getParam(mout, "rdsOutput.peak2"),
                                        strandLength = 100, prefix = "Control_specific", chr = chr)
-    
+
     comp_result <- list(
         Peakanno.case = Peakanno.case,
         Peakanno.ctrl = Peakanno.ctrl,
@@ -1960,27 +1869,27 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
         footprint.case = footprint.case,
         footprint.ctrl = footprint.ctrl
     )
-    
-    
-    
+
+
+
     conclusion <- list(caselist = caselist,
                        ctrllist = ctrllist,
                        comp_result = comp_result
     )
-    
+
     message("Generate summary done")
     if(createReport){
         message("Begin to generate Report")
         #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
         #filename <- basename(filename)
-        
+
         rmdfile<-system.file(package="esATAC", "extdata", "Rep_Report2.Rmd")
         rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
         #rmdtext<-sprintf(rmdtext,filename)
-        
+
         workdir <- getwd()
         save(caselist,ctrllist,comp_result,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
-        
+
         writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Rep_Report2.Rmd"),useBytes = TRUE)
         render(file.path(.obtainConfigure("tmpdir"),"Rep_Report2.Rmd"))
         #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
@@ -1993,20 +1902,20 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             urllink <- paste0("<a href='./case/replicate",1:length(caseFastqInput1),"/Report.html'>","replicate ",1:length(caseFastqInput1)," report link</a>")
             caseSingleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
             caseMergeConRep <- data.frame(Report_Name="concordance and merge",Link="<a href='./case/rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
-            
+
             replicateNum <- paste0("replicate ",1:length(ctrlFastqInput1))
             urllink <- paste0("<a href='./control/replicate",1:length(ctrlFastqInput1),"/Report.html'>","replicate ",1:length(ctrlFastqInput1)," report link</a>")
             ctrlSingleRep <- data.frame(Report_Name=replicateNum,Link=urllink)
             ctrlMergeConRep <- data.frame(Report_Name="concordance and merge",Link="<a href='./control/rep_concord_merge/Rep_Report.html'>concordance and merge analysis report link</a>")
-            
+
             case_control <- data.frame(Report_Name="case and control",Link="<a href='./case_control/Rep_Report2.html'>case and control analysis report link</a>")
             save(caseSingleRep,caseMergeConRep,ctrlSingleRep,ctrlMergeConRep,case_control,file = file.path(.obtainConfigure("tmpdir"),"ReportIdx.Rdata"))
-            
+
             rmdidxfile<-system.file(package="esATAC", "extdata", "Report_Index.Rmd")
             file.copy(rmdidxfile,.obtainConfigure("tmpdir"), overwrite = TRUE)
             render(file.path(.obtainConfigure("tmpdir"),"Report_Index.Rmd"))
             file.copy(file.path(.obtainConfigure("tmpdir"),"Report_Index.html"),file.path(esATAC_report,"Report.html"), overwrite = TRUE)
-            
+
             # copy other files
             esATAC_report <- file.path(esATAC_report,"case_control")
             esATAC_result <- file.path(esATAC_result,"case_control")
@@ -2023,7 +1932,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             #file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(comp_result$Peakanno.case,"annoOutput"), esATAC_result, overwrite = TRUE)
             file.copy(getReportVal(comp_result$Peakanno.ctrl,"annoOutput"), esATAC_result, overwrite = TRUE)
-            
+
             file.copy(from = getReportVal(caselist$atacProcs$footprint, "pdf.dir"),
                       to = esATAC_result, overwrite = TRUE, recursive = TRUE)
             file.copy(from = getReportVal(ctrllist$atacProcs$footprint, "pdf.dir"),
@@ -2041,7 +1950,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             motif_enrich.case_file <- paste(esATAC_result, "/motif_enrichment_Case.txt", sep = "")
             write.table(x = motif_enrich.case, file = motif_enrich.case_file, sep = "\t",
                         row.names = TRUE, col.names = TRUE)
-            
+
             motif_enrich.ctrl <- getReportVal(comp_result$mout, "rdsOutput.peak2")
             motif_enrich.ctrl <- motif_enrich.ctrl[, c(1, 3, 4)]
             colnames(motif_enrich.ctrl) <- c("motif", "motif length", "p_value")
@@ -2050,16 +1959,16 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
             motif_enrich.ctrl_file <- paste(esATAC_result, "/motif_enrichment_Control.txt", sep = "")
             write.table(x = motif_enrich.ctrl, file = motif_enrich.ctrl_file, sep = "\t",
                         row.names = TRUE, col.names = TRUE)
-            
-            
+
+
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Rep_Report.html")))
         }else{
             message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Rep_Report2.html")))
         }
     }
-    
+
     invisible(conclusion)
-    
+
 }
 
 

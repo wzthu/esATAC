@@ -14,13 +14,11 @@ setMethod(
     f = "initialize",
     signature = "RMotifScanPair",
     definition = function(.Object, atacProc, ..., peak1 = NULL, peak2 = NULL,
-                          background = NULL, genome = NULL,
-                          motifPWM = NULL, min.score = "85%",
-                          scanO.dir = NULL, n.cores = NULL,
-                          prefix = NULL, use.SavedPWM = NULL, editable = FALSE){
+                          background = NULL, genome = NULL, motifs = NULL,
+                          p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL,
+                          editable = FALSE){
         .Object <- init(.Object, "RMotifScanPair", editable, list(arg1 = atacProc))
 
-        .Object@paramlist[["use.SavedPWM"]] <- use.SavedPWM
         if(!is.null(atacProc)){
             .Object@paramlist[["peak1"]] <- getParam(atacProc, "bedOutput")[1]
             .Object@paramlist[["peak2"]] <- getParam(atacProc, "bedOutput")[2]
@@ -30,6 +28,17 @@ setMethod(
             .Object@paramlist[["peak2"]] <- peak2
             .Object@paramlist[["background"]] <- background
         }
+
+        if(!is.null(genome)){
+            .Object@paramlist[["genome"]] <- genome
+        }else{
+            .Object@paramlist[["genome"]] <- .obtainConfigure("bsgenome")
+        }
+
+        .Object@paramlist[["motifs"]] <- motifs
+        .Object@paramlist[["motifs.len"]] <- lapply(X = .Object@paramlist[["motifs"]], FUN = ncol)
+        .Object@paramlist[["p.cutoff"]] <- p.cutoff
+
         if(is.null(prefix)){
             peak1.prefix <- tools::file_path_sans_ext(base::basename(.Object@paramlist[["peak1"]]))
             peak2.prefix <- tools::file_path_sans_ext(base::basename(.Object@paramlist[["peak2"]]))
@@ -40,9 +49,7 @@ setMethod(
         }
 
         if(is.null(scanO.dir)){
-            tmp_pre1 <- gsub("\\..*","", base::basename(.Object@paramlist[["peak1"]]))
-            tmp_pre2 <- gsub("\\..*","", base::basename(.Object@paramlist[["peak2"]]))
-            pre_prefix <- paste(tmp_pre1, "_and_", tmp_pre2, sep = "")
+            pre_prefix <- paste(.Object@paramlist[["prefix"]], sep = "", collapse = "_")
             .Object@paramlist[["scanO.dir"]] <- paste(dirname(.Object@paramlist[["peak1"]]),
                                                       "/",
                                                       pre_prefix,
@@ -52,6 +59,7 @@ setMethod(
         }else{
             .Object@paramlist[["scanO.dir"]] <- scanO.dir
         }
+
         .Object@paramlist[["rdsOutput.peak1"]] <- paste(
             .Object@paramlist[["scanO.dir"]], "/",
             .Object@paramlist[["prefix"]][1],
@@ -67,28 +75,6 @@ setMethod(
             .Object@paramlist[["prefix"]][3],
             "_", "RMotifScanPair.rds", sep = ""
         )
-
-        if(is.null(.Object@paramlist[["use.SavedPWM"]])){
-            if(!is.null(genome)){
-                .Object@paramlist[["genome"]] <- genome
-            }else{
-                .Object@paramlist[["genome"]] <- .obtainConfigure("bsgenome")
-            }
-            .Object@paramlist[["motifPWM"]] <- motifPWM
-            .Object@paramlist[["motifPWM.len"]] <- lapply(X = .Object@paramlist[["motifPWM"]], FUN = ncol)
-            .Object@paramlist[["min.score"]] <- min.score
-            if(is.null(n.cores)){
-                .Object@paramlist[["n.cores"]] <- .obtainConfigure("threads")
-            }else{
-                .Object@paramlist[["n.cores"]] <- n.cores
-            }
-        }else{
-            .Object@paramlist[["genome"]] <- NULL
-            .Object@paramlist[["motifPWM"]] <- NULL
-            .Object@paramlist[["motifPWM.len"]] <- NULL
-            .Object@paramlist[["min.score"]] <- NULL
-            .Object@paramlist[["n.cores"]] <- NULL
-        }
         .Object
     }
 )
@@ -108,10 +94,12 @@ setMethod(
         case.peak <- rtracklayer::import(.Object@paramlist[["peak1"]], format = "bed")
         ctrl.peak <- rtracklayer::import(.Object@paramlist[["peak2"]], format = "bed")
         backg.peak <- rtracklayer::import(.Object@paramlist[["background"]], format = "bed")
+
         # middle interval peak
         case_mid.peak <- mid_interval(x = case.peak)
         ctrl_mid.peak <- mid_interval(x = ctrl.peak)
         backg_mid.peak <- mid_interval(x = backg.peak)
+
         # number of peak
         case_peak.num <- length(case_mid.peak)
         ctrl_peak.num <- length(ctrl_mid.peak)
@@ -122,197 +110,113 @@ setMethod(
         ctrl_save_info <- data.frame()
         backg_save_info <- data.frame()
 
-        # running
-        if(is.null(.Object@paramlist[["use.SavedPWM"]])){
-            sitesetList <- list()
-            n_motif <- length(.Object@paramlist[["motifPWM"]])
-            k <- .Object@paramlist[["n.cores"]] * 2
-            motif_in_group <- split(.Object@paramlist[["motifPWM"]],
-                                    rep(1:ceiling(n_motif/k), each=k)[1:n_motif])
-            n_group <- length(motif_in_group)
-            WriteMotifOrder <- 1
-            cl <- makeCluster(.Object@paramlist[["n.cores"]])
-            for(i in seq(n_group)){
-                thisGroup.motif <- motif_in_group[[i]]
-                thisGroup.motifname <- names(thisGroup.motif)
-                thisGroup.motifnum <- length(thisGroup.motif)
-                thisGroup.motifinfo <- paste("Now, processing the following motif: ",
-                                             paste(thisGroup.motifname, collapse = ","),
-                                             sep = "")
-                print(thisGroup.motifinfo)
-                sitesetList <- parLapply(cl = cl,
-                                         X = thisGroup.motif,
-                                         fun = Biostrings::matchPWM,
-                                         subject = .Object@paramlist[["genome"]],
-                                         min.score = .Object@paramlist[["min.score"]],
-                                         with.score = TRUE)
+        # start finding motif occurence
+        # for case
+        SiteSetList.case <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+                                                     subject = case.peak,
+                                                     genome = .Object@paramlist[["genome"]],
+                                                     out = "positions",
+                                                     p.cutoff = .Object@paramlist[["p.cutoff"]])
+        # for ctrl
+        SiteSetList.ctrl <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+                                                     subject = ctrl.peak,
+                                                     genome = .Object@paramlist[["genome"]],
+                                                     out = "positions",
+                                                     p.cutoff = .Object@paramlist[["p.cutoff"]])
+        # for background
+        SiteSetList.bg <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+                                                   subject = backg.peak,
+                                                   genome = .Object@paramlist[["genome"]],
+                                                   out = "positions",
+                                                   p.cutoff = .Object@paramlist[["p.cutoff"]])
 
-                for(i in seq(thisGroup.motifnum)){
-                    # processing motif scan
-                    motif_name <- names(sitesetList[i])
-                    motif_len <- .Object@paramlist[["motifPWM.len"]][[motif_name]]
-                    # for case
-                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                             ranges = case.peak,
-                                                             ignore.strand = TRUE)
-                    output_data <- sort(x = output_data, ignore.strand = TRUE)
-                    output_data <- as.data.frame(output_data)
-                    output_data <- within(output_data, rm(width))
-                    output_path <- paste(.Object@paramlist[["scanO.dir"]],
-                                         "/", .Object@paramlist[["prefix"]][1], "_",
-                                         motif_name, sep = "")
-                    case_save_info[WriteMotifOrder, 1] <- motif_name
-                    case_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
-                    case_save_info[WriteMotifOrder, 3] <- motif_len
-                    write.table(x = output_data, file = output_path, row.names = FALSE,
-                                col.names = FALSE, quote = FALSE)
-                    # for ctrl
-                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                             ranges = ctrl.peak,
-                                                             ignore.strand = TRUE)
-                    output_data <- sort(x = output_data, ignore.strand = TRUE)
-                    output_data <- as.data.frame(output_data)
-                    output_data <- within(output_data, rm(width))
-                    output_path <- paste(.Object@paramlist[["scanO.dir"]],
-                                         "/", .Object@paramlist[["prefix"]][2], "_",
-                                         motif_name, sep = "")
-                    ctrl_save_info[WriteMotifOrder, 1] <- motif_name
-                    ctrl_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
-                    ctrl_save_info[WriteMotifOrder, 3] <- motif_len
-                    write.table(x = output_data, file = output_path, row.names = FALSE,
-                                col.names = FALSE, quote = FALSE)
-                    # for olap
-                    output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                             ranges = backg.peak,
-                                                             ignore.strand = TRUE)
-                    output_data <- sort(x = output_data, ignore.strand = TRUE)
-                    output_data <- as.data.frame(output_data)
-                    output_data <- within(output_data, rm(width))
-                    output_path <- paste(.Object@paramlist[["scanO.dir"]],
-                                         "/", .Object@paramlist[["prefix"]][3], "_",
-                                         motif_name, sep = "")
-                    backg_save_info[WriteMotifOrder, 1] <- motif_name
-                    backg_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
-                    backg_save_info[WriteMotifOrder, 3] <- motif_len
-                    write.table(x = output_data, file = output_path, row.names = FALSE,
-                                col.names = FALSE, quote = FALSE)
-
-                    # processing motif enrichment
-                    case_overlap <- GenomicRanges::findOverlaps(query = case_mid.peak,
-                                                                subject = sitesetList[[i]],
-                                                                ignore.strand = TRUE)
-                    ctrl_overlap <- GenomicRanges::findOverlaps(query = ctrl_mid.peak,
-                                                                subject = sitesetList[[i]],
-                                                                ignore.strand = TRUE)
-                    backg_overlap <- GenomicRanges::findOverlaps(query = backg_mid.peak,
-                                                                 subject = sitesetList[[i]],
-                                                                 ignore.strand = TRUE)
-                    case.occur <- length(unique(S4Vectors::queryHits(case_overlap)))
-                    ctrl.occur <- length(unique(S4Vectors::queryHits(ctrl_overlap)))
-                    backg.occur <- length(unique(S4Vectors::queryHits(backg_overlap)))
-                    case.btest <- binom.test(x = case.occur, n = case_peak.num, p = backg.occur / backg_peak.num)
-                    ctrl.btest <- binom.test(x = ctrl.occur, n = ctrl_peak.num, p = backg.occur / backg_peak.num)
-                    case_save_info[WriteMotifOrder ,4] <- case.btest$p.value
-                    ctrl_save_info[WriteMotifOrder, 4] <- ctrl.btest$p.value
-
-                    WriteMotifOrder <- WriteMotifOrder + 1
-                }
-            }
-            stopCluster(cl)
-
-            saveRDS(object = case_save_info, file = .Object@paramlist[["rdsOutput.peak1"]])
-            saveRDS(object = ctrl_save_info, file = .Object@paramlist[["rdsOutput.peak2"]])
-            saveRDS(object = backg_save_info, file = .Object@paramlist[["rdsOutput.background"]])
-        }else{
-
-            print("Now, loading motif position information......")
-            sitesetList <- readRDS(file = .Object@paramlist[["use.SavedPWM"]])
-            print("Now, processing motif sites......")
-            thisGroup.motifnum <- length(sitesetList)
-            WriteMotifOrder <- 1
-            for(i in seq(thisGroup.motifnum)){
-                # processing motif scan
-                num_flag <- length(sitesetList[[i]])
-                motif_name <- names(sitesetList[i])
-                if(num_flag == 0){
-                    messg <- paste("No motif occurrence found! Factor: ", motif_name, ".", sep = "")
-                    print(messg)
-                    next
-                }
-                motif_name <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = motif_name, perl = TRUE)
-                motif_len <- GenomicRanges::end(sitesetList[[i]][1]) - GenomicRanges::start(sitesetList[[i]][1]) + 1
-                # for case
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = case.peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(.Object@paramlist[["scanO.dir"]],
-                                     "/", .Object@paramlist[["prefix"]][1], "_",
-                                     motif_name, sep = "")
-                # print(output_path)
-                case_save_info[WriteMotifOrder, 1] <- motif_name
-                case_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
-                case_save_info[WriteMotifOrder, 3] <- motif_len
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-                # for ctrl
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = ctrl.peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(.Object@paramlist[["scanO.dir"]],
-                                     "/", .Object@paramlist[["prefix"]][2], "_",
-                                     motif_name, sep = "")
-                # print(output_path)
-                ctrl_save_info[WriteMotifOrder, 1] <- motif_name
-                ctrl_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
-                ctrl_save_info[WriteMotifOrder, 3] <- motif_len
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-                # for olap
-                output_data <- IRanges::subsetByOverlaps(x = sitesetList[[i]],
-                                                         ranges = backg.peak,
-                                                         ignore.strand = TRUE)
-                output_data <- sort(x = output_data, ignore.strand = TRUE)
-                output_data <- as.data.frame(output_data)
-                output_data <- within(output_data, rm(width))
-                output_path <- paste(.Object@paramlist[["scanO.dir"]],
-                                     "/", .Object@paramlist[["prefix"]][3], "_",
-                                     motif_name, sep = "")
-                # print(output_path)
-                backg_save_info[WriteMotifOrder, 1] <- motif_name
-                backg_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output_path)
-                backg_save_info[WriteMotifOrder, 3] <- motif_len
-
-                write.table(x = output_data, file = output_path, row.names = FALSE,
-                            col.names = FALSE, quote = FALSE)
-                # processing motif enrichment
-                case_overlap <- GenomicRanges::findOverlaps(query = case_mid.peak,
-                                                            subject = sitesetList[[i]],
-                                                            ignore.strand = TRUE)
-                ctrl_overlap <- GenomicRanges::findOverlaps(query = ctrl_mid.peak,
-                                                            subject = sitesetList[[i]],
-                                                            ignore.strand = TRUE)
-                backg_overlap <- GenomicRanges::findOverlaps(query = backg_mid.peak,
-                                                             subject = sitesetList[[i]],
-                                                             ignore.strand = TRUE)
-                case.occur <- length(unique(S4Vectors::queryHits(case_overlap)))
-                ctrl.occur <- length(unique(S4Vectors::queryHits(ctrl_overlap)))
-                backg.occur <- length(unique(S4Vectors::queryHits(backg_overlap)))
-                case.btest <- binom.test(x = case.occur, n = case_peak.num, p = backg.occur / backg_peak.num)
-                ctrl.btest <- binom.test(x = ctrl.occur, n = ctrl_peak.num, p = backg.occur / backg_peak.num)
-                case_save_info[WriteMotifOrder ,4] <- case.btest$p.value
-                ctrl_save_info[WriteMotifOrder, 4] <- ctrl.btest$p.value
-                WriteMotifOrder <- WriteMotifOrder + 1
-            }
-            saveRDS(object = case_save_info, file = .Object@paramlist[["rdsOutput.peak1"]])
-            saveRDS(object = ctrl_save_info, file = .Object@paramlist[["rdsOutput.peak2"]])
-            saveRDS(object = backg_save_info, file = .Object@paramlist[["rdsOutput.background"]])
+        # length check
+        Motif.caselen <- length(SiteSetList.case)
+        Motif.ctrllen <- length(SiteSetList.ctrl)
+        Motif.bglen <- length(SiteSetList.bg)
+        if(!(Motif.caselen == Motif.ctrllen & Motif.ctrllen == Motif.bglen & Motif.caselen == Motif.bglen)){
+            stop("An unexpected error occured!")
         }
+
+        # save info
+        case_save_info <- data.frame()
+        ctrl_save_info <- data.frame()
+        backg_save_info <- data.frame()
+
+        WriteMotifOrder <- 1
+
+        # save files and compute motif enrichment
+        for(i in seq(Motif.caselen)){
+            motif.name <- names(SiteSetList.case[i])
+            motif.len <- .Object@paramlist[["motifs.len"]][[motif.name]]
+
+            # for case
+            motif.case <- SiteSetList.case[[motif.name]]
+            motif.case <- sort.GenomicRanges(x = motif.case, ignore.strand = TRUE)
+            motif.case <- as.data.frame(motif.case)
+            motif.case <- within(motif.case, rm(width))
+            output.case <- paste(.Object@paramlist[["scanO.dir"]],
+                                 "/", .Object@paramlist[["prefix"]][1], "_",
+                                 motif.name, sep = "")
+            case_save_info[WriteMotifOrder, 1] <- motif.name
+            case_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.case)
+            case_save_info[WriteMotifOrder, 3] <- motif.len
+            write.table(x = motif.case, file = output.case, row.names = FALSE,
+                        col.names = FALSE, quote = FALSE, sep = "\t", append = FALSE)
+
+            # for ctrl
+            motif.ctrl <- SiteSetList.ctrl[[motif.name]]
+            motif.ctrl <- sort.GenomicRanges(x = motif.ctrl, ignore.strand = TRUE)
+            motif.ctrl <- as.data.frame(motif.ctrl)
+            motif.ctrl <- within(motif.ctrl, rm(width))
+            output.ctrl <- paste(.Object@paramlist[["scanO.dir"]],
+                                 "/", .Object@paramlist[["prefix"]][2], "_",
+                                 motif.name, sep = "")
+            ctrl_save_info[WriteMotifOrder, 1] <- motif.name
+            ctrl_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.ctrl)
+            ctrl_save_info[WriteMotifOrder, 3] <- motif.len
+            write.table(x = motif.ctrl, file = output.ctrl, row.names = FALSE,
+                        col.names = FALSE, quote = FALSE, sep = "\t", append = FALSE)
+
+            # for background
+            motif.bg <- SiteSetList.bg[[motif.name]]
+            motif.bg <- sort.GenomicRanges(x = motif.bg, ignore.strand = TRUE)
+            motif.bg <- as.data.frame(motif.bg)
+            motif.bg <- within(motif.bg, rm(width))
+            output.bg <- paste(.Object@paramlist[["scanO.dir"]],
+                                 "/", .Object@paramlist[["prefix"]][3], "_",
+                                 motif.name, sep = "")
+            backg_save_info[WriteMotifOrder, 1] <- motif.name
+            backg_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.bg)
+            backg_save_info[WriteMotifOrder, 3] <- motif.len
+            write.table(x = motif.bg, file = output.bg, row.names = FALSE,
+                        col.names = FALSE, quote = FALSE, sep = "\t", append = FALSE)
+
+            # processing motif enrichment
+            case_overlap <- GenomicRanges::findOverlaps(query = case_mid.peak,
+                                                        subject = SiteSetList.case[[motif.name]],
+                                                        ignore.strand = TRUE)
+            ctrl_overlap <- GenomicRanges::findOverlaps(query = ctrl_mid.peak,
+                                                        subject = SiteSetList.ctrl[[motif.name]],
+                                                        ignore.strand = TRUE)
+            backg_overlap <- GenomicRanges::findOverlaps(query = backg_mid.peak,
+                                                         subject = SiteSetList.bg[[motif.name]],
+                                                         ignore.strand = TRUE)
+            case.occur <- length(unique(S4Vectors::queryHits(case_overlap)))
+            ctrl.occur <- length(unique(S4Vectors::queryHits(ctrl_overlap)))
+            backg.occur <- length(unique(S4Vectors::queryHits(backg_overlap)))
+            case.btest <- binom.test(x = case.occur, n = case_peak.num, p = backg.occur / backg_peak.num)
+            ctrl.btest <- binom.test(x = ctrl.occur, n = ctrl_peak.num, p = backg.occur / backg_peak.num)
+            case_save_info[WriteMotifOrder ,4] <- case.btest$p.value
+            ctrl_save_info[WriteMotifOrder, 4] <- ctrl.btest$p.value
+
+            WriteMotifOrder <- WriteMotifOrder + 1
+        }
+
+        saveRDS(object = case_save_info, file = .Object@paramlist[["rdsOutput.peak1"]])
+        saveRDS(object = ctrl_save_info, file = .Object@paramlist[["rdsOutput.peak2"]])
+        saveRDS(object = backg_save_info, file = .Object@paramlist[["rdsOutput.background"]])
+
         .Object
     }
 )
@@ -332,14 +236,8 @@ setMethod(
         if(is.null(.Object@paramlist[["background"]])){
             stop("Parameter atacProc or background is required!")
         }
-        # when use.SavedPWM == NULL, motifPWM must not be NULL
-        if(is.null(.Object@paramlist[["use.SavedPWM"]])){
-            if(is.null(.Object@paramlist[["motifPWM"]])){
-                stop("Parameter motifPWM is required!")
-                if(!is.list(.Object@paramlist[["motifPWM"]])){
-                    stop("Parameter motifPWM must be a list!")
-                }
-            }
+        if(is.null(.Object@paramlist[["motifs"]])){
+            stop("Parameter motifs is required!")
         }
     }
 )
@@ -383,30 +281,21 @@ setMethod(
 #' @name RMotifScanPair
 #' @title Search Motif Position in Given Regions
 #' @description
-#' Search motif position in given genome regions according PWM matrix.
+#' Search motif position in genome according thr given motif and peak information.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacpeakComp}}.
 #' @param peak1 peak file path.
 #' @param peak2 peak file path.
 #' @param background background peak file path.
-#' @param genome A DNAString object.
-#' @param motifPWM \code{list} scalar. Default: from \code{\link{setConfigure}}.
-#' Every element in the \code{list} contains a motif PWM matrix.
-#' e.g. pwm <- list("CTCF" = CTCF_PWMmatrix)
-#' @param min.score The minimum score for counting a match. Can be given as a
-#' character string containing a percentage (e.g. "85%") of the highest
-#' possible score or as a single number.
+#' @param genome BSgenome object, Default: from \code{\link{setConfigure}}.
+#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}.
+#' @param p.cutoff p-value cutoff for returning motifs.
 #' @param scanO.dir \code{Character} scalar.
-#' the output file directory. This function will use the index in motifPWM as
+#' the output file directory. This function will use the name in motifs as
 #' the file name to save the motif position information in separate files.
-#' @param n.cores How many core to run this function.
-#' Default: from \code{\link{setConfigure}}.
 #' @param prefix prefix for Output file. Order: peak1, peak2, backgroud.
-#' @param use.SavedPWM use local motif position information. This data is
-#' download or generate by users. It must be a rds file (generated by R) and the
-#' information saved as GRanges. Once this parameter is used, parameters
-#' "genome", "motifPWM", "min.score", "n.cores" will be set to NULL.
 #' @param ... Additional arguments, currently unused.
 #' @details This function scan motif position in a given genome regions.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
@@ -415,7 +304,7 @@ setMethod(
 #'
 #' @examples
 #'
-#'
+#' \dontrun{
 #' library(R.utils)
 #' library(BSgenome.Hsapiens.UCSC.hg19)
 #' p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -429,25 +318,23 @@ setMethod(
 #' peakcom.output <- peakcomp(bedInput1 = peak1_path, bedInput2 = peak2_path,
 #' olap.rate = 0.1)
 #'
-#' pwm <- readRDS(system.file("extdata", "motifPWM.rds", package="esATAC"))
-#' \dontrun{
+#' motif <- readRDS(system.file("extdata", "MotifPFM.rds", package="esATAC"))
 #' output <- atacMotifScanPair(atacProc = peakcom.output,
-#' genome = BSgenome.Hsapiens.UCSC.hg19,
-#' motifPWM = pwm)
-#' }
+#' genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
+#'}
 #'
 #' @seealso
 #' \code{\link{atacpeakComp}}
-
-#' @importFrom parallel makeCluster
-#' @importFrom parallel parLapply
-#' @importFrom parallel stopCluster
-
+#'
+#' @importFrom motifmatchr matchMotifs
+#' @importFrom GenomicRanges sort.GenomicRanges
+#' @importFrom rtracklayer import
+#' @importFrom IRanges subsetByOverlaps
 
 setGeneric("atacMotifScanPair",
-           function(atacProc, peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
-                    motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                    n.cores = NULL, prefix = NULL, use.SavedPWM = NULL, ...) standardGeneric("atacMotifScanPair"))
+           function(atacProc, peak1 = NULL, peak2 = NULL,
+                    background = NULL, genome = NULL, motifs = NULL,
+                    p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL, ...) standardGeneric("atacMotifScanPair"))
 
 #' @rdname RMotifScanPair
 #' @aliases atacMotifScanPair
@@ -455,9 +342,9 @@ setGeneric("atacMotifScanPair",
 setMethod(
     f = "atacMotifScanPair",
     signature = "ATACProc",
-    definition = function(atacProc, peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
-                          motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = NULL, prefix = NULL, use.SavedPWM = NULL, ...){
+    definition = function(atacProc, peak1 = NULL, peak2 = NULL,
+                          background = NULL, genome = NULL, motifs = NULL,
+                          p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL, ...){
         atacproc <- new(
             "RMotifScanPair",
             atacProc = atacProc,
@@ -465,12 +352,10 @@ setMethod(
             peak2 = peak2,
             background = background,
             genome = genome,
-            motifPWM = motifPWM,
-            min.score = min.score,
+            motifs = motifs,
+            p.cutoff = p.cutoff,
             scanO.dir = scanO.dir,
-            n.cores = n.cores,
-            prefix = prefix,
-            use.SavedPWM = use.SavedPWM)
+            prefix = prefix)
         atacproc <- process(atacproc)
         invisible(atacproc)
     }
@@ -479,9 +364,9 @@ setMethod(
 #' @rdname RMotifScanPair
 #' @aliases motifscanpair
 #' @export
-motifscanpair <- function(peak1 = NULL, peak2 = NULL, background = NULL, genome = NULL,
-                          motifPWM = NULL, min.score = "85%", scanO.dir = NULL,
-                          n.cores = NULL, prefix = NULL, use.SavedPWM = NULL, ...){
+motifscanpair <- function(peak1 = NULL, peak2 = NULL,
+                          background = NULL, genome = NULL, motifs = NULL,
+                          p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL, ...){
     atacproc <- new(
         "RMotifScanPair",
         atacProc = NULL,
@@ -489,12 +374,18 @@ motifscanpair <- function(peak1 = NULL, peak2 = NULL, background = NULL, genome 
         peak2 = peak2,
         background = background,
         genome = genome,
-        motifPWM = motifPWM,
-        min.score = min.score,
+        motifs = motifs,
+        p.cutoff = p.cutoff,
         scanO.dir = scanO.dir,
-        n.cores = n.cores,
-        prefix = prefix,
-        use.SavedPWM = use.SavedPWM)
+        prefix = prefix)
     atacproc <- process(atacproc)
     invisible(atacproc)
 }
+
+
+
+
+
+
+
+
