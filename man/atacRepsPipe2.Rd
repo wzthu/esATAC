@@ -8,8 +8,7 @@ atacRepsPipe2(genome, caseFastqInput1, caseFastqInput2, ctrlFastqInput1,
   ctrlFastqInput2, caseAdapter1 = NULL, caseAdapter2 = NULL,
   ctrlAdapter1 = NULL, ctrlAdapter2 = NULL, refdir = NULL,
   tmpdir = NULL, threads = 2, interleave = FALSE, createReport = TRUE,
-  motifPWM = NULL, chr = c(1:22, "X", "Y"), min.score = "90\%",
-  use.SavedPWM = NULL, ...)
+  motifs = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 1e-04, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -69,19 +68,14 @@ interleaved paired-end sequencing data.}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifPWM}{\code{List} scalar. Motif PWM list.}
+\item{motifs}{either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
+\link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.}
 
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
-\item{min.score}{The minimum score for counting a match. Can be given as a
-character string containing a percentage (default: "90%") of the highest
-possible score or as a single number.}
-
-\item{use.SavedPWM}{use local motif position information. This data is
-download or generate by users. it must be a rds file and the information
-saved as GRanges. Once this parameter is used, parameters "motifPWM" will be set to NULL.}
+\item{p.cutoff}{p-value cutoff for returning motifs, default: 0.0001.}
 
 \item{...}{Additional arguments, currently unused.}
 }
@@ -154,7 +148,7 @@ conclusion <-
                           system.file(package="esATAC", "extdata", "chr20_2.2.fq.bz2")),
      # MODIFY: Set the genome for your data
      genome = "hg19",
-     motifPWM = getMotifPWM(motif.file = system.file("extdata", "CTCF.txt", package="esATAC"), is.PWM = FALSE))
+     motifs = getMotifInfo(motif.file = system.file("extdata", "CustomizedMotif.txt", package="esATAC")))
 
 
 # call pipeline
