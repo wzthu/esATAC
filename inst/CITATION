@@ -1,0 +1,20 @@
+citHeader("Please cite Wei, Zheng, et al. \"esATAC: an easy-to-use systematic pipeline for ATAC-seq data analysis.\" Bioinformatics (2018) for using esATAC.")
+
+citEntry(entry  ="ARTICLE",
+         title  = "esATAC: an easy-to-use systematic pipeline for ATAC-seq data analysis",
+         author = personList(
+             as.person("Zheng Wei"),
+             as.person("Wei Zhang"),
+             as.person("Huan Fang"),
+             as.person("Yanda Li"),
+             as.person("Xiaowo Wang")
+             ),
+         journal = "Bioinformatics",
+         year    = "2018",
+         volume  = "",
+         number  = "",
+         pages   = "",
+         PMID    = "29522192",
+         doi     = "10.1093/bioinformatics/bty141",
+         textVersion = "Wei, Zheng, et al. \"esATAC: an easy-to-use systematic pipeline for ATAC-seq data analysis.\" Bioinformatics (2018)",
+         )

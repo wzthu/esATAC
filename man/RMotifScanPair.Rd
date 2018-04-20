@@ -58,7 +58,6 @@ This function scan motif position in a given genome regions.
 }
 \examples{
 
-\dontrun{
 library(R.utils)
 library(BSgenome.Hsapiens.UCSC.hg19)
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -75,7 +74,6 @@ olap.rate = 0.1)
 motif <- readRDS(system.file("extdata", "MotifPFM.rds", package="esATAC"))
 output <- atacMotifScanPair(atacProc = peakcom.output,
 genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
-}
 
 }
 \seealso{
