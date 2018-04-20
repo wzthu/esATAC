@@ -59,7 +59,9 @@ setMethod(
         }else{
             genome <- seqinfo(.Object@paramlist[["bsgenome"]])
         }
-        readsbed <- unique(import(.Object@paramlist[["bedInput"]], genome = genome))
+        #unique confilict with rJava, if solved, uncommented:
+        #readsbed <- unique(import(.Object@paramlist[["bedInput"]], genome = genome))
+        readsbed <- import(.Object@paramlist[["bedInput"]], genome = genome)
 
         readsbed<-readsbed[(width(readsbed)>=.Object@paramlist[["fregLenRange"]][1])&
                                (width(readsbed)<=.Object@paramlist[["fregLenRange"]][2])]
@@ -69,7 +71,9 @@ setMethod(
 
         TSS <- promoters(txdb, upstream=.Object@paramlist[["updownstream"]], downstream=1+.Object@paramlist[["updownstream"]])
         #end(trans)<-start(trans)+1
-        TSS<-unique(TSS)
+
+        #unique confilict with rJava, if solved, uncommented:
+        #TSS<-unique(TSS)
 
 
         #end(trans)<-start(trans)+.Object@paramlist[["updownstream"]]

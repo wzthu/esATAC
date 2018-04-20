@@ -9,12 +9,12 @@
 \title{Search Motif Position in Given Regions}
 \usage{
 atacMotifScan(atacProc, peak = NULL, genome = NULL, motifs = NULL,
-  p.cutoff = 1e-04, scanO.dir = NULL, prefix = NULL, ...)
+  p.cutoff = 1e-06, scanO.dir = NULL, prefix = NULL, ...)
 
 \S4method{atacMotifScan}{ATACProc}(atacProc, peak = NULL, genome = NULL,
-  motifs = NULL, p.cutoff = 1e-04, scanO.dir = NULL, prefix = NULL, ...)
+  motifs = NULL, p.cutoff = 1e-06, scanO.dir = NULL, prefix = NULL, ...)
 
-motifscan(peak = NULL, genome = NULL, motifs = NULL, p.cutoff = 1e-04,
+motifscan(peak = NULL, genome = NULL, motifs = NULL, p.cutoff = 1e-06,
   scanO.dir = NULL, prefix = NULL, ...)
 }
 \arguments{
