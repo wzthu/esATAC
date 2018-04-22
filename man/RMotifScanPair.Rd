@@ -58,7 +58,7 @@ This function scan motif position in a given genome regions.
 }
 \examples{
 
-\dontrun{
+
 library(R.utils)
 library(BSgenome.Hsapiens.UCSC.hg19)
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -77,7 +77,7 @@ output <- atacMotifScanPair(atacProc = peakcom.output,
 genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
 }
 
-}
+
 \seealso{
 \code{\link{atacpeakComp}}
 }
