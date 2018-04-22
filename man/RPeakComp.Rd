@@ -29,13 +29,13 @@ It has to be the return value of upstream process:
 
 \item{bedInput1}{\code{Character} scalar.
 Input peak file path. UCSC bed file is recommented. Other file should be
-able to import as \link[GenomicRanges]{GRanges} objects through
-\link[rtracklayer]{import}.}
+able to import as \code{\link{GRanges}} objects through
+\code{\link{import}}.}
 
 \item{bedInput2}{\code{Character} scalar.
 Input peak file path. UCSC bed file is recommented. Other file should be
-able to import as \link[GenomicRanges]{GRanges} objects through
-\link[rtracklayer]{import}.}
+able to import as \code{\link{GRanges}} objects through
+\code{\link{import}}.}
 
 \item{bedOutput}{The output file path. File name order: bedInput1 specific
 peaks, bedInput2 specific peaks, overlap peaks.}

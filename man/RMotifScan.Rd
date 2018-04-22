@@ -24,13 +24,13 @@ It has to be the return value of upstream process:
 
 \item{peak}{\code{Character} scalar.
 Input region path. UCSC bed file is recommented. Other file should be able
-to import as \link[GenomicRanges]{GRanges} objects through
-\link[rtracklayer]{import}.}
+to import as \code{\link{GRanges}} objects through
+\code{\link{import}}.}
 
 \item{genome}{BSgenome object, Default: from \code{\link{setConfigure}}.}
 
-\item{motifs}{either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-\link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}.}
+\item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+\code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.}
 
 \item{p.cutoff}{p-value cutoff for returning motifs.}
 
