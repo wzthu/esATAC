@@ -413,10 +413,10 @@ setMethod(qa, "ShortRead", .qa_ShortRead)
 #' @title Generate PFMatrix or PFMatrixList from file.
 #' @description
 #' atacMotifScan and atacMotifScanPair accept PFM in a \code{list}, this
-#' function convert JASPAR PFM file to \link[TFBSTools]{PFMatrix} or \link[TFBSTools]{PFMatrixList}.
+#' function convert JASPAR PFM file to \code{\link{PFMatrix}} or \code{\link{PFMatrixList}}.
 #' @param motif.file Motif PFM file downloaded from JASPAR.
-#' @details Generate \link[TFBSTools]{PFMatrix} or \link[TFBSTools]{PFMatrixList}.
-#' @return \link[TFBSTools]{PFMatrix} or \link[TFBSTools]{PFMatrixList}.
+#' @details Generate \code{\link{PFMatrix}} or \code{\link{PFMatrixList}}.
+#' @return \code{\link{PFMatrix}} or \code{\link{PFMatrixList}}.
 #' @author Wei Zhang
 #' @importFrom TFBSTools PFMatrix
 #' @importFrom TFBSTools as.matrix

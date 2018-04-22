@@ -132,11 +132,11 @@ setMethod(
 #' \code{\link{atacPeakCalling}}.
 #' @param peak \code{Character} scalar.
 #' Input region path. UCSC bed file is recommented. Other file should be able
-#' to import as \link[GenomicRanges]{GRanges} objects through
-#' \link[rtracklayer]{import}.
+#' to import as \code{\link{GRanges}} objects through
+#' \code{\link{import}}.
 #' @param genome BSgenome object, Default: from \code{\link{setConfigure}}.
-#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}.
+#' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+#' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.
 #' @param p.cutoff p-value cutoff for returning motifs.
 #' @param scanO.dir \code{Character} scalar.
 #' the output file directory. This function will use the name in motifs as

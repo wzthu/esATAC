@@ -175,12 +175,12 @@ setMethod(
 #' \code{\link{atacPeakCalling}}.
 #' @param bedInput1 \code{Character} scalar.
 #' Input peak file path. UCSC bed file is recommented. Other file should be
-#' able to import as \link[GenomicRanges]{GRanges} objects through
-#' \link[rtracklayer]{import}.
+#' able to import as \code{\link{GRanges}} objects through
+#' \code{\link{import}}.
 #' @param bedInput2 \code{Character} scalar.
 #' Input peak file path. UCSC bed file is recommented. Other file should be
-#' able to import as \link[GenomicRanges]{GRanges} objects through
-#' \link[rtracklayer]{import}.
+#' able to import as \code{\link{GRanges}} objects through
+#' \code{\link{import}}.
 #' @param bedOutput The output file path. File name order: bedInput1 specific
 #' peaks, bedInput2 specific peaks, overlap peaks.
 #' @param olap.rate Overlap rate, if the overlap region between 2 peak is more

@@ -161,14 +161,14 @@ setMethod(
 #' @title Annotate ATAC-seq Peak
 #' @description
 #' This function annotates ATAC-seq peak by a given annotation database.
-#' For more information, please see \link[ChIPseeker]{annotatePeak}.
+#' For more information, please see \code{\link{annotatePeak}}.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacPeakCalling}}.
 #' @param peakInput \code{Character} scalar.
 #' Input peak file path. UCSC bed file is recommented. Other file should be
-#' able to import as \link[GenomicRanges]{GRanges} objects through
-#' \link[rtracklayer]{import}.
+#' able to import as \code{\link{GRanges}} objects through
+#' \code{\link{import}}.
 #' @param tssRegion Region range of TSS, default:c(-1000, 1000).
 #' @param TxDb TxDb object, annotation database.
 #' @param level "transcript" or "gene".
