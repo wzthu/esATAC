@@ -8,7 +8,7 @@ atacRepsPipe2(genome, caseFastqInput1, caseFastqInput2, ctrlFastqInput1,
   ctrlFastqInput2, caseAdapter1 = NULL, caseAdapter2 = NULL,
   ctrlAdapter1 = NULL, ctrlAdapter2 = NULL, refdir = NULL,
   tmpdir = NULL, threads = 2, interleave = FALSE, createReport = TRUE,
-  motifs = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 1e-04, ...)
+  motifs = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 1e-06, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -68,14 +68,14 @@ interleaved paired-end sequencing data.}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifs}{either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-\link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.}
+\item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+\code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.}
 
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
-\item{p.cutoff}{p-value cutoff for returning motifs, default: 0.0001.}
+\item{p.cutoff}{p-value cutoff for returning motifs, default: 1e-6.}
 
 \item{...}{Additional arguments, currently unused.}
 }

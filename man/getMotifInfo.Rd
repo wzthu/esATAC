@@ -10,14 +10,14 @@ getMotifInfo(motif.file = NULL)
 \item{motif.file}{Motif PFM file downloaded from JASPAR.}
 }
 \value{
-\link[TFBSTools]{PFMatrix} or \link[TFBSTools]{PFMatrixList}.
+\code{\link{PFMatrix}} or \code{\link{PFMatrixList}}.
 }
 \description{
 atacMotifScan and atacMotifScanPair accept PFM in a \code{list}, this
-function convert JASPAR PFM file to \link[TFBSTools]{PFMatrix} or \link[TFBSTools]{PFMatrixList}.
+function convert JASPAR PFM file to \code{\link{PFMatrix}} or \code{\link{PFMatrixList}}.
 }
 \details{
-Generate \link[TFBSTools]{PFMatrix} or \link[TFBSTools]{PFMatrixList}.
+Generate \code{\link{PFMatrix}} or \code{\link{PFMatrixList}}.
 }
 \examples{
 

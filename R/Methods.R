@@ -151,14 +151,14 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param basicAnalysis \code{Logical} scalar. If it is TRUE, the pipeline will skip the time consuming steps
 #' like GO annoation and motif analysis
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
+#' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+#' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param p.cutoff p-value cutoff for returning motifs, default:0.0001.
+#' @param p.cutoff p-value cutoff for returning motifs, default: 1e-6.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "filelist": the input file paths.
@@ -210,7 +210,7 @@ getSuffixlessFileName0 <- function(filePath){
 
 atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=NULL, threads=2, adapter1 = NULL, adapter2 = NULL,
                      interleave = FALSE,  basicAnalysis = FALSE, createReport = TRUE, motifs = NULL, prefix = NULL,
-                     chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){ #saveTmp = TRUE,
+                     chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
 
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
@@ -706,12 +706,12 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
+#' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+#' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param p.cutoff p-value cutoff for returning motifs, default: 0.0001.
+#' @param p.cutoff p-value cutoff for returning motifs, default: 1e-6.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "wholesummary": a dataframe for quality control summary of  case and control data
@@ -799,7 +799,7 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
 atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
-                      chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){ #saveTmp = TRUE,
+                      chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
         stop("fastqInput1 for case can not be NULL")
     }
@@ -1070,14 +1070,14 @@ checkFilePathExist <- function(afilePaths){
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
+#' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+#' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.
 #' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param p.cutoff p-value cutoff for returning motifs, default:0.0001.
+#' @param p.cutoff p-value cutoff for returning motifs, default: 1e-6.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "filelist": the input file paths.
@@ -1134,7 +1134,7 @@ checkFilePathExist <- function(afilePaths){
 #'
 atacRepsPipe <- function(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL, tmpdir = NULL, threads = 2,
                          adapter1 = NULL, adapter2 = NULL, interleave = FALSE,  createReport = TRUE,
-                         motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){
+                         motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
     }
@@ -1546,12 +1546,12 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 #' @param interleave \code{Logical} scalar. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
-#' @param motifs either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-#' \link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.
+#' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+#' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .
 #' Default:c(1:22, "X", "Y").
-#' @param p.cutoff p-value cutoff for returning motifs, default: 0.0001.
+#' @param p.cutoff p-value cutoff for returning motifs, default: 1e-6.
 #' @param ... Additional arguments, currently unused.
 #' @return \code{List} scalar. It is a list that save the result of the pipeline.
 #' Slot "caselist" and "ctrlist": Each of them is a list that save the result for case or control data.
@@ -1653,7 +1653,7 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInput1, ctrlFastqInput2,
                           caseAdapter1 = NULL, caseAdapter2 = NULL, ctrlAdapter1 = NULL, ctrlAdapter2 = NULL,
                           refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
-                          chr = c(1:22, "X", "Y"), p.cutoff = 0.0001, ...){ #saveTmp = TRUE,
+                          chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
 
     stopifnot(is.list(caseFastqInput1))
     stopifnot(length(caseFastqInput1)>0)

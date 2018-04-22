@@ -52,8 +52,6 @@ bam2bed(bamInput = ex1_file)
 \seealso{
 \code{\link{atacBamSort}}
 \code{\link{atacSam2Bam}}
-\link[rtracklayer]{import}
-\link[rtracklayer]{export}
 }
 \author{
 Wei Zhang

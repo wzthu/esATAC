@@ -43,8 +43,6 @@ bamsort(bamInput = ex1_file)
 
 }
 \seealso{
-\link[Rsamtools]{sortBam}
-\link[Rsamtools]{indexBam}
 \code{\link{atacSam2Bam}}
 \code{\link{atacBam2Bed}}
 }

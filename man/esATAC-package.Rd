@@ -10,7 +10,7 @@ atacPipe(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
   tmpdir = NULL, threads = 2, adapter1 = NULL, adapter2 = NULL,
   interleave = FALSE, basicAnalysis = FALSE, createReport = TRUE,
   motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
-  p.cutoff = 1e-04, ...)
+  p.cutoff = 1e-06, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -47,8 +47,8 @@ like GO annoation and motif analysis}
 
 \item{createReport}{\code{Logical} scalar. If the HTML report file will be created.}
 
-\item{motifs}{either \link[TFBSTools]{PFMatrix}, \link[TFBSTools]{PFMatrixList},
-\link[TFBSTools]{PWMatrix}, \link[TFBSTools]{PWMatrixList}, default: vertebrates motif from JASPAR.}
+\item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
+\code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.}
 
 \item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
 when multiple pipeline generating file in the same tempdir.}
@@ -57,7 +57,7 @@ when multiple pipeline generating file in the same tempdir.}
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
 
-\item{p.cutoff}{p-value cutoff for returning motifs, default:0.0001.}
+\item{p.cutoff}{p-value cutoff for returning motifs, default: 1e-6.}
 
 \item{...}{Additional arguments, currently unused.}
 }

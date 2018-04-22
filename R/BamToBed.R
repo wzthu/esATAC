@@ -102,8 +102,6 @@ setMethod(
 #' @seealso
 #' \code{\link{atacBamSort}}
 #' \code{\link{atacSam2Bam}}
-#' \link[rtracklayer]{import}
-#' \link[rtracklayer]{export}
 #' @importFrom rtracklayer export
 
 
