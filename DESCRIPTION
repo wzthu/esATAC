@@ -3,8 +3,8 @@ Type: Package
 Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
 Version: 1.2.0
 Date: 2017-06-25
-Author: Zheng Wei, Wei Zhang
-Maintainer: Zheng Wei <wzweizheng@qq.com>
+Author: Zheng Wei, Wei Zhang, Huan Fang, Yanda Li, Xiaowo Wang
+Maintainer: Zheng Wei <wzweizheng@qq.com>, Wei Zhang <w-zhang16@mails.tsinghua.edu.cn>
 Description: This package provides a framework and complete preset pipeline for
     quantification and analysis of ATAC-seq Reads. It covers raw sequencing
     reads preprocessing (FASTQ files), reads alignment (Rbowtie2), aligned reads
