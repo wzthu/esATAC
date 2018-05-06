@@ -60,8 +60,8 @@ setMethod(
             genome <- seqinfo(.Object@paramlist[["bsgenome"]])
         }
         #unique confilict with rJava, if solved, uncommented:
-        #readsbed <- unique(import(.Object@paramlist[["bedInput"]], genome = genome))
-        readsbed <- import(.Object@paramlist[["bedInput"]], genome = genome)
+        readsbed <- unique(import(.Object@paramlist[["bedInput"]], genome = genome))
+        #readsbed <- import(.Object@paramlist[["bedInput"]], genome = genome)
 
         readsbed<-readsbed[(width(readsbed)>=.Object@paramlist[["fregLenRange"]][1])&
                                (width(readsbed)<=.Object@paramlist[["fregLenRange"]][2])]
@@ -73,7 +73,7 @@ setMethod(
         #end(trans)<-start(trans)+1
 
         #unique confilict with rJava, if solved, uncommented:
-        #TSS<-unique(TSS)
+        TSS<-unique(TSS)
 
 
         #end(trans)<-start(trans)+.Object@paramlist[["updownstream"]]
