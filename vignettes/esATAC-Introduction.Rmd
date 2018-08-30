@@ -32,8 +32,9 @@ starting from Bioc 3.6 built on R 3.4. Please check your current Bioconductor ve
 you can download install esATAC and all its dependencies software like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("esATAC")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("esATAC")
 ```
 
 **NOTE: We recommend to use this package in RStudio. Or you have to install [pandoc](https://pandoc.org/) yourself if you use R terminal**
