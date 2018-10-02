@@ -75,7 +75,7 @@ setMethod(
             .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["fastqInput2"]]))
             .Object <- writeLog(.Object,sprintf("destination:%s",.Object@paramlist[["fastqOutput2"]]))
             cl<-makeCluster(2)
-            parLapply(cl = cl,X = 1:2,fun = singleCall, .Object=.Object)
+            parLapply(cl = cl,X = 1:2,fun = singleCall,.renamer_call=.renamer_call, .Object=.Object)
             stopCluster(cl)
         }else{
             singleCall(1,.Object=.Object)
@@ -111,7 +111,7 @@ setMethod(
     }
 )
 
-singleCall<-function(number,.Object){
+singleCall<-function(number,.renamer_call,.Object){
     if(number==1){
         .renamer_call(inputFile = .Object@paramlist[["fastqInput1"]],
                       outputFile = .Object@paramlist[["fastqOutput1"]],
