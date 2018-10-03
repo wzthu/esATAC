@@ -32,8 +32,9 @@ starting from Bioc 3.6 built on R 3.4. Please check your current Bioconductor ve
 you can download install esATAC and all its dependencies software like this:
 
 ```{r installpkg,eval=FALSE,message=FALSE,warning=FALSE}
-source("http://www.bioconductor.org/biocLite.R")
-biocLite("esATAC")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("esATAC")
 ```
 
 **NOTE: We recommend to use this package in RStudio. Or you have to install [pandoc](https://pandoc.org/) yourself if you use R terminal**
@@ -51,7 +52,7 @@ Acquiring more installation detail information for Linux, Windows and macOS,  yo
 | mm9      | BSgenome.Mmusculus.UCSC.mm9       | TxDb.Mmusculus.UCSC.mm9.knownGene     | org.Mm.eg.db  |
 | mm10     | BSgenome.Mmusculus.UCSC.mm10      | TxDb.Mmusculus.UCSC.mm10.knownGene    | org.Mm.eg.db  |
 
-They will not be downloaded and installed during executing `biocLite("esATAC")` because these package file are very big. They will be downloaded and installed according to the `genome` parameter when calling the preset pipeline for the first time.
+They will not be downloaded and installed during executing `BiocManager::install("esATAC")` because these package file are very big. They will be downloaded and installed according to the `genome` parameter when calling the preset pipeline for the first time.
 
 ### Loading
 
@@ -491,7 +492,7 @@ options(java.parameters = "-Xmx8000m")
 ### Loading Recommend Package
 
 The BSgenome package, TxDb known gene package and OrgDb annotation package
-for some functions are required. We recommend to install (use `biocLite("packageName")`) and
+for some functions are required. We recommend to install (use `BiocManager::install("packageName")`) and
 load the specific species related packages before using the packages.
 
 ```{r loadingpkg,message=FALSE}

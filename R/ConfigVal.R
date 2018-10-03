@@ -2,7 +2,7 @@
 #' @importFrom Biostrings masks DNAStringSet injectHardMask
 #' @importFrom BSgenome available.genomes
 #' @importFrom BSgenome installed.genomes
-#' @importFrom BiocInstaller biocLite
+#' @importFrom BiocManager install
 setClass(Class = ".ConfigClass",
          slots = list(
              configList = "list",
@@ -78,7 +78,7 @@ setMethod(f = "isValidVal",
                   bsgenomeinstall <- BSgenome::installed.genomes()[grepl(paste0(val,"$"),installed.genomes())]
                   
                   if(length(bsgenomeinstall)==0){
-                      BiocInstaller::biocLite(bsgenomename)
+                      BiocManager::install(bsgenomename)
                   }
                   .Object@configList[["bsgenome"]]<-getBSgenome(val)
                   if(is.null(.Object@configList[["refdir"]])){
@@ -93,8 +93,8 @@ setMethod(f = "isValidVal",
                   error = function(e){
                       message(as.character(e))
                       stop(paste("To install the package, type:",
-                                "library(\"BiocInstaller\")",
-                                sprintf("biocLite(\"org.%s.eg.db\")",unlist(strsplit(as.character(e),"org\\.|\\.eg\\.db"))[2]),
+                                "library(\"BiocManager\")",
+                                sprintf("BiocManager::install(\"org.%s.eg.db\")",unlist(strsplit(as.character(e),"org\\.|\\.eg\\.db"))[2]),
                                 sep="\n"))
                   })
                   message("Configure knownGene ...")
@@ -104,8 +104,8 @@ setMethod(f = "isValidVal",
                   error = function(e){
                       message(as.character(e))
                       stop(paste("To install the package, type:",
-                                 "library(\"BiocInstaller\")",
-                                 sprintf("biocLite(\"TxDb.%sGene\")",unlist(strsplit(as.character(e),"TxDb\\.|Gene"))[2]),
+                                 "library(\"BiocManager\")",
+                                 sprintf("BiocManager::install(\"TxDb.%sGene\")",unlist(strsplit(as.character(e),"TxDb\\.|Gene"))[2]),
                                  sep="\n"))
                   })
                   
@@ -309,7 +309,7 @@ setMethod(f = "GetTxDb",
                   library(.Object@curTxDb,character.only = TRUE)
               },
               error = function(e){
-                  BiocInstaller::biocLite(.Object@curTxDb)
+                  BiocManager::install(.Object@curTxDb)
                   library(.Object@curTxDb,character.only = TRUE)
               })
               return(get0(.Object@curTxDb))
@@ -348,7 +348,7 @@ setMethod(f = "GetOrgDb",
                   library(.Object@curOrgDb,character.only = TRUE)
               },
               error = function(e){
-                  BiocInstaller::biocLite(.Object@curOrgDb)
+                  BiocManager::install(.Object@curOrgDb)
                   library(.Object@curOrgDb,character.only = TRUE)
               })
               #return(get0(.Object@curOrgDb))
