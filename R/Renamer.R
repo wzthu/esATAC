@@ -69,7 +69,7 @@ setMethod(
             threads <- .Object@paramlist[["threads"]]
         }
         if(.Object@singleEnd||.Object@paramlist[["interleave"]]){
-            singleCall(number=1,.Object=.Object)
+            singleCall(number=1,.renamer_call=.renamer_call, .Object=.Object)
         }else if(threads>=2){
             .Object <- writeLog(.Object,paste0("processing file:"))
             .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["fastqInput2"]]))
@@ -78,11 +78,11 @@ setMethod(
             parLapply(cl = cl,X = 1:2,fun = singleCall,.renamer_call=.renamer_call, .Object=.Object)
             stopCluster(cl)
         }else{
-            singleCall(1,.Object=.Object)
+            singleCall(1,.renamer_call=.renamer_call,.Object=.Object)
             .Object <- writeLog(.Object,paste0("processing file:"))
             .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["fastqInput2"]]))
             .Object <- writeLog(.Object,sprintf("destination:%s",.Object@paramlist[["fastqOutput2"]]))
-            singleCall(2,.Object=.Object)
+            singleCall(2,.renamer_call=.renamer_call,.Object=.Object)
         }
         .Object
     }
