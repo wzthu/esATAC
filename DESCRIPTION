@@ -1,7 +1,7 @@
 Package: esATAC
 Type: Package
 Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
-Version: 1.4.0
+Version: 1.5.0
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
