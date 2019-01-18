@@ -403,8 +403,8 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
                                           getVMRShow(getReportVal(sam2Bed,"save"),
                                                      getReportVal(sam2Bed,"total")),
                                           sprintf("%d",as.numeric(getReportVal(fripQC,"totalPeaks"))),
-                                          getPer(getReportVal(DHSQC,"qcbedRate")),
-                                          getPer(getReportVal(blacklistQC,"qcbedRate")),
+                                          ifelse(is.null(DHSQC),"NA",getPer(getReportVal(DHSQC,"qcbedRate"))),
+                                          ifelse(is.null(blacklistQC),"NA",getPer(getReportVal(blacklistQC,"qcbedRate"))),
                                           getPer(getReportVal(fripQC,"FRiP")))
                                   ,
                                   `Reference`=c("SE / PE",
@@ -531,8 +531,8 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
                                       getVMRShow(getReportVal(shortBed,"save"),
                                                  getReportVal(shortBed,"total")),
                                       sprintf("%d",as.numeric(getReportVal(fripQC,"totalPeaks"))),
-                                      getPer(getReportVal(DHSQC,"qcbedRate")),
-                                      getPer(getReportVal(blacklistQC,"qcbedRate")),
+                                      ifelse(is.null(DHSQC),"NA",getPer(getReportVal(DHSQC,"qcbedRate"))),
+                                      ifelse(is.null(blacklistQC),"NA",getPer(getReportVal(blacklistQC,"qcbedRate"))),
                                       getPer(getReportVal(fripQC,"FRiP")))
                               ,
                               `Reference`=c("SE / PE",
