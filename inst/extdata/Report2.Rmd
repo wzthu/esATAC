@@ -205,24 +205,27 @@ grid.arrange(g12, g22, ncol=2)
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
+ifelse(is.null(caselist$atacProcs$blacklistQC),"NA",{
 casetb<-getReportVal(caselist$atacProcs$blacklistQC,"report")
 ctrltb<-getReportVal(ctrllist$atacProcs$blacklistQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
                         ))
+})
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-
+ifelse(is.null(caselist$atacProcs$DHSQC),"NA",{
 casetb<-getReportVal(caselist$atacProcs$DHSQC,"report")
 ctrltb<-getReportVal(ctrllist$atacProcs$DHSQC,"report")
 knitr::kable(data.frame(Items=casetb[["Item"]],
                         Case=casetb[["Value"]],
                         Control=ctrltb[["Value"]]
                         ))
+})
 ```
 
 ## Fraction of reads in peaks (FRiP)

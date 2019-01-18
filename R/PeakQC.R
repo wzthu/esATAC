@@ -200,6 +200,8 @@ setMethod(
     definition = function(atacProc, bsgenome = NULL,
                           reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
                           bedInput = NULL, ...){
+tryCatch(
+    {
         atacproc <- new(
             "PeakQC",
             atacProc = atacProc,
@@ -209,12 +211,27 @@ setMethod(
             bedInput = bedInput)
         atacproc <- process(atacproc)
         invisible(atacproc)
+    },
+    error = function(cond){
+        if(qcbedInput == "DHS" || qcbedInput == 'blacklist'){
+            message('genome is not configured or')
+            print(paste(qcbedInput,'is not available for current configured genome'))
+            return(NULL)
+        }else{
+            stop(paste('qcbedInput:', qcbedInput,'does not exist'))
+        }
     }
+)    
+}
 )
+   
+
 #' @rdname PeakQC
 #' @aliases peakQC
 #' @export
 peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), ...){
+tryCatch(
+    {
     atacproc <- new(
         "PeakQC",
         atacProc = NULL,
@@ -224,4 +241,15 @@ peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DH
         bedInput = bedInput)
     atacproc <- process(atacproc)
     invisible(atacproc)
+},
+    error = function(cond){
+        if(qcbedInput == "DHS" || qcbedInput == 'blacklist'){
+            message('genome is not configured or')
+            print(paste(qcbedInput,'is not available for current configured genome'))
+            return(NULL)
+        }else{
+            stop(paste('qcbedInput:', qcbedInput,'does not exist'))
+        }
+    }
+)
 }

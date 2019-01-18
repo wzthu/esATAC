@@ -136,13 +136,15 @@ grid.arrange(g1, g2, ncol=2)
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = getReportVal(atacProcs$blacklistQC,"report"))
+ifelse(is.null(atacProcs$blacklistQC),"NA",
+knitr::kable(x = getReportVal(atacProcs$blacklistQC,"report")))
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = getReportVal(atacProcs$DHSQC,"report"))
+ifelse(is.null(atacProcs$DHSQC),"NA",
+knitr::kable(x = getReportVal(atacProcs$DHSQC,"report")))
 ```
 
 ## Fraction of reads in peaks (FRiP)
