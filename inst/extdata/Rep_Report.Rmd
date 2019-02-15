@@ -99,7 +99,6 @@ knitr::kable(x = getReportVal(atacProcs$blacklistQC,"report")))
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 ifelse(is.null(atacProcs$DHSQC),"NA",
 knitr::kable(x = getReportVal(atacProcs$DHSQC,"report")))
-)
 ```
 
 ## Fraction of reads in peaks (FRiP)
