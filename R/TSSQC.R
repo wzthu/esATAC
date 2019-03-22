@@ -61,8 +61,8 @@ setMethod(
         }
         #unique confilict with rJava, if solved, uncommented:
         #readsbed <- unique(import(.Object@paramlist[["bedInput"]], genome = genome))
-        readsbed <- import(.Object@paramlist[["bedInput"]], genome = genome)
-
+#        readsbed <- import(.Object@paramlist[["bedInput"]], genome = genome)
+       readsbed <- import(.Object@paramlist[["bedInput"]])
         readsbed<-readsbed[(width(readsbed)>=.Object@paramlist[["fregLenRange"]][1])&
                                (width(readsbed)<=.Object@paramlist[["fregLenRange"]][2])]
 
