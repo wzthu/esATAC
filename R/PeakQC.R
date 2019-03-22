@@ -60,11 +60,11 @@ setMethod(
             genome <- seqinfo(.Object@paramlist[["bsgenome"]])
         }
 
-        inputbed <- import(con = .Object@paramlist[["bedInput"]], genome = genome,format = "bed")
+#        inputbed <- import(con = .Object@paramlist[["bedInput"]], genome = genome,format = "bed")
+        inputbed <- import(con = .Object@paramlist[["bedInput"]], format = "bed")
 
-
-        qcbedInput<-import(con = .Object@paramlist[["qcbedInput"]], genome = genome,format = "bed")
-
+#        qcbedInput<-import(con = .Object@paramlist[["qcbedInput"]], genome = genome,format = "bed")
+        qcbedInput<-import(con = .Object@paramlist[["qcbedInput"]], format = "bed")
 
 
         qcval=list();

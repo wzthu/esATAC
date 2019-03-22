@@ -51,7 +51,8 @@ setMethod(
         }else{
             genome <- seqinfo(.Object@paramlist[["bsgenome"]])
         }
-        bedranges <- import(.Object@paramlist[["bedInput"]], genome = genome)
+#        bedranges <- import(.Object@paramlist[["bedInput"]], genome = genome)
+       bedranges <- import(.Object@paramlist[["bedInput"]])
         cov <- coverage(bedranges)
         ans <- GRanges(cov)
         ans <- subset(ans, score > 0)
