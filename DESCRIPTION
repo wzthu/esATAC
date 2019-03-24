@@ -19,7 +19,8 @@ Depends:
     R (>= 3.5),
     Rsamtools,
     GenomicRanges,
-    ShortRead
+    ShortRead,
+    pipeFrame
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -35,7 +36,6 @@ Imports:
     clusterProfiler,
     igraph,
     rJava,
-    DiagrammeR,
     magrittr,
     digest,
     BSgenome,
@@ -64,13 +64,12 @@ Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     org.Hs.eg.db,
-    DiagrammeRsvg,
     testthat,
     webshot
 LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
-    BaseProc.R
+    ATACProc.R
     BamToBed.R
     BedToBigWig.R
     BedUtils.R
@@ -81,7 +80,6 @@ Collate:
     FRiPQC.R
     FastQC.R
     FregLenDistribute.R
-    GraphMng.R
     JavaExports.R
     JavaInterface.R
     LibComplexQC.R
@@ -109,8 +107,7 @@ biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Prepro
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 NeedsCompilation: yes
 URL: https://github.com/wzthu/esATAC
 BugReports: https://github.com/wzthu/esATAC/issues
-

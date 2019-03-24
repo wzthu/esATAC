@@ -17,8 +17,8 @@ atacTSSQC(atacProc, txdbKnownGene = NULL, bsgenome = NULL,
   fragLenRange = c(0, 2000), tssUpdownstream = 1000, ...)
 
 tssQC(bedInput, txdbKnownGene = NULL, bsgenome = NULL,
-  reportPrefix = NULL, fragLenRange = c(0, 2000), tssUpdownstream = 1000,
-  ...)
+  reportPrefix = NULL, fragLenRange = c(0, 2000),
+  tssUpdownstream = 1000, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.

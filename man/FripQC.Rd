@@ -9,13 +9,15 @@
 \title{Quality control for fraction of reads in peaks (FRiP)}
 \usage{
 atacFripQC(atacProcReads, atacProcPeak, bsgenome = NULL,
-  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL, ...)
-
-\S4method{atacFripQC}{ATACProc}(atacProcReads, atacProcPeak, bsgenome = NULL,
-  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL, ...)
-
-fripQC(readsBedInput, peakBedInput, bsgenome = NULL, reportOutput = NULL,
+  reportOutput = NULL, readsBedInput = NULL, peakBedInput = NULL,
   ...)
+
+\S4method{atacFripQC}{ATACProc}(atacProcReads, atacProcPeak,
+  bsgenome = NULL, reportOutput = NULL, readsBedInput = NULL,
+  peakBedInput = NULL, ...)
+
+fripQC(readsBedInput, peakBedInput, bsgenome = NULL,
+  reportOutput = NULL, ...)
 }
 \arguments{
 \item{atacProcReads}{\code{\link{ATACProc-class}} object scalar.

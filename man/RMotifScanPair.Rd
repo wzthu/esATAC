@@ -8,13 +8,13 @@
 \alias{motifscanpair}
 \title{Search Motif Position in Given Regions}
 \usage{
-atacMotifScanPair(atacProc, peak1 = NULL, peak2 = NULL, background = NULL,
-  genome = NULL, motifs = NULL, p.cutoff = 1e-04, scanO.dir = NULL,
-  prefix = NULL, ...)
+atacMotifScanPair(atacProc, peak1 = NULL, peak2 = NULL,
+  background = NULL, genome = NULL, motifs = NULL,
+  p.cutoff = 1e-04, scanO.dir = NULL, prefix = NULL, ...)
 
-\S4method{atacMotifScanPair}{ATACProc}(atacProc, peak1 = NULL, peak2 = NULL,
-  background = NULL, genome = NULL, motifs = NULL, p.cutoff = 1e-04,
-  scanO.dir = NULL, prefix = NULL, ...)
+\S4method{atacMotifScanPair}{ATACProc}(atacProc, peak1 = NULL,
+  peak2 = NULL, background = NULL, genome = NULL, motifs = NULL,
+  p.cutoff = 1e-04, scanO.dir = NULL, prefix = NULL, ...)
 
 motifscanpair(peak1 = NULL, peak2 = NULL, background = NULL,
   genome = NULL, motifs = NULL, p.cutoff = 1e-04, scanO.dir = NULL,
@@ -58,7 +58,7 @@ This function scan motif position in a given genome regions.
 }
 \examples{
 
-
+\dontrun{
 library(R.utils)
 library(BSgenome.Hsapiens.UCSC.hg19)
 p1bz <- system.file("extdata", "Example_peak1.bed.bz2", package="esATAC")
@@ -77,7 +77,7 @@ output <- atacMotifScanPair(atacProc = peakcom.output,
 genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
 }
 
-
+}
 \seealso{
 \code{\link{atacpeakComp}}
 }

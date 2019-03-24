@@ -9,11 +9,12 @@
 \title{Quality control for peak overlap}
 \usage{
 atacPeakQC(atacProc, bsgenome = NULL, reportOutput = NULL,
-  qcbedInput = c("DHS", "blacklist", "path/to/bed"), bedInput = NULL, ...)
+  qcbedInput = c("DHS", "blacklist", "path/to/bed"), bedInput = NULL,
+  ...)
 
 \S4method{atacPeakQC}{ATACProc}(atacProc, bsgenome = NULL,
-  reportOutput = NULL, qcbedInput = c("DHS", "blacklist", "path/to/bed"),
-  bedInput = NULL, ...)
+  reportOutput = NULL, qcbedInput = c("DHS", "blacklist",
+  "path/to/bed"), bedInput = NULL, ...)
 
 peakQC(bedInput, bsgenome = NULL, reportOutput = NULL,
   qcbedInput = c("DHS", "blacklist", "path/to/bed"), ...)

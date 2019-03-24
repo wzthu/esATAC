@@ -4,12 +4,13 @@
 \alias{atacPipe2}
 \title{Pipeline for single replicate case-control paired-end sequencing data}
 \usage{
-atacPipe2(genome, case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
-  "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
+atacPipe2(genome, case = list(fastqInput1 = "paths/To/fastq1",
+  fastqInput2 = "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
   control = list(fastqInput1 = "paths/To/fastq1", fastqInput2 =
   "paths/To/fastq2", adapter1 = NULL, adapter2 = NULL), refdir = NULL,
-  tmpdir = NULL, threads = 2, interleave = FALSE, createReport = TRUE,
-  motifs = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 1e-06, ...)
+  tmpdir = NULL, threads = 2, interleave = FALSE,
+  createReport = TRUE, motifs = NULL, chr = c(1:22, "X", "Y"),
+  p.cutoff = 1e-06, ...)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}

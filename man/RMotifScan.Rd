@@ -11,11 +11,12 @@
 atacMotifScan(atacProc, peak = NULL, genome = NULL, motifs = NULL,
   p.cutoff = 1e-06, scanO.dir = NULL, prefix = NULL, ...)
 
-\S4method{atacMotifScan}{ATACProc}(atacProc, peak = NULL, genome = NULL,
-  motifs = NULL, p.cutoff = 1e-06, scanO.dir = NULL, prefix = NULL, ...)
+\S4method{atacMotifScan}{ATACProc}(atacProc, peak = NULL,
+  genome = NULL, motifs = NULL, p.cutoff = 1e-06, scanO.dir = NULL,
+  prefix = NULL, ...)
 
-motifscan(peak = NULL, genome = NULL, motifs = NULL, p.cutoff = 1e-06,
-  scanO.dir = NULL, prefix = NULL, ...)
+motifscan(peak = NULL, genome = NULL, motifs = NULL,
+  p.cutoff = 1e-06, scanO.dir = NULL, prefix = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.

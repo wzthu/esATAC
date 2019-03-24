@@ -9,20 +9,22 @@
 \title{process bed file with limit memory}
 \usage{
 atacBedUtils(atacProc, bedInput = NULL, bedOutput = NULL,
-  mergePair = FALSE, downSample = NULL, posOffset = 0L, negOffset = 0L,
-  chrFilterList = c("chrM"), select = FALSE, sortBed = FALSE,
-  uniqueBed = FALSE, minFragLen = 0, maxFragLen = 2e+09, ...)
+  mergePair = FALSE, downSample = NULL, posOffset = 0L,
+  negOffset = 0L, chrFilterList = c("chrM"), select = FALSE,
+  sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,
+  maxFragLen = 2e+09, ...)
 
 \S4method{atacBedUtils}{ATACProc}(atacProc, bedInput = NULL,
   bedOutput = NULL, mergePair = FALSE, downSample = NULL,
   posOffset = 0L, negOffset = 0L, chrFilterList = c("chrM"),
-  select = FALSE, sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,
-  maxFragLen = 2e+09, ...)
+  select = FALSE, sortBed = FALSE, uniqueBed = FALSE,
+  minFragLen = 0, maxFragLen = 2e+09, ...)
 
-bedUtils(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,
-  reportOutput = NULL, posOffset = 0L, negOffset = 0L,
-  chrFilterList = c("chrM"), select = FALSE, sortBed = FALSE,
-  uniqueBed = FALSE, minFragLen = 0, maxFragLen = 2e+09, ...)
+bedUtils(bedInput, bedOutput = NULL, mergePair = FALSE,
+  downSample = NULL, reportOutput = NULL, posOffset = 0L,
+  negOffset = 0L, chrFilterList = c("chrM"), select = FALSE,
+  sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,
+  maxFragLen = 2e+09, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.

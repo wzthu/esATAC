@@ -8,17 +8,18 @@
 \alias{cutsitecount}
 \title{Count cut site number in given motif region and plot footprint.}
 \usage{
-atacCutSiteCount(atacProcCutSite, atacProcMotifScan = NULL, csInput = NULL,
-  motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-  strandLength = 100, FootPrint = TRUE, prefix = NULL, ...)
+atacCutSiteCount(atacProcCutSite, atacProcMotifScan = NULL,
+  csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
+  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
+  prefix = NULL, ...)
 
 \S4method{atacCutSiteCount}{ATACProc}(atacProcCutSite,
   atacProcMotifScan = NULL, csInput = NULL, motif_info = NULL,
   chr = c(1:22, "X", "Y"), matrixOutput = NULL, strandLength = 100,
   FootPrint = TRUE, prefix = NULL, ...)
 
-cutsitecount(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"),
-  matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
+cutsitecount(csInput = NULL, motif_info = NULL, chr = c(1:22, "X",
+  "Y"), matrixOutput = NULL, strandLength = 100, FootPrint = TRUE,
   prefix = NULL, ...)
 }
 \arguments{

@@ -12,8 +12,8 @@ atacpeakComp(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
   bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...)
 
 \S4method{atacpeakComp}{ATACProc}(atacProcPeak1, atacProcPeak2,
-  bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2,
-  ...)
+  bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
+  olap.rate = 0.2, ...)
 
 peakcomp(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
   olap.rate = 0.2, ...)

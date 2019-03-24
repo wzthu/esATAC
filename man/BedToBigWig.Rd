@@ -14,8 +14,8 @@ atacBedToBigWig(atacProc, bedInput = NULL, bsgenome = NULL,
 \S4method{atacBedToBigWig}{ATACProc}(atacProc, bedInput = NULL,
   bsgenome = NULL, bwOutput = NULL, toWig = FALSE, ...)
 
-bedToBigWig(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE,
-  ...)
+bedToBigWig(bedInput, bsgenome = NULL, bwOutput = NULL,
+  toWig = FALSE, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
