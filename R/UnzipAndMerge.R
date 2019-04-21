@@ -12,43 +12,43 @@ setMethod(
         fastqOutput1 <- allparam[["fastqOutput1"]]
         fastqOutput2 <- allparam[["fastqOutput2"]]
         interleave <- allparam[["interleave"]]
-        .Object@paramList[["interleave"]]<-interleave
-        .Object@propList[["interleave"]]<-interleave
+        param(.Object, "interleave") <- interleave
+        property(.Object, "interleave") <- interleave
         if(interleave){
-            .Object@propList[["singleEnd"]]<-FALSE
-            .Object@inputList[["fastqInput1"]]<-fastqInput1
+            property(.Object, "singleEnd") <- FALSE
+            input(.Object, "fastqInput1") <- fastqInput1
             if(!is.null(fastqOutput1)){
-                .Object@outputList[["fastqOutput1"]]<-fastqOutput1
+                output(.Object, "fastqOutput1") <- fastqOutput1
             }else{
-                .Object@outputList[["fastqOutput1"]]<-getAutoPath(.Object,.Object@inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                output(.Object, "fastqOutput1") <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
             }
         }else{
             if(is.null(fastqInput2)){
-                .Object@propList[["singleEnd"]]<-TRUE
-                .Object@inputList[["fastqInput1"]]<-fastqInput1
+                property(.Object, "singleEnd") <- TRUE
+                input(.Object, "fastqInput1") <-fastqInput1
                 if(!is.null(fastqOutput1)){
-                    .Object@outputList[["fastqOutput1"]]<-fastqOutput1
+                    output(.Object, "fastqOutput1") <-fastqOutput1
                 }else{
-                    .Object@outputList[["fastqOutput1"]]<-getAutoPath(.Object,.Object@inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object, "fastqOutput1") <-getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }else{
-                .Object@propList[["singleEnd"]]<-FALSE
-                .Object@inputList[["fastqInput1"]]<-fastqInput1
-                .Object@inputList[["fastqInput2"]]<-fastqInput2
-                if(length(.Object@inputList[["fastqInput1"]])!=length(.Object@inputList[["fastqInput2"]])){
+                property(.Object, "singleEnd") <-FALSE
+                input(.Object, "fastqInput1") <-fastqInput1
+                input(.Object, "fastqInput2") <-fastqInput2
+                if(length(.Object$inputList[["fastqInput1"]])!=length(.Object$inputList[["fastqInput2"]])){
                     stop("The number of pair-end fastq files should be equal.")
                 }
                 if(!is.null(fastqOutput1)){
                     #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
-                    .Object@outputList[["fastqOutput1"]]<-fastqOutput1
+                    output(.Object, "fastqOutput1") <- fastqOutput1
                 }else{
-                    .Object@outputList[["fastqOutput1"]]<-getAutoPath(.Object,.Object@inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object, "fastqOutput1") <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
                 if(!is.null(fastqOutput2)){
                     #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
-                    .Object@outputList[["fastqOutput2"]]<-fastqOutput2
+                    output(.Object, "fastqOutput2") <- fastqOutput2
                 }else{
-                    .Object@outputList[["fastqOutput2"]]<-getAutoPath(.Object,.Object@inputList[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object, "fastqOutput2") <- getAutoPath(.Object,.Object$inputList[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }
         }
@@ -60,32 +60,32 @@ setMethod(
     f = "processing",
     signature = "UnzipAndMerge",
     definition = function(.Object,...){
-        if(.Object@propList[["singleEnd"]]||(!.Object@propList[["singleEnd"]]&&.Object@paramList[["interleave"]])){
-            fileNumber<-length(.Object@inputList[["fastqInput1"]])
-            decompress(.Object,.Object@inputList[["fastqInput1"]][1],.Object@outputList[["fastqOutput1"]])
+        if(property(.Object)[["singleEnd"]]||(!property(.Object)[["singleEnd"]]&&.Object$paramList[["interleave"]])){
+            fileNumber<-length(.Object$inputList[["fastqInput1"]])
+            decompress(.Object,.Object$inputList[["fastqInput1"]][1],.Object$outputList[["fastqOutput1"]])
             if(fileNumber>1){
                 for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,.Object@inputList[["fastqInput1"]][i],dirname(.Object@outputList[["fastqOutput1"]]));
-                    file.append(.Object@outputList[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=.Object@inputList[["fastqInput1"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput1"]][i],dirname(.Object$outputList[["fastqOutput1"]]));
+                    file.append(.Object$outputList[["fastqOutput1"]],tempfastqfile)
+                    if(tempfastqfile!=.Object$inputList[["fastqInput1"]][i]){
                         unlink(tempfastqfile)
                     }
                 }
             }
         }else{
-            fileNumber<-length(.Object@inputList[["fastqInput1"]])
-            decompress(.Object,.Object@inputList[["fastqInput1"]][1],.Object@outputList[["fastqOutput1"]])
-            decompress(.Object,.Object@inputList[["fastqInput2"]][1],.Object@outputList[["fastqOutput2"]])
+            fileNumber<-length(.Object$inputList[["fastqInput1"]])
+            decompress(.Object,.Object$inputList[["fastqInput1"]][1],.Object$outputList[["fastqOutput1"]])
+            decompress(.Object,.Object$inputList[["fastqInput2"]][1],.Object$outputList[["fastqOutput2"]])
             if(fileNumber>1){
                 for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,.Object@inputList[["fastqInput1"]][i],dirname(.Object@outputList[["fastqOutput1"]]));
-                    file.append(.Object@outputList[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=.Object@inputList[["fastqInput1"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput1"]][i],dirname(.Object$outputList[["fastqOutput1"]]));
+                    file.append(.Object$outputList[["fastqOutput1"]],tempfastqfile)
+                    if(tempfastqfile!=.Object$inputList[["fastqInput1"]][i]){
                         unlink(tempfastqfile)
                     }
-                    tempfastqfile<-decompressFastq(.Object,.Object@inputList[["fastqInput2"]][i],dirname(.Object@outputList[["fastqOutput2"]]));
-                    file.append(.Object@outputList[["fastqOutput2"]],tempfastqfile)
-                    if(tempfastqfile!=.Object@inputList[["fastqInput2"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput2"]][i],dirname(.Object$outputList[["fastqOutput2"]]));
+                    file.append(.Object$outputList[["fastqOutput2"]],tempfastqfile)
+                    if(tempfastqfile!=.Object$inputList[["fastqInput2"]][i]){
                         unlink(tempfastqfile)
                     }
                 }
@@ -99,10 +99,10 @@ setMethod(
     f = "checkRequireParam",
     signature = "UnzipAndMerge",
     definition = function(.Object,...){
-        if(is.null(.Object@inputList[["fastqInput1"]])){
+        if(is.null(.Object$inputList[["fastqInput1"]])){
             stop("fastqInput1 is required.")
         }
-        if(.Object@paramList[["interleave"]]&&.Object@propList[["singleEnd"]]){
+        if(.Object$paramList[["interleave"]]&&.Object$propList[["singleEnd"]]){
             stop("Single end data should not be interleave")
         }
     }
