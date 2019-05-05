@@ -142,52 +142,44 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "SamToBed",
-    definition = function(.Object, item){
+    definition = function(.Object, ...){
         qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-        if(item == "report"){
-            data.frame(
-                Item = c("Total mapped reads",
-                         sprintf("Chromasome %s filted reads",paste(.Object@paramlist[["filterList"]],collapse = "/")),
-                         "Filted multimap reads",
-                         "Removed fragment size out of range",
-                         "Removed duplicate reads"
-                ),
-                Retain = c(qcval[["total"]],
-                           as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]])),
-                           as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])),
-                           as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]] - as.integer(qcval[["extlen"]]))),
-                           qcval[["save"]]
-
-                ),
-                Filted = c("/",
-                           qcval[["filted"]],
-                           qcval[["multimap"]],
-                           qcval[["unique"]],
-                           qcval[["extlen"]]
-                )
-
+        
+        
+        
+        data.frame(
+            Item = c("Total mapped reads",
+                     sprintf("Chromasome %s filted reads",paste(.Object@paramlist[["filterList"]],collapse = "/")),
+                     "Filted multimap reads",
+                     "Removed fragment size out of range",
+                     "Removed duplicate reads"
+            ),
+            Retain = c(qcval[["total"]],
+                       as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]])),
+                       as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])),
+                       as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]] - as.integer(qcval[["extlen"]]))),
+                       qcval[["save"]]
+                       
+            ),
+            Filted = c("/",
+                       qcval[["filted"]],
+                       qcval[["multimap"]],
+                       qcval[["unique"]],
+                       qcval[["extlen"]]
             )
-            return(data.frame(Item=names(qcval),Value=as.character(qcval)))
-        }else if(item == "non-mitochondrial")(
-            return(as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]])))
-        )else if(item == "non-mitochondrial-multimap"){
-            return(as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])))
-        }else{
-            return(qcval[[item]])
-        }
+            
+        )
+        report(.Object)[["report"]] <- data.frame(Item=names(qcval),Value=as.character(qcval))
+        
+        report(.Object)[["non-mitochondrial"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]))
+        report(.Object)[["non-mitochondrial-multimap"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]]))
+        report(.Object) <- c(report(.Object), qcval)
+        .Object
     }
 )
 
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "SamToBed",
-    definition = function(.Object){
-        return(c("report","total","save","filted","extlen","unique","multimap","non-mitochondrial","non-mitochondrial-multimap"))
-    }
-)
 
 
 #' @name SamToBed

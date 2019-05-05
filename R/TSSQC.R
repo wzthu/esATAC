@@ -174,24 +174,16 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "TSSQC",
-    definition = function(.Object, item,...){
+    definition = function(.Object,...){
         tss <- read.table(file= .Object@paramlist[["tsstxtOutput"]],header=TRUE)
-        if(item == "tss"){
-            return(tss)
-        }
+        report(.Object)$tss <- tss
+        .Object
     }
 )
 
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "TSSQC",
-    definition = function(.Object){
-        return(c("tss"))
-    }
-)
 
 
 

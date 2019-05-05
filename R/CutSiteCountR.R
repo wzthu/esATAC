@@ -191,27 +191,17 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "CutSiteCountR",
-    definition = function(.Object, item){
-        if(item == "footprint.data"){
-            fp <- readRDS(.Object@paramlist[["footprint.data"]])
-            return(fp)
-        }else if(item == "pdf.dir"){
-            return(.Object@paramlist[["fp_pdf.dir"]])
-        }
+    definition = function(.Object, ...){
+        fp <- readRDS(.Object@paramlist[["footprint.data"]])
+        report(.Object)[["footprint.data"]] <- fp
+        report(.Object)[["pdf.dir"]] <- .Object@paramlist[["fp_pdf.dir"]]
+        .Object
     }
 )
 
 
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "CutSiteCountR",
-    definition = function(.Object){
-        return(c("footprint.data", "pdf.dir"))
-    }
-)
 
 #' @name CutSiteCountR
 #' @title Count cut site number in given motif region and plot footprint.

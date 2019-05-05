@@ -3,69 +3,82 @@ setClass(Class = "RemoveAdapter",
 )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "RemoveAdapter",
-    definition = function(.Object,atacProc,..., adapter1=NULL,adapter2=NULL,fastqOutput1=NULL, reportPrefix=NULL,
-                          fastqOutput2=NULL, fastqInput1=NULL, fastqInput2=NULL,interleave=FALSE,
-                          threads=NULL, paramList= NULL,findParamList=NULL,editable=FALSE){
-        .Object <- init(.Object,"RemoveAdapter",editable,list(arg1=atacProc))
-        if(!is.null(atacProc)){
-            .Object@paramlist[["fastqInput1"]] <- getParam(atacProc,"fastqOutput1");
-            .Object@paramlist[["fastqInput2"]] <- getParam(atacProc,"fastqOutput2");
-            regexProcName<-sprintf("(fastq|fq|%s)",getProcName(atacProc))
-            .Object@paramlist[["interleave"]] <- getParam(atacProc,"interleave")
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        fastqInput1 <- allparam[["fastqInput1"]]
+        fastqInput2 <- allparam[["fastqInput2"]]
+        adapter1 <- allparam[["adapter1"]]
+        adapter2 <- allparam[["adapter2"]]
+        fastqOutput1 <- allparam[["fastqOutput1"]]
+        fastqOutput2 <- allparam[["fastqOutput2"]]
+        reportPrefix <- allparam[["reportPrefix"]]
+        interleave <- allparam[["interleave"]]
+        paramList <- allparam[["paramList"]]
+
+
+        if(length(prevSteps) > 0){
+            fastqStep <- prevSteps[[1]]
+            param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
+            param(.Object)[["singleEnd"]] <- property(fastqStep)[["singleEnd"]]
+            input(.Object)[["fastqInput1"]] <- output(prevSteps)[["fastqOutput1"]]
+            if(!param(.Object)[["interleave"]] && !input(.Object)[["fastqInput1"]]){
+                input(.Object)[["fastqInput2"]] <- output(prevSteps)[["fastqOutput2"]]
+            }
+            if(length(prevSteps) > 1){
+                findAdapterStep <- prevSteps[[2]]
+                param(.Object)$adapter1 <- property(findAdapterStep)[["adapter1"]]
+                param(.Object)$adapter2 <- property(findAdapterStep)[["adapter2"]]
+            }
         }else{
-            regexProcName<-"(fastq|fq)"
-            .Object@paramlist[["interleave"]] <- interleave
+            param(.Object)[["interleave"]] <- interleave
+            property(.Object)[["interleave"]] <- interleave
             if(is.null(fastqInput2)){
-                .Object@singleEnd<-TRUE
+                property(.Object)[["singleEnd"]] <- TRUE
+                property(.Object)[["singleEnd"]] <- TRUE
             }else{
-                .Object@singleEnd<-FALSE
+                property(.Object)[["singleEnd"]] <- FALSE
+                property(.Object)[["singleEnd"]] <- FALSE
             }
         }
 
-        if(!is.null(fastqInput1)){
-            .Object@paramlist[["fastqInput1"]] <- fastqInput1;
-        }
+
+        input(.Object)[["fastqInput1"]] <- fastqInput1;
+
         if(!is.null(fastqInput2)){
-            .Object@paramlist[["fastqInput2"]] <- fastqInput2;
+            input(.Object)[["fastqInput2"]] <- fastqInput2;
         }
 
 
 
         if(is.null(fastqOutput1)){
-            if(!is.null(.Object@paramlist[["fastqInput1"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
-                .Object@paramlist[["fastqOutput1"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".fq"))
-            }
+            output(.Object)[["fastqOutput1"]] <- getAutoPath(.Object, input(.Object)[["fastqInput1"]], "fq|fastq", "fq")
         }else{
-            .Object@paramlist[["fastqOutput1"]] <- fastqOutput1;
+            output(.Object)[["fastqOutput1"]] <- fastqOutput1;
         }
         if(is.null(fastqOutput2)){
-            if(!is.null(.Object@paramlist[["fastqInput2"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput2"]],regexProcName)
-                .Object@paramlist[["fastqOutput2"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".fq"));
+            if(!is.null(input(.Object)[["fastqInput2"]])){
+                output(.Object)[["fastqOutput2"]] <- getAutoPath(.Object, input(.Object)[["fastqInput2"]], "fq|fastq", "fq")
             }
         }else{
-            .Object@paramlist[["fastqOutput2"]] <- fastqOutput2;
+            output(.Object)[["fastqOutput2"]] <- fastqOutput2;
         }
         if(is.null(reportPrefix)){
-            if(!is.null(.Object@paramlist[["fastqInput1"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
-                .Object@paramlist[["reportPrefix"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".report"))
-            }
+            output(.Object)$reportPrefix <- getStepWorkDir(.Object,"adrm.report")
         }else{
-            .Object@paramlist[["reportPrefix"]] <- reportPrefix;
+            output(.Object)$reportPrefix <- reportPrefix
         }
 
-        .Object@paramlist[["reportPrefix_adapter1_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter1")
-        .Object@paramlist[["reportPrefix_adapter2_Output"]]<-paste0(.Object@paramlist[["reportPrefix"]],".adapter2")
+        if(!is.null(adapter1)){
+            param(.Object)$adapter1 <- adapter1
+        }
+        if(!is.null(adapter2)){
+            param(.Object)$adapter1 <- adapter1
+        }
         
-
-        .Object@paramlist[["adapter1"]] <- adapter1
-        .Object@paramlist[["adapter2"]] <- adapter2
-
-        .Object@paramlist[["paramList"]]<-""
+       
+        param(.Object)$paramList<-""
         if(!is.null(paramList)){
             paramList<-trimws(as.character(paramList))
             paramList<-paste(paramList,collapse = " ")
@@ -73,29 +86,15 @@ setMethod(
             if(length(paramList)>0){
                 rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
                 checkParam(.Object,paramList,rejectp)
-                .Object@paramlist[["paramList"]]<-paramList
+                param(.Object)$paramList<-paramList
             }
         }
 
-
-        .Object@paramlist[["findParamList"]] <- ""
-        if(!is.null(findParamList)){
-            findParamList<-trimws(as.character(findParamList))
-            findParamList<-paste(findParamList,collapse = " ")
-            findParamList <- strsplit(findParamList,"\\s+")[[1]]
-            if(length(paramList)>0){
-                rejectp<-"--file1|--file2|--threads|--identify-adapters|--basename"
-                checkParam(.Object,findParamList,rejectp)
-                .Object@paramlist[["findParamList"]]<-findParamList
-            }
-        }
+       
 
         if(!is.null(threads)){
-            .Object@paramlist[["threads"]] <- as.integer(threads)
+            param(.Object)$threads <- as.integer(threads)
         }
-
-
-        paramValidation(.Object)
         .Object
     }
 )
@@ -104,115 +103,82 @@ setMethod(
     f = "processing",
     signature = "RemoveAdapter",
     definition = function(.Object,...){
-        if(!is.null(.Object@paramlist[["threads"]])){
-            if(.Object@paramlist[["threads"]]>1){
-                threadparam<-c("--threads",as.character(.Object@paramlist[["threads"]]))
+        if(!is.null(param(.Object)$threads)){
+            if(param(.Object)$threads>1){
+                threadparam<-c("--threads",as.character(param(.Object)$threads))
             }
         }else if(.obtainConfigure("threads")>1){
             threadparam<-c("--threads",as.character(.obtainConfigure("threads")))
         }else{
             threadparam<-NULL
         }
-        findParamList <- paste(c(threadparam, .Object@paramlist[["findParamList"]]),collapse = " ")
-        paramList <- paste(c(threadparam, .Object@paramlist[["paramList"]]), collapse = " ")
+        paramList <- paste(c(threadparam, param(.Object)$paramList), collapse = " ")
         if(.Object@singleEnd){
-            .Object <- writeLog(.Object,"begin to remove adapter")
-            .Object <- writeLog(.Object,"source:",showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput1"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,paste0("Adapter1:",.Object@paramlist[["adapter1"]]))
-            .Object <- writeLog(.Object,"Destination:",showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput1"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["reportPrefix"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,paste0("other parameters:",.obtainConfigure("threads")),showMsg=FALSE)
+            writeLog(.Object,"begin to remove adapter")
+            writeLog(.Object,"source:",showMsg=FALSE)
+            writeLog(.Object,input(.Object)[["fastqInput1"]],showMsg=FALSE)
+            writeLog(.Object,paste0("Adapter1:",param(.Object)$adapter1))
+            writeLog(.Object,"Destination:",showMsg=FALSE)
+            writeLog(.Object,output(.Object)[["fastqOutput1"]],showMsg=FALSE)
+            writeLog(.Object,output(.Object)$reportPrefix,showMsg=FALSE)
+            writeLog(.Object,paste0("other parameters:",.obtainConfigure("threads")),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
             #                                    paramlist=private$paramlist[["paramList"]])
             if(length(paramList)>0){
-                remove_adapters(file1 = .Object@paramlist[["fastqInput1"]],
+                remove_adapters(file1 = input(.Object)[["fastqInput1"]],
                                 paramList,
-                                adapter1 = .Object@paramlist[["adapter1"]],
-                                output1 = .Object@paramlist[["fastqOutput1"]],
-                                basename = .Object@paramlist[["reportPrefix"]],
+                                adapter1 = output(.Object)$adapter1,
+                                output1 = output(.Object)[["fastqOutput1"]],
+                                basename = output(.Object)$reportPrefix,
                                 interleaved = FALSE,
                                 overwrite = TRUE)
             }else{
-                remove_adapters(file1 = .Object@paramlist[["fastqInput1"]],
-                                adapter1 = .Object@paramlist[["adapter1"]],
-                                output1 = .Object@paramlist[["fastqOutput1"]],
-                                basename = .Object@paramlist[["reportPrefix"]],
+                remove_adapters(file1 = input(.Object)[["fastqInput1"]],
+                                adapter1 = output(.Object)[["adapter1"]],
+                                output1 = output(.Object)[["fastqOutput1"]],
+                                basename = output(.Object)[["reportPrefix"]],
                                 interleaved = FALSE,
                                 overwrite = TRUE)
             }
 
-        }else if(.Object@paramlist[["interleave"]]){
-            adapter1<-.Object@paramlist[["adapter1"]]
-            adapter2<-.Object@paramlist[["adapter2"]]
-            if(is.null(.Object@paramlist[["adapter1"]])){
-                .Object<-writeLog(.Object,"begin to find adapter")
-                if(length(findParamList)>0){
-                    adapters<-identify_adapters(file1 = .Object@paramlist[["fastqInput1"]],
-                                                file2 = NULL,
-                                                findParamList,
-                                                basename = .Object@paramlist[["reportPrefix"]], overwrite=TRUE)
-                }else{
-                    adapters<-identify_adapters(file1 = .Object@paramlist[["fastqInput1"]],
-                                                file2 = NULL,
-                                                basename = .Object@paramlist[["reportPrefix"]],overwrite=TRUE)
-                }
-
-                adapter1 <- adapters[1]
-                adapter2 <- adapters[2]
-            }
+        }else if(param(.Object)[["interleave"]]){
+            adapter1<-param(.Object)[["adapter1"]]
+            adapter2<-param(.Object)[["adapter2"]]
             if(length(paramList)>0){
-                remove_adapters(file1 = .Object@paramlist[["fastqInput1"]],
+                remove_adapters(file1 = input(.Object)[["fastqInput1"]],
                                 paramList,
                                 adapter1 = adapter1,
-                                output1 = .Object@paramlist[["fastqOutput1"]],
+                                output1 = output(.Object)[["fastqOutput1"]],
                                 adapter2 = adapter2,
-                                basename = .Object@paramlist[["reportPrefix"]],
+                                basename = output(.Object)[["reportPrefix"]],
                                 interleaved = TRUE,
                                 overwrite = TRUE)
             }else{
-                remove_adapters(file1 = .Object@paramlist[["fastqInput1"]],
+                remove_adapters(file1 = input(.Object)[["fastqInput1"]],
                                 adapter1 = adapter1,
-                                output1 = .Object@paramlist[["fastqOutput1"]],
+                                output1 = output(.Object)[["fastqOutput1"]],
                                 adapter2 = adapter2,
-                                basename = .Object@paramlist[["reportPrefix"]],
+                                basename = output(.Object)[["reportPrefix"]],
                                 interleaved = TRUE,
                                 overwrite = TRUE)
             }
 
 
         }else{
-            adapter1<-.Object@paramlist[["adapter1"]]
-            adapter2<-.Object@paramlist[["adapter2"]]
-            if(is.null(.Object@paramlist[["adapter1"]])){
-                .Object<-writeLog(.Object,"begin to find adapter")
-                if(length(findParamList)>0){
-                    adapters<-identify_adapters(file1 = .Object@paramlist[["fastqInput1"]],
-                                                file2 = .Object@paramlist[["fastqInput2"]],
-                                                findParamList,
-                                                basename = .Object@paramlist[["reportPrefix"]], overwrite=TRUE)
-                }else{
-                    adapters<-identify_adapters(file1 = .Object@paramlist[["fastqInput1"]],
-                                                file2 = .Object@paramlist[["fastqInput2"]],
-                                                basename = .Object@paramlist[["reportPrefix"]],overwrite=TRUE)
-                }
-
-                adapter1 <- adapters[1]
-                adapter2 <- adapters[2]
-            }
-            .Object <- writeLog(.Object,"begin to remove adapter")
-            .Object <- writeLog(.Object,"source:",showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput1"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqInput2"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,paste0("Adapter1:",adapter1))
-            .Object <- writeLog(.Object,paste0("Adapter2:",adapter2))
-            .Object <- writeLog(.Object,"Destination:",showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput1"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["fastqOutput2"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,.Object@paramlist[["reportPrefix"]],showMsg=FALSE)
-            .Object <- writeLog(.Object,paste0("Threads:",.obtainConfigure("threads")),showMsg=FALSE)
+            adapter1<-param(.Object)[["adapter1"]]
+            adapter2<-param(.Object)[["adapter2"]]
+            writeLog(.Object,"begin to remove adapter")
+            writeLog(.Object,"source:",showMsg=FALSE)
+            writeLog(.Object,input(.Object)[["fastqInput1"]],showMsg=FALSE)
+            writeLog(.Object,input(.Object)[["fastqInput2"]],showMsg=FALSE)
+            writeLog(.Object,paste0("Adapter1:",adapter1))
+            writeLog(.Object,paste0("Adapter2:",adapter2))
+            writeLog(.Object,"Destination:",showMsg=FALSE)
+            writeLog(.Object,output(.Object)[["fastqOutput1"]],showMsg=FALSE)
+            writeLog(.Object,output(.Object)[["fastqOutput2"]],showMsg=FALSE)
+            writeLog(.Object,param(.Object)[["reportPrefix"]],showMsg=FALSE)
+            writeLog(.Object,paste0("Threads:",.obtainConfigure("threads")),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=adapter1,
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
             #                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=adapter2,
@@ -250,137 +216,108 @@ setMethod(
     f = "checkRequireParam",
     signature = "RemoveAdapter",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["fastqInput1"]])){
+        if(is.null(input(.Object)[["fastqInput1"]])){
             stop("'fastqInput1' is required.")
         }
-        if(.Object@singleEnd&&is.null(.Object@paramlist[["adapter1"]])){
-            stop("Parameter 'adapter1' is requied for single end sequencing data.")
+        if(is.null(param(.Object)[["adapter1"]])){
+            stop("Parameter 'adapter1' is requied")
         }
-        if(.Object@paramlist[["interleave"]]&&.Object@singleEnd){
+        if(is.null(param(.Object)[["adapter2"]])){
+            stop("Parameter 'adapter2' is requied")
+        }
+        if(param(.Object)[["interleave"]]&&param(.Object)$ingleEnd){
             stop("Single end data should not be interleave")
         }
     }
 )
 
 
-
 setMethod(
-    f = "checkAllPath",
+    f = "genReport",
     signature = "RemoveAdapter",
     definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["fastqInput1"]]);
-        checkFileExist(.Object,.Object@paramlist[["fastqInput2"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["fastqOutput1"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["fastqOutput2"]]);
-        checkPathExist(.Object,.Object@paramlist[["reportPrefix"]]);
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "RemoveAdapter",
-    definition = function(.Object,item,...){
-        if(item == "adapterslist"){
-            tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
-            splitlist <- strsplit(tblist,": ")
-            if(.Object@singleEnd){
-                return(data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
-            }else{
-                return(data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
-                                  sequence=c(splitlist[[1]][2],splitlist[[2]][2])))
-                #return(list(adapter1=splitlist[[1]][2],
-                #            adapter2=splitlist[[2]][2]))
-            }
-        }
-        if(item == "adapters"){
-            tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
-            splitlist <- strsplit(tblist,": ")
-            if(.Object@singleEnd){
-                return(listToFrame(list(adpater1=splitlist[[1]][2])))
-            }else{
-                return(listToFrame(list(adapter1=splitlist[[1]][2],
-                                                adapter2=splitlist[[2]][2])))
-            }
-        }
-        if(sum(item == c("adapter1","adapter2"))>0){
-            tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
-            splitlist <- strsplit(tblist,": ")
-            if(item == "adapter1"){
-                return(splitlist[[1]][2])
-            }
-            if(item == "adapter2"){
-                return(splitlist[[2]][2])
-            }
-        }
-        if(item == "settingslist"){
-            tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
-            splitlist <- strsplit(tblist,": ")
-            lst <- list()
-            for(i in 1:length(tblist)){
-                lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
-            }
-            return(lst)
-        }
-        if(item == "settings"){
-            tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
-            splitlist <- strsplit(tblist,": ")
-            lst <- list()
-            for(i in 1:length(tblist)){
-                lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
-            }
-            return(listToFrame(lst))
-
-        }
-        if(item == "statisticslist"){
-            tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
-            splitlist <- strsplit(tblist,": ")
-            lst <- list()
-            for(i in 1:length(tblist)){
-                lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
-            }
-            return(lst)
-        }
-        if(item == "statistics"){
-            tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
-            splitlist <- strsplit(tblist,": ")
-            lst <- list()
-            for(i in 1:length(tblist)){
-                lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
-            }
-            return(listToFrame(lst))
-        }
-        if(item == "distribution"){
-            tblist <- getTopic(.Object,"\\[Length distribution\\]")
-            splitlist <- strsplit(tblist,"\t")
-            colkey <- splitlist[[1]]
-            tbdt <- NULL
-            for(i in 2:length(tblist)){
-                tbdt <- c(tbdt,splitlist[[i]])
-            }
-            tbdt<-as.integer(tbdt)
-            if(isSingleEnd(.Object)){
-                colsize<-4
-            }else{
-                colsize<-6
-            }
-            df<-as.data.frame(matrix(tbdt,length(tblist)-1,colsize,TRUE))
-            colnames(df) <- colkey
-            return(df)
-        }
-        stop(paste0(item," is not an item of report value."))
-    }
-)
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RemoveAdapter",
-    definition = function(.Object, ...){
-        if(isSingleEnd(.Object)){
-            return(c("adapters","adapterslist","adapter1","settings","statistics","settingslist","statisticslist","distribution"))
+        #adapterslist
+        tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
+        splitlist <- strsplit(tblist,": ")
+        if(.Object@singleEnd){
+            report(.Object)[["adapterslist"]] <- (data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
         }else{
-            return(c("adapters","adapterslist","adapter1","adapter2","settings","statistics","settingslist","statisticslist","distribution"))
+            report(.Object)[["adapterslist"]] <- (data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
+                                                             sequence=c(splitlist[[1]][2],splitlist[[2]][2])))
+            #return(list(adapter1=splitlist[[1]][2],
+            #            adapter2=splitlist[[2]][2]))
+        }   
+
+        # adapters
+        tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
+        splitlist <- strsplit(tblist,": ")
+        if(.Object@singleEnd){
+            report(.Object)[["adapters"]] <- (listToFrame(list(adpater1=splitlist[[1]][2])))
+        }else{
+            report(.Object)[["adapters"]] <- (listToFrame(list(adapter1=splitlist[[1]][2],
+                                                               adapter2=splitlist[[2]][2])))
         }
+            
+        # adapter1 adapter2
+        tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
+        splitlist <- strsplit(tblist,": ")
+        report(.Object)[["adapter1"]] <- (splitlist[[1]][2])
+        report(.Object)[["adapter2"]] <- (splitlist[[2]][2])
+
+        #settingslist
+        tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
+        splitlist <- strsplit(tblist,": ")
+        lst <- list()
+        for(i in 1:length(tblist)){
+            lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+        }
+        report(.Object)[["settingslist"]] <- (lst)
+        
+        # settings
+        tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
+        splitlist <- strsplit(tblist,": ")
+        lst <- list()
+        for(i in 1:length(tblist)){
+            lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+        }
+        report(.Object)[["settings"]] <- (listToFrame(lst))
+       
+        #statisticslist
+        tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
+        splitlist <- strsplit(tblist,": ")
+        lst <- list()
+        for(i in 1:length(tblist)){
+            lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+        }
+        report(.Object)[["statisticslist"]] <- (lst)
+        
+        #statistics
+        tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
+        splitlist <- strsplit(tblist,": ")
+        lst <- list()
+        for(i in 1:length(tblist)){
+            lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+        }
+        report(.Object)[["statistics"]] <- (listToFrame(lst))
+        
+        #distribution
+        tblist <- getTopic(.Object,"\\[Length distribution\\]")
+        splitlist <- strsplit(tblist,"\t")
+        colkey <- splitlist[[1]]
+        tbdt <- NULL
+        for(i in 2:length(tblist)){
+            tbdt <- c(tbdt,splitlist[[i]])
+        }
+        tbdt<-as.integer(tbdt)
+        if(isSingleEnd(.Object)){
+            colsize<-4
+        }else{
+            colsize<-6
+        }
+        df<-as.data.frame(matrix(tbdt,length(tblist)-1,colsize,TRUE))
+        colnames(df) <- colkey
+        report(.Object)[["distribution"]] <- (df)
+        .Object
     }
 )
 
@@ -395,7 +332,7 @@ setMethod(
     f = "getTopic",
     signature = "RemoveAdapter",
     definition = function(.Object, topic,...){
-        setLine<-readLines(paste0(.Object@paramlist[["reportPrefix"]],".settings"))
+        setLine<-readLines(paste0(param(.Object)[["reportPrefix"]],".settings"))
         itemstarts<-grep("\\]$",setLine)
 
         itemstart<-grep(topic,setLine)
@@ -526,33 +463,23 @@ setMethod(
                           fastqOutput2=NULL,fastqInput1=NULL,
                           fastqInput2=NULL,interleave=FALSE,
                           paramList= NULL,findParamList=NULL, ...){
-        atacproc <- new("RemoveAdapter",atacProc = atacProc,
-                        adapter1 = adapter1,adapter2 = adapter2,
-                        fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,
-                        fastqOutput2 = fastqOutput2, fastqInput1 = fastqInput1,
-                        fastqInput2 = fastqInput2, interleave = interleave,
-                        paramList = paramList,findParamList = findParamList)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "UnzipAndMerge", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
 #' @rdname RemoveAdapter
 #' @aliases removeAdapter
 #' @export
-removeAdapter <- function(fastqInput1, fastqInput2=NULL,
-                              adapter1=NULL,adapter2=NULL,
+removeAdapter <- function(fastqInput1, fastqInput2,
+                              adapter1, adapter2,
                               fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,
                               interleave=FALSE,
                               paramList = NULL,findParamList = NULL, ...){
-    atacproc <- new("RemoveAdapter",atacProc = NULL,
-                    adapter1 = adapter1,adapter2 = adapter2,
-                    fastqOutput1 = fastqOutput1, reportPrefix = reportPrefix,
-                    fastqOutput2 = fastqOutput2, fastqInput1 = fastqInput1,
-                    fastqInput2 = fastqInput2, interleave = interleave,
-                    paramList = paramList,findParamList = findParamList)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "RemoveAdapter", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 

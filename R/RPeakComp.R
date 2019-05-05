@@ -142,24 +142,15 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "RPeakComp",
     definition = function(.Object, item){
-        if(item == "venn.data"){
-            vd <- readRDS(.Object@paramlist[["venn.data"]])
-            return(vd)
-        }
+        report(.Object)[["venn.data"]] <-  readRDS(.Object@paramlist[["venn.data"]])
+        .Object
     }
 )
 
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RPeakComp",
-    definition = function(.Object){
-        return(c("venn.data"))
-    }
-)
 
 
 #' @name RPeakComp

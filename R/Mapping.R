@@ -152,32 +152,21 @@ setMethod(
 )
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "Bowtie2Mapping",
-    definition = function(.Object,item,...){
+    definition = function(.Object,...){
         txt <- readLines(.Object@paramlist[["reportOutput"]])
-        if(item == "total"){
-            s<-strsplit(txt[1]," ")
-            return(as.integer(s[[1]][1]))
-        }
-        if(item == "maprate"){
-            s<-strsplit(txt[length(txt)],"% ")
-            return(as.numeric(s[[1]][1])/100)
-        }
-        if(item == "detail"){
-            return(txt)
-        }
-        stop(paste0(item," is not an item of report value."))
+        s<-strsplit(txt[1]," ")
+        report(.Object)$total <- as.integer(s[[1]][1])
+       
+        s<-strsplit(txt[length(txt)],"% ")
+        report(.Object)$maprate <- (as.numeric(s[[1]][1])/100)
+        
+        report(.Object)$detail <- txt
+        .Object
     }
 )
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "Bowtie2Mapping",
-    definition = function(.Object, ...){
-        return(c("total","maprate","detail"))
-    }
-)
 
 #' @name Bowtie2Mapping
 #' @importFrom Rbowtie2 bowtie2

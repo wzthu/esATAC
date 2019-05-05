@@ -88,33 +88,21 @@ setMethod(
 
 
 
-setMethod(
-    f = "checkAllPath",
-    signature = "FRiPQC",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["readsBedInput"]]);
-        checkFileExist(.Object,.Object@paramlist[["peakBedInput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["reportOutput"]]);
-    }
-)
-
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "FRiPQC",
-    definition = function(.Object, item){
+    definition = function(.Object, ...){
         qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-        if(item == "report"){
-            cqcval<-as.character(qcval)
-            cqcval[4] <- sprintf("%.2f",as.numeric(cqcval[4]))
-            return(data.frame(Item=c("The number of reads in peak",
-                                     "The number of total reads",
-                                     "The number of total peaks",
-                                     "FRiP"),Value=cqcval))
-        }else{
-            return(qcval[[item]])
-        }
+        cqcval<-as.character(qcval)
+        cqcval[4] <- sprintf("%.2f",as.numeric(cqcval[4]))
+        report(.Object)$report <- (data.frame(Item=c("The number of reads in peak",
+                                                     "The number of total reads",
+                                                     "The number of total peaks",
+                                                     "FRiP"),Value=cqcval))
+        report(.Object) <- c(report(.Object), qcval)
+        .Object
     }
 )
 
@@ -148,13 +136,6 @@ setMethod(
     }
 )
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "FRiPQC",
-    definition = function(.Object){
-        return(c("report","peakReads","totalReads","totalPeaks","FRiP"))
-    }
-)
 
 #' @name FRiPQC
 #' @title Quality control for fraction of reads in peaks (FRiP)

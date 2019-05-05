@@ -255,28 +255,16 @@ setMethod(
 )
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "RMotifScanPair",
-    definition = function(.Object, item){
-        if(item == "rdsOutput.peak1"){
-            fp <- readRDS(.Object@paramlist[["rdsOutput.peak1"]])
-        }else if(item == "rdsOutput.peak2"){
-            fp <- readRDS(.Object@paramlist[["rdsOutput.peak2"]])
-        }else if(item == "rdsOutput.background"){
-            fp <- readRDS(.Object@paramlist[["rdsOutput.background"]])
-        }
-        return(fp)
+    definition = function(.Object, ...){
+        report(.Object)[["rdsOutput.peak1"]] <- readRDS(.Object@paramlist[["rdsOutput.peak1"]])
+        report(.Object)[["rdsOutput.peak2"]] <- readRDS(.Object@paramlist[["rdsOutput.peak2"]])
+        report(.Object)[["rdsOutput.background"]] <- readRDS(.Object@paramlist[["rdsOutput.background"]])
+        .Object
     }
 )
 
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RMotifScanPair",
-    definition = function(.Object){
-        return(c("rdsOutput.peak1", "rdsOutput.peak2", "rdsOutput.background"))
-    }
-)
 
 #' @name RMotifScanPair
 #' @title Search Motif Position in Given Regions

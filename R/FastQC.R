@@ -79,23 +79,14 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "FastQC",
-    definition = function(.Object, item){
-        if(item == "pdf"){
-            return(.Object@paramlist[["Output"]])
-        }
+    definition = function(.Object, ...){
+        report(.Object)[["pdf"]] <- .Object@paramlist[["Output"]]
+        .Object
     }
 )
 
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "FastQC",
-    definition = function(.Object){
-        return(c("pdf"))
-    }
-)
 
 
 

@@ -80,6 +80,7 @@ Collate:
     FRiPQC.R
     FastQC.R
     FregLenDistribute.R
+    FindAdapter.R
     JavaExports.R
     JavaInterface.R
     LibComplexQC.R

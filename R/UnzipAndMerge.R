@@ -12,43 +12,43 @@ setMethod(
         fastqOutput1 <- allparam[["fastqOutput1"]]
         fastqOutput2 <- allparam[["fastqOutput2"]]
         interleave <- allparam[["interleave"]]
-        param(.Object, "interleave") <- interleave
-        property(.Object, "interleave") <- interleave
+        param(.Object)$interleave <- interleave
+        property(.Object)$interleave <- interleave
         if(interleave){
-            property(.Object, "singleEnd") <- FALSE
-            input(.Object, "fastqInput1") <- fastqInput1
+            property(.Object)$singleEnd <- FALSE
+            input(.Object)$fastqInput1 <- fastqInput1
             if(!is.null(fastqOutput1)){
-                output(.Object, "fastqOutput1") <- fastqOutput1
+                output(.Object)$fastqOutput1 <- fastqOutput1
             }else{
-                output(.Object, "fastqOutput1") <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                output(.Object)$fastqOutput1 <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
             }
         }else{
             if(is.null(fastqInput2)){
-                property(.Object, "singleEnd") <- TRUE
-                input(.Object, "fastqInput1") <-fastqInput1
+                property(.Object)$singleEnd <- TRUE
+                input(.Object)$fastqInput1 <-fastqInput1
                 if(!is.null(fastqOutput1)){
-                    output(.Object, "fastqOutput1") <-fastqOutput1
+                    output(.Object)$fastqOutput1 <-fastqOutput1
                 }else{
-                    output(.Object, "fastqOutput1") <-getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object)$fastqOutput1 <-getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }else{
-                property(.Object, "singleEnd") <-FALSE
-                input(.Object, "fastqInput1") <-fastqInput1
-                input(.Object, "fastqInput2") <-fastqInput2
+                property(.Object)$singleEnd <-FALSE
+                input(.Object)$fastqInput1 <-fastqInput1
+                input(.Object)$fastqInput2 <-fastqInput2
                 if(length(.Object$inputList[["fastqInput1"]])!=length(.Object$inputList[["fastqInput2"]])){
                     stop("The number of pair-end fastq files should be equal.")
                 }
                 if(!is.null(fastqOutput1)){
                     #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
-                    output(.Object, "fastqOutput1") <- fastqOutput1
+                    output(.Object)$fastqOutput1 <- fastqOutput1
                 }else{
-                    output(.Object, "fastqOutput1") <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object)$fastqOutput1 <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
                 if(!is.null(fastqOutput2)){
                     #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
-                    output(.Object, "fastqOutput2") <- fastqOutput2
+                    output(.Object)$fastqOutput2 <- fastqOutput2
                 }else{
-                    output(.Object, "fastqOutput2") <- getAutoPath(.Object,.Object$inputList[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object)$fastqOutput2 <- getAutoPath(.Object,.Object$inputList[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }
         }

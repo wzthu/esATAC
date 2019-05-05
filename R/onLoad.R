@@ -22,7 +22,9 @@
 
     addEdges(edges = c(
                   "PeakCallingFseq","FRiPQC",
-                  "PeakCallingFseq","RPeakComp"
+                  "PeakCallingFseq","RPeakComp",
+                  "FindAdapter", "RemoveAdapter"
+                  
               ),
              argOrder = 2)
     addEdges(edges = c(
@@ -32,6 +34,7 @@
                   "Renamer", "RemoveAdapter",
                   "RemoveAdapter", "FastQC",
                   "Renamer", "FastQC",
+                  "Renamer", "FindAdapter",
                   "SamToBam", "Rsortbam",
                   "SamToBam", "BamToBed",
                   "Rsortbam", "BamToBed",

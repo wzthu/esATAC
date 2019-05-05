@@ -81,68 +81,47 @@ setMethod(
 
 
 
-setMethod(
-    f = "checkAllPath",
-    signature = "LibComplexQC",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["samInput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["reportOutput"]]);
-    }
-)
-
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "LibComplexQC",
-    definition = function(.Object, item){
+    definition = function(.Object, ...){
         qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-        if(item == "report"){
-            showdf<-data.frame(
-                Item = c(
-                    "Total mapped reads (ratio of original reads)",
-                    "Unique locations mapped uniquely by reads",
-                    "Uniquely mappable reads",
-                    "Non-Redundant Fraction (NRF)",
-                    "Locations with only 1 reads mapping uniquely",
-                    "Locations with only 2 reads mapping uniquely",
-                    "PCR Bottlenecking Coefficients 1 (PBC1)",
-                    "PCR Bottlenecking Coefficients 2 (PBC2)"),
-                Value = c(
-                    getVMShow(qcval[["samTotal"]],TRUE),
-                    getVMShow(qcval[["total"]],TRUE),
-                    getVMShow(qcval[["nonMultimap"]],TRUE),
-                    sprintf("%.2f",qcval[["NRF"]]),
-                    getVMShow(qcval[["one"]],TRUE),
-                    getVMShow(qcval[["two"]],TRUE),
-                    sprintf("%.2f",qcval[["PBC1"]]),
-                    sprintf("%.2f",qcval[["PBC2"]])
-                ),
-                Reference = c("",
-                              "",
-                              "",
-                              ">0.7",
-                              "",
-                              "",
-                              ">0.7",
-                              ">3"
-                )
+        report(.Object)[["report"]] <-data.frame( Item = c(
+            "Total mapped reads (ratio of original reads)",
+            "Unique locations mapped uniquely by reads",
+            "Uniquely mappable reads",
+            "Non-Redundant Fraction (NRF)",
+            "Locations with only 1 reads mapping uniquely",
+            "Locations with only 2 reads mapping uniquely",
+            "PCR Bottlenecking Coefficients 1 (PBC1)",
+            "PCR Bottlenecking Coefficients 2 (PBC2)"),
+            Value = c(
+                getVMShow(qcval[["samTotal"]],TRUE),
+                getVMShow(qcval[["total"]],TRUE),
+                getVMShow(qcval[["nonMultimap"]],TRUE),
+                sprintf("%.2f",qcval[["NRF"]]),
+                getVMShow(qcval[["one"]],TRUE),
+                getVMShow(qcval[["two"]],TRUE),
+                sprintf("%.2f",qcval[["PBC1"]]),
+                sprintf("%.2f",qcval[["PBC2"]])
+            ),
+            Reference = c("",
+                          "",
+                          "",
+                          ">0.7",
+                          "",
+                          "",
+                          ">0.7",
+                          ">3"
             )
-            return(showdf)
-            #return(data.frame(Item=names(qcval),Value=as.character(qcval)))
-        }else{
-            return(qcval[[item]])
-        }
+        )
+        report(.Object) <- c(report(.Object),qcval) 
+        .Object
     }
 )
 
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "LibComplexQC",
-    definition = function(.Object){
-        return(c("report","NRF","PBC1","PBC2","one","two","total","reads","nonMultimap"))
-    }
-)
 
 #' @name LibComplexQC
 #' @title Quality control for library complexity

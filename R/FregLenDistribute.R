@@ -140,24 +140,16 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "FragLenDistr",
-    definition = function(.Object, item){
+    definition = function(.Object, ...){
         readscounts <- read.table(file= .Object@paramlist[["lendistrtxtOutput"]],header=TRUE)
-        if(item == "readsCounts"){
-            return(readscounts)
-        }
+        report(.Object)$readsCounts <- readscounts
+        .Object
     }
 )
 
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "FragLenDistr",
-    definition = function(.Object){
-        return(c("readsCounts"))
-    }
-)
 
 #' @name FragLenDistr
 #' @title Quality control for fragment length distribution

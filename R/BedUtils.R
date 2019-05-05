@@ -100,22 +100,15 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "BedUtils",
-    definition = function(.Object, item){
+    definition = function(.Object, ...){
         qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-        return(qcval[[item]])
+        report(.Object) <- qcval
+        .Object
     }
 )
 
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "BedUtils",
-    definition = function(.Object){
-        return(c("total","save","filted","extlen","unique"))
-    }
-)
 
 #' @name  BedUtils
 #' @title process bed file with limit memory

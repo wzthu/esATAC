@@ -111,22 +111,14 @@ setMethod(
 
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "RGo",
     definition = function(.Object, item){
-        if(item == "goOutput"){
-            return(.Object@paramlist[["goOutput"]])
-        }
+        report(.Object)$goOutput <- .Object@paramlist[["goOutput"]]
+        .Object
     }
 )
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RGo",
-    definition = function(.Object){
-        return(c("goOutput"))
-    }
-)
 
 #' @name RGo
 #' @title Gene Ontology Analysis

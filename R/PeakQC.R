@@ -104,36 +104,27 @@ setMethod(
 )
 
 setMethod(
-    f = "getReportValImp",
+    f = "genReport",
     signature = "PeakQC",
-    definition = function(.Object, item){
+    definition = function(.Object, ...){
         qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-        if(item == "report"){
-            cqcval<-as.character(qcval)
-            cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
-            if(.Object@fixtag=="DHS"){
-                return(data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
-                                  Value=cqcval))
-            }else if(.Object@fixtag=="blacklist"){
-                return(data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval))
-            }else{
-                return(data.frame(Item=names(qcval),Value=as.character(qcval)))
-            }
-
+        cqcval<-as.character(qcval)
+        cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
+        if(.Object@fixtag=="DHS"){
+            report(.Object)$report <- (data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
+                                                  Value=cqcval))
+        }else if(.Object@fixtag=="blacklist"){
+            report(.Object)$report <- (data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval))
         }else{
-            return(qcval[[item]])
+            report(.Object)$report <- (data.frame(Item=names(qcval),Value=as.character(qcval)))
         }
+        n <- names(qcval)
+        report(.Object) <- c(report(.Object),qcval)
+        .Object
     }
 )
 
 
-setMethod(
-    f = "getReportItemsImp",
-    signature = "PeakQC",
-    definition = function(.Object){
-        return(c("report","totalInput","qcbedInput","qcbedRate"))
-    }
-)
 
 
 
