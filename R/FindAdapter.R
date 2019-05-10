@@ -106,7 +106,7 @@ setMethod(
             property(.Object)[["adapter1"]] <- adapters[1]
             property(.Object)[["adapter2"]] <- adapters[2]
         }else{
-            .Object<-writeLog(.Object,"begin to find adapter")
+            writeLog(.Object,"begin to find adapter")
             if(length(findParamList)>0){
                 print(input(.Object)[["fastqInput1"]])
                 print(input(.Object)[["fastqInput2"]])
