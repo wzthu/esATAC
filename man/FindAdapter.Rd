@@ -10,14 +10,15 @@
 \usage{
 atacFindAdapter(atacProc, fastqInput1 = NULL, fastqInput2 = NULL,
   reportPrefix = NULL, interleave = FALSE, findParamList = NULL,
-  threads = NULL, ...)
+  threads = getThreads(), ...)
 
 \S4method{atacFindAdapter}{ATACProc}(atacProc, fastqInput1 = NULL,
   fastqInput2 = NULL, reportPrefix = NULL, interleave = FALSE,
-  findParamList = NULL, threads = NULL, ...)
+  findParamList = NULL, threads = getThreads(), ...)
 
 findAdapter(fastqInput1, fastqInput2 = NULL, reportPrefix = NULL,
-  interleave = FALSE, findParamList = NULL, threads = NULL, ...)
+  interleave = FALSE, findParamList = NULL, threads = getThreads(),
+  ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -82,7 +83,7 @@ function arguments. See the output of
 \examples{
 library(magrittr)
 td <- tempdir()
-options(atacConf=setTmpDir(td))
+setTmpDir(td)
 
 # Identify adapters
 prefix<-system.file(package="esATAC", "extdata", "uzmg")

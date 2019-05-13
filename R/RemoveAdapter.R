@@ -16,17 +16,25 @@ setMethod(
         reportPrefix <- allparam[["reportPrefix"]]
         interleave <- allparam[["interleave"]]
         paramList <- allparam[["paramList"]]
+        threads <- allparam[["threads"]]
 
 
         if(length(prevSteps) > 0){
-            fastqStep <- prevSteps[[1]]
-            param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
-            param(.Object)[["singleEnd"]] <- property(fastqStep)[["singleEnd"]]
-            input(.Object)[["fastqInput1"]] <- output(prevSteps)[["fastqOutput1"]]
-            if(!param(.Object)[["interleave"]] && !input(.Object)[["fastqInput1"]]){
-                input(.Object)[["fastqInput2"]] <- output(prevSteps)[["fastqOutput2"]]
+            if(!is.null(prevSteps[[1]])){
+                fastqSteps <- prevSteps[[1]]
+                fastqSteps<-unlist(fastqSteps)
+                fastqStep <- fastqSteps[[length(fastqSteps)]]
+                param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
+                param(.Object)[["singleEnd"]] <- property(fastqStep)[["singleEnd"]]
+                input(.Object)[["fastqInput1"]] <- output(fastqStep)[["fastqOutput1"]]
+                if(!param(.Object)[["interleave"]] && !is.null(input(.Object)[["fastqInput1"]])){
+                    input(.Object)[["fastqInput2"]] <- output(fastqStep)[["fastqOutput2"]]
+                }
+                print("++++++++++")
+                print(input(.Object))
+                print("++++++++++")
             }
-            if(length(prevSteps) > 1){
+            if(!is.null(prevSteps[[2]])){
                 findAdapterStep <- prevSteps[[2]]
                 param(.Object)$adapter1 <- property(findAdapterStep)[["adapter1"]]
                 param(.Object)$adapter2 <- property(findAdapterStep)[["adapter2"]]
@@ -44,14 +52,19 @@ setMethod(
         }
 
 
-        input(.Object)[["fastqInput1"]] <- fastqInput1;
+        print(fastqInput1)
+        if(!is.null(fastqInput1)){
+            input(.Object)[["fastqInput1"]] <- fastqInput1;
+        }
 
         if(!is.null(fastqInput2)){
             input(.Object)[["fastqInput2"]] <- fastqInput2;
         }
 
 
-
+        print("++++++++++")
+        print(input(.Object))
+        print("++++++++++")
         if(is.null(fastqOutput1)){
             output(.Object)[["fastqOutput1"]] <- getAutoPath(.Object, input(.Object)[["fastqInput1"]], "fq|fastq", "fq")
         }else{
@@ -65,9 +78,9 @@ setMethod(
             output(.Object)[["fastqOutput2"]] <- fastqOutput2;
         }
         if(is.null(reportPrefix)){
-            output(.Object)$reportPrefix <- getStepWorkDir(.Object,"adrm.report")
+            param(.Object)$reportPrefix <- getStepWorkDir(.Object,"adrm.report")
         }else{
-            output(.Object)$reportPrefix <- reportPrefix
+            param(.Object)$reportPrefix <- reportPrefix
         }
 
         if(!is.null(adapter1)){
@@ -92,9 +105,9 @@ setMethod(
 
        
 
-        if(!is.null(threads)){
-            param(.Object)$threads <- as.integer(threads)
-        }
+        stopifnot(is.numeric(threads))
+        param(.Object)$threads <- threads
+
         .Object
     }
 )
@@ -113,14 +126,14 @@ setMethod(
             threadparam<-NULL
         }
         paramList <- paste(c(threadparam, param(.Object)$paramList), collapse = " ")
-        if(.Object@singleEnd){
+        if(param(.Object)$singleEnd){
             writeLog(.Object,"begin to remove adapter")
             writeLog(.Object,"source:",showMsg=FALSE)
             writeLog(.Object,input(.Object)[["fastqInput1"]],showMsg=FALSE)
             writeLog(.Object,paste0("Adapter1:",param(.Object)$adapter1))
             writeLog(.Object,"Destination:",showMsg=FALSE)
             writeLog(.Object,output(.Object)[["fastqOutput1"]],showMsg=FALSE)
-            writeLog(.Object,output(.Object)$reportPrefix,showMsg=FALSE)
+            writeLog(.Object,param(.Object)$reportPrefix,showMsg=FALSE)
             writeLog(.Object,paste0("other parameters:",.obtainConfigure("threads")),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
@@ -130,14 +143,14 @@ setMethod(
                                 paramList,
                                 adapter1 = output(.Object)$adapter1,
                                 output1 = output(.Object)[["fastqOutput1"]],
-                                basename = output(.Object)$reportPrefix,
+                                basename = param(.Object)$reportPrefix,
                                 interleaved = FALSE,
                                 overwrite = TRUE)
             }else{
                 remove_adapters(file1 = input(.Object)[["fastqInput1"]],
                                 adapter1 = output(.Object)[["adapter1"]],
                                 output1 = output(.Object)[["fastqOutput1"]],
-                                basename = output(.Object)[["reportPrefix"]],
+                                basename = param(.Object)[["reportPrefix"]],
                                 interleaved = FALSE,
                                 overwrite = TRUE)
             }
@@ -151,7 +164,7 @@ setMethod(
                                 adapter1 = adapter1,
                                 output1 = output(.Object)[["fastqOutput1"]],
                                 adapter2 = adapter2,
-                                basename = output(.Object)[["reportPrefix"]],
+                                basename = param(.Object)[["reportPrefix"]],
                                 interleaved = TRUE,
                                 overwrite = TRUE)
             }else{
@@ -159,7 +172,7 @@ setMethod(
                                 adapter1 = adapter1,
                                 output1 = output(.Object)[["fastqOutput1"]],
                                 adapter2 = adapter2,
-                                basename = output(.Object)[["reportPrefix"]],
+                                basename = param(.Object)[["reportPrefix"]],
                                 interleaved = TRUE,
                                 overwrite = TRUE)
             }
@@ -184,27 +197,26 @@ setMethod(
             #                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=adapter2,
             #                                    outputFile2 = private$paramlist[["fastqOutput2"]],paramlist=private$paramlist[["paramList"]])
             if(length(paramList)>0){
-                remove_adapters(file1 = .Object@paramlist[["fastqInput1"]],
+                remove_adapters(file1 = input(.Object)[["fastqInput1"]],
                                 paramList,
                                 adapter1 = adapter1,
-                                output1 = .Object@paramlist[["fastqOutput1"]],
-                                file2 = .Object@paramlist[["fastqInput2"]],
+                                output1 = output(.Object)[["fastqOutput1"]],
+                                file2 = input(.Object)[["fastqInput2"]],
                                 adapter2 = adapter2,
-                                output2 = .Object@paramlist[["fastqOutput2"]],
-                                basename = .Object@paramlist[["reportPrefix"]],
+                                output2 = output(.Object)[["fastqOutput2"]],
+                                basename = param(.Object)[["reportPrefix"]],
                                 interleaved = FALSE,
                                 overwrite = TRUE)
             }else{
-                remove_adapters(file1 = .Object@paramlist[["fastqInput1"]],
+                remove_adapters(file1 = input(.Object)[["fastqInput1"]],
                                 adapter1 = adapter1,
-                                output1 = .Object@paramlist[["fastqOutput1"]],
-                                file2 = .Object@paramlist[["fastqInput2"]],
+                                output1 = output(.Object)[["fastqOutput1"]],
+                                file2 = input(.Object)[["fastqInput2"]],
                                 adapter2 = adapter2,
-                                output2 = .Object@paramlist[["fastqOutput2"]],
-                                basename = .Object@paramlist[["reportPrefix"]],
+                                output2 = output(.Object)[["fastqOutput2"]],
+                                basename = param(.Object)[["reportPrefix"]],
                                 interleaved = FALSE,
                                 overwrite = TRUE)
-
             }
 
         }
@@ -225,7 +237,7 @@ setMethod(
         if(is.null(param(.Object)[["adapter2"]])){
             stop("Parameter 'adapter2' is requied")
         }
-        if(param(.Object)[["interleave"]]&&param(.Object)$ingleEnd){
+        if(param(.Object)[["interleave"]]&&param(.Object)$singleEnd){
             stop("Single end data should not be interleave")
         }
     }
@@ -392,6 +404,8 @@ listToFrame <- function(a){
 #' --interleaved-output is enabled)
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
+#' @param threads \code{Numeric}. The max threads allowed to be used by this step.
+#' Default: getThreads()
 #' @param paramList Additional arguments to be passed on to the binaries
 #' for removing adapter. See below for details.
 #' @param findParamList Additional arguments to be passed on to the binaries
@@ -428,7 +442,7 @@ listToFrame <- function(a){
 #' @examples
 #' library(magrittr)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' # Identify adapters
 #' prefix<-system.file(package="esATAC", "extdata", "uzmg")
@@ -439,7 +453,7 @@ listToFrame <- function(a){
 #' reads_merged_2 <- file.path(td,"reads2.fastq")
 #' atacproc <-
 #' atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
-#' atacRenamer %>% atacRemoveAdapter
+#' atacRenamer %>% atacFindAdapter %>% atacRemoveAdapter
 #'
 #' dir(td)
 #' @importFrom Rbowtie2 identify_adapters
@@ -450,7 +464,7 @@ listToFrame <- function(a){
 setGeneric("atacRemoveAdapter",function(atacProc,adapter1=NULL,adapter2=NULL,
                                         fastqOutput1=NULL,reportPrefix=NULL,
                                         fastqOutput2=NULL,fastqInput1=NULL,
-                                        fastqInput2=NULL,interleave=FALSE,
+                                        fastqInput2=NULL,interleave=FALSE, threads = getThreads(),
                                         paramList= NULL,findParamList=NULL, ...) standardGeneric("atacRemoveAdapter"))
 #' @rdname RemoveAdapter
 #' @aliases atacRemoveAdapter
@@ -461,9 +475,9 @@ setMethod(
     definition = function(atacProc,adapter1=NULL,adapter2=NULL,
                           fastqOutput1=NULL,reportPrefix=NULL,
                           fastqOutput2=NULL,fastqInput1=NULL,
-                          fastqInput2=NULL,interleave=FALSE,
+                          fastqInput2=NULL,interleave=FALSE, threads = getThreads(),
                           paramList= NULL,findParamList=NULL, ...){
-        allpara <- c(list(Class = "UnzipAndMerge", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        allpara <- c(list(Class = "RemoveAdapter", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
     }
@@ -476,7 +490,7 @@ removeAdapter <- function(fastqInput1, fastqInput2,
                               adapter1, adapter2,
                               fastqOutput1=NULL,reportPrefix=NULL,
                               fastqOutput2=NULL,
-                              interleave=FALSE,
+                              interleave=FALSE, threads = getThreads(),
                               paramList = NULL,findParamList = NULL, ...){
     allpara <- c(list(Class = "RemoveAdapter", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)

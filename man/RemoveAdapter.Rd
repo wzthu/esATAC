@@ -11,16 +11,19 @@
 atacRemoveAdapter(atacProc, adapter1 = NULL, adapter2 = NULL,
   fastqOutput1 = NULL, reportPrefix = NULL, fastqOutput2 = NULL,
   fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE,
-  paramList = NULL, findParamList = NULL, ...)
+  threads = getThreads(), paramList = NULL, findParamList = NULL,
+  ...)
 
 \S4method{atacRemoveAdapter}{ATACProc}(atacProc, adapter1 = NULL,
   adapter2 = NULL, fastqOutput1 = NULL, reportPrefix = NULL,
   fastqOutput2 = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE, paramList = NULL, findParamList = NULL, ...)
+  interleave = FALSE, threads = getThreads(), paramList = NULL,
+  findParamList = NULL, ...)
 
 removeAdapter(fastqInput1, fastqInput2, adapter1, adapter2,
   fastqOutput1 = NULL, reportPrefix = NULL, fastqOutput2 = NULL,
-  interleave = FALSE, paramList = NULL, findParamList = NULL, ...)
+  interleave = FALSE, threads = getThreads(), paramList = NULL,
+  findParamList = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -65,6 +68,9 @@ it must be \code{NULL}.}
 \item{interleave}{\code{Logical}. Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
 
+\item{threads}{\code{Numeric}. The max threads allowed to be used by this step.
+Default: getThreads()}
+
 \item{paramList}{Additional arguments to be passed on to the binaries
 for removing adapter. See below for details.}
 
@@ -102,7 +108,7 @@ function arguments. See the output of
 \examples{
 library(magrittr)
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 # Identify adapters
 prefix<-system.file(package="esATAC", "extdata", "uzmg")
@@ -113,7 +119,7 @@ reads_merged_1 <- file.path(td,"reads1.fastq")
 reads_merged_2 <- file.path(td,"reads2.fastq")
 atacproc <-
 atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) \%>\%
-atacRenamer \%>\% atacRemoveAdapter
+atacRenamer \%>\% atacFindAdapter \%>\% atacRemoveAdapter
 
 dir(td)
 }

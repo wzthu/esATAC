@@ -15,7 +15,8 @@ setMethod(
         threads <- allparam[["threads"]]
         
         if(length(prevSteps) >0){
-            prevSteps <- prevSteps[[1]]
+            prevSteps <- unlist(prevSteps[[1]])
+            prevSteps <- prevSteps[[length(prevSteps)]]
             param(.Object)[["interleave"]] <- property(.Object)[["interleave"]]
             param(.Object)[["singleEnd"]] <- property(.Object)[["singleEnd"]]
             if(param(.Object)[["singleEnd"]]){
@@ -69,9 +70,9 @@ setMethod(
             }
         }
         
-        if(!is.null(threads)){
-            param(.Object)$threads <- as.integer(threads)
-        }
+        stopifnot(is.numeric(threads))
+        param(.Object)$threads <- threads
+        
         .Object
     }
 )
@@ -214,7 +215,7 @@ setMethod(
 #' @examples
 #' library(magrittr)
 #' td <- tempdir()
-#' options(atacConf=setTmpDir(td))
+#' setTmpDir(td)
 #'
 #' # Identify adapters
 #' prefix<-system.file(package="esATAC", "extdata", "uzmg")
@@ -234,7 +235,7 @@ setMethod(
 
 setGeneric("atacFindAdapter",function(atacProc,fastqInput1=NULL,
                                         fastqInput2=NULL, reportPrefix = NULL, interleave=FALSE,
-                                        findParamList=NULL, threads = NULL, ...) standardGeneric("atacFindAdapter"))
+                                        findParamList=NULL, threads = getThreads(), ...) standardGeneric("atacFindAdapter"))
 #' @rdname FindAdapter
 #' @aliases atacFindAdapter
 #' @export
@@ -243,7 +244,7 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc,fastqInput1=NULL,
                           fastqInput2=NULL, reportPrefix = NULL, interleave=FALSE,
-                          findParamList=NULL, threads = NULL, ...){
+                          findParamList=NULL, threads = getThreads(), ...){
         allpara <- c(list(Class = "FindAdapter", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -254,7 +255,7 @@ setMethod(
 #' @aliases findAdapter
 #' @export
 findAdapter <- function(fastqInput1, fastqInput2 = NULL, reportPrefix = NULL,
-                          interleave=FALSE, findParamList = NULL, threads = NULL, ...){
+                          interleave=FALSE, findParamList = NULL, threads = getThreads(), ...){
     allpara <- c(list(Class = "FindAdapter", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)

@@ -9,14 +9,16 @@
 \title{Rename reads name in fastq}
 \usage{
 atacRenamer(atacProc, fastqOutput1 = NULL, fastqOutput2 = NULL,
-  fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE, ...)
+  fastqInput1 = NULL, fastqInput2 = NULL, interleave = FALSE,
+  threads = getThreads(), ...)
 
 \S4method{atacRenamer}{ATACProc}(atacProc, fastqOutput1 = NULL,
   fastqOutput2 = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE, ...)
+  interleave = FALSE, threads = getThreads(), ...)
 
 renamer(fastqInput1 = NULL, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE, threads = NULL, ...)
+  fastqOutput2 = NULL, interleave = FALSE, threads = getThreads(),
+  ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -47,10 +49,10 @@ it must be \code{NULL}.}
 Set \code{TRUE} when files are
 interleaved paired-end sequencing data.}
 
-\item{...}{Additional arguments, currently unused.}
-
 \item{threads}{\code{Integer} scalar.
 The threads will be created in this process. default: 1}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
@@ -71,7 +73,7 @@ you can use \code{renamer} instead.
 \examples{
 library(magrittr)
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 # Identify adapters
 prefix<-system.file(package="esATAC", "extdata", "uzmg")

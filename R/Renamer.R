@@ -51,11 +51,8 @@ setMethod(
         }else{
             output(.Object)[["fastqOutput2"]] <- fastqOutput2
         }
-        if(!is.null(threads)){
-            param(.Object)[["threads"]] <- as.integer(threads)
-        }else{
-            param(.Object)[["threads"]] <- .obtainConfigure("threads")
-        }
+        stopifnot(is.numeric(threads))
+        param(.Object)[["threads"]] <- threads
         .Object
     }
 )
@@ -159,7 +156,7 @@ singleCall<-function(number,.renamer_call,.Object){
 #' @examples
 #' library(magrittr)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' # Identify adapters
 #' prefix<-system.file(package="esATAC", "extdata", "uzmg")
@@ -183,7 +180,9 @@ setGeneric("atacRenamer",function(atacProc,fastqOutput1=NULL,
                                   fastqOutput2=NULL,
                                   fastqInput1=NULL,
                                   fastqInput2=NULL,
-                                  interleave = FALSE, ...) standardGeneric("atacRenamer"))
+                                  interleave = FALSE, 
+                                  threads = getThreads(), 
+                                  ...) standardGeneric("atacRenamer"))
 
 #' @rdname Renamer
 #' @aliases atacRenamer
@@ -196,7 +195,8 @@ setMethod(
              fastqOutput2=NULL,
              fastqInput1=NULL,
              fastqInput2=NULL,
-             interleave = FALSE, ...){
+             interleave = FALSE, 
+             threads = getThreads(), ...){
         allpara <- c(list(Class = "Renamer", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -210,7 +210,7 @@ renamer <- function(fastqInput1=NULL,
                     fastqOutput1=NULL,
                     fastqOutput2=NULL,
                     interleave = FALSE,
-                    threads = NULL, ...){
+                    threads = getThreads(), ...){
     allpara <- c(list(Class = "Renamer", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
