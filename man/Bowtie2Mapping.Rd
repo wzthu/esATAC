@@ -10,17 +10,17 @@
 \usage{
 atacBowtie2Mapping(atacProc, samOutput = NULL, reportOutput = NULL,
   bt2Idx = NULL, fastqInput1 = NULL, fastqInput2 = NULL,
-  interleave = FALSE, threads = NULL,
+  interleave = FALSE, threads = getThreads(),
   paramList = "--no-discordant --no-unal --no-mixed -X 2000", ...)
 
 \S4method{atacBowtie2Mapping}{ATACProc}(atacProc, samOutput = NULL,
   reportOutput = NULL, bt2Idx = NULL, fastqInput1 = NULL,
-  fastqInput2 = NULL, interleave = FALSE, threads = NULL,
+  fastqInput2 = NULL, interleave = FALSE, threads = getThreads(),
   paramList = "--no-discordant --no-unal --no-mixed -X 2000", ...)
 
 bowtie2Mapping(fastqInput1, fastqInput2 = NULL, samOutput = NULL,
   reportOutput = NULL, bt2Idx = NULL, interleave = FALSE,
-  threads = NULL,
+  threads = getThreads(),
   paramList = "--no-discordant --no-unal --no-mixed -X 2000", ...)
 }
 \arguments{
@@ -58,7 +58,7 @@ it must be \code{NULL}.}
 interleaved paired-end sequencing data.}
 
 \item{threads}{\code{Integer} scalar.
-The threads will be created in this process. default: 1}
+The threads will be created in this process. default: getThreads()}
 
 \item{paramList}{Additional arguments to be passed on to the binaries.
 See below for details.}
@@ -93,7 +93,7 @@ function arguments. See the output of
 }
 \examples{
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 ## Building a bowtie2 index
 library("Rbowtie2")
@@ -107,7 +107,7 @@ reads_1 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 reads_2 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 "reads_2.fastq")
 if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
-    (bowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+    (bowtie2Mapping(bt2Idx = file.path(td, "lambda_virus"),
        samOutput = file.path(td, "result.sam"),
        fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
     head(readLines(file.path(td, "result.sam")))

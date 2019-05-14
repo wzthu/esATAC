@@ -2,51 +2,69 @@ setClass(Class = "Bowtie2Mapping",
          contains = "ATACProc"
 )
 
+
+
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "Bowtie2Mapping",
-    definition = function(.Object,atacProc,..., samOutput=NULL, bt2Idx=NULL,
-                          fastqInput1=NULL, fastqInput2=NULL,
-                          interleave = FALSE,
-                          paramList="--no-discordant --no-unal --no-mixed -X 2000",
-                          reportOutput = NULL, threads = NULL, editable=FALSE){
-        .Object <- init(.Object,"Bowtie2Mapping",editable,list(arg1=atacProc))
-        if(!is.null(atacProc)){
-            .Object@paramlist[["fastqInput1"]] <- getParam(atacProc,"fastqOutput1");
-            .Object@paramlist[["fastqInput2"]] <- getParam(atacProc,"fastqOutput2");
-            regexProcName<-sprintf("(fastq|fq|%s)",getProcName(atacProc))
-            .Object@paramlist[["interleave"]] <- getParam(atacProc,"interleave")
+    definition = function(.Object, prevSteps = list(),...){
+        allparam <- list(...)
+        fastqInput1 <- allparam[["fastqInput1"]]
+        fastqInput2 <- allparam[["fastqInput2"]]
+        samOutput <- allparam[["samOutput"]]
+        bt2Idx <- allparam[["bt2Idx"]]
+        reportOutput <- allparam[["reportOutput"]]
+        interleave <- allparam[["interleave"]]
+        threads <- allparam[["threads"]]
+        paramList <- allparam[["paramList"]]
+        
+        if(length(prevSteps) > 0){
+            fastqSteps <- prevSteps[[1]]
+            fastqSteps<-unlist(fastqSteps)
+            fastqStep <- fastqSteps[[length(fastqSteps)]]
+            input(.Object)[["fastqInput1"]] <- output(fastqStep)[["fastqOutput1"]]
+            input(.Object)[["fastqInput2"]] <- output(fastqStep)[["fastqOutput2"]]
+            param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
+            param(.Object)[["singleEnd"]] <- property(fastqStep)[["singleEnd"]]
         }else{
-            regexProcName<-"(fastq|fq)"
-            .Object@paramlist[["interleave"]] <- interleave
-            if(is.null(fastqInput2)){
-                .Object@singleEnd<-TRUE
+            param(.Object)[["interleave"]] <- interleave
+            property(.Object)[["interleave"]] <- interleave
+            if(interleave){
+                if(!is.null(fastqInput2)){
+                    stop("interleave data should put in one fastq file")
+                }else{
+                    property(.Object)$singleEnd <- TRUE
+                    param(.Object)$singleEnd <- TRUE
+                }
             }else{
-                .Object@singleEnd<-FALSE
+                property(.Object)$singleEnd<-is.null(fastqInput2)
+                param(.Object)$singleEnd<-is.null(fastqInput2)
             }
         }
 
         if(!is.null(fastqInput1)){
-            .Object@paramlist[["fastqInput1"]] <- fastqInput1;
+            input(.Object)[["fastqInput1"]] <- fastqInput1;
         }
         if(!is.null(fastqInput2)){
-            .Object@paramlist[["fastqInput2"]] <- fastqInput2;
+            input(.Object)[["fastqInput2"]] <- fastqInput2;
         }
 
 
         if(is.null(samOutput)){
-            if(!is.null(.Object@paramlist[["fastqInput1"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
-                .Object@paramlist[["samOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".sam"))
+            if(!is.null(input(.Object)[["fastqInput1"]])){
+                output(.Object)[["samOutput"]] <- 
+                    getAutoPath(.Object,input(.Object)[["fastqInput1"]],"fastq|fq","sam")
             }
         }else{
-            .Object@paramlist[["samOutput"]] <- samOutput;
+            output(.Object)[["samOutput"]] <- samOutput;
         }
 
         if(is.null(bt2Idx)){
-            .Object@paramlist[["bt2Idx"]]=.obtainConfigure("bt2Idx")
+            param(.Object)[["bt2Idx"]] <- getRefRc("bt2Idx")
+            input(.Object)[["bt2Idxs"]] <- paste0(bt2Idx,c(".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"))
         }else{
-            .Object@paramlist[["bt2Idx"]]<-bt2Idx
+            param(.Object)[["bt2Idx"]] <- bt2Idx
+            input(.Object)[["bt2Idxs"]] <- paste0(bt2Idx,c(".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"))
         }
 
 
@@ -56,23 +74,22 @@ setMethod(
             paramList <- strsplit(paramList,"\\s+")[[1]]
             if(length(paramList)>0){
                 rejectp<-"-p|--threads|-x|-1|-2|-U|-S|--interleaved"
-                checkParam(.Object,paramList,rejectp)
-                .Object@paramlist[["paramList"]]<-paramList
+                checkParam(paramList,rejectp)
+                param(.Object)[["paramList"]]<-paramList
             }
         }
 
         if(is.null(reportOutput)){
-            if(!is.null(.Object@paramlist[["fastqInput1"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
-                .Object@paramlist[["reportOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".report"))
+            if(!is.null(input(.Object)[["fastqInput1"]])){
+                output(.Object)[["reportOutput"]] <- getAutoPath(.Object, input(.Object)[["fastqInput1"]], "fq|fastq", "report")
             }
         }else{
-            .Object@paramlist[["reportOutput"]] <- reportOutput;
+            output(.Object)[["reportOutput"]] <- reportOutput;
         }
-        if(!is.null(threads)){
-            .Object@paramlist[["threads"]] <- as.integer(threads)
-        }
-        paramValidation(.Object)
+        
+        stopifnot(is.numeric(threads))
+        param(.Object)[["threads"]] <- threads
+        
         .Object
     }
 )
@@ -82,44 +99,38 @@ setMethod(
     signature = "Bowtie2Mapping",
     definition = function(.Object,...){
         paramList <- NULL
-        if(!is.null(.Object@paramlist[["paramList"]])){
-            paramList <- paste(.Object@paramlist[["paramList"]],collapse = " ")
-        }
-        if(!is.null(.Object@paramlist[["threads"]])){
-            if(.Object@paramlist[["threads"]]>1){
-                paramList<-paste(c("-p",as.character(.Object@paramlist[["threads"]]),.Object@paramlist[["paramList"]]),collapse = " ")
-            }
-        }else if(.obtainConfigure("threads")>1){
-            paramList<-paste(c("-p",as.character(.obtainConfigure("threads")),.Object@paramlist[["paramList"]]),collapse = " ")
+        if(!is.null(param(.Object)[["paramList"]])){
+            paramList <- paste(param(.Object)[["paramList"]],collapse = " ")
         }
 
-        .Object<-writeLog(.Object,"start mapping with parameters:")
-        .Object<-writeLog(.Object,paste0("bowtie2 index:",.Object@paramlist[["bt2Idx"]]))
-        .Object<-writeLog(.Object,paste0("samOutput:",.Object@paramlist[["samOutput"]]))
-        .Object<-writeLog(.Object,paste0("report:",.Object@paramlist[["reportOutput"]]))
-        .Object<-writeLog(.Object,paste0("fastqInput1:",.Object@paramlist[["fastqInput1"]]))
-        .Object<-writeLog(.Object,paste0("fastqInput2:",.Object@paramlist[["fastqInput2"]]))
-        .Object<-writeLog(.Object,paste0("other parameters:",paste(.Object@paramlist[["paramList"]],collapse = " ")))
+        paramList<-paste("-p",as.character(param(.Object)[["threads"]]),paramList)
+ 
+
+        writeLog(.Object,"start mapping with parameters:")
+        writeLog(.Object,paste0("bowtie2 index:",param(.Object)[["bt2Idx"]]))
+        writeLog(.Object,paste0("samOutput:",output(.Object)[["samOutput"]]))
+        writeLog(.Object,paste0("report:",output(.Object)[["reportOutput"]]))
+        writeLog(.Object,paste0("fastqInput1:",input(.Object)[["fastqInput1"]]))
+        writeLog(.Object,paste0("fastqInput2:",input(.Object)[["fastqInput2"]]))
+        writeLog(.Object,paste0("other parameters:",paramList))
         if(length(paramList)>0){
-            rs<-bowtie2(bt2Index = .Object@paramlist[["bt2Idx"]],
-                        samOutput = .Object@paramlist[["samOutput"]],
-                        seq1 = .Object@paramlist[["fastqInput1"]],
+            rs<-bowtie2(bt2Index = param(.Object)[["bt2Idx"]],
+                        samOutput = output(.Object)[["samOutput"]],
+                        seq1 = input(.Object)[["fastqInput1"]],
                         paramList,
-                        seq2 = .Object@paramlist[["fastqInput2"]],
-                        interleaved = .Object@paramlist[["interleave"]],
+                        seq2 = input(.Object)[["fastqInput2"]],
+                        interleaved = param(.Object)[["interleave"]],
                         overwrite=TRUE)
         }else{
-            rs<-bowtie2(bt2Index = .Object@paramlist[["bt2Idx"]],
-                        samOutput = .Object@paramlist[["samOutput"]],
-                        seq1 = .Object@paramlist[["fastqInput1"]],
-                        seq2 = .Object@paramlist[["fastqInput2"]],
-                        interleaved = .Object@paramlist[["interleave"]],
+            rs<-bowtie2(bt2Index = param(.Object)[["bt2Idx"]],
+                        samOutput = output(.Object)[["samOutput"]],
+                        seq1 = input(.Object)[["fastqInput1"]],
+                        seq2 = input(.Object)[["fastqInput2"]],
+                        interleaved = param(.Object)[["interleave"]],
                         overwrite=TRUE)
         }
 
-        writeLines(text = rs,con = .Object@paramlist[["reportOutput"]])
-
-
+        writeLines(text = rs,con = output(.Object)[["reportOutput"]])
 
         .Object
     }
@@ -129,10 +140,10 @@ setMethod(
     f = "checkRequireParam",
     signature = "Bowtie2Mapping",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["fastqInput1"]])){
+        if(is.null(input(.Object)[["fastqInput1"]])){
             stop("fastqInput1 is required.")
         }
-        if(is.null(.Object@paramlist[["bt2Idx"]])){
+        if(is.null(param(.Object)[["bt2Idx"]])){
             stop("bt2Idx is required")
         }
     }
@@ -141,21 +152,10 @@ setMethod(
 
 
 setMethod(
-    f = "checkAllPath",
-    signature = "Bowtie2Mapping",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["fastqInput1"]]);
-        checkFileExist(.Object,.Object@paramlist[["fastqInput2"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["samOutput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["reportOutput"]]);
-    }
-)
-
-setMethod(
     f = "genReport",
     signature = "Bowtie2Mapping",
     definition = function(.Object,...){
-        txt <- readLines(.Object@paramlist[["reportOutput"]])
+        txt <- readLines(output(.Object)[["reportOutput"]])
         s<-strsplit(txt[1]," ")
         report(.Object)$total <- as.integer(s[[1]][1])
        
@@ -202,7 +202,7 @@ setMethod(
 #' @param interleave \code{Logical}. Set \code{TRUE} when files are
 #' interleaved paired-end sequencing data.
 #' @param threads \code{Integer} scalar.
-#' The threads will be created in this process. default: 1
+#' The threads will be created in this process. default: getThreads()
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -236,7 +236,7 @@ setMethod(
 #' \code{\link{atacLibComplexQC}}
 #' @examples
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' ## Building a bowtie2 index
 #' library("Rbowtie2")
@@ -250,7 +250,7 @@ setMethod(
 #' reads_2 <- system.file(package="esATAC", "extdata", "bt2", "reads",
 #' "reads_2.fastq")
 #' if(file.exists(file.path(td, "lambda_virus.1.bt2"))){
-#'     (bowtie2Mapping(NULL,bt2Idx = file.path(td, "lambda_virus"),
+#'     (bowtie2Mapping(bt2Idx = file.path(td, "lambda_virus"),
 #'        samOutput = file.path(td, "result.sam"),
 #'        fastqInput1=reads_1,fastqInput2=reads_2,threads=3))
 #'     head(readLines(file.path(td, "result.sam")))
@@ -258,7 +258,12 @@ setMethod(
 
 
 
-setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...) standardGeneric("atacBowtie2Mapping"))
+setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,
+                                         reportOutput =NULL, bt2Idx=NULL,
+                                         fastqInput1=NULL, fastqInput2=NULL, 
+                                         interleave = FALSE, threads = getThreads(), 
+                                         paramList="--no-discordant --no-unal --no-mixed -X 2000", ...) 
+                                         standardGeneric("atacBowtie2Mapping"))
 
 
 
@@ -268,20 +273,25 @@ setGeneric("atacBowtie2Mapping",function(atacProc,samOutput=NULL,reportOutput =N
 setMethod(
     f = "atacBowtie2Mapping",
     signature = "ATACProc",
-    definition = function(atacProc,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL,fastqInput1=NULL, fastqInput2=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
-
-        atacproc<-new("Bowtie2Mapping",atacProc=atacProc,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                                     fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+    definition = function(atacProc,samOutput=NULL,
+                          reportOutput =NULL, bt2Idx=NULL,
+                          fastqInput1=NULL, fastqInput2=NULL, 
+                          interleave = FALSE, threads = getThreads(), 
+                          paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
+        allpara <- c(list(Class = "Bowtie2Mapping", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname Bowtie2Mapping
 #' @aliases bowtie2Mapping
 #' @export
-bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,samOutput=NULL,reportOutput =NULL, bt2Idx=NULL, interleave = FALSE, threads = NULL, paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
-    atacproc<-new("Bowtie2Mapping",atacProc=NULL,bt2Idx=bt2Idx,samOutput=samOutput, fastqInput1=fastqInput1,
-                  fastqInput2=fastqInput2, interleave = interleave, paramList=paramList,reportOutput=reportOutput, threads= threads)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+bowtie2Mapping <- function(fastqInput1, fastqInput2=NULL,
+                           samOutput=NULL,reportOutput =NULL, 
+                           bt2Idx=NULL, interleave = FALSE, 
+                           threads = getThreads(), 
+                           paramList="--no-discordant --no-unal --no-mixed -X 2000", ...){
+    allpara <- c(list(Class = "Bowtie2Mapping", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

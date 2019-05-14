@@ -98,7 +98,7 @@ setMethod(
             paramList <- strsplit(paramList,"\\s+")[[1]]
             if(length(paramList)>0){
                 rejectp<-"--file1|--adapter1|--output1|--file2|--adapter2|--output2|--threads|--basename"
-                checkParam(.Object,paramList,rejectp)
+                checkParam(paramList,rejectp)
                 param(.Object)$paramList<-paramList
             }
         }
