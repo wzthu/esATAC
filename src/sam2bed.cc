@@ -43,16 +43,30 @@ SamToBed::SamToBed(char * ifilePath, char * ofilePath, int memSize,int down_samp
 }
 
 int SamToBed::getReadsLen(string & CIGAR){
-    int i = 0;
-    int size = CIGAR.size();
-    int seqlen = 0;
-    for(int j = 0; j < size ; j++){
-        if(CIGAR[j]<'0'||CIGAR[j]>'9'){
-            seqlen += atoi(CIGAR.substr(i,j-i).c_str());
-            i = j+1;
-        }
+  int i = 0;
+  int size = CIGAR.size();
+  int seqlen = 0;
+  for(int j = 0; j < size ; j++){
+    if(CIGAR[j]<'0'||CIGAR[j]>'9'){
+      switch (CIGAR[j]){
+      case 'M':
+      case 'N':
+      case 'D':
+      case '=':
+      case 'X':
+        seqlen += atoi(CIGAR.substr(i,j-i).c_str());
+        i = j+1;
+      case 'H':
+      case 'I':
+      case 'P':
+      case 'S':
+        break;
+      default:
+        break;
+      }
     }
-    return seqlen;
+  }
+  return seqlen;
 }
 int SamToBed::sam2bed(int pos_offset,int neg_offset,char ** chrList,int char_filter_size, bool sort,bool unique) {
 
