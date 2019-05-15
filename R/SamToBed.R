@@ -25,8 +25,8 @@ setMethod(
         if(length(prevSteps) > 0){
             if(!is.null(prevSteps[[1]])){
                 atacProc <- prevSteps[[1]]
-                atacProc <- unlist(atacProc)
-                atacProc <- fastqSteps[[length(atacProc)]]
+                atacProc <- c(unlist(atacProc),list())
+                atacProc <- atacProc[[length(atacProc)]]
                 input(.Object)[["samInput"]] <- output(atacProc)[["samOutput"]]
                 if(merge=="auto"){
                     if(property(.Object)$singleEnd){
@@ -260,7 +260,7 @@ setMethod(
     definition = function(atacProc, reportOutput =NULL,merge = c("auto","yes","no"), posOffset = +4, negOffset= -5, chrFilterList= "chrM",#chrUn.*|chrM|.*random.*
                           samInput = NULL, bedOutput = NULL, sortBed = TRUE, minFragLen = 0,maxFragLen = 100,
                           saveExtLen = FALSE,uniqueBed = TRUE, ...){
-        allpara <- c(list(Class = "SamToBed", prevSteps = list()),as.list(environment()),list(...))
+        allpara <- c(list(Class = "SamToBed", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
     }

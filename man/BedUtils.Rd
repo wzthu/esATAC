@@ -103,7 +103,7 @@ you can use \code{bedUtils} instead.
 library(R.utils)
 library(magrittr)
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
