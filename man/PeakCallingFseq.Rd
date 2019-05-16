@@ -10,19 +10,21 @@
 \usage{
 atacPeakCalling(atacProc, bedInput = NULL, background = NULL,
   genomicReadsCount = NULL, fragmentSize = 0, featureLength = NULL,
-  bedOutput = NULL, ploidyDir = NULL, wiggleTrackStep = NULL,
-  threshold = NULL, verbose = TRUE, wgThresholdSet = NULL, ...)
+  bedOutput = NULL, ploidyDir = NULL, fileformat = c("bed", "wig",
+  "npf"), wiggleTrackStep = NULL, threshold = NULL, verbose = TRUE,
+  wgThresholdSet = NULL, ...)
 
 \S4method{atacPeakCalling}{ATACProc}(atacProc, bedInput = NULL,
   background = NULL, genomicReadsCount = NULL, fragmentSize = 0,
   featureLength = NULL, bedOutput = NULL, ploidyDir = NULL,
-  wiggleTrackStep = NULL, threshold = NULL, verbose = TRUE,
-  wgThresholdSet = NULL, ...)
+  fileformat = c("bed", "wig", "npf"), wiggleTrackStep = NULL,
+  threshold = NULL, verbose = TRUE, wgThresholdSet = NULL, ...)
 
 peakCalling(bedInput, background = NULL, genomicReadsCount = NULL,
   fragmentSize = 0, featureLength = NULL, bedOutput = NULL,
-  ploidyDir = NULL, wiggleTrackStep = NULL, threshold = NULL,
-  verbose = TRUE, wgThresholdSet = NULL, ...)
+  ploidyDir = NULL, fileformat = c("bed", "wig", "npf"),
+  wiggleTrackStep = NULL, threshold = NULL, verbose = TRUE,
+  wgThresholdSet = NULL, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -85,7 +87,7 @@ you can use \code{peakCalling} instead.
 library(R.utils)
 library(magrittr)
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
