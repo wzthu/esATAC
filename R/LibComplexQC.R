@@ -2,39 +2,48 @@ setClass(Class = "LibComplexQC",
          contains = "ATACProc"
 )
 
+
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "LibComplexQC",
-    definition = function(.Object,atacProc,...,reportOutput=NULL,samInput=NULL,
-                          singleEnd = FALSE,subsampleSize=Inf,editable=FALSE){
-        .Object <- init(.Object,"LibComplexQC",editable,list(arg1=atacProc))
-        if(!is.null(atacProc)){
-            .Object@paramlist[["samInput"]] <- getParam(atacProc,"samOutput");
-            regexProcName<-sprintf("(SAM|Sam|sam|%s)",getProcName(atacProc))
-        }else{
-            regexProcName<-"(SAM|Sam|sam)"
-            .Object@singleEnd<-singleEnd
-        }
-        if(!is.null(samInput)){
-            .Object@paramlist[["samInput"]] <- samInput;
-        }
-        if(is.null(reportOutput)){
-            if(!is.null(.Object@paramlist[["samInput"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["samInput"]],regexProcName)
-                .Object@paramlist[["reportOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".report"))
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        samInput <- allparam[["samInput"]]
+        reportOutput <- allparam[["reportOutput"]]
+        singleEnd <- allparam[["singleEnd"]]
+        subsampleSize <- allparam[["subsampleSize"]]
+        
+        if(length(prevSteps) > 0){
+            if(!is.null(prevSteps[[1]])){
+                atacProc <- prevSteps[[1]]
+                atacProc <- c(unlist(atacProc),list())
+                atacProc <- atacProc[[length(atacProc)]]
+                input(.Object)[["samInput"]] <- output(atacProc)[["samOutput"]]
+                param(.Object)[["singleEnd"]] <- property(atacProc)[["singleEnd"]]
+                singleEnd <- property(atacProc)[["singleEnd"]]
             }
         }else{
-            .Object@paramlist[["reportOutput"]] <- reportOutput;
+            param(.Object)[["singleEnd"]] <- singleEnd
+            property(.Object)[["singleEnd"]] <- singleEnd
+        }
+        if(!is.null(samInput)){
+            input(.Object)[["samInput"]] <- samInput;
+        }
+        if(is.null(reportOutput)){
+            if(!is.null(input(.Object)[["samInput"]])){
+                output(.Object)[["reportOutput"]] <- getAutoPath(.Object,input(.Object)[["samInput"]],"Sam|SAM|sam","report")
+            }
+        }else{
+            output(.Object)[["reportOutput"]] <- reportOutput;
         }
 
         if(is.infinite(subsampleSize)){
-            .Object@paramlist[["subsample"]] <- FALSE;
-            .Object@paramlist[["subsampleSize"]] <- 1e9;
+            param(.Object)[["subsample"]] <- FALSE;
+            param(.Object)[["subsampleSize"]] <- 1e9;
         }else{
-            .Object@paramlist[["subsample"]] <- TRUE;
-            .Object@paramlist[["subsampleSize"]] <- subsampleSize;
+            param(.Object)[["subsample"]] <- TRUE;
+            param(.Object)[["subsampleSize"]] <- subsampleSize;
         }
-        paramValidation(.Object)
         .Object
     }
 )
@@ -44,15 +53,15 @@ setMethod(
     f = "processing",
     signature = "LibComplexQC",
     definition = function(.Object,...){
-        if(!.Object@singleEnd){
-            qcval0<-.sam2bed_merge_call(samfile = .Object@paramlist[["samInput"]], bedfile = paste0(.Object@paramlist[["reportOutput"]],".tmp"),
+        if(!param(.Object)$singleEnd){
+            qcval0<-.sam2bed_merge_call(samfile = input(.Object)[["samInput"]], bedfile = paste0(output(.Object)[["reportOutput"]],".tmp"),
                                         posOffset = 0, negOffset = 0,sortBed = FALSE,
-                                        uniqueBed = FALSE, filterList = NULL,minFregLen = 0,maxFregLen = 1000000,saveExtLen = FALSE ,downSample=.Object@paramlist[["subsampleSize"]])
+                                        uniqueBed = FALSE, filterList = NULL,minFragLen = 0,maxFragLen = 1000000,saveExtLen = FALSE ,downSample=param(.Object)[["subsampleSize"]])
         }else{
-            qcval0<-.sam2bed_call(samfile = .Object@paramlist[["samInput"]], bedfile = paste0(.Object@paramlist[["reportOutput"]],".tmp"),
-                                  posOffset = 0, negOffset = 0, sortBed = FALSE, uniqueBed = FALSE,  filterList = NULL,downSample=.Object@paramlist[["subsampleSize"]])
+            qcval0<-.sam2bed_call(samfile = input(.Object)[["samInput"]], bedfile = paste0(output(.Object)[["reportOutput"]],".tmp"),
+                                  posOffset = 0, negOffset = 0, sortBed = FALSE, uniqueBed = FALSE,  filterList = NULL,downSample=param(.Object)[["subsampleSize"]])
         }
-        qcval<-.lib_complex_qc_call(bedfile=paste0(.Object@paramlist[["reportOutput"]],".tmp"), sortedBed=FALSE, max_reads=.Object@paramlist[["subsampleSize"]])
+        qcval<-.lib_complex_qc_call(bedfile=paste0(output(.Object)[["reportOutput"]],".tmp"), sortedBed=FALSE, max_reads=param(.Object)[["subsampleSize"]])
         qcval[["samTotal"]] <- qcval0[["total"]]
         qcval[["chrM"]] <- qcval0[["filted"]]
         qcval[["multimap"]] <- qcval0[["multimap"]]
@@ -60,10 +69,10 @@ setMethod(
         qcval[["NRF"]] <- as.numeric(qcval[["total"]])/
             (as.numeric(qcval[["nonMultimap"]]))
 
-        unlink(paste0(.Object@paramlist[["reportOutput"]],".tmp"))
+        unlink(paste0(output(.Object)[["reportOutput"]],".tmp"))
         print(unlist(qcval))
-        print(.Object@paramlist[["reportOutput"]])
-        write.table(as.data.frame(qcval),file = .Object@paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+        print(output(.Object)[["reportOutput"]])
+        write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
         .Object
     }
 )
@@ -73,7 +82,7 @@ setMethod(
     f = "checkRequireParam",
     signature = "LibComplexQC",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["samInput"]])){
+        if(is.null(input(.Object)[["samInput"]])){
             stop("samInput is required.")
         }
     }
@@ -86,7 +95,7 @@ setMethod(
     f = "genReport",
     signature = "LibComplexQC",
     definition = function(.Object, ...){
-        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
+        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
         report(.Object)[["report"]] <-data.frame( Item = c(
             "Total mapped reads (ratio of original reads)",
             "Unique locations mapped uniquely by reads",
@@ -165,7 +174,7 @@ setMethod(
 #' @examples
 #' library(R.utils)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 #' samfile <- file.path(td,"Example.sam")
@@ -184,28 +193,16 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc,reportOutput=NULL,samInput=NULL,
                           singleEnd = FALSE,subsampleSize=Inf, ...){
-        atacproc <- new(
-            "LibComplexQC",
-            atacProc = atacProc,
-            reportOutput = reportOutput,
-            samInput = samInput,
-            singleEnd = singleEnd,
-            subsampleSize = subsampleSize)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "LibComplexQC", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname LibComplexQC
 #' @aliases libComplexQC
 #' @export
 libComplexQC<-function(samInput, reportOutput=NULL,singleEnd = FALSE,subsampleSize=Inf, ...){
-    atacproc <- new(
-        "LibComplexQC",
-        atacProc = NULL,
-        reportOutput = reportOutput,
-        samInput = samInput,
-        singleEnd = singleEnd,
-        subsampleSize = subsampleSize)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "LibComplexQC", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

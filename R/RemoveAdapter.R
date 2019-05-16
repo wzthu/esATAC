@@ -22,7 +22,7 @@ setMethod(
         if(length(prevSteps) > 0){
             if(!is.null(prevSteps[[1]])){
                 fastqSteps <- prevSteps[[1]]
-                fastqSteps<-unlist(fastqSteps)
+                fastqSteps<-c(unlist(fastqSteps),list())
                 fastqStep <- fastqSteps[[length(fastqSteps)]]
                 param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
                 param(.Object)[["singleEnd"]] <- property(fastqStep)[["singleEnd"]]

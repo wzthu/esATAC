@@ -64,7 +64,7 @@ you can use \code{libComplexQC} instead.
 \examples{
 library(R.utils)
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 samfile <- file.path(td,"Example.sam")
