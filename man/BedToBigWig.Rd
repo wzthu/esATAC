@@ -58,7 +58,7 @@ you can use \code{bedToBigWig} instead.
 \examples{
 library(R.utils)
 td <- tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 bedfile <- file.path(td,"chr20.50000.bed")
