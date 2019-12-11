@@ -4,11 +4,26 @@
 \alias{atacRepsPipe2}
 \title{Pipeline for multi-replicates case-control paired-end sequencing data}
 \usage{
-atacRepsPipe2(genome, caseFastqInput1, caseFastqInput2, ctrlFastqInput1,
-  ctrlFastqInput2, caseAdapter1 = NULL, caseAdapter2 = NULL,
-  ctrlAdapter1 = NULL, ctrlAdapter2 = NULL, refdir = NULL,
-  tmpdir = NULL, threads = 2, interleave = FALSE, createReport = TRUE,
-  motifs = NULL, chr = c(1:22, "X", "Y"), p.cutoff = 1e-06, ...)
+atacRepsPipe2(
+  genome,
+  caseFastqInput1,
+  caseFastqInput2,
+  ctrlFastqInput1,
+  ctrlFastqInput2,
+  caseAdapter1 = NULL,
+  caseAdapter2 = NULL,
+  ctrlAdapter1 = NULL,
+  ctrlAdapter2 = NULL,
+  refdir = NULL,
+  tmpdir = NULL,
+  threads = 2,
+  interleave = FALSE,
+  createReport = TRUE,
+  motifs = NULL,
+  chr = c(1:22, "X", "Y"),
+  p.cutoff = 1e-06,
+  ...
+)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}

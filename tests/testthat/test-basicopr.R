@@ -49,12 +49,12 @@ test_that("test basic operation",{
     #'
     expect_true(isReady(atacproc))
     expect_false(isSingleEnd(atacproc))
-    (ritems<-getReportItems(atacproc))
+    (ritems<-names(report(atacproc)))
     expect_equivalent(ritems,c("adapters","adapterslist","adapter1","adapter2",
                                "settings","statistics","settingslist","statisticslist","distribution"))
-    expect_equal(getReportVal(atacproc,ritems[3]),
+    expect_equal(report(atacproc)[[ritems[3]]],
                  "AGATCGGAAGAGCACACGTCTGAACTCCAGTCACCACCTAATCTCGTATGCCGTCTTCTGCTTGAAAAAAAAAAAAAAAAAAAAAAAA")
-    expect_equal(getReportVal(atacproc,ritems[4]),
+    expect_equal(report(atacproc)[[ritems[4]]],
                  "AGATCGGAAGAGCGTCGTGTAGGGAAAGAGTGTAGATCTCGGTGGTCGCCGTATCATTAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
     clearProcCache(atacproc)
     expect_false(file.exists(file.path(td,RemoveAdapterLog)))

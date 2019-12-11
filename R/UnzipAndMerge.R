@@ -3,72 +3,55 @@ setClass(Class = "UnzipAndMerge",
          )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "UnzipAndMerge",
-    definition = function(.Object,fastqInput1,..., fastqInput2=NULL,fastqOutput1=NULL,fastqOutput2=NULL,interleave = FALSE,editable = FALSE){
-        .Object <- init(.Object,"UnzipAndMerge",editable,list())
-        .Object@paramlist[["interleave"]]<-interleave
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        fastqInput1 <- allparam[["fastqInput1"]]
+        fastqInput2 <- allparam[["fastqInput2"]]
+        fastqOutput1 <- allparam[["fastqOutput1"]]
+        fastqOutput2 <- allparam[["fastqOutput2"]]
+        interleave <- allparam[["interleave"]]
+        param(.Object)$interleave <- interleave
+        property(.Object)$interleave <- interleave
         if(interleave){
-            .Object@singleEnd<-FALSE
-            .Object@paramlist[["fastqInput1"]]<-fastqInput1
-            for(i in 1:length(.Object@paramlist[["fastqInput1"]])){
-                checkFileExist(.Object,.Object@paramlist[["fastqInput1"]][i]);
-            }
+            property(.Object)$singleEnd <- FALSE
+            input(.Object)$fastqInput1 <- fastqInput1
             if(!is.null(fastqOutput1)){
-                .Object@paramlist[["fastqOutput1"]]<-fastqOutput1
-                checkFileCreatable(.Object,.Object@paramlist[["fastqOutput1"]])
+                output(.Object)$fastqOutput1 <- fastqOutput1
             }else{
-                .Object@paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(.Object@paramlist[["fastqInput1"]][1]))
-                .Object@paramlist[["fastqOutput1"]]<-removeCompressSuffix(.Object,.Object@paramlist[["fastqOutput1"]])
+                output(.Object)$fastqOutput1 <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
             }
         }else{
             if(is.null(fastqInput2)){
-                .Object@singleEnd<-TRUE
-                .Object@paramlist[["fastqInput1"]]<-fastqInput1
-                for(i in 1:length(.Object@paramlist[["fastqInput1"]])){
-                    checkFileExist(.Object,.Object@paramlist[["fastqInput1"]][i]);
-                }
+                property(.Object)$singleEnd <- TRUE
+                input(.Object)$fastqInput1 <-fastqInput1
                 if(!is.null(fastqOutput1)){
-                    .Object@paramlist[["fastqOutput1"]]<-fastqOutput1
-                    checkFileCreatable(.Object,.Object@paramlist[["fastqOutput1"]])
+                    output(.Object)$fastqOutput1 <-fastqOutput1
                 }else{
-                    .Object@paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(.Object@paramlist[["fastqInput1"]][1]))
-                    .Object@paramlist[["fastqOutput1"]]<-removeCompressSuffix(.Object,.Object@paramlist[["fastqOutput1"]])
+                    output(.Object)$fastqOutput1 <-getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
-
             }else{
-                .Object@singleEnd<-FALSE
-                .Object@paramlist[["fastqInput1"]]<-fastqInput1
-                for(i in 1:length(.Object@paramlist[["fastqInput1"]])){
-                    checkFileExist(.Object,.Object@paramlist[["fastqInput1"]][i]);
-                }
-                .Object@paramlist[["fastqInput2"]]<-fastqInput2
-                if(length(.Object@paramlist[["fastqInput1"]])!=length(.Object@paramlist[["fastqInput2"]])){
+                property(.Object)$singleEnd <-FALSE
+                input(.Object)$fastqInput1 <-fastqInput1
+                input(.Object)$fastqInput2 <-fastqInput2
+                if(length(.Object$inputList[["fastqInput1"]])!=length(.Object$inputList[["fastqInput2"]])){
                     stop("The number of pair-end fastq files should be equal.")
-                }
-                for(i in 1:length(.Object@paramlist[["fastqInput2"]])){
-                    checkFileExist(.Object,.Object@paramlist[["fastqInput2"]][i]);
                 }
                 if(!is.null(fastqOutput1)){
                     #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
-                    .Object@paramlist[["fastqOutput1"]]<-fastqOutput1
-                    checkFileCreatable(.Object,.Object@paramlist[["fastqOutput1"]])
+                    output(.Object)$fastqOutput1 <- fastqOutput1
                 }else{
-                    .Object@paramlist[["fastqOutput1"]]<-file.path(.obtainConfigure("tmpdir"),basename(.Object@paramlist[["fastqInput1"]][1]))
-                    .Object@paramlist[["fastqOutput1"]]<-removeCompressSuffix(.Object,.Object@paramlist[["fastqOutput1"]])
+                    output(.Object)$fastqOutput1 <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
                 if(!is.null(fastqOutput2)){
                     #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
-                    .Object@paramlist[["fastqOutput2"]]<-fastqOutput2
-                    checkFileCreatable(.Object,.Object@paramlist[["fastqOutput2"]])
+                    output(.Object)$fastqOutput2 <- fastqOutput2
                 }else{
-                    .Object@paramlist[["fastqOutput2"]]<-file.path(.obtainConfigure("tmpdir"),basename(.Object@paramlist[["fastqInput2"]][1]))
-                    .Object@paramlist[["fastqOutput2"]]<-removeCompressSuffix(.Object,.Object@paramlist[["fastqOutput2"]])
+                    output(.Object)$fastqOutput2 <- getAutoPath(.Object,.Object$inputList[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }
         }
-
-        paramValidation(.Object)
         .Object
     }
 )
@@ -77,32 +60,32 @@ setMethod(
     f = "processing",
     signature = "UnzipAndMerge",
     definition = function(.Object,...){
-        if(.Object@singleEnd||(!.Object@singleEnd&&.Object@paramlist[["interleave"]])){
-            fileNumber<-length(.Object@paramlist[["fastqInput1"]])
-            decompress(.Object,.Object@paramlist[["fastqInput1"]][1],.Object@paramlist[["fastqOutput1"]])
+        if(property(.Object)[["singleEnd"]]||(!property(.Object)[["singleEnd"]]&&.Object$paramList[["interleave"]])){
+            fileNumber<-length(.Object$inputList[["fastqInput1"]])
+            decompress(.Object,.Object$inputList[["fastqInput1"]][1],.Object$outputList[["fastqOutput1"]])
             if(fileNumber>1){
                 for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,.Object@paramlist[["fastqInput1"]][i],dirname(.Object@paramlist[["fastqOutput1"]]));
-                    file.append(.Object@paramlist[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=.Object@paramlist[["fastqInput1"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput1"]][i],dirname(.Object$outputList[["fastqOutput1"]]));
+                    file.append(.Object$outputList[["fastqOutput1"]],tempfastqfile)
+                    if(tempfastqfile!=.Object$inputList[["fastqInput1"]][i]){
                         unlink(tempfastqfile)
                     }
                 }
             }
         }else{
-            fileNumber<-length(.Object@paramlist[["fastqInput1"]])
-            decompress(.Object,.Object@paramlist[["fastqInput1"]][1],.Object@paramlist[["fastqOutput1"]])
-            decompress(.Object,.Object@paramlist[["fastqInput2"]][1],.Object@paramlist[["fastqOutput2"]])
+            fileNumber<-length(.Object$inputList[["fastqInput1"]])
+            decompress(.Object,.Object$inputList[["fastqInput1"]][1],.Object$outputList[["fastqOutput1"]])
+            decompress(.Object,.Object$inputList[["fastqInput2"]][1],.Object$outputList[["fastqOutput2"]])
             if(fileNumber>1){
                 for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,.Object@paramlist[["fastqInput1"]][i],dirname(.Object@paramlist[["fastqOutput1"]]));
-                    file.append(.Object@paramlist[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=.Object@paramlist[["fastqInput1"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput1"]][i],dirname(.Object$outputList[["fastqOutput1"]]));
+                    file.append(.Object$outputList[["fastqOutput1"]],tempfastqfile)
+                    if(tempfastqfile!=.Object$inputList[["fastqInput1"]][i]){
                         unlink(tempfastqfile)
                     }
-                    tempfastqfile<-decompressFastq(.Object,.Object@paramlist[["fastqInput2"]][i],dirname(.Object@paramlist[["fastqOutput2"]]));
-                    file.append(.Object@paramlist[["fastqOutput2"]],tempfastqfile)
-                    if(tempfastqfile!=.Object@paramlist[["fastqInput2"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput2"]][i],dirname(.Object$outputList[["fastqOutput2"]]));
+                    file.append(.Object$outputList[["fastqOutput2"]],tempfastqfile)
+                    if(tempfastqfile!=.Object$inputList[["fastqInput2"]][i]){
                         unlink(tempfastqfile)
                     }
                 }
@@ -116,25 +99,16 @@ setMethod(
     f = "checkRequireParam",
     signature = "UnzipAndMerge",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["fastqInput1"]])){
+        if(is.null(.Object$inputList[["fastqInput1"]])){
             stop("fastqInput1 is required.")
         }
-        if(.Object@paramlist[["interleave"]]&&.Object@singleEnd){
+        if(.Object$paramList[["interleave"]]&&.Object$propList[["singleEnd"]]){
             stop("Single end data should not be interleave")
         }
     }
 )
 
 
-
-setMethod(
-    f = "checkAllPath",
-    signature = "UnzipAndMerge",
-    definition = function(.Object,...){
-        checkFileCreatable(.Object,.Object@paramlist[["fastqOutput1"]])
-        checkFileCreatable(.Object,.Object@paramlist[["fastqOutput2"]])
-    }
-)
 
 
 setGeneric(
@@ -148,9 +122,9 @@ setMethod(
     signature = "UnzipAndMerge",
     definition = function(.Object,filename,destpath,...){
         destname<-file.path(destpath,basename(filename))
-        .Object<-writeLog(.Object,paste0("processing file:"))
-        .Object<-writeLog(.Object,sprintf("source:%s",filename))
-        .Object<-writeLog(.Object,sprintf("destination:%s",destname))
+        writeLog(.Object,paste0("processing file:"))
+        writeLog(.Object,sprintf("source:%s",filename))
+        writeLog(.Object,sprintf("destination:%s",destname))
         if(isBzipped(filename)){
             destname<-gsub(sprintf("[.]%s$", "bz2"), "", destname, ignore.case=TRUE)
             return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
@@ -173,9 +147,9 @@ setMethod(
     f = "decompress",
     signature = "UnzipAndMerge",
     definition = function(.Object,filename,destname,...){
-        .Object<-writeLog(.Object,paste0("processing file:"))
-        .Object<-writeLog(.Object,sprintf("source:%s",filename))
-        .Object<-writeLog(.Object,sprintf("destination:%s",destname))
+        writeLog(.Object,paste0("processing file:"))
+        writeLog(.Object,sprintf("source:%s",filename))
+        writeLog(.Object,sprintf("destination:%s",destname))
         if(isBzipped(filename)){
             return(bunzip2(filename,destname=destname,overwrite=TRUE,remove=FALSE))
         }else if(isGzipped(filename)){
@@ -241,17 +215,16 @@ setMethod(
 #' \code{\link{atacRenamer}}
 #' \code{\link{atacQCReport}}
 #' @examples
-#' 
 #' td<-tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
-#'
+#' setTmpDir(td)
+#' 
 #' # Identify adapters
 #' prefix<-system.file(package="esATAC", "extdata", "uzmg")
 #' (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 #' (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
-#'
-#' reads_merged_1 <- file.path(td,"reads1.fastq")
-#' reads_merged_2 <- file.path(td,"reads2.fastq")
+#' 
+#' reads_merged_1 <- file.path(td,"reads_1.fq")
+#' reads_merged_2 <- file.path(td,"reads_2.fq")
 #' atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 #' dir(td)
 #' 
@@ -260,15 +233,9 @@ setMethod(
 atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
                              interleave = FALSE, ...){
-    atacproc <- new(
-        "UnzipAndMerge",
-        fastqInput1 = fastqInput1,
-        fastqInput2 = fastqInput2,
-        fastqOutput1 = fastqOutput1,
-        fastqOutput2 = fastqOutput2,
-        interleave = interleave);
-    atacproc<-process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "UnzipAndMerge", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 
 #' @rdname UnzipAndMerge
@@ -276,14 +243,9 @@ atacUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
 unzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
                              fastqOutput1=NULL,fastqOutput2=NULL,
                              interleave = FALSE, ...){
-    atacproc <- new(
-        "UnzipAndMerge",
-        fastqInput1 = fastqInput1,
-        fastqInput2 = fastqInput2,
-        fastqOutput1 = fastqOutput1,
-        fastqOutput2 = fastqOutput2,
-        interleave = interleave);
-    atacproc<-process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "UnzipAndMerge", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
+    
 }
 

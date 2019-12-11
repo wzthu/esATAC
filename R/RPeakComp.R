@@ -4,50 +4,57 @@ setClass(Class = "RPeakComp",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "RPeakComp",
-    definition = function(.Object, atacProcPeak1 = NULL, atacProcPeak2 = NULL, ...,
-                          bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL,
-                          olap.rate = NULL, editable = FALSE){
-        .Object <- init(.Object, "RPeakComp", editable, list(arg1 = atacProcPeak1, arg2 = atacProcPeak2))
+    definition = function(.Object,prevSteps = list(),... ){
+        allparam <- list(...)
+        bedInput1 <- allparam[["bedInput1"]]
+        bedInput2 <- allparam[["bedInput2"]]
+        bedOutput <- allparam[["bedOutput"]]
+        olap.rate <- allparam[["olap.rate"]]
 
+        atacProcPeak1 <- NULL
+        if(length(prevSteps) > 0){
+            atacProcPeak1 <- prevSteps[[1]]
+        }
+        
+        atacProcPeak2 <- NULL
+        if(length(prevSteps) > 0){
+            atacProcPeak2 <- prevSteps[[1]]
+        }
+        
         # necessary parameters
         if(!is.null(atacProcPeak1)){
-            .Object@paramlist[["bedInput1"]] <- getParam(atacProcPeak1, "bedOutput")
+            input(.Object)[["bedInput1"]] <- getParam(atacProcPeak1, "bedOutput")
         }else{
-            .Object@paramlist[["bedInput1"]] <- bedInput1
+            input(.Object)[["bedInput1"]] <- bedInput1
         }
         if(!is.null(atacProcPeak2)){
-            .Object@paramlist[["bedInput2"]] <- getParam(atacProcPeak2, "bedOutput")
+            input(.Object)[["bedInput2"]] <- getParam(atacProcPeak2, "bedOutput")
         }else{
-            .Object@paramlist[["bedInput2"]] <- bedInput2
+            input(.Object)[["bedInput2"]] <- bedInput2
         }
-        .Object@paramlist[["olap.rate"]] <- olap.rate
+        param(.Object)[["olap.rate"]] <- olap.rate
         regexProcName <- "(bed)"
-        .Object@paramlist[["prefix1"]] <- getBasenamePrefix(.Object, .Object@paramlist[["bedInput1"]], regexProcName)
-        .Object@paramlist[["prefix2"]] <- getBasenamePrefix(.Object, .Object@paramlist[["bedInput2"]], regexProcName)
-
-        venn_file <- paste("VennPlot_", .Object@paramlist[["prefix1"]], "_", .Object@paramlist[["prefix2"]], ".pdf", sep = "")
-        .Object@paramlist[["venn.plot"]] <- file.path(.obtainConfigure("tmpdir"), venn_file)
-
-        venn_data <- paste("VennData_", .Object@paramlist[["prefix1"]], "_", .Object@paramlist[["prefix2"]], ".rds", sep = "")
-        .Object@paramlist[["venn.data"]] <- file.path(.obtainConfigure("tmpdir"), venn_data)
+        
+        output(.Object)[["venn.plot"]] <- getStepWorkDir(.Object, filename = "venn.plot.pdf")
+        output(.Object)[["venn.data"]] <-  getStepWorkDir(.Object, filename = "venn.data.rds")
 
         # unnecessary parameters
+        output(.Object)[["bedOutput1"]] <- getAutoPath(.Object,input(.Object)[["bedInput1"]], "bed", "peak1.bed")
+        output(.Object)[["bedOutput2"]] <- getAutoPath(.Object,input(.Object)[["bedInput2"]], "bed", "peak2.bed")
         if(is.null(bedOutput)){
-            bedInput1_specific <- paste(.Object@paramlist[["prefix1"]], "_specific.bed", sep = "")
-            bedInput1_specific_path <- file.path(.obtainConfigure("tmpdir"), bedInput1_specific)
-            bedInput2_specific <- paste(.Object@paramlist[["prefix2"]], "_specific.bed", sep = "")
-            bedInput2_specific_path <- file.path(.obtainConfigure("tmpdir"), bedInput2_specific)
-            overlap_file <- paste("overlap_", .Object@paramlist[["prefix1"]], "_", .Object@paramlist[["prefix2"]], ".bed", sep = "")
-            overlap_file_path <- file.path(.obtainConfigure("tmpdir"), overlap_file)
-            .Object@paramlist[["bedOutput"]] <- c(bedInput1_specific_path,
-                                                  bedInput2_specific_path,
-                                                  overlap_file_path)
+            output(.Object)[["bedOutput"]] <- getStepWorkDir(.Object, filename = "overlap.bed")
         }else{
-            .Object@paramlist[["bedOutput"]] <- bedOutput
+            output(.Object)[["bedOutput"]] <- addFileSuffix(bedOutput,"bed")
         }
-        paramValidation(.Object)
+        
+        peak1 <- basename(output(.Object)[["bedOutput1"]])
+        peak2 <- basename(output(.Object)[["bedOutput2"]])
+        param(.Object)[["prefix1"]] <- substring(peak1,1,nchar(peak1)-4)
+        param(.Object)[["prefix2"]] <- substring(peak2,1,nchar(peak2)-4)
+        
+
         .Object
 
     }
@@ -58,42 +65,37 @@ setMethod(
     f = "processing",
     signature = "RPeakComp",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object, paste0("processing file:"))
-        .Object <- writeLog(.Object, sprintf("bed1 source:%s", .Object@paramlist[["bedInput1"]]))
-        .Object <- writeLog(.Object, sprintf("bed2 source:%s", .Object@paramlist[["bedInput2"]]))
-        .Object <- writeLog(.Object, sprintf("bed1 specific peak:%s", .Object@paramlist[["bedOutput"]][1]))
-        .Object <- writeLog(.Object, sprintf("bed2 specific peak:%s", .Object@paramlist[["bedOutput"]][2]))
-        .Object <- writeLog(.Object, sprintf("overlap peak:%s", .Object@paramlist[["bedOutput"]][3]))
+       
 
-        gr_a <- rtracklayer::import(con = .Object@paramlist[["bedInput1"]], format = "bed")
-        gr_b <- rtracklayer::import(con = .Object@paramlist[["bedInput2"]], format = "bed")
+        gr_a <- rtracklayer::import(con = input(.Object)[["bedInput1"]], format = "bed")
+        gr_b <- rtracklayer::import(con = input(.Object)[["bedInput2"]], format = "bed")
         o <- GenomicRanges::findOverlaps(query = gr_a, subject = gr_b, ignore.strand = TRUE)
         o_1 <- gr_a[S4Vectors::queryHits(o)]
         o_2 <- gr_b[S4Vectors::subjectHits(o)]
 
         peak_intersect <- IRanges::pintersect(o_1, o_2)
-        keep <- (IRanges::width(peak_intersect)/pmin(IRanges::width(o_1),IRanges::width(o_2)) >= .Object@paramlist[["olap.rate"]])
+        keep <- (IRanges::width(peak_intersect)/pmin(IRanges::width(o_1),IRanges::width(o_2)) >= param(.Object)[["olap.rate"]])
 
         overlap_peak <- IRanges::union(o_1[keep], o_2[keep])
         a_diff <- IRanges::setdiff(gr_a, o_1[keep])
         b_diff <- IRanges::setdiff(gr_b, o_2[keep])
 
-        rtracklayer::export(object = a_diff, con = .Object@paramlist[["bedOutput"]][1], format = "bed")
-        rtracklayer::export(object = b_diff, con = .Object@paramlist[["bedOutput"]][2], format = "bed")
-        rtracklayer::export(object = overlap_peak, con = .Object@paramlist[["bedOutput"]][3], format = "bed")
+        rtracklayer::export(object = a_diff, con = output(.Object)[["bedOutput1"]], format = "bed")
+        rtracklayer::export(object = b_diff, con = output(.Object)[["bedOutput2"]], format = "bed")
+        rtracklayer::export(object = overlap_peak, con = output(.Object)[["bedOutput"]], format = "bed")
 
         num_a <- length(a_diff)
         num_b <- length(b_diff)
         num_olap <- length(overlap_peak)
         num_gr_a <- length(gr_a)
         num_gr_b <- length(gr_b)
-        saveRDS(object = c(num_a, num_b, num_olap, num_gr_a, num_gr_b), file = .Object@paramlist[["venn.data"]])
+        saveRDS(object = c(num_a, num_b, num_olap, num_gr_a, num_gr_b), file = output(.Object)[["venn.data"]])
 
         venn.plot <- VennDiagram::draw.pairwise.venn(
             area1 = num_a + num_olap,
             area2 = num_b + num_olap,
             cross.area = num_olap,
-            category = c(.Object@paramlist[["prefix1"]], .Object@paramlist[["prefix2"]]),
+            category = c(param(.Object)[["prefix1"]], param(.Object)[["prefix2"]]),
             fill = c("blue", "red"),
             cex = 3,
             cat.cex = 2,
@@ -105,7 +107,7 @@ setMethod(
             ext.line.lwd = 2,
             ext.line.lty = "dashed"
         )
-        pdf(file = .Object@paramlist[["venn.plot"]])
+        pdf(file = output(.Object)[["venn.plot"]])
         grid::grid.draw(venn.plot)
         dev.off()
 
@@ -114,52 +116,6 @@ setMethod(
 )
 
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "RPeakComp",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bedInput1"]])){
-            stop("Parameter bedInput1 is requied!")
-        }
-        if(is.null(.Object@paramlist[["bedInput2"]])){
-            stop("Parameter bedInput2 is requied!")
-        }
-    }
-)
-
-
-setMethod(
-    f = "checkAllPath",
-    signature = "RPeakComp",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["bedInput1"]])
-        checkFileExist(.Object,.Object@paramlist[["bedInput2"]])
-        checkPathExist(.Object,.Object@paramlist[["bedOutput"]][1])
-        checkPathExist(.Object,.Object@paramlist[["bedOutput"]][2])
-        checkPathExist(.Object,.Object@paramlist[["bedOutput"]][3])
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "RPeakComp",
-    definition = function(.Object, item){
-        if(item == "venn.data"){
-            vd <- readRDS(.Object@paramlist[["venn.data"]])
-            return(vd)
-        }
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RPeakComp",
-    definition = function(.Object){
-        return(c("venn.data"))
-    }
-)
 
 
 #' @name RPeakComp
@@ -181,8 +137,7 @@ setMethod(
 #' Input peak file path. UCSC bed file is recommented. Other file should be
 #' able to import as \code{\link{GRanges}} objects through
 #' \code{\link{import}}.
-#' @param bedOutput The output file path. File name order: bedInput1 specific
-#' peaks, bedInput2 specific peaks, overlap peaks.
+#' @param bedOutput The output file path for overlap peaks.
 #' @param olap.rate Overlap rate, if the overlap region between 2 peak is more
 #' than this rate of the short peak, these two peak are considered to be
 #' overlap and will be merged to a bigger peak. Default: 0.2. NOTICE: multi-peak will be
@@ -225,16 +180,9 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
                           bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){
-        atacproc <- new(
-            "RPeakComp",
-            atacProcPeak1 = atacProcPeak1,
-            atacProcPeak2 = atacProcPeak2,
-            bedInput1 = bedInput1,
-            bedInput2 = bedInput2,
-            bedOutput = bedOutput,
-            olap.rate = olap.rate)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "RPeakComp", prevSteps = list(atacProcPeak1,atacProcPeak2)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -242,16 +190,9 @@ setMethod(
 #' @aliases peakcomp
 #' @export
 peakcomp <- function(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){
-    atacproc <- new(
-        "RPeakComp",
-        atacProcPeak1 = NULL,
-        atacProcPeak2 = NULL,
-        bedInput1 = bedInput1,
-        bedInput2 = bedInput2,
-        bedOutput = bedOutput,
-        olap.rate = olap.rate)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "RPeakComp", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 
 

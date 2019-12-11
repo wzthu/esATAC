@@ -3,56 +3,56 @@ setClass(Class = "Renamer",
 )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "Renamer",
-    definition = function(.Object,atacProc,..., fastqOutput1=NULL, fastqOutput2=NULL,
-                          fastqInput1=NULL, fastqInput2=NULL,
-                          interleave = FALSE, threads = NULL, editable=FALSE){
-        .Object <- init(.Object,"Renamer",editable,list(arg1=atacProc))
-        if(!is.null(atacProc)){
-            .Object@paramlist[["fastqInput1"]] <- getParam(atacProc,"fastqOutput1");
-            .Object@paramlist[["fastqInput2"]] <- getParam(atacProc,"fastqOutput2");
-            regexProcName<-sprintf("(fastq|fq|%s)",getProcName(atacProc))
-            .Object@paramlist[["interleave"]] <- getParam(atacProc,"interleave")
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        fastqOutput1 <- allparam[["fastqOutput1"]]
+        fastqOutput2 <- allparam[["fastqOutput2"]]
+        fastqInput1 <- allparam[["fastqInput1"]]
+        fastqInput2 <- allparam[["fastqInput2"]]
+        interleave <- allparam[["interleave"]]
+        threads <- allparam[["threads"]]
+        if(length(prevSteps)>0){
+            atacProc <- prevSteps[[1]]
+            input(.Object)[["fastqInput1"]] <- output(atacProc)[["fastqOutput1"]]
+            input(.Object)[["fastqInput2"]] <- output(atacProc)[["fastqOutput2"]]
+            param(.Object)[["interleave"]] <- property(atacProc)[["interleave"]]
+            param(.Object)[["singleEnd"]] <- property(atacProc)[["singleEnd"]]
         }else{
-            regexProcName<-"(fastq|fq)"
-            .Object@paramlist[["interleave"]] <- interleave
+            param(.Object)[["interleave"]] <- interleave
             if(is.null(fastqInput2)){
-                .Object@singleEnd<-TRUE
+                property(.Object)[["interleave"]] <-TRUE
             }else{
-                .Object@singleEnd<-FALSE
+                property(.Object)[["interleave"]]<-FALSE
             }
         }
+        print(input(.Object)[["fastqInput1"]])
 
         if(!is.null(fastqInput1)){
-            .Object@paramlist[["fastqInput1"]] <- fastqInput1;
+            input(.Object)[["fastqInput1"]] <- fastqInput1;
         }
         if(!is.null(fastqInput2)){
-            .Object@paramlist[["fastqInput2"]] <- fastqInput2;
+            input(.Object)[["fastqInput2"]] <- fastqInput2;
         }
 
 
         if(is.null(fastqOutput1)){
-            if(!is.null(.Object@paramlist[["fastqInput1"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput1"]],regexProcName)
-                .Object@paramlist[["fastqOutput1"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".fq"))
+            if(!is.null(input(.Object)[["fastqInput1"]])){
+                output(.Object)[["fastqOutput1"]] <- getAutoPath(.Object,originPath = input(.Object)[["fastqInput1"]],"fastq|fq","fq")
             }
         }else{
-            .Object@paramlist[["fastqOutput1"]] <- fastqOutput1;
+            output(.Object)[["fastqOutput1"]] <- fastqOutput1
         }
         if(is.null(fastqOutput2)){
-            if(!is.null(.Object@paramlist[["fastqInput2"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["fastqInput2"]],regexProcName)
-                .Object@paramlist[["fastqOutput2"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".fq"));
+            if(!is.null(input(.Object)[["fastqInput2"]])){
+                output(.Object)[["fastqOutput2"]] <- getAutoPath(.Object,originPath = input(.Object)[["fastqInput2"]],"fastq|fq","fq")
             }
         }else{
-            .Object@paramlist[["fastqOutput2"]] <- fastqOutput2;
+            output(.Object)[["fastqOutput2"]] <- fastqOutput2
         }
-        if(!is.null(threads)){
-            .Object@paramlist[["threads"]] <- as.integer(threads)
-        }
-
-        paramValidation(.Object)
+        stopifnot(is.numeric(threads))
+        param(.Object)[["threads"]] <- threads
         .Object
     }
 )
@@ -61,27 +61,23 @@ setMethod(
     f = "processing",
     signature = "Renamer",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object,paste0("processing file:"))
-        .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["fastqInput1"]]))
-        .Object <- writeLog(.Object,sprintf("destination:%s",.Object@paramlist[["fastqOutput1"]]))
-        threads <- .obtainConfigure("threads")
-        if(!is.null(.Object@paramlist[["threads"]])){
-            threads <- .Object@paramlist[["threads"]]
-        }
-        if(.Object@singleEnd||.Object@paramlist[["interleave"]]){
+        writeLog(.Object,paste0("processing file:"))
+        writeLog(.Object,sprintf("source:%s",input(.Object)[["fastqInput1"]]))
+        writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput1"]]))
+        threads <- param(.Object)[["threads"]]
+      
+        if(param(.Object)$singleEnd||param(.Object)[["interleave"]]){
             singleCall(number=1,.renamer_call=.renamer_call, .Object=.Object)
         }else if(threads>=2){
-            .Object <- writeLog(.Object,paste0("processing file:"))
-            .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["fastqInput2"]]))
-            .Object <- writeLog(.Object,sprintf("destination:%s",.Object@paramlist[["fastqOutput2"]]))
-            cl<-makeCluster(2)
-            parLapply(cl = cl,X = 1:2,fun = singleCall,.renamer_call=.renamer_call, .Object=.Object)
-            stopCluster(cl)
+            writeLog(.Object,paste0("processing file:"))
+            writeLog(.Object,sprintf("source:%s",input(.Object)[["fastqInput2"]]))
+            writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput2"]]))
+            mclapply(X = 1:2,FUN = singleCall,.renamer_call=.renamer_call, .Object=.Object, mc.cores=2)
         }else{
             singleCall(1,.renamer_call=.renamer_call,.Object=.Object)
-            .Object <- writeLog(.Object,paste0("processing file:"))
-            .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["fastqInput2"]]))
-            .Object <- writeLog(.Object,sprintf("destination:%s",.Object@paramlist[["fastqOutput2"]]))
+            writeLog(.Object,paste0("processing file:"))
+            writeLog(.Object,sprintf("source:%s",input(.Object)[["fastqInput2"]]))
+            writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput2"]]))
             singleCall(2,.renamer_call=.renamer_call,.Object=.Object)
         }
         .Object
@@ -92,7 +88,7 @@ setMethod(
     f = "checkRequireParam",
     signature = "Renamer",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["fastqInput1"]])){
+        if(is.null(input(.Object)[["fastqInput1"]])){
             stop("fastqInput1 is required.")
         }
     }
@@ -100,26 +96,16 @@ setMethod(
 
 
 
-setMethod(
-    f = "checkAllPath",
-    signature = "Renamer",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["fastqInput1"]]);
-        checkFileExist(.Object,.Object@paramlist[["fastqInput2"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["fastqOutput1"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["fastqOutput2"]]);
-    }
-)
 
 singleCall<-function(number,.renamer_call,.Object){
     if(number==1){
-        .renamer_call(inputFile = .Object@paramlist[["fastqInput1"]],
-                      outputFile = .Object@paramlist[["fastqOutput1"]],
-                      interleave = .Object@paramlist[["interleave"]])
+        .renamer_call(inputFile = input(.Object)[["fastqInput1"]],
+                      outputFile = output(.Object)[["fastqOutput1"]],
+                      interleave = param(.Object)[["interleave"]])
     }else if(number==2){
-        .renamer_call(inputFile = .Object@paramlist[["fastqInput2"]],
-                      outputFile = .Object@paramlist[["fastqOutput2"]],
-                      interleave = .Object@paramlist[["interleave"]])
+        .renamer_call(inputFile = input(.Object)[["fastqInput2"]],
+                      outputFile = output(.Object)[["fastqOutput2"]],
+                      interleave = param(.Object)[["interleave"]])
     }
 }
 
@@ -170,7 +156,7 @@ singleCall<-function(number,.renamer_call,.Object){
 #' @examples
 #' library(magrittr)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' # Identify adapters
 #' prefix<-system.file(package="esATAC", "extdata", "uzmg")
@@ -185,7 +171,7 @@ singleCall<-function(number,.renamer_call,.Object){
 #'
 #' dir(td)
 #'
-#' @importFrom parallel makeCluster parLapply stopCluster
+#' @importFrom parallel makeCluster parLapply stopCluster mclapply
 
 #' @name Renamer
 
@@ -194,7 +180,9 @@ setGeneric("atacRenamer",function(atacProc,fastqOutput1=NULL,
                                   fastqOutput2=NULL,
                                   fastqInput1=NULL,
                                   fastqInput2=NULL,
-                                  interleave = FALSE, ...) standardGeneric("atacRenamer"))
+                                  interleave = FALSE, 
+                                  threads = getThreads(), 
+                                  ...) standardGeneric("atacRenamer"))
 
 #' @rdname Renamer
 #' @aliases atacRenamer
@@ -207,16 +195,11 @@ setMethod(
              fastqOutput2=NULL,
              fastqInput1=NULL,
              fastqInput2=NULL,
-             interleave = FALSE, ...){
-        atacproc <- new(
-            "Renamer",
-            atacProc = atacProc,
-            fastqOutput1 = fastqOutput1,
-            fastqOutput2 = fastqOutput2,
-            fastqInput1 = fastqInput1,
-            fastqInput2 = fastqInput2)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+             interleave = FALSE, 
+             threads = getThreads(), ...){
+        allpara <- c(list(Class = "Renamer", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname Renamer
@@ -227,15 +210,9 @@ renamer <- function(fastqInput1=NULL,
                     fastqOutput1=NULL,
                     fastqOutput2=NULL,
                     interleave = FALSE,
-                    threads = NULL, ...){
-    atacproc <- new(
-        "Renamer",
-        atacProc = NULL,
-        fastqOutput1 = fastqOutput1,
-        fastqOutput2 = fastqOutput2,
-        fastqInput1 = fastqInput1,
-        fastqInput2 = fastqInput2)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+                    threads = getThreads(), ...){
+    allpara <- c(list(Class = "Renamer", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 

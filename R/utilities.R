@@ -485,4 +485,11 @@ getMotifInfo <- function(motif.file = NULL){
     return(PWMList)
 }
 
+checkParam <- function(paramlist,paramPattern,...){
+    rs<-grepl(paramPattern, paramlist)
+    if(sum(rs)>0){
+        banp=paste(paramlist[rs], collapse = "'/'")
+        stop(sprintf("Parameter(s) '%s' are not acceptable in paramList. it should be set as fix parameter.",banp))
+    }
+}
 
