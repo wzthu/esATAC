@@ -20,8 +20,6 @@ setMethod(
         
         if(length(prevSteps) > 0){
             fastqSteps <- prevSteps[[1]]
-            fastqSteps<-unlist(fastqSteps)
-            fastqStep <- fastqSteps[[length(fastqSteps)]]
             input(.Object)[["fastqInput1"]] <- output(fastqStep)[["fastqOutput1"]]
             input(.Object)[["fastqInput2"]] <- output(fastqStep)[["fastqOutput2"]]
             param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
