@@ -59,7 +59,7 @@ setMethod(
 
         if(is.null(bt2Idx)){
             param(.Object)[["bt2Idx"]] <- getRefRc("bt2Idx")
-            input(.Object)[["bt2Idxs"]] <- paste0(bt2Idx,c(".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"))
+            input(.Object)[["bt2Idxs"]] <- getRefFiles("bt2Idx")
         }else{
             param(.Object)[["bt2Idx"]] <- bt2Idx
             input(.Object)[["bt2Idxs"]] <- paste0(bt2Idx,c(".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"))
