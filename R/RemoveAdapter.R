@@ -122,7 +122,7 @@ setMethod(
                 threadparam<-c("--threads",as.character(param(.Object)$threads))
             }
         }else if(getThreads()>1){
-            threadparam<-c("--threads",as.character(getThreads("threads")))
+            threadparam<-c("--threads",as.character(getThreads()))
         }else{
             threadparam<-NULL
         }
@@ -135,7 +135,7 @@ setMethod(
             writeLog(.Object,"Destination:",showMsg=FALSE)
             writeLog(.Object,output(.Object)[["fastqOutput1"]],showMsg=FALSE)
             writeLog(.Object,param(.Object)$reportPrefix,showMsg=FALSE)
-            writeLog(.Object,paste0("other parameters:",getThreads("threads")),showMsg=FALSE)
+            writeLog(.Object,paste0("other parameters:",getThreads()),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=private$paramlist[["adapter1"]],
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
             #                                    paramlist=private$paramlist[["paramList"]])
@@ -192,7 +192,7 @@ setMethod(
             writeLog(.Object,output(.Object)[["fastqOutput1"]],showMsg=FALSE)
             writeLog(.Object,output(.Object)[["fastqOutput2"]],showMsg=FALSE)
             writeLog(.Object,param(.Object)[["reportPrefix"]],showMsg=FALSE)
-            writeLog(.Object,paste0("Threads:",getThreads("threads")),showMsg=FALSE)
+            writeLog(.Object,paste0("Threads:",getThreads()),showMsg=FALSE)
             #              .remove_adapters_call(inputFile1=private$paramlist[["fastqInput1"]],adapter1=adapter1,
             #                                    outputFile1 = private$paramlist[["fastqOutput1"]],basename = private$paramlist[["reportPrefix"]],
             #                                    inputFile2=private$paramlist[["fastqInput2"]],adapter2=adapter2,
