@@ -19,7 +19,7 @@ setMethod(
         paramList <- allparam[["paramList"]]
         
         if(length(prevSteps) > 0){
-            fastqSteps <- prevSteps[[1]]
+            fastqStep <- prevSteps[[1]]
             input(.Object)[["fastqInput1"]] <- output(fastqStep)[["fastqOutput1"]]
             input(.Object)[["fastqInput2"]] <- output(fastqStep)[["fastqOutput2"]]
             param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
