@@ -53,8 +53,8 @@ setMethod(
             param(.Object)$reportPrefix <- reportPrefix
         }
         
-        output(.Object)$reportPrefix_adapter1_Output <- paste0(output(.Object)$reportPrefix,".adapter1")
-        output(.Object)$reportPrefix_adapter2_Output <- paste0(output(.Object)$reportPrefix,".adapter2")
+        output(.Object)$reportPrefix_adapter1_Output <- paste0(param(.Object)$reportPrefix,".adapter1")
+        output(.Object)$reportPrefix_adapter2_Output <- paste0(param(.Object)$reportPrefix,".adapter2")
         
         
         param(.Object)$findParamList<-""
