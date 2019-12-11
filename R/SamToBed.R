@@ -81,7 +81,7 @@ setMethod(
         }
         if(is.null(reportOutput)){
             if(!is.null(input(.Object)[["samInput"]])){
-                output(.Object)[["reportOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]], "SAM|sam|Sam","bed")
+                output(.Object)[["reportOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]], "SAM|sam|Sam",".report.txt")
             }
         }else{
             output(.Object)[["reportOutput"]] <- reportOutput;

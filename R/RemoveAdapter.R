@@ -116,6 +116,7 @@ setMethod(
     f = "processing",
     signature = "RemoveAdapter",
     definition = function(.Object,...){
+        threadparam <- NULL
         if(!is.null(param(.Object)$threads)){
             if(param(.Object)$threads>1){
                 threadparam<-c("--threads",as.character(param(.Object)$threads))

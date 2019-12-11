@@ -15,12 +15,11 @@ setMethod(
         threads <- allparam[["threads"]]
         
         if(length(prevSteps) >0){
-            prevSteps <- unlist(prevSteps[[1]])
-            prevSteps <- prevSteps[[length(prevSteps)]]
+            prevSteps <- prevSteps[[1]]
             param(.Object)[["interleave"]] <- property(.Object)[["interleave"]]
             param(.Object)[["singleEnd"]] <- property(.Object)[["singleEnd"]]
             if(param(.Object)[["singleEnd"]]){
-                stop(paste("Previous step", getDefName(prevSteps), 
+                stop(paste("Previous step", stepName(prevSteps), 
                            "is single end data. FindAdapter is not available for single end data"))
             }
             input(.Object)[["fastqInput1"]] <- output(prevSteps)[["fastqOutput1"]]
@@ -81,6 +80,7 @@ setMethod(
     f = "processing",
     signature = "FindAdapter",
     definition = function(.Object,...){
+        threadparam <- NULL
         if(!is.null(param(.Object)$threads)){
             if(param(.Object)$threads>1){
                 threadparam<-c("--threads",as.character(param(.Object)$threads))

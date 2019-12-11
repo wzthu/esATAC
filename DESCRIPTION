@@ -108,7 +108,7 @@ biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Prepro
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr
 Archs: x64
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 NeedsCompilation: yes
 URL: https://github.com/wzthu/esATAC
 BugReports: https://github.com/wzthu/esATAC/issues

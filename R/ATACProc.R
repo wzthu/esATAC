@@ -32,7 +32,6 @@
 #' @importMethodsFrom pipeFrame checkRequireParam
 #' @importMethodsFrom pipeFrame clearStepCache
 #' @importMethodsFrom pipeFrame getAutoPath
-#' @importMethodsFrom pipeFrame getDefName
 #' @importMethodsFrom pipeFrame getParam
 #' @importMethodsFrom pipeFrame getParamItems
 #' @importMethodsFrom pipeFrame getParamMD5Path
@@ -43,6 +42,7 @@
 #' @importMethodsFrom pipeFrame init
 #' @importMethodsFrom pipeFrame isReady
 #' @importMethodsFrom pipeFrame writeLog
+#' @importMethodsFrom pipeFrame addFileSuffix
 
 #' @name ATACProc-class
 #' @rdname  ATACProc-class

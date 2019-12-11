@@ -4,7 +4,7 @@ setClass(Class = "BedToBigWig",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "BedToBigWig",
     definition = function(.Object,prevSteps = list(), ...){
         allparam <- list(...)

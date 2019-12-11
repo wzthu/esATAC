@@ -37,7 +37,7 @@ setMethod(
                     param(.Object)$singleEnd <- TRUE
                 }
             }else{
-                property(.Object)$singleEnd<-is.null(fastqInput2)
+                property(.Object)$singleEnd <- is.null(fastqInput2)
                 param(.Object)$singleEnd<-is.null(fastqInput2)
             }
         }

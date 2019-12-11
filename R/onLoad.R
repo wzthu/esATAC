@@ -23,8 +23,9 @@
     addEdges(edges = c(
                   "PeakCallingFseq","FRiPQC",
                   "PeakCallingFseq","RPeakComp",
-                  "FindAdapter", "RemoveAdapter"
-                  
+                  "FindAdapter", "RemoveAdapter",
+                  "RMotifScan", "CutSiteCountR",
+                  "RMotifScanPair",  "CutSiteCountR"
               ),
              argOrder = 2)
     addEdges(edges = c(
@@ -66,11 +67,9 @@
                   "PeakCallingFseq", "RSNPs",
                   "SamToBed", "CutSitePre",
                   "CutSitePre", "CutSiteCountR",
-                  "RMotifScan", "CutSiteCountR",
                   "RPeakAnno", "RGo",
                   "RMotifScan", "RSNPs",
-                  "RPeakComp", "RMotifScanPair",
-                  "RMotifScanPair",  "CutSiteCountR"
+                  "RPeakComp", "RMotifScanPair"
               ),
              argOrder = 1)
 

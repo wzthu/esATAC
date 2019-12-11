@@ -3,14 +3,27 @@
 \name{UnzipAndMerge}
 \alias{UnzipAndMerge}
 \alias{atacUnzipAndMerge}
+\alias{removeAdapter}
 \alias{unzipAndMerge}
 \title{Unzip and merge fastq files}
 \usage{
-atacUnzipAndMerge(fastqInput1, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE, ...)
+atacUnzipAndMerge(
+  fastqInput1,
+  fastqInput2 = NULL,
+  fastqOutput1 = NULL,
+  fastqOutput2 = NULL,
+  interleave = FALSE,
+  ...
+)
 
-unzipAndMerge(fastqInput1, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE, ...)
+unzipAndMerge(
+  fastqInput1,
+  fastqInput2 = NULL,
+  fastqOutput1 = NULL,
+  fastqOutput2 = NULL,
+  interleave = FALSE,
+  ...
+)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,

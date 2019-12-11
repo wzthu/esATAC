@@ -41,7 +41,8 @@ setMethod(
         }
         if(is.null(bedOutput)){
             if(!is.null(input(.Object)[["bedInput"]])){
-                output(.Object)[["bedOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]],"BED|bed|Bed","bed")
+                output(.Object)[["bedOutput"]] <- 
+                    getAutoPath(.Object, input(.Object)[["bedInput"]],"BED|bed|Bed","bed")
             }
         }else{
             output(.Object)[["bedOutput"]] <- bedOutput;
@@ -50,7 +51,8 @@ setMethod(
         if(is.null(reportOutput)){
             if(!is.null(input(.Object)[["bedInput"]])){
 
-                output(.Object)[["reportOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]],"BED|bed|Bed",".report")
+                output(.Object)[["reportOutput"]] <- 
+                    getAutoPath(.Object, input(.Object)[["bedInput"]],"BED|bed|Bed",".report")
             }
         }else{
             output(.Object)[["reportOutput"]] <- reportOutput;
@@ -93,29 +95,6 @@ setMethod(
                                  filterList = param(.Object)[["filterList"]],
                                  select = param(.Object)[["select"]])
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
-        .Object
-    }
-)
-
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "BedUtils",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["bedInput"]])){
-            stop(paste("bedInput is requied"));
-        }
-    }
-)
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "BedUtils",
-    definition = function(.Object, ...){
-        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
-        report(.Object) <- qcval
         .Object
     }
 )
@@ -200,9 +179,15 @@ setMethod(
 #' atacBedUtils(maxFragLen = 100, chrFilterList = NULL)
 #'
 
-setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
-                                  posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                                  sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...) standardGeneric("atacBedUtils"))
+setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, 
+                                   bedOutput = NULL,  mergePair = FALSE, 
+                                   downSample = NULL,
+                                  posOffset = 0L, negOffset= 0L, 
+                                  chrFilterList= c("chrM"),select = FALSE,
+                                  sortBed = FALSE, uniqueBed = FALSE, 
+                                  minFragLen = 0,maxFragLen = 2e9,  
+                                  newStepType = "BedUtils",...) 
+    standardGeneric("atacBedUtils"))
 
 #' @rdname BedUtils
 #' @aliases atacBedUtils
@@ -214,10 +199,12 @@ setMethod(
                           bedOutput = NULL,  mergePair = FALSE, 
                           downSample = NULL,
                           posOffset = 0L, negOffset= 0L, 
-                          chrFilterList= c("chrM"),select = FALSE,
+                          chrFilterList = c("chrM"),select = FALSE,
                           sortBed = FALSE, uniqueBed = FALSE, 
-                          minFragLen = 0,maxFragLen = 2e9, ...){
-        allpara <- c(list(Class = "BedUtils", prevSteps = list(atacProc)),as.list(environment()),list(...))
+                          minFragLen = 0,maxFragLen = 2e9, 
+                          newStepType = "BedUtils", ...){
+        allpara <- c(list(Class = regAttachedStep(newStepType,"BedUtils"), 
+                          prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
     }
@@ -229,10 +216,16 @@ bedUtils <- function(bedInput, bedOutput = NULL,
                      mergePair = FALSE, downSample = NULL,
                      reportOutput = NULL,
                      posOffset = 0L, negOffset= 0L, 
-                     chrFilterList= c("chrM"),select = FALSE,
+                     chrFilterList = c("chrM"),select = FALSE,
                      sortBed = FALSE, uniqueBed = FALSE, 
-                     minFragLen = 0,maxFragLen = 2e9, ...){
-    allpara <- c(list(Class = "BedUtils", prevSteps = list()),as.list(environment()),list(...))
+                     minFragLen = 0,maxFragLen = 2e9, 
+                     newStepType = "BedUtils", ...){
+    allpara <- c(list(Class = regAttachedStep(newStepType,"BedUtils"), 
+                      prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
 }
+
+
+
+

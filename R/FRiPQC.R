@@ -172,7 +172,7 @@ setMethod(
 #' 
 
 
-setGeneric("atacFripQC",function(atacProc,bsgenome = NULL,
+setGeneric("atacFripQC",function(atacProc, atacProcPeak = NULL , bsgenome = NULL,
                                   reportOutput=NULL,readsBedInput=NULL,
                                   peakBedInput=NULL, ...) standardGeneric("atacFripQC"))
 
@@ -183,10 +183,10 @@ setGeneric("atacFripQC",function(atacProc,bsgenome = NULL,
 setMethod(
     f = "atacFripQC",
     signature = "ATACProc",
-    definition = function(atacProc,bsgenome = NULL,
+    definition = function(atacProc, atacProcPeak = NULL, bsgenome = NULL,
                           reportOutput=NULL,readsBedInput=NULL,
                           peakBedInput=NULL, ...){
-        allpara <- c(list(Class = "FRiPQC", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        allpara <- c(list(Class = "FRiPQC", prevSteps = list(atacProc,atacProcPeak)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
     }

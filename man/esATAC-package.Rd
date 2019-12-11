@@ -6,11 +6,24 @@
 \alias{atacPipe}
 \title{An Easy-to-use Systematic pipeline for ATACseq data analysis}
 \usage{
-atacPipe(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
-  tmpdir = NULL, threads = 2, adapter1 = NULL, adapter2 = NULL,
-  interleave = FALSE, basicAnalysis = FALSE, createReport = TRUE,
-  motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
-  p.cutoff = 1e-06, ...)
+atacPipe(
+  genome,
+  fastqInput1,
+  fastqInput2 = NULL,
+  refdir = NULL,
+  tmpdir = NULL,
+  threads = 2,
+  adapter1 = NULL,
+  adapter2 = NULL,
+  interleave = FALSE,
+  basicAnalysis = FALSE,
+  createReport = TRUE,
+  motifs = NULL,
+  prefix = NULL,
+  chr = c(1:22, "X", "Y"),
+  p.cutoff = 1e-06,
+  ...
+)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
