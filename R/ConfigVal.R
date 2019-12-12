@@ -145,22 +145,5 @@ checkAndInstall <- function(check = TRUE, ...){
 }
 
 
-.obtainConfigure<-function(item = c("threads","tmpdir","refdir","genome","knownGene","bsgenome","annoDb","bt2Idx","DHS","blacklist","SNP")){
-    item <- match.arg(item)
-    switch(item,
-           threads = getThreads(),
-           tmpdir = getTmpDir(),
-           refdir = getRefDir(),
-           genome = getGenome(),
-           knowGene = tryCatch(get(getRefRc("knowGene")),error = function(e) {library(getRefRc("knowGene"));get(getRefRc("knowGene"))}),
-           bsgenome = getBSgenome(getGenome()),
-           annoDb = getRefRc("annoDb"),
-           bt2Idx = getRefRc("bt2Idx"),
-           DHS = getRefFiles("DHS"),
-           blacklist = getRefFiles("blacklist"),
-           SNP = getRefFiles("SNP")
-           )
-}
-
 
 
