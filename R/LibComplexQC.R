@@ -115,59 +115,6 @@ setMethod(
 )
 
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "LibComplexQC",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["samInput"]])){
-            stop("samInput is required.")
-        }
-    }
-)
-
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "LibComplexQC",
-    definition = function(.Object, ...){
-        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
-        report(.Object)[["report"]] <-data.frame( Item = c(
-            "Total mapped reads (ratio of original reads)",
-            "Unique locations mapped uniquely by reads",
-            "Uniquely mappable reads",
-            "Non-Redundant Fraction (NRF)",
-            "Locations with only 1 reads mapping uniquely",
-            "Locations with only 2 reads mapping uniquely",
-            "PCR Bottlenecking Coefficients 1 (PBC1)",
-            "PCR Bottlenecking Coefficients 2 (PBC2)"),
-            Value = c(
-                getVMShow(qcval[["samTotal"]],TRUE),
-                getVMShow(qcval[["total"]],TRUE),
-                getVMShow(qcval[["nonMultimap"]],TRUE),
-                sprintf("%.2f",qcval[["NRF"]]),
-                getVMShow(qcval[["one"]],TRUE),
-                getVMShow(qcval[["two"]],TRUE),
-                sprintf("%.2f",qcval[["PBC1"]]),
-                sprintf("%.2f",qcval[["PBC2"]])
-            ),
-            Reference = c("",
-                          "",
-                          "",
-                          ">0.7",
-                          "",
-                          "",
-                          ">0.7",
-                          ">3"
-            )
-        )
-        report(.Object) <- c(report(.Object),qcval) 
-        .Object
-    }
-)
-
-
 
 #' @name LibComplexQC
 #' @title Quality control for library complexity
