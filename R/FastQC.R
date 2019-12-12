@@ -15,7 +15,6 @@ setMethod(
         input_file <- allparam[["input_file"]]
         output_file <- allparam[["output_file"]]
         
-        print(allparam)  
         if((!is.null(atacProc)) && (class(atacProc)[1] == "UnzipAndMerge")){ # atacproc from UnzipAndMerge
             if(is.null(getParam(atacProc,"fastqOutput2"))){ # single end
                 input(.Object)[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
@@ -34,9 +33,7 @@ setMethod(
                  ((!is.null(atacProc)) && (class(atacProc)[1] != "Renamer"))){
             stop("Input class must be got from 'UnzipAndMerge' or 'Renamer'!")
         }else{
-            print(input_file)
             input(.Object)[["Input"]] <- input_file
-            print(input(.Object)[["Input"]])
         }
 
         if(is.null(output_file)){

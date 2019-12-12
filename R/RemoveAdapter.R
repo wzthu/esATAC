@@ -225,7 +225,7 @@ setMethod(
         
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
-        if(.Object@singleEnd){
+        if(property(.Object)$singleEnd){
             report(.Object)$adapterslist <- (data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
         }else{
             report(.Object)$adapterslist <- (data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
@@ -237,7 +237,7 @@ setMethod(
         
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
-        if(.Object@singleEnd){
+        if(property(.Object)$singleEnd){
             report(.Object)$adapters <- (listToFrame(list(adpater1=splitlist[[1]][2])))
         }else{
             report(.Object)$adapters <- (listToFrame(list(adapter1=splitlist[[1]][2],
@@ -295,7 +295,7 @@ setMethod(
             tbdt <- c(tbdt,splitlist[[i]])
         }
         tbdt<-as.integer(tbdt)
-        if(isSingleEnd(.Object)){
+        if(property(.Object)$singleEnd){
             colsize<-4
         }else{
             colsize<-6

@@ -21,20 +21,14 @@ setMethod(
         uniqueBed <- allparam[["uniqueBed"]]
         minFragLen <- allparam[["minFragLen"]]
         maxFragLen <- allparam[["maxFragLen"]]
-        message("-----------------------")
         if(length(prevSteps) > 0){
-            message("----------------------_____+++++++++++++==")
-            print(prevSteps)
             if(!is.null(prevSteps[[1]])){
                 atacProc <- prevSteps[[1]]
                 atacProc<-c(unlist(atacProc),list())
                 atacProc <- atacProc[[length(atacProc)]]
-                input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]];
-                message("not null")
-                print(output(atacProc)[["bedOutput"]])
+                input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
             }
         }
-        message("-----------------------")
 
         if(!is.null(bedInput)){
             input(.Object)[["bedInput"]] <- bedInput;

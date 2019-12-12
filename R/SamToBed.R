@@ -123,7 +123,7 @@ setMethod(
         
         report(.Object)$table <- data.frame(
             Item = c("Total mapped reads",
-                     sprintf("Chromasome %s filted reads",paste(.Object@paramlist[["filterList"]],collapse = "/")),
+                     sprintf("Chromasome %s filted reads",paste(param(.Object)[["filterList"]],collapse = "/")),
                      "Filted multimap reads",
                      "Removed fragment size out of range",
                      "Removed duplicate reads"
