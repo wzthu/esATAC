@@ -1,7 +1,5 @@
 setClass(Class = "PeakQC",
-         contains = "ATACProc",
-         slots = list(fixtag = "character"),
-         prototype = list(fixtag = "User file")
+         contains = "ATACProc"
 )
 
 
@@ -27,10 +25,10 @@ setMethod(
         qcbedInput <- qcbedInput[1]
         if(qcbedInput == "DHS"){
             input(.Object)[["qcbedInput"]]<-getRefFiles("DHS");
-            .Object@fixtag = "DHS"
+            property(.Object)$fixtag <-  "DHS"
         }else if(qcbedInput == "blacklist"){
             input(.Object)[["qcbedInput"]]<-getRefFiles("blacklist");
-            .Object@fixtag = "blacklist"
+            property(.Object)$fixtag <- "blacklist"
         }else{
             input(.Object)[["qcbedInput"]]<-qcbedInput;
         }
@@ -88,10 +86,10 @@ setMethod(
 
         cqcval<-as.character(qcval)
         cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
-        if(.Object@fixtag=="DHS"){
+        if(property(.Object)$fixtag=="DHS"){
           report(.Object)$table<-data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
                             Value=cqcval)
-        }else if(.Object@fixtag=="blacklist"){
+        }else if(property(.Object)$fixtag=="blacklist"){
           report(.Object)$table<-data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval)
         }else{
           report(.Object)$table<-data.frame(Item=names(qcval),Value=as.character(qcval))
