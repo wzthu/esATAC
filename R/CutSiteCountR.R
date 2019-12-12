@@ -170,6 +170,9 @@ setMethod(
 
         }
         saveRDS(object = footprint_data, file = output(.Object)[["footprint.data"]])
+        
+        report(.Object)[["footprint.data"]] <- footprint_data
+        report(.Object)[["pdf.dir"]] <- output(.Object)[["fp_pdf.dir"]]
         .Object
     }
 )

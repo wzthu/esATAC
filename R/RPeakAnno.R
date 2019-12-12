@@ -99,6 +99,10 @@ setMethod(
         write.table(x = tmp_file, file = output(.Object)[["annoOutput.txt"]],
                     quote = FALSE, row.names = FALSE, sep = "\t",
                     col.names = TRUE, append = FALSE)
+        
+        report(.Object)$annoOutput.rds <- peakAn
+        report(.Object)$annoOutput <- output(.Object)[["annoOutput.txt"]]
+        
         .Object
     }
 )

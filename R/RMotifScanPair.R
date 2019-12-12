@@ -207,6 +207,10 @@ setMethod(
         saveRDS(object = ctrl_save_info, file = output(.Object)[["rdsOutput.peak2"]])
         saveRDS(object = backg_save_info, file = output(.Object)[["rdsOutput.background"]])
 
+        report(.Object)$rdsOutput.peak1 <- case_save_info
+        report(.Object)$rdsOutput.peak2 <- ctrl_save_info
+        report(.Object)$rdsOutput.background <- backg_save_info
+        
         .Object
     }
 )

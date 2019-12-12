@@ -6,7 +6,7 @@ setClass(Class = "FRiPQC",
 setMethod(
     f = "init",
     signature = "FRiPQC",
-    definition = function(.Object, prevSteps, ...){
+    definition = function(.Object, prevSteps = list(), ...){
         allparam <- list(...)
         readsBedInput <- allparam[["readsBedInput"]]
         peakBedInput <- allparam[["peakBedInput"]]
@@ -76,43 +76,19 @@ setMethod(
         #unlink(paste0(.Object@paramlist[["reportPrefix"]],".tmp"))
         ####.Object@paramlist[["qcval"]]<-qcval
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
-        .Object
-    }
-)
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "FRiPQC",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["readsBedInput"]])){
-            stop("readsBedInput is required.")
-        }
-        if(is.null(input(.Object)[["peakBedInput"]])){
-            stop("peakBedInput is required.")
-        }
-    }
-)
-
-
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "FRiPQC",
-    definition = function(.Object, ...){
-        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
+        
         cqcval<-as.character(qcval)
         cqcval[4] <- sprintf("%.2f",as.numeric(cqcval[4]))
-        report(.Object)$report <- (data.frame(Item=c("The number of reads in peak",
-                                                     "The number of total reads",
-                                                     "The number of total peaks",
-                                                     "FRiP"),Value=cqcval))
-        report(.Object) <- c(report(.Object), qcval)
+        report(.Object)$table <- data.frame(Item=c("The number of reads in peak",
+                                                   "The number of total reads",
+                                                   "The number of total peaks",
+                                                   "FRiP"),Value=cqcval)
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )
-
 
 
 #' @name FRiPQC

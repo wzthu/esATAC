@@ -95,20 +95,6 @@ setMethod(
     }
 )
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "UnzipAndMerge",
-    definition = function(.Object,...){
-        if(is.null(.Object$inputList[["fastqInput1"]])){
-            stop("fastqInput1 is required.")
-        }
-        if(.Object$paramList[["interleave"]]&&.Object$propList[["singleEnd"]]){
-            stop("Single end data should not be interleave")
-        }
-    }
-)
-
-
 
 
 setGeneric(

@@ -104,6 +104,7 @@ Collate:
     onLoad.R
     RMotifScanPair.R
     utilities.R
+    SingleRepReport.R
 biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq
 VignetteBuilder: knitr

@@ -2,6 +2,9 @@
 .Rhistory
 .Rapp.history
 
+# Mac
+.DS_Store
+
 #test
 esATAC-pipeline/
 

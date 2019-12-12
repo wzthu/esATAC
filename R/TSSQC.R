@@ -108,7 +108,7 @@ setMethod(
         start(reads)<-0
         end(reads)<-0
         end(reads)<-re
-        start(reads)<- rs
+        start(reads)<- rsf
 
 
 
@@ -147,39 +147,18 @@ setMethod(
         writeLog(.Object,sprintf("TSS Reads: %.0f",qcval[["TSSReads"]]))
         qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
         writeLog(.Object,sprintf("TSS Rate: %f",qcval[["TSSRate"]]))
-        qcval<-as.matrix(qcval)
+        qcval0<-as.matrix(qcval)
 
-        write.table(qcval,file = output(.Object)[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+        write.table(qcval0,file = output(.Object)[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+        
+        report(.Object)$tss <- df
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )
 
-
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "TSSQC",
-    definition = function(.Object,...){
-        if(is.null(param(.Object)[["knownGene"]])){
-            stop("txdbKnownGene is required.")
-        }
-        if(is.null(input(.Object)[["bedInput"]])){
-            stop("bedInput is required.")
-        }
-    }
-)
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "TSSQC",
-    definition = function(.Object,...){
-        tss <- read.table(file= output(.Object)[["tsstxtOutput"]],header=TRUE)
-        report(.Object)$tss <- tss
-        .Object
-    }
-)
 
 
 

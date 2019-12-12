@@ -95,6 +95,9 @@ setMethod(
                                  filterList = param(.Object)[["filterList"]],
                                  select = param(.Object)[["select"]])
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )

@@ -221,99 +221,72 @@ setMethod(
             }
 
         }
-        .Object
-    }
-)
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "RemoveAdapter",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["fastqInput1"]])){
-            stop("'fastqInput1' is required.")
-        }
-        if(is.null(param(.Object)[["adapter1"]])){
-            stop("Parameter 'adapter1' is requied")
-        }
-        if(is.null(param(.Object)[["adapter2"]])){
-            stop("Parameter 'adapter2' is requied")
-        }
-        if(param(.Object)[["interleave"]]&&param(.Object)$singleEnd){
-            stop("Single end data should not be interleave")
-        }
-    }
-)
-
-
-setMethod(
-    f = "genReport",
-    signature = "RemoveAdapter",
-    definition = function(.Object,...){
-        #adapterslist
+        
+        
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
         if(.Object@singleEnd){
-            report(.Object)[["adapterslist"]] <- (data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
+            report(.Object)$adapterslist <- (data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
         }else{
-            report(.Object)[["adapterslist"]] <- (data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
-                                                             sequence=c(splitlist[[1]][2],splitlist[[2]][2])))
+            report(.Object)$adapterslist <- (data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
+                                                        sequence=c(splitlist[[1]][2],splitlist[[2]][2])))
             #return(list(adapter1=splitlist[[1]][2],
             #            adapter2=splitlist[[2]][2]))
-        }   
-
-        # adapters
+        }
+        
+        
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
         if(.Object@singleEnd){
-            report(.Object)[["adapters"]] <- (listToFrame(list(adpater1=splitlist[[1]][2])))
+            report(.Object)$adapters <- (listToFrame(list(adpater1=splitlist[[1]][2])))
         }else{
-            report(.Object)[["adapters"]] <- (listToFrame(list(adapter1=splitlist[[1]][2],
-                                                               adapter2=splitlist[[2]][2])))
+            report(.Object)$adapters <- (listToFrame(list(adapter1=splitlist[[1]][2],
+                                    adapter2=splitlist[[2]][2])))
         }
-            
-        # adapter1 adapter2
+        
+        
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
-        report(.Object)[["adapter1"]] <- (splitlist[[1]][2])
-        report(.Object)[["adapter2"]] <- (splitlist[[2]][2])
-
-        #settingslist
-        tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
-        splitlist <- strsplit(tblist,": ")
-        lst <- list()
-        for(i in 1:length(tblist)){
-            lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
-        }
-        report(.Object)[["settingslist"]] <- (lst)
+        report(.Object)$adapter1 <- (splitlist[[1]][2])
+        report(.Object)$adapter1 <- (splitlist[[2]][2])
         
-        # settings
+        
         tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
         splitlist <- strsplit(tblist,": ")
         lst <- list()
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)[["settings"]] <- (listToFrame(lst))
+        report(.Object)$settingslist <- (lst)
+        
+        
+        tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
+        splitlist <- strsplit(tblist,": ")
+        lst <- list()
+        for(i in 1:length(tblist)){
+            lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
+        }
+        report(.Object)$settings <- (listToFrame(lst))
        
-        #statisticslist
+        
         tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
         splitlist <- strsplit(tblist,": ")
         lst <- list()
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)[["statisticslist"]] <- (lst)
+        report(.Object)$statisticslist <- (lst)
         
-        #statistics
+        
         tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
         splitlist <- strsplit(tblist,": ")
         lst <- list()
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)[["statistics"]] <- (listToFrame(lst))
+        report(.Object)$statistics <- (listToFrame(lst))
         
-        #distribution
+        
         tblist <- getTopic(.Object,"\\[Length distribution\\]")
         splitlist <- strsplit(tblist,"\t")
         colkey <- splitlist[[1]]
@@ -329,10 +302,12 @@ setMethod(
         }
         df<-as.data.frame(matrix(tbdt,length(tblist)-1,colsize,TRUE))
         colnames(df) <- colkey
-        report(.Object)[["distribution"]] <- (df)
+        report(.Object) <- distribution <- (df)
+        
         .Object
     }
 )
+
 
 setGeneric(
     name = "getTopic",

@@ -74,17 +74,6 @@ setMethod(
 )
 
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "BedToBigWig",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["bedInput"]])){
-            stop(paste("bedInput is requied"));
-        }
-    }
-)
-
-
 #' @name BedToBigWig
 #' @title generate BigWig file from BED file
 #' @description
