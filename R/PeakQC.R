@@ -52,7 +52,12 @@ setMethod(
             output(.Object)[["reportOutput"]] <- reportOutput;
         }
         print("-------------------")
-        param(.Object)[["bsgenome"]] <- bsgenome
+        if(is.null(bsgenome)){
+            param(.Object)[["bsgenome"]] <- getRefRc("bsgenome")
+        }else{
+            param(.Object)[["bsgenome"]] <- bsgenome
+        }
+       
         print("-------------------")
         .Object
     }
@@ -63,11 +68,7 @@ setMethod(
     f = "processing",
     signature = "PeakQC",
     definition = function(.Object,...){
-        if(is.null(param(.Object)[["bsgenome"]])){
-            genome <- seqinfo(getRefRc("bsgenome"))
-        }else{
-            genome <- seqinfo(param(.Object)[["bsgenome"]])
-        }
+        genome <- seqinfo(param(.Object)[["bsgenome"]])
 print("-------------------")
 #        inputbed <- import(con = .Object@paramlist[["bedInput"]], genome = genome,format = "bed")
         inputbed <- import(con = input(.Object)[["bedInput"]], format = "bed")
