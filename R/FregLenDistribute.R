@@ -23,11 +23,9 @@ setMethod(
                 input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
             }
         }
-        print('--------------------')
         if(!is.null(bedInput)){
             input(.Object)[["bedInput"]] <- bedInput;
         }
-        print('--------------------')
         if(is.null(reportPrefix)){
             if(!is.null(input(.Object)[["bedInput"]])){
                 output(.Object)[["lendistrpdfOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed","lendistr.pdf")
@@ -41,7 +39,6 @@ setMethod(
             output(.Object)[["dnagroovepdfOutput"]] <- paste0(reportPrefix,".dnagroove.pdf")
             output(.Object)[["histonepdfOutput"]] <- paste0(reportPrefix,".histone.pdf")
         }
-        print('--------------------')
         .Object
     }
 )

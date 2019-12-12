@@ -17,7 +17,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
-load("Report.Rdata")
+#load("Report.Rdata")
+library(esATAC)
+objname <- load("PrevSteps.Rdata")
 ```
 
 # Summary Table
@@ -25,7 +27,9 @@ load("Report.Rdata")
 Sequence files below are set as inputs of the pipeline. 
 
 ```{r cols.print=3, eval=TRUE, echo=FALSE,warning=FALSE}
-filelist
+stepUnzipAndMerge <- prevSteps[["UnzipAndMerge"]]
+
+report(stepUnzipAndMerge)$filelist
 ```
 
 Summerized infomation on sequence files has been shown showed below. You can see details in later sections

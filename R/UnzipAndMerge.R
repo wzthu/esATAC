@@ -91,6 +91,22 @@ setMethod(
                 }
             }
         }
+        if(param(.Object)$interleave){
+            report(.Object)$seqtype <- "paired end (PE,interleave)"
+            report(.Object)$frag <- 2
+        }else if(is.null(input(.Object)$fastqInput2)){
+            report(.Object)$seqtype  <- "single end (SE)"
+            report(.Object)$frag <- 1
+        }else{
+            report(.Object)$seqtype  <- "paired end (PE)"
+            report(.Object)$frag <- 2
+        }
+        if(is.null(input(.Object)$fastqInput2)){
+            report(.Object)$filelist <- data.frame(`File(s)`=fastqInput1)
+        }else{
+            report(.Object)$filelist <- data.frame(`Mate1 files`=fastqInput1,
+                                   `Mate2 files`=fastqInput2)
+        }
         .Object
     }
 )

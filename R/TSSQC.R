@@ -184,6 +184,8 @@ setMethod(
 #' The fragment length ranges.
 #' @param tssUpdownstream \code{Interger} scalar.
 #' The upstream and downstrem from TSS locations.
+#' @param newStepType \code{Character} scalar.
+#' New class name
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -219,8 +221,9 @@ setMethod(
 
 
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
-                                  reportPrefix=NULL,bedInput = NULL,
-                                  fragLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
+                                reportPrefix=NULL,bedInput = NULL,
+                                fragLenRange=c(0,2000),tssUpdownstream=1000, 
+                                newStepType = "TSSQC", ...) standardGeneric("atacTSSQC"))
 
 #' @rdname TSSQC
 #' @aliases atacTSSQC
@@ -230,8 +233,8 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                           reportPrefix=NULL,bedInput = NULL,
-                          fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
-        allpara <- c(list(Class = "TSSQC", prevSteps = list(atacProc)),as.list(environment()),list(...))
+                          fragLenRange=c(0,2000),tssUpdownstream=1000, newStepType = "TSSQC", ...){
+        allpara <- c(list(Class = regAttachedStep(newStepType,"TSSQC"), prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
     }
@@ -245,8 +248,8 @@ setMethod(
 #' @export
 tssQC<-function(bedInput, txdbKnownGene = NULL,
                 bsgenome = NULL,reportPrefix=NULL,
-                fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
-    allpara <- c(list(Class = "TSSQC", prevSteps = list()),as.list(environment()),list(...))
+                fragLenRange=c(0,2000),tssUpdownstream=1000, newStepType = "TSSQC", ...){
+    allpara <- c(list(Class = regAttachedStep(newStepType,"TSSQC"), prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
 }
