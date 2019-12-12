@@ -108,7 +108,7 @@ setMethod(
         start(reads)<-0
         end(reads)<-0
         end(reads)<-re
-        start(reads)<- rsf
+        start(reads)<- rs
 
 
 

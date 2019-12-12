@@ -30,9 +30,6 @@ setMethod(
                 if(!param(.Object)[["interleave"]] && !is.null(input(.Object)[["fastqInput1"]])){
                     input(.Object)[["fastqInput2"]] <- output(fastqStep)[["fastqOutput2"]]
                 }
-                print("++++++++++")
-                print(input(.Object))
-                print("++++++++++")
             }
             if(!is.null(prevSteps[[2]])){
                 findAdapterStep <- prevSteps[[2]]
@@ -52,7 +49,7 @@ setMethod(
         }
 
 
-        print(fastqInput1)
+
         if(!is.null(fastqInput1)){
             input(.Object)[["fastqInput1"]] <- fastqInput1;
         }
@@ -62,9 +59,6 @@ setMethod(
         }
 
 
-        print("++++++++++")
-        print(input(.Object))
-        print("++++++++++")
         if(is.null(fastqOutput1)){
             output(.Object)[["fastqOutput1"]] <- getAutoPath(.Object, input(.Object)[["fastqInput1"]], "fq|fastq", "fq")
         }else{
