@@ -52,7 +52,12 @@ setMethod(
             output(.Object)[["reportOutput"]] <- reportOutput;
         }
         print("-------------------")
-        param(.Object)[["bsgenome"]] <- bsgenome
+        if(is.null(bsgenome)){
+            param(.Object)[["bsgenome"]] <- getRefRc("bsgenome")
+        }else{
+            param(.Object)[["bsgenome"]] <- bsgenome
+        }
+       
         print("-------------------")
         .Object
     }
@@ -63,11 +68,7 @@ setMethod(
     f = "processing",
     signature = "PeakQC",
     definition = function(.Object,...){
-        if(is.null(param(.Object)[["bsgenome"]])){
-            genome <- seqinfo(getRefRc("bsgenome"))
-        }else{
-            genome <- seqinfo(param(.Object)[["bsgenome"]])
-        }
+        genome <- seqinfo(param(.Object)[["bsgenome"]])
 print("-------------------")
 #        inputbed <- import(con = .Object@paramlist[["bedInput"]], genome = genome,format = "bed")
         inputbed <- import(con = input(.Object)[["bedInput"]], format = "bed")
@@ -196,22 +197,11 @@ setMethod(
     definition = function(atacProc, bsgenome = NULL,
                           reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
                           bedInput = NULL, newStepType = "PeakQC", ...){
-tryCatch(
-    {
+
         allpara <- c(list(Class = regAttachedStep(newStepType,"PeakQC")), prevSteps = list(atacProc),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
-    },
-    error = function(cond){
-        if(qcbedInput == "DHS" || qcbedInput == 'blacklist'){
-            message('genome is not configured or')
-            print(paste(qcbedInput,'is not available for current configured genome'))
-            return(NULL)
-        }else{
-            stop(paste('qcbedInput:', qcbedInput,'does not exist'))
-        }
-    }
-)    
+  
 }
 )
    
@@ -220,20 +210,8 @@ tryCatch(
 #' @aliases peakQC
 #' @export
 peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), newStepType = "PeakQC", ...){
-tryCatch(
-    {
         allpara <- c(list(Class = regAttachedStep(newStepType,"PeakQC"), prevSteps = list()),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
-},
-    error = function(cond){
-        if(qcbedInput == "DHS" || qcbedInput == 'blacklist'){
-            message('genome is not configured or')
-            print(paste(qcbedInput,'is not available for current configured genome'))
-            return(NULL)
-        }else{
-            stop(paste('qcbedInput:', qcbedInput,'does not exist'))
-        }
-    }
-)
+
 }
