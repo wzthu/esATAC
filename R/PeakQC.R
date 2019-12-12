@@ -186,7 +186,7 @@ setMethod(
 
 setGeneric("atacPeakQC",function(atacProc, bsgenome = NULL,
                                  reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
-                                 bedInput = NULL, ...) standardGeneric("atacPeakQC"))
+                                 bedInput = NULL, newStepType = "PeakQC",...) standardGeneric("atacPeakQC"))
 #' @rdname PeakQC
 #' @aliases atacPeakQC
 #' @export
@@ -195,10 +195,10 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, bsgenome = NULL,
                           reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
-                          bedInput = NULL, ...){
+                          bedInput = NULL, newStepType = "PeakQC", ...){
 tryCatch(
     {
-        allpara <- c(list(Class = "PeakQC", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        allpara <- c(list(Class = regAttachedStep(newStepType,"PeakQC")), prevSteps = list(atacProc),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
     },
@@ -219,10 +219,10 @@ tryCatch(
 #' @rdname PeakQC
 #' @aliases peakQC
 #' @export
-peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), ...){
+peakQC<-function(bedInput, bsgenome = NULL, reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"), newStepType = "PeakQC", ...){
 tryCatch(
     {
-        allpara <- c(list(Class = "PeakQC", prevSteps = list()),as.list(environment()),list(...))
+        allpara <- c(list(Class = regAttachedStep(newStepType,"PeakQC"), prevSteps = list()),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
 },
