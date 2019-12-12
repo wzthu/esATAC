@@ -35,7 +35,6 @@
 #' @importMethodsFrom pipeFrame getParam
 #' @importMethodsFrom pipeFrame getParamItems
 #' @importMethodsFrom pipeFrame getParamMD5Path
-#' @importMethodsFrom pipeFrame genReport
 #' @importMethodsFrom pipeFrame stepID
 #' @importMethodsFrom pipeFrame stepName
 #' @importMethodsFrom pipeFrame getStepWorkDir

@@ -26,7 +26,7 @@ setMethod(
 
 setMethod(
     f = "processing",
-    signature = "SingleSampleReport",
+    signature = "SingleRepReport",
     definition = function(.Object, ...){
         htmlOutput <- output(.Object)[["htmlOutput"]]
         prevSteps <- list(...)[["prevSteps"]]
@@ -57,7 +57,7 @@ setMethod(
 )
 
 
-#' @name SingleSampleReport
+#' @name SingleRepReport
 #' @importFrom rtracklayer import
 #' @importFrom rtracklayer import.bed
 #' @title Final report for single group of regions
@@ -89,7 +89,7 @@ setGeneric("atacSingleRepReport",
 
 
 #' @rdname SingleRepReport
-#' @aliases enrichSingleSampleReport
+#' @aliases atacSingleRepReport
 #' @export
 setMethod(
     f = "atacSingleRepReport",
