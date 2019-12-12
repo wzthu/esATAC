@@ -125,35 +125,13 @@ setMethod(
             property(.Object)[["adapter1"]] <- adapters[1]
             property(.Object)[["adapter2"]] <- adapters[2]
         }
-        .Object
-    }
-)
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "FindAdapter",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["fastqInput1"]])){
-            stop("'fastqInput1' is required.")
-        }
-        if(param(.Object)[["interleave"]]&&param(.Object)$singleEnd){
-            stop("Single end data should not be interleave")
-        }
-    }
-)
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "FindAdapter",
-    definition = function(.Object,...){
+        
         report(.Object)[["adapter1"]] <- property(.Object)[["adapter1"]]
         report(.Object)[["adapter2"]] <- property(.Object)[["adapter2"]]
+        
         .Object
     }
 )
-
 
 
 
