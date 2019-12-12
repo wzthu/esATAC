@@ -74,9 +74,12 @@ setMethod(
     signature = "RPeakAnno",
     definition = function(.Object,...){
         peakGRange <- rtracklayer::import(con = input(.Object)[["peakInput"]], format = "bed")
+        txdb<-param(.Object)[["TxDb"]]
+        library(txdb,character.only = TRUE)
+        txdb <- get0(txdb)
         peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
                                            tssRegion = param(.Object)[["tssRegion"]],
-                                           TxDb = param(.Object)[["TxDb"]],
+                                           TxDb = txdb,
                                            level = param(.Object)[["level"]],
                                            genomicAnnotationPriority = param(.Object)[["genomicAnnotationPriority"]],
                                            annoDb = param(.Object)[["annoDb"]],
