@@ -26,7 +26,7 @@ setMethod(
         if(!is.null(txdbKnownGene)){
             param(.Object)[["knownGene"]] <- txdbKnownGene;
         }else{
-            param(.Object)[["knownGene"]]<-.obtainConfigure("knownGene");
+            param(.Object)[["knownGene"]]<- getRefRc("knownGene")
         }
 
         if(!is.null(bedInput)){
@@ -61,7 +61,7 @@ setMethod(
     signature = "TSSQC",
     definition = function(.Object,...){
         if(is.null(param(.Object)[["bsgenome"]])){
-            genome <- seqinfo(.obtainConfigure("bsgenome"))
+            genome <- seqinfo(getRefRc("bsgenome"))
         }else{
             genome <- seqinfo(param(.Object)[["bsgenome"]])
         }
