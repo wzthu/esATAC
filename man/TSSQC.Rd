@@ -15,6 +15,7 @@ atacTSSQC(
   bedInput = NULL,
   fragLenRange = c(0, 2000),
   tssUpdownstream = 1000,
+  newStepType = "TSSQC",
   ...
 )
 
@@ -26,6 +27,7 @@ atacTSSQC(
   bedInput = NULL,
   fragLenRange = c(0, 2000),
   tssUpdownstream = 1000,
+  newStepType = "TSSQC",
   ...
 )
 
@@ -36,6 +38,7 @@ tssQC(
   reportPrefix = NULL,
   fragLenRange = c(0, 2000),
   tssUpdownstream = 1000,
+  newStepType = "TSSQC",
   ...
 )
 }
@@ -62,6 +65,9 @@ The fragment length ranges.}
 
 \item{tssUpdownstream}{\code{Interger} scalar.
 The upstream and downstrem from TSS locations.}
+
+\item{newStepType}{\code{Character} scalar.
+New class name}
 
 \item{...}{Additional arguments, currently unused.}
 }
