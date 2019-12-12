@@ -198,7 +198,7 @@ setMethod(
                           reportOutput=NULL,qcbedInput = c("DHS","blacklist","path/to/bed"),
                           bedInput = NULL, newStepType = "PeakQC", ...){
 
-        allpara <- c(list(Class = regAttachedStep(newStepType,"PeakQC")), prevSteps = list(atacProc),as.list(environment()),list(...))
+        allpara <- c(list(Class = regAttachedStep(newStepType,"PeakQC"), prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
   
