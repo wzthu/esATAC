@@ -13,6 +13,7 @@ atacPeakQC(
   reportOutput = NULL,
   qcbedInput = c("DHS", "blacklist", "path/to/bed"),
   bedInput = NULL,
+  newStepType = "PeakQC",
   ...
 )
 
@@ -22,6 +23,7 @@ atacPeakQC(
   reportOutput = NULL,
   qcbedInput = c("DHS", "blacklist", "path/to/bed"),
   bedInput = NULL,
+  newStepType = "PeakQC",
   ...
 )
 
@@ -30,6 +32,7 @@ peakQC(
   bsgenome = NULL,
   reportOutput = NULL,
   qcbedInput = c("DHS", "blacklist", "path/to/bed"),
+  newStepType = "PeakQC",
   ...
 )
 }
