@@ -116,33 +116,14 @@ setMethod(
             annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), 
                      label = "186bp") +xlab("period") + ylab("strength")  
         ggsave(output(.Object)[["histonepdfOutput"]])
-
-        .Object
-    }
-)
-
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "FragLenDistr",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["bedInput"]])){
-            stop("bedInput is required.")
-        }
-    }
-)
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "FragLenDistr",
-    definition = function(.Object, ...){
-        readscounts <- read.table(file= output(.Object)[["lendistrtxtOutput"]],header=TRUE)
+        
+#        readscounts <- read.table(file= output(.Object)[["lendistrtxtOutput"]],header=TRUE)
         report(.Object)$readsCounts <- readscounts
+
         .Object
     }
 )
+
 
 
 

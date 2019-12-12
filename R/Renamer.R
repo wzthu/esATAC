@@ -84,15 +84,6 @@ setMethod(
     }
 )
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "Renamer",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["fastqInput1"]])){
-            stop("fastqInput1 is required.")
-        }
-    }
-)
 
 
 

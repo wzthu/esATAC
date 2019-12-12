@@ -73,6 +73,43 @@ setMethod(
         print(unlist(qcval))
         print(output(.Object)[["reportOutput"]])
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+
+        
+#        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
+        
+        report(.Object)$table<-data.frame(
+            Item = c(
+                "Total mapped reads (ratio of original reads)",
+                "Unique locations mapped uniquely by reads",
+                "Uniquely mappable reads",
+                "Non-Redundant Fraction (NRF)",
+                "Locations with only 1 reads mapping uniquely",
+                "Locations with only 2 reads mapping uniquely",
+                "PCR Bottlenecking Coefficients 1 (PBC1)",
+                "PCR Bottlenecking Coefficients 2 (PBC2)"),
+            Value = c(
+                getVMShow(qcval[["samTotal"]],TRUE),
+                getVMShow(qcval[["total"]],TRUE),
+                getVMShow(qcval[["nonMultimap"]],TRUE),
+                sprintf("%.2f",qcval[["NRF"]]),
+                getVMShow(qcval[["one"]],TRUE),
+                getVMShow(qcval[["two"]],TRUE),
+                sprintf("%.2f",qcval[["PBC1"]]),
+                sprintf("%.2f",qcval[["PBC2"]])
+            ),
+            Reference = c("",
+                          "",
+                          "",
+                          ">0.7",
+                          "",
+                          "",
+                          ">0.7",
+                          ">3"
+            ))
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }     
+        
         .Object
     }
 )

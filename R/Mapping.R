@@ -129,41 +129,25 @@ setMethod(
         }
 
         writeLines(text = rs,con = output(.Object)[["reportOutput"]])
-
-        .Object
-    }
-)
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "Bowtie2Mapping",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["fastqInput1"]])){
-            stop("fastqInput1 is required.")
-        }
-        if(is.null(param(.Object)[["bt2Idx"]])){
-            stop("bt2Idx is required")
-        }
-    }
-)
-
-
-
-setMethod(
-    f = "genReport",
-    signature = "Bowtie2Mapping",
-    definition = function(.Object,...){
-        txt <- readLines(output(.Object)[["reportOutput"]])
+        
+        txt <- rs
+#        txt <- readLines(output(.Object)[["reportOutput"]])
         s<-strsplit(txt[1]," ")
         report(.Object)$total <- as.integer(s[[1]][1])
-       
+        
         s<-strsplit(txt[length(txt)],"% ")
         report(.Object)$maprate <- (as.numeric(s[[1]][1])/100)
         
         report(.Object)$detail <- txt
+
+
         .Object
     }
 )
+
+
+
+
 
 
 #' @name Bowtie2Mapping

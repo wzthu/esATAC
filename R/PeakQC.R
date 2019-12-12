@@ -23,10 +23,8 @@ setMethod(
                 atacProc <- atacProc[[length(atacProc)]]
                 input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
             }
-        }
-        print("-------------------")        
+        }      
         qcbedInput <- qcbedInput[1]
-        print("-------------------")
         if(qcbedInput == "DHS"){
             input(.Object)[["qcbedInput"]]<-getRefFiles("DHS");
             .Object@fixtag = "DHS"
@@ -34,31 +32,26 @@ setMethod(
             input(.Object)[["qcbedInput"]]<-getRefFiles("blacklist");
             .Object@fixtag = "blacklist"
         }else{
-            print("-------------------")
             input(.Object)[["qcbedInput"]]<-qcbedInput;
         }
-        print("-------------------")
         if(!is.null(bedInput)){
             input(.Object)[["bedInput"]] <- bedInput;
         }
-        print("-------------------")
         if(is.null(reportOutput)){
             if(!is.null(input(.Object)[["bedInput"]])){
-                print("-------------------")
                 output(.Object)[["reportOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed","report.txt")
             }
         }else{
-            print("-------------------")
             output(.Object)[["reportOutput"]] <- reportOutput;
         }
-        print("-------------------")
+
         if(is.null(bsgenome)){
             param(.Object)[["bsgenome"]] <- getRefRc("bsgenome")
         }else{
             param(.Object)[["bsgenome"]] <- bsgenome
         }
        
-        print("-------------------")
+
         .Object
     }
 )
@@ -69,7 +62,7 @@ setMethod(
     signature = "PeakQC",
     definition = function(.Object,...){
         genome <- seqinfo(param(.Object)[["bsgenome"]])
-print("-------------------")
+
 #        inputbed <- import(con = .Object@paramlist[["bedInput"]], genome = genome,format = "bed")
         inputbed <- import(con = input(.Object)[["bedInput"]], format = "bed")
 
@@ -78,58 +71,37 @@ print("-------------------")
 
 
         qcval=list();
-        print("-------------------")
+
         qcval[["totalInput"]]<-length(inputbed)
-        print("-------------------")
+
         qcval[["qcbedInput"]]<-length(subsetByOverlaps(inputbed, qcbedInput,ignore.strand = TRUE))
-        print("-------------------")
+
         qcval[["qcbedRate"]]<-qcval[["qcbedInput"]]/qcval[["totalInput"]]
-        print("-------------------")
+
         print(as.data.frame(qcval))
         print( output(.Object)[["reportOutput"]])
         
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
-        print("-------------------")
-        .Object
-    }
-)
 
+        
+#        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "PeakQC",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["bedInput"]])){
-            stop("bedInput is required.")
-        }
-        if(is.null(input(.Object)[["qcbedInput"]])){
-            stop("qcbedInput is required.")
-        }
-    }
-)
-
-
-setMethod(
-    f = "genReport",
-    signature = "PeakQC",
-    definition = function(.Object, ...){
-        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
         cqcval<-as.character(qcval)
         cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
         if(.Object@fixtag=="DHS"){
-            report(.Object)$report <- (data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
-                                                  Value=cqcval))
+          report(.Object)$table<-data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
+                            Value=cqcval)
         }else if(.Object@fixtag=="blacklist"){
-            report(.Object)$report <- (data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval))
+          report(.Object)$table<-data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval)
         }else{
-            report(.Object)$report <- (data.frame(Item=names(qcval),Value=as.character(qcval)))
+          report(.Object)$table<-data.frame(Item=names(qcval),Value=as.character(qcval))
         }
-        n <- names(qcval)
-        report(.Object) <- c(report(.Object),qcval)
+        for(n in names(qcval)){
+          report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )
-
 
 
 

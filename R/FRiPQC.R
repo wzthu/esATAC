@@ -76,6 +76,16 @@ setMethod(
         #unlink(paste0(.Object@paramlist[["reportPrefix"]],".tmp"))
         ####.Object@paramlist[["qcval"]]<-qcval
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+        
+        cqcval<-as.character(qcval)
+        cqcval[4] <- sprintf("%.2f",as.numeric(cqcval[4]))
+        report(.Object)$table <- data.frame(Item=c("The number of reads in peak",
+                                                   "The number of total reads",
+                                                   "The number of total peaks",
+                                                   "FRiP"),Value=cqcval)
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )

@@ -111,6 +111,8 @@ setMethod(
         grid::grid.draw(venn.plot)
         dev.off()
 
+        
+        report(.Object)$venn.data <- c(num_a, num_b, num_olap, num_gr_a, num_gr_b)
         .Object
     }
 )

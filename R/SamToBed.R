@@ -120,33 +120,10 @@ setMethod(
         }
 
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
-        .Object
-    }
-)
-
-
-setMethod(
-    f = "checkRequireParam",
-    signature = "SamToBed",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["samInput"]])){
-            stop(paste("samInput is requied"));
-        }
-    }
-)
-
-
-setMethod(
-    f = "genReport",
-    signature = "SamToBed",
-    definition = function(.Object, ...){
-        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
         
-        
-        
-        data.frame(
+        report(.Object)$table <- data.frame(
             Item = c("Total mapped reads",
-                     sprintf("Chromasome %s filted reads",paste(param(.Object)[["filterList"]],collapse = "/")),
+                     sprintf("Chromasome %s filted reads",paste(.Object@paramlist[["filterList"]],collapse = "/")),
                      "Filted multimap reads",
                      "Removed fragment size out of range",
                      "Removed duplicate reads"
@@ -166,14 +143,16 @@ setMethod(
             )
             
         )
-        report(.Object)[["report"]] <- data.frame(Item=names(qcval),Value=as.character(qcval))
-        
+        report(.Object)$report <- data.frame(Item=names(qcval),Value=as.character(qcval))
         report(.Object)[["non-mitochondrial"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]))
         report(.Object)[["non-mitochondrial-multimap"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]]))
-        report(.Object) <- c(report(.Object), qcval)
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )
+
 
 
 
