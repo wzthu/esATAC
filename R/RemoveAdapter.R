@@ -220,10 +220,10 @@ setMethod(
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
         if(property(.Object)$singleEnd){
-            report(.Object)$adapterslist <- (data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2])))
+            report(.Object)$adapterslist <- data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2]))
         }else{
-            report(.Object)$adapterslist <- (data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
-                                                        sequence=c(splitlist[[1]][2],splitlist[[2]][2])))
+            report(.Object)$adapterslist <- data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
+                                                        sequence=c(splitlist[[1]][2],splitlist[[2]][2]))
             #return(list(adapter1=splitlist[[1]][2],
             #            adapter2=splitlist[[2]][2]))
         }
@@ -241,8 +241,8 @@ setMethod(
         
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
-        report(.Object)$adapter1 <- (splitlist[[1]][2])
-        report(.Object)$adapter1 <- (splitlist[[2]][2])
+        report(.Object)$adapter1 <- splitlist[[1]][2]
+        report(.Object)$adapter1 <- splitlist[[2]][2]
         
         
         tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
@@ -251,7 +251,7 @@ setMethod(
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)$settingslist <- (lst)
+        report(.Object)$settingslist <- lst
         
         
         tblist <- getTopic(.Object,"\\[Adapter trimming\\]")
@@ -260,7 +260,7 @@ setMethod(
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)$settings <- (listToFrame(lst))
+        report(.Object)$settings <- listToFrame(lst)
        
         
         tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
@@ -269,7 +269,7 @@ setMethod(
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)$statisticslist <- (lst)
+        report(.Object)$statisticslist <- lst
         
         
         tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
@@ -278,7 +278,7 @@ setMethod(
         for(i in 1:length(tblist)){
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
-        report(.Object)$statistics <- (listToFrame(lst))
+        report(.Object)$statistics <- listToFrame(lst)
         
         
         tblist <- getTopic(.Object,"\\[Length distribution\\]")
@@ -296,7 +296,7 @@ setMethod(
         }
         df<-as.data.frame(matrix(tbdt,length(tblist)-1,colsize,TRUE))
         colnames(df) <- colkey
-        report(.Object) <- distribution <- (df)
+        report(.Object)$distribution <- df
         
         .Object
     }

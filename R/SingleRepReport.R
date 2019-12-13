@@ -82,7 +82,7 @@ setMethod(
                                              "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
                                              "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
                                       
-                                      Value=c(seqtype,
+                                      Value=c(report(unzipAndMerge)[["seqtype"]],
                                               getVMShow(report(removeAdapter)[["statisticslist"]][[1]]),
                                               getVMRShow(as.integer(report(removeAdapter)[["statisticslist"]][["Number of retained reads"]]) / 
                                                          report(unzipAndMerge)[["frag"]],
@@ -187,7 +187,7 @@ setMethod(
                                              "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
                                              "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
                                       
-                                      Value=c(seqtype,
+                                      Value=c(report(unzipAndMerge)[["seqtype"]],
                                               getVMShow(report(removeAdapter)[["statisticslist"]][[1]]),
                                               getVMRShow(as.integer(report(removeAdapter)[["statisticslist"]][["Number of retained reads"]])/report(unzipAndMerge)[["frag"]],
                                                          report(removeAdapter)[["statisticslist"]][[1]]),
