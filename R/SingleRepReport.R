@@ -84,7 +84,8 @@ setMethod(
                                       
                                       Value=c(seqtype,
                                               getVMShow(report(removeAdapter)[["statisticslist"]][[1]]),
-                                              getVMRShow(as.integer(report(removeAdapter)[["statisticslist"]][["Number of retained reads"]])/frag,
+                                              getVMRShow(as.integer(report(removeAdapter)[["statisticslist"]][["Number of retained reads"]]) / 
+                                                         report(unzipAndMerge)[["frag"]],
                                                          report(removeAdapter)[["statisticslist"]][[1]]),
                                               getVMRShow(report(sam2Bed)[["total"]],
                                                          report(removeAdapter)[["statisticslist"]][[1]]),
