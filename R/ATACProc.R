@@ -28,6 +28,7 @@
 #' @importFrom pipeFrame setRefDir
 #' @importFrom pipeFrame setThreads
 #' @importFrom pipeFrame setTmpDir
+#' @importFrom pipeFrame addFileSuffix
 #' @importMethodsFrom pipeFrame checkAllPath
 #' @importMethodsFrom pipeFrame checkRequireParam
 #' @importMethodsFrom pipeFrame clearStepCache
@@ -41,7 +42,7 @@
 #' @importMethodsFrom pipeFrame init
 #' @importMethodsFrom pipeFrame isReady
 #' @importMethodsFrom pipeFrame writeLog
-#' @importMethodsFrom pipeFrame addFileSuffix
+
 
 #' @name ATACProc-class
 #' @rdname  ATACProc-class
