@@ -19,7 +19,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
 #load("Report.Rdata")
 library(esATAC)
-allsteps.info <- load("allsteps.info.rds")
+allsteps.info <- readRDS("allsteps.info.rds")
 allsteps <- allsteps.info[["prevSteps"]]
 wholesummary <- allsteps.info[["wholesummary"]]
 filtstat <- allsteps.info[["filtstat"]]
@@ -103,7 +103,7 @@ knitr::kable(x = filtstat)
 
 ```{r fegdist, eval=TRUE,message=FALSE,warning=FALSE}
 library(ggplot2)
-load("Report.Rdata")
+
 readsCounts<-report(allsteps$FragLenDistr)[["readsCounts"]]
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 
@@ -129,7 +129,6 @@ grid.arrange(g1, g2, ncol=2)
 The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enrichment around transcription starting site (TSS) are shown below.
 ```{r TSSenrich, eval=TRUE}
 library(ggplot2)
-load("Report.Rdata")
 df<-report(allsteps$TSSQCNFR)[["tss"]]
 g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Nucleosome Free Reads") + theme(plot.title = element_text(hjust = 0.5))
 df<-report(allsteps$TSSQCneucleosome)[["tss"]]
