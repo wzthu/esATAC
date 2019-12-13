@@ -107,16 +107,6 @@ setMethod(
     }
 )
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "PeakCallingFseq",
-    definition = function(.Object,...){
-        if(is.null(input(.Object)[["bedInput"]])){
-            stop("bedInput is required.")
-        }
-    }
-)
-
 
 
 #' @name PeakCallingFseq
