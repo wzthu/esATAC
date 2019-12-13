@@ -88,7 +88,7 @@ report(allsteps$Bowtie2Mapping)[["detail"]]
 ## Library complexity
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = report(allsteps$LibComplexQC)[["report"]])
+knitr::kable(x = report(allsteps$LibComplexQC)[["table"]])
 ```
 The annotation you can see in section 1.
 
@@ -142,20 +142,20 @@ grid.arrange(g1, g2, ncol=2)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 ifelse(is.null(allsteps$PeakQCblacklist),"NA",
-knitr::kable(x = report(allsteps$PeakQCblacklist)[["report"]]))
+knitr::kable(x = report(allsteps$PeakQCblacklist)[["table"]]))
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
 ifelse(is.null(allsteps$PeakQCDHS),"NA",
-knitr::kable(x = report(allsteps$PeakQCDHS)[["report"]]))
+knitr::kable(x = report(allsteps$PeakQCDHS)[["table"]]))
 ```
 
 ## Fraction of reads in peaks (FRiP)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = report(allsteps$FRiPQC)[["report"]])
+knitr::kable(x = report(allsteps$FRiPQC)[["table"]])
 ```
 
 
