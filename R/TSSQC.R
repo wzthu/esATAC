@@ -147,9 +147,9 @@ setMethod(
         writeLog(.Object,sprintf("TSS Reads: %.0f",qcval[["TSSReads"]]))
         qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
         writeLog(.Object,sprintf("TSS Rate: %f",qcval[["TSSRate"]]))
-        qcval0<-as.matrix(qcval)
+        
 
-        write.table(qcval0,file = output(.Object)[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+        write.table(data.frame(qcval),file = output(.Object)[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
         
         
         .Object
@@ -163,6 +163,8 @@ setMethod(
     definition = function(.Object, ...){
         tss <- read.table(file= output(.Object)[["tsstxtOutput"]],header=TRUE)
         report(.Object)$tss <- tss
+        qcval <- as.list(read.table(output(.Object)[["tssreportOutput"]],header = TRUE,sep = "\t"))
+
         for(n in names(qcval)){
             report(.Object)[[n]] <- qcval[[n]]
         }  
