@@ -142,15 +142,23 @@ grid.arrange(g1, g2, ncol=2)
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-ifelse(is.null(allsteps$PeakQCblacklist),"NA",
-knitr::kable(x = report(allsteps$PeakQCblacklist)[["table"]]))
+if(!is.null(allsteps$PeakQCblacklist)){
+    knitr::kable(x = report(allsteps$PeakQCblacklist)[["table"]])
+}else{
+    message("Blacklist ratio is not available.")
+}
+
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-ifelse(is.null(allsteps$PeakQCDHS),"NA",
-knitr::kable(x = report(allsteps$PeakQCDHS)[["table"]]))
+if(!is.null(allsteps$PeakQCDHS)){
+    knitr::kable(x = report(allsteps$PeakQCDHS)[["table"]])
+}else{
+    message("DHS is ratio not available.")
+}
+
 ```
 
 ## Fraction of reads in peaks (FRiP)
