@@ -107,6 +107,13 @@ setMethod(
     }
 )
 
+setMethod(
+    f = "genReport",
+    signature = "PeakCallingFseq",
+    definition = function(.Object, ...){
+        .Object
+    }
+)
 
 
 #' @name PeakCallingFseq

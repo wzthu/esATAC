@@ -52,11 +52,19 @@ setMethod(
     signature = "FastQC",
     definition = function(.Object,...){
         qQCReport(input = input(.Object)[["Input"]], pdfFilename = output(.Object)[["Output"]])
-        report(.Object)$pdf <- output(.Object)[["Output"]]
+
         .Object
     }
 )
 
+setMethod(
+    f = "genReport",
+    signature = "FastQC",
+    definition = function(.Object, ...){
+        report(.Object)$pdf <- output(.Object)[["Output"]]
+        .Object
+    }
+)
 
 
 

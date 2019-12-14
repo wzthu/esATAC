@@ -81,6 +81,16 @@ setMethod(
                                          pool = param(.Object)[["pool"]])
         write.table(x = tmp, file = output(.Object)[["goOutput"]],
                     append = FALSE, quote = FALSE, row.names = FALSE, sep = "\t")
+        
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "RGo",
+    definition = function(.Object, ...){
         report(.Object)$goOutput <- output(.Object)[["goOutput"]]
         .Object
     }

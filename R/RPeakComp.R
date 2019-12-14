@@ -112,12 +112,19 @@ setMethod(
         dev.off()
 
         
-        report(.Object)$venn.data <- c(num_a, num_b, num_olap, num_gr_a, num_gr_b)
         .Object
     }
 )
 
-
+setMethod(
+    f = "genReport",
+    signature = "RPeakComp",
+    definition = function(.Object, ...){
+        obj <- readRDS(output(.Object)[["venn.data"]])
+        report(.Object)$venn.data <- obj
+        .Object
+    }
+)
 
 
 #' @name RPeakComp

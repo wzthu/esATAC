@@ -50,6 +50,16 @@ setMethod(
     }
 )
 
+
+setMethod(
+    f = "genReport",
+    signature = "SamToBam",
+    definition = function(.Object, ...){
+        .Object
+    }
+)
+
+
 #' @name SamToBam
 #' @title Convert sam format to bam format.
 #' @description
