@@ -217,13 +217,52 @@ setMethod(
         }
         
         
+
+        
+        .Object
+    }
+)
+
+
+setGeneric(
+    name = "getTopic",
+    def = function(.Object,topic,...){
+        standardGeneric("getTopic")
+    }
+)
+
+setMethod(
+    f = "getTopic",
+    signature = "RemoveAdapter",
+    definition = function(.Object, topic,...){
+        setLine<-readLines(paste0(param(.Object)[["reportPrefix"]],".settings"))
+        itemstarts<-grep("\\]$",setLine)
+
+        itemstart<-grep(topic,setLine)
+        itemsendidx<-which(itemstarts == itemstart) + 1
+        if(itemsendidx>length(itemstarts)){
+            itemend <- length(setLine)
+        }else{
+            itemend <- itemstarts[itemsendidx]
+            itemend <- itemend - 3
+        }
+
+        return(setLine[(itemstart+1):itemend])
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "RemoveAdapter",
+    definition = function(.Object, ...){
         tblist <- getTopic(.Object,"\\[Adapter sequences\\]")
         splitlist <- strsplit(tblist,": ")
         if(property(.Object)$singleEnd){
             report(.Object)$adapterslist <- data.frame(adapter=c("adapter for single end data"),sequence=c(splitlist[[1]][2]))
         }else{
             report(.Object)$adapterslist <- data.frame(adapter=c("adapter for paired end data mate 1","adapter for paired end data mate 2"),
-                                                        sequence=c(splitlist[[1]][2],splitlist[[2]][2]))
+                                                       sequence=c(splitlist[[1]][2],splitlist[[2]][2]))
             #return(list(adapter1=splitlist[[1]][2],
             #            adapter2=splitlist[[2]][2]))
         }
@@ -235,7 +274,7 @@ setMethod(
             report(.Object)$adapters <- (listToFrame(list(adpater1=splitlist[[1]][2])))
         }else{
             report(.Object)$adapters <- (listToFrame(list(adapter1=splitlist[[1]][2],
-                                    adapter2=splitlist[[2]][2])))
+                                                          adapter2=splitlist[[2]][2])))
         }
         
         
@@ -261,7 +300,7 @@ setMethod(
             lst[[splitlist[[i]][1]]]<-splitlist[[i]][2]
         }
         report(.Object)$settings <- listToFrame(lst)
-       
+        
         
         tblist <- getTopic(.Object,"\\[Trimming statistics\\]")
         splitlist <- strsplit(tblist,": ")
@@ -297,38 +336,10 @@ setMethod(
         df<-as.data.frame(matrix(tbdt,length(tblist)-1,colsize,TRUE))
         colnames(df) <- colkey
         report(.Object)$distribution <- df
-        
         .Object
     }
 )
 
-
-setGeneric(
-    name = "getTopic",
-    def = function(.Object,topic,...){
-        standardGeneric("getTopic")
-    }
-)
-
-setMethod(
-    f = "getTopic",
-    signature = "RemoveAdapter",
-    definition = function(.Object, topic,...){
-        setLine<-readLines(paste0(param(.Object)[["reportPrefix"]],".settings"))
-        itemstarts<-grep("\\]$",setLine)
-
-        itemstart<-grep(topic,setLine)
-        itemsendidx<-which(itemstarts == itemstart) + 1
-        if(itemsendidx>length(itemstarts)){
-            itemend <- length(setLine)
-        }else{
-            itemend <- itemstarts[itemsendidx]
-            itemend <- itemend - 3
-        }
-
-        return(setLine[(itemstart+1):itemend])
-    }
-)
 
 
 

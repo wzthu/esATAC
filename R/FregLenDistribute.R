@@ -114,14 +114,19 @@ setMethod(
                      label = "186bp") +xlab("period") + ylab("strength")  
         ggsave(output(.Object)[["histonepdfOutput"]])
         
-#        readscounts <- read.table(file= output(.Object)[["lendistrtxtOutput"]],header=TRUE)
-        report(.Object)$readsCounts <- readscounts
-
         .Object
     }
 )
 
-
+setMethod(
+    f = "genReport",
+    signature = "FragLenDistr",
+    definition = function(.Object, ...){
+        readscounts <- read.table(file= output(.Object)[["lendistrtxtOutput"]],header=TRUE)
+        report(.Object)$readsCounts <- readscounts
+        .Object
+    }
+)
 
 
 #' @name FragLenDistr

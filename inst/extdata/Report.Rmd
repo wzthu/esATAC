@@ -19,10 +19,11 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
 #load("Report.Rdata")
 library(esATAC)
-allsteps.info <- readRDS("allsteps.info.rds")
-allsteps <- allsteps.info[["prevSteps"]]
-wholesummary <- allsteps.info[["wholesummary"]]
-filtstat <- allsteps.info[["filtstat"]]
+loadConfig(file.path("ReportData","SummaryInfo","config.rds"))
+suminfo <- readRDS(file.path("ReportData","SummaryInfo","suminfo.rds"))
+allsteps <- suminfo[["prevSteps"]]
+wholesummary <- suminfo[["wholesummary"]]
+filtstat <- suminfo[["filtstat"]]
 ```
 
 # Summary Table

@@ -20,7 +20,7 @@ setMethod(
             if(!is.null(fastqOutput1)){
                 output(.Object)$fastqOutput1 <- fastqOutput1
             }else{
-                output(.Object)$fastqOutput1 <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                output(.Object)$fastqOutput1 <- getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
             }
         }else{
             if(is.null(fastqInput2)){
@@ -29,26 +29,26 @@ setMethod(
                 if(!is.null(fastqOutput1)){
                     output(.Object)$fastqOutput1 <-fastqOutput1
                 }else{
-                    output(.Object)$fastqOutput1 <-getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object)$fastqOutput1 <-getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }else{
                 property(.Object)$singleEnd <-FALSE
                 input(.Object)$fastqInput1 <-fastqInput1
                 input(.Object)$fastqInput2 <-fastqInput2
-                if(length(.Object$inputList[["fastqInput1"]])!=length(.Object$inputList[["fastqInput2"]])){
+                if(length(input(.Object)[["fastqInput1"]])!=length(input(.Object)[["fastqInput2"]])){
                     stop("The number of pair-end fastq files should be equal.")
                 }
                 if(!is.null(fastqOutput1)){
                     #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
                     output(.Object)$fastqOutput1 <- fastqOutput1
                 }else{
-                    output(.Object)$fastqOutput1 <- getAutoPath(.Object,.Object$inputList[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object)$fastqOutput1 <- getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
                 if(!is.null(fastqOutput2)){
                     #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
                     output(.Object)$fastqOutput2 <- fastqOutput2
                 }else{
-                    output(.Object)$fastqOutput2 <- getAutoPath(.Object,.Object$inputList[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
+                    output(.Object)$fastqOutput2 <- getAutoPath(.Object,input(.Object)[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
                 }
             }
         }
@@ -60,53 +60,38 @@ setMethod(
     f = "processing",
     signature = "UnzipAndMerge",
     definition = function(.Object,...){
-        if(property(.Object)[["singleEnd"]]||(!property(.Object)[["singleEnd"]]&&.Object$paramList[["interleave"]])){
-            fileNumber<-length(.Object$inputList[["fastqInput1"]])
-            decompress(.Object,.Object$inputList[["fastqInput1"]][1],.Object$outputList[["fastqOutput1"]])
+        if(property(.Object)[["singleEnd"]]||(!property(.Object)[["singleEnd"]]&&param(.Object)[["interleave"]])){
+            fileNumber<-length(input(.Object)[["fastqInput1"]])
+            decompress(.Object,input(.Object)[["fastqInput1"]][1],output(.Object)[["fastqOutput1"]])
             if(fileNumber>1){
                 for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput1"]][i],dirname(.Object$outputList[["fastqOutput1"]]));
-                    file.append(.Object$outputList[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=.Object$inputList[["fastqInput1"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput1"]][i],dirname(output(.Object)[["fastqOutput1"]]));
+                    file.append(output(.Object)[["fastqOutput1"]],tempfastqfile)
+                    if(tempfastqfile!=input(.Object)[["fastqInput1"]][i]){
                         unlink(tempfastqfile)
                     }
                 }
             }
         }else{
-            fileNumber<-length(.Object$inputList[["fastqInput1"]])
-            decompress(.Object,.Object$inputList[["fastqInput1"]][1],.Object$outputList[["fastqOutput1"]])
-            decompress(.Object,.Object$inputList[["fastqInput2"]][1],.Object$outputList[["fastqOutput2"]])
+            fileNumber<-length(input(.Object)[["fastqInput1"]])
+            decompress(.Object,input(.Object)[["fastqInput1"]][1],output(.Object)[["fastqOutput1"]])
+            decompress(.Object,input(.Object)[["fastqInput2"]][1],output(.Object)[["fastqOutput2"]])
             if(fileNumber>1){
                 for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput1"]][i],dirname(.Object$outputList[["fastqOutput1"]]));
-                    file.append(.Object$outputList[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=.Object$inputList[["fastqInput1"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput1"]][i],dirname(output(.Object)[["fastqOutput1"]]));
+                    file.append(output(.Object)[["fastqOutput1"]],tempfastqfile)
+                    if(tempfastqfile!=input(.Object)[["fastqInput1"]][i]){
                         unlink(tempfastqfile)
                     }
-                    tempfastqfile<-decompressFastq(.Object,.Object$inputList[["fastqInput2"]][i],dirname(.Object$outputList[["fastqOutput2"]]));
-                    file.append(.Object$outputList[["fastqOutput2"]],tempfastqfile)
-                    if(tempfastqfile!=.Object$inputList[["fastqInput2"]][i]){
+                    tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput2"]][i],dirname(output(.Object)[["fastqOutput2"]]));
+                    file.append(output(.Object)[["fastqOutput2"]],tempfastqfile)
+                    if(tempfastqfile!=input(.Object)[["fastqInput2"]][i]){
                         unlink(tempfastqfile)
                     }
                 }
             }
         }
-        if(param(.Object)$interleave){
-            report(.Object)$seqtype <- "paired end (PE,interleave)"
-            report(.Object)$frag <- 2
-        }else if(is.null(input(.Object)$fastqInput2)){
-            report(.Object)$seqtype  <- "single end (SE)"
-            report(.Object)$frag <- 1
-        }else{
-            report(.Object)$seqtype  <- "paired end (PE)"
-            report(.Object)$frag <- 2
-        }
-        if(is.null(input(.Object)$fastqInput2)){
-            report(.Object)$filelist <- data.frame(`File(s)`=fastqInput1)
-        }else{
-            report(.Object)$filelist <- data.frame(`Mate1 files`=fastqInput1,
-                                   `Mate2 files`=fastqInput2)
-        }
+        
         .Object
     }
 )
@@ -185,6 +170,30 @@ setMethod(
     }
 )
 
+
+setMethod(
+    f = "genReport",
+    signature = "UnzipAndMerge",
+    definition = function(.Object, ...){
+        if(param(.Object)$interleave){
+            report(.Object)$seqtype <- "paired end (PE,interleave)"
+            report(.Object)$frag <- 2
+        }else if(is.null(input(.Object)$fastqInput2)){
+            report(.Object)$seqtype  <- "single end (SE)"
+            report(.Object)$frag <- 1
+        }else{
+            report(.Object)$seqtype  <- "paired end (PE)"
+            report(.Object)$frag <- 2
+        }
+        if(is.null(input(.Object)$fastqInput2)){
+            report(.Object)$filelist <- data.frame(`File(s)`= input(.Object)$fastqInput1)
+        }else{
+            report(.Object)$filelist <- data.frame(`Mate1 files`=input(.Object)$fastqInput1,
+                                                   `Mate2 files`=input(.Object)$fastqInput2)
+        }
+        .Object
+    }
+)
 
 
 #' @name UnzipAndMerge

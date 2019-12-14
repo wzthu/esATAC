@@ -126,9 +126,20 @@ setMethod(
             property(.Object)[["adapter2"]] <- adapters[2]
         }
         
-        report(.Object)[["adapter1"]] <- property(.Object)[["adapter1"]]
-        report(.Object)[["adapter2"]] <- property(.Object)[["adapter2"]]
+       
         
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "FindAdapter",
+    definition = function(.Object, ...){
+        
+        report(.Object)[["adapter1"]] <- readLines(output(.Object)$reportPrefix_adapter1_Output)
+        report(.Object)[["adapter2"]] <- readLines(output(.Object)$reportPrefix_adapter2_Output)
         .Object
     }
 )

@@ -100,15 +100,22 @@ setMethod(
                     quote = FALSE, row.names = FALSE, sep = "\t",
                     col.names = TRUE, append = FALSE)
         
-        report(.Object)$annoOutput.rds <- peakAn
-        report(.Object)$annoOutput <- output(.Object)[["annoOutput.txt"]]
+
         
         .Object
     }
 )
 
 
-
+setMethod(
+  f = "genReport",
+  signature = "RPeakAnno",
+  definition = function(.Object, ...){
+    report(.Object)$annoOutput.rds <- readRDS(output(.Object)[["annoOutput.rds"]])
+    report(.Object)$annoOutput <- output(.Object)[["annoOutput.txt"]]
+    .Object
+  }
+)
 
 #' @name RPeakAnno
 #' @title Annotate ATAC-seq Peak

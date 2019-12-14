@@ -97,6 +97,16 @@ setMethod(
     }
 )
 
+
+setMethod(
+    f = "genReport",
+    signature = "RMotifScan",
+    definition = function(.Object, ...){
+        .Object
+    }
+)
+
+
 #' @name RMotifScan
 #' @title Search Motif Position in Given Regions
 #' @description

@@ -116,6 +116,13 @@ setMethod(
 )
 
 
+setMethod(
+    f = "genReport",
+    signature = "RSNPs",
+    definition = function(.Object, ...){
+        .Object
+    }
+)
 
 #' @name RSNPs
 #' @title Find whether snps are in the given regions.

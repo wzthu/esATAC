@@ -207,15 +207,22 @@ setMethod(
         saveRDS(object = ctrl_save_info, file = output(.Object)[["rdsOutput.peak2"]])
         saveRDS(object = backg_save_info, file = output(.Object)[["rdsOutput.background"]])
 
-        report(.Object)$rdsOutput.peak1 <- case_save_info
-        report(.Object)$rdsOutput.peak2 <- ctrl_save_info
-        report(.Object)$rdsOutput.background <- backg_save_info
+        
         
         .Object
     }
 )
 
-
+setMethod(
+    f = "genReport",
+    signature = "RMotifScanPair",
+    definition = function(.Object, ...){
+        report(.Object)$rdsOutput.peak1 <- readRDS(output(.Object)[["rdsOutput.peak1"]])
+        report(.Object)$rdsOutput.peak2 <- readRDS(output(.Object)[["rdsOutput.peak2"]])
+        report(.Object)$rdsOutput.background <- readRDS(output(.Object)[["rdsOutput.background"]])
+        .Object
+    }
+)
 
 
 #' @name RMotifScanPair

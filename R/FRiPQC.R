@@ -77,6 +77,15 @@ setMethod(
         ####.Object@paramlist[["qcval"]]<-qcval
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
         
+        .Object
+    }
+)
+
+setMethod(
+    f = "genReport",
+    signature = "FRiPQC",
+    definition = function(.Object, ...){
+        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
         cqcval<-as.character(qcval)
         cqcval[4] <- sprintf("%.2f",as.numeric(cqcval[4]))
         report(.Object)$table <- data.frame(Item=c("The number of reads in peak",

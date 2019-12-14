@@ -84,6 +84,13 @@ setMethod(
     }
 )
 
+setMethod(
+  f = "genReport",
+  signature = "Renamer",
+  definition = function(.Object, ...){
+    .Object
+  }
+)
 
 
 

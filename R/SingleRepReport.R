@@ -17,6 +17,9 @@ setMethod(
             output(.Object)$htmlOutput <- getStepWorkDir(.Object, filename = htmlOutput)
         }
         
+        output(.Object)$reportData <- getStepWorkDir(.Object, filename = "ReportData")
+        
+        
         .Object
     }
 )
@@ -30,10 +33,18 @@ setMethod(
     definition = function(.Object, ...){
         htmlOutput <- output(.Object)[["htmlOutput"]]
         prevSteps <- list(...)[["prevSteps"]]
+        dir.create(output(.Object)$reportData)
+        sumDir <- file.path(output(.Object)$reportData,"SummaryInfo")
+        dir.create(sumDir)
+        rsDir <- file.path(output(.Object)$reportData,"ResultData")
+        dir.create(rsDir)
         prevStepsType <- lapply(prevSteps, function(step){
-            return(stepType(step))
+            st <- stepType(step)
+            return(st)
         })
         names(prevSteps) <- unlist(prevStepsType)
+        
+        
         
         wholesummary <- NULL
         filtstat <- NULL
@@ -280,8 +291,9 @@ setMethod(
         saveRDS(list(prevSteps = prevSteps, 
                      wholesummary = wholesummary, 
                      filtstat = filtstat), 
-                file = getStepWorkDir(.Object = .Object, 
-                                      filename = "allsteps.info.rds"))
+                file = file.path(sumDir,"suminfo.rds"))
+        
+        saveConfig(file.path(sumDir,"config.rds"))
         
         reportmkd <- getStepWorkDir(.Object = .Object, filename = "Report.Rmd")
         
@@ -301,6 +313,17 @@ setMethod(
         .Object
     }
 )
+
+
+
+setMethod(
+  f = "genReport",
+  signature = "SingleRepReport",
+  definition = function(.Object, ...){
+    .Object
+  }
+)
+
 
 
 #' @name SingleRepReport

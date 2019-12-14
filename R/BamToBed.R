@@ -41,6 +41,14 @@ setMethod(
 )
 
 
+setMethod(
+    f = "genReport",
+    signature = "BamToBed",
+    definition = function(.Object, ...){
+        .Object
+    }
+)
+
 
 
 

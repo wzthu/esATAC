@@ -44,6 +44,16 @@ setMethod(
     }
 )
 
+
+
+setMethod(
+    f = "genReport",
+    signature = "Rsortbam",
+    definition = function(.Object, ...){
+        .Object
+    }
+)
+
 #' @name Rsortbam
 #' @title Sort bam file and rebuild bai index.
 #' @description

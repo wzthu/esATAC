@@ -75,7 +75,16 @@ setMethod(
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
 
         
-#        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
+#       
+        .Object
+    }
+)
+
+setMethod(
+    f = "genReport",
+    signature = "LibComplexQC",
+    definition = function(.Object, ...){
+        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
         
         report(.Object)$table<-data.frame(
             Item = c(
@@ -113,8 +122,6 @@ setMethod(
         .Object
     }
 )
-
-
 
 #' @name LibComplexQC
 #' @title Quality control for library complexity

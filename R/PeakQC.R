@@ -82,26 +82,32 @@ setMethod(
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
 
         
-#        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-
-        cqcval<-as.character(qcval)
-        cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
-        if(property(.Object)$fixtag=="DHS"){
-          report(.Object)$table<-data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
-                            Value=cqcval)
-        }else if(property(.Object)$fixtag=="blacklist"){
-          report(.Object)$table<-data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval)
-        }else{
-          report(.Object)$table<-data.frame(Item=names(qcval),Value=as.character(qcval))
-        }
-        for(n in names(qcval)){
-          report(.Object)[[n]] <- qcval[[n]]
-        }  
         .Object
     }
 )
 
-
+setMethod(
+  f = "genReport",
+  signature = "PeakQC",
+  definition = function(.Object, ...){
+    qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
+    
+    cqcval<-as.character(qcval)
+    cqcval[3]<-sprintf("%.2f",as.numeric(cqcval[[3]]))
+    if(property(.Object)$fixtag=="DHS"){
+      report(.Object)$table<-data.frame(Item=c("Total peaks","DHS regions", "Ratio"),
+                                        Value=cqcval)
+    }else if(property(.Object)$fixtag=="blacklist"){
+      report(.Object)$table<-data.frame(Item=c("Total peaks","Blacklist regions", "Ratio"),Value=cqcval)
+    }else{
+      report(.Object)$table<-data.frame(Item=names(qcval),Value=as.character(qcval))
+    }
+    for(n in names(qcval)){
+      report(.Object)[[n]] <- qcval[[n]]
+    }  
+    .Object
+  }
+)
 
 
 #' @name PeakQC

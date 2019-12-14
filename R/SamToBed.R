@@ -121,6 +121,17 @@ setMethod(
 
         write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
         
+        
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "SamToBed",
+    definition = function(.Object, ...){
+        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
         report(.Object)$table <- data.frame(
             Item = c("Total mapped reads",
                      sprintf("Chromasome %s filted reads",paste(param(.Object)[["filterList"]],collapse = "/")),
@@ -152,8 +163,6 @@ setMethod(
         .Object
     }
 )
-
-
 
 
 #' @name SamToBed

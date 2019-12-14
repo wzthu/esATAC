@@ -151,16 +151,24 @@ setMethod(
 
         write.table(qcval0,file = output(.Object)[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
         
-        report(.Object)$tss <- df
+        
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "TSSQC",
+    definition = function(.Object, ...){
+        tss <- read.table(file= output(.Object)[["tsstxtOutput"]],header=TRUE)
+        report(.Object)$tss <- tss
         for(n in names(qcval)){
             report(.Object)[[n]] <- qcval[[n]]
         }  
         .Object
     }
 )
-
-
-
 
 
 

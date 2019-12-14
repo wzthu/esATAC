@@ -130,8 +130,16 @@ setMethod(
 
         writeLines(text = rs,con = output(.Object)[["reportOutput"]])
         
-        txt <- rs
-#        txt <- readLines(output(.Object)[["reportOutput"]])
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "Bowtie2Mapping",
+    definition = function(.Object, ...){
+        txt <- readLines(output(.Object)[["reportOutput"]])
         s<-strsplit(txt[1]," ")
         report(.Object)$total <- as.integer(s[[1]][1])
         
@@ -139,13 +147,9 @@ setMethod(
         report(.Object)$maprate <- (as.numeric(s[[1]][1])/100)
         
         report(.Object)$detail <- txt
-
-
         .Object
     }
 )
-
-
 
 
 

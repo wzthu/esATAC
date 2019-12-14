@@ -59,7 +59,7 @@ setMethod(
         }else{
             genome <- seqinfo(param(.Object)[["bsgenome"]])
         }
-#        bedranges <- import(.Object@paramlist[["bedInput"]], genome = genome)
+#        bedranges <- import(input(.Object)[["bedInput"]], genome = genome)
        bedranges <- import(input(.Object)[["bedInput"]])
         cov <- coverage(bedranges)
         ans <- GRanges(cov)
@@ -69,6 +69,15 @@ setMethod(
         }else{
             export.bw(ans,output(.Object)[["bwOutput"]])
         }
+        .Object
+    }
+)
+
+
+setMethod(
+    f = "genReport",
+    signature = "BedToBigWig",
+    definition = function(.Object, ...){
         .Object
     }
 )

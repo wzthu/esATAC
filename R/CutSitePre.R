@@ -67,6 +67,14 @@ setMethod(
 
 )
 
+setMethod(
+  f = "genReport",
+  signature = "CutSitePre",
+  definition = function(.Object, ...){
+    .Object
+  }
+)
+
 
 #' @name CutSitePre
 #' @title Extract ATAC-seq cutting site from bed file.
