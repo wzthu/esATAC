@@ -59,7 +59,7 @@ setMethod(
        # dir.create(output(.Object)[["csfile.dir"]])
 
         
-        file_path_data <- .CutSite_call(InputFile = input(.Object)[["bedInput"]], OutputFile = output(.Object)[["csfile.dir"]])
+        file_path_data <- .CutSite_call(InputFile = input(.Object)[["bedInput"]], OutputFile = param(.Object)[["csfile.dir"]])
         # may use in the future
         # saveRDS(object = file_path_data, file = .Object@paramlist[["csfile.rds"]])
         .Object
