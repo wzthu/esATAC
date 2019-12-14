@@ -27,16 +27,16 @@ setMethod(
 
         if(is.null(csOutput.dir)){
  
-            output(.Object)[["csOutput.dir"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "bed", "")
+            output(.Object)[["csOutput.dir"]] <- getStepWorkDir(.Object, "csOutput")
             
         }else{
             output(.Object)[["csOutput.dir"]] <- csOutput.dir
         }
 
         if(is.null(prefix)){
-            output(.Object)[["csfile.dir"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "bed", "Cutsite")
+            param(.Object)[["csfile.dir"]] <- file.path(output(.Object)[["csOutput.dir"]], "Cutsite")
         }else{
-            output(.Object)[["csfile.dir"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "bed", prefix)
+            param(.Object)[["csfile.dir"]] <-  file.path(output(.Object)[["csOutput.dir"]], prefix)
         }
 
 
@@ -55,8 +55,8 @@ setMethod(
     signature = "CutSitePre",
     definition = function(.Object,...){
        
- #       dir.create(output(.Object)[["csOutput.dir"]])
-  #      dir.create(output(.Object)[["csfile.dir"]])
+        dir.create(output(.Object)[["csOutput.dir"]])
+       # dir.create(output(.Object)[["csfile.dir"]])
 
         
         file_path_data <- .CutSite_call(InputFile = input(.Object)[["bedInput"]], OutputFile = output(.Object)[["csfile.dir"]])
