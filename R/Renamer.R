@@ -27,7 +27,6 @@ setMethod(
                 property(.Object)[["interleave"]]<-FALSE
             }
         }
-        print(input(.Object)[["fastqInput1"]])
 
         if(!is.null(fastqInput1)){
             input(.Object)[["fastqInput1"]] <- fastqInput1;
