@@ -90,7 +90,7 @@ checkAndInstallBt2Idx <- function(refFilePath){
     fastaFilePath <- getRefFiles("fasta")
     fileprefix <- substring(refFilePath[1],1,nchar(refFilePath[1]) -6)
     bowtie2_build(fastaFilePath,fileprefix,"-q","--threads",as.character(threads),overwrite=TRUE)
-    fileprefix
+    file.path(getGenome(),"genome")
 }
 
 
