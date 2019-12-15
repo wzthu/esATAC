@@ -58,7 +58,7 @@ setMethod(
         }
 
         if(is.null(bt2Idx)){
-            param(.Object)[["bt2Idx"]] <- getRefRc("bt2Idx")
+            param(.Object)[["bt2Idx"]] <- file.path(getRefDir(),getRefRc("bt2Idx"))
             input(.Object)[["bt2Idxs"]] <- getRefFiles("bt2Idx")
         }else{
             param(.Object)[["bt2Idx"]] <- bt2Idx
