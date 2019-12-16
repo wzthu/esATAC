@@ -141,7 +141,9 @@ checkAndInstall <- function(check = TRUE, ...){
                                                                                         "genome.rev.2.bt2"))
     runWithFinishCheck(func = downloadDHS,refName = "DHS", refFilePath = "DHS.bed")
     runWithFinishCheck(func = downloadBlacklist,refName = "blacklist", refFilePath = "blacklist.bed")
-    runWithFinishCheck(func = downloadSNP,refName = "SNP", refFilePath = "snp.txt")
+    if(getGenome()=="hg19"){
+        runWithFinishCheck(func = downloadSNP,refName = "SNP", refFilePath = "snp.txt")
+    }
 }
 
 
