@@ -102,30 +102,15 @@ downloadAndGunzip <- function(urlplaceholder,refFilePath){
 }
 
 downloadDHS <- function(refFilePath){
-    genome <- getGenome()
-    if(genome %in% c("hg19","hg38","mm9","mm10")){
-        downloadAndGunzip("https://wzthu.github.io/esATAC/refdata/%s.DHS.bed.gz", refFilePath)        
-    }else{
-        warning(paste("DHS is not available for ",genome, ". Please copy your own DHS file to '", refFilePath,"'"))
-    }
+    downloadAndGunzip("https://wzthu.github.io/esATAC/refdata/%s.DHS.bed.gz", refFilePath) 
 }
 
 downloadBlacklist <- function(refFilePath){
-    genome <- getGenome()
-    if(genome %in% c("hg19","hg38","mm9","mm10")){
-        downloadAndGunzip("https://wzthu.github.io/esATAC/refdata/%s.blacklist.bed.gz", refFilePath)        
-    }else{
-        warning(paste("blacklist is not available for ",genome, ". Please copy your own blacklist file to '", refFilePath,"'"))
-    }
+    downloadAndGunzip("https://wzthu.github.io/esATAC/refdata/%s.blacklist.bed.gz", refFilePath)        
 }
 
 downloadSNP <- function(refFilePath){
-    genome <- getGenome()
-    if(genome %in% c("hg19")){
-        downloadAndGunzip("https://wzthu.github.io/esATAC/refdata/%s.snp.txt.gz", refFilePath)        
-    }else{
-        warning(paste("DHS is not available for ",genome, ". Please copy your own snp file to '", refFilePath,"'"))
-    }    
+    downloadAndGunzip("https://wzthu.github.io/esATAC/refdata/%s.snp.txt.gz", refFilePath)        
 }
 
 checkAndInstall <- function(check = TRUE, ...){
@@ -139,11 +124,9 @@ checkAndInstall <- function(check = TRUE, ...){
                                                                                         "genome.4.bt2",
                                                                                         "genome.rev.1.bt2",
                                                                                         "genome.rev.2.bt2"))
-    runWithFinishCheck(func = downloadDHS,refName = "DHS", refFilePath = "DHS.bed")
-    runWithFinishCheck(func = downloadBlacklist,refName = "blacklist", refFilePath = "blacklist.bed")
-    if(getGenome()=="hg19"){
-        runWithFinishCheck(func = downloadSNP,refName = "SNP", refFilePath = "snp.txt")
-    }
+    runWithFinishCheck(func = downloadDHS,refName = "DHS", refFilePath = "DHS.bed", genome = c("hg19","hg38","mm9","mm10"))
+    runWithFinishCheck(func = downloadBlacklist,refName = "blacklist", refFilePath = "blacklist.bed", genome = c("hg19","hg38","mm9","mm10"))
+    runWithFinishCheck(func = downloadSNP,refName = "SNP", refFilePath = "snp.txt", genome = "hg19")
 }
 
 
