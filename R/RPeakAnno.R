@@ -75,8 +75,10 @@ setMethod(
     definition = function(.Object,...){
         peakGRange <- rtracklayer::import(con = input(.Object)[["peakInput"]], format = "bed")
         txdb<-param(.Object)[["TxDb"]]
-        library(txdb,character.only = TRUE)
-        txdb <- get0(txdb)
+        if(is.character(txdb)){
+          library(txdb,character.only = TRUE)
+          txdb <- get0(txdb)
+        }
         peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
                                            tssRegion = param(.Object)[["tssRegion"]],
                                            TxDb = txdb,

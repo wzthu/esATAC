@@ -208,10 +208,24 @@ getSuffixlessFileName0 <- function(filePath){
 #' }
 #' @export
 
-atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=NULL, threads=2, adapter1 = NULL, adapter2 = NULL,
-                     interleave = FALSE,  basicAnalysis = FALSE, createReport = TRUE, motifs = NULL, prefix = NULL,
-                     chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
-
+atacPipe <- function(genome, 
+                     fastqInput1, 
+                     fastqInput2=NULL, 
+                     tmpdir = file.path(getwd(),"esATAC-pipeline"), 
+                     refdir = file.path(tmpdir,"refdir"), 
+                     threads = 2, 
+                     adapter1 = NULL, 
+                     adapter2 = NULL,
+                     interleave = FALSE,  
+                     basicAnalysis = FALSE, 
+                     createReport = TRUE, 
+                     motifs = NULL, 
+                     pipelineName = "pipe",
+                     chr = c(1:22, "X", "Y"), 
+                     p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
+    
+    prefix = pipelineName
+    
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
     }
@@ -221,464 +235,70 @@ atacPipe <- function(genome, fastqInput1, fastqInput2=NULL, refdir=NULL, tmpdir=
     if(!is.null(fastqInput2)){
         fastqInput2 = normalizePath(fastqInput2)
     }
-
-    esATAC_result <- NULL
-    esATAC_report <- NULL
-    param.tmp <- list(...)
-    if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
-        if(!is.null(refdir)){
-            options(atacConf=setConfigure("refdir",refdir))
-        }else{
-            if(!dir.exists("esATAC_pipeline")){
-                dir.create("esATAC_pipeline")
-            }
-            if(!dir.exists(file.path("esATAC_pipeline","refdir"))){
-                dir.create(file.path("esATAC_pipeline","refdir"))
-            }
-            options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
-        }
-        if(!is.null(threads)){
-            options(atacConf=setConfigure("threads",as.numeric(threads)))
-            message(getConfigure("threads"))
-        }else{
-            options(atacConf=setConfigure("threads",2))
-        }
-        if(!is.null(genome)){
-            options(atacConf=setConfigure("genome",genome))
-        }else{
-            stop("parameter genome is required")
-        }
-        if(!is.null(tmpdir)){
-            options(atacConf=setConfigure("tmpdir",tmpdir))
-        }else{
-            if(!dir.exists("esATAC_pipeline")){
-                dir.create("esATAC_pipeline")
-            }
-            if(!dir.exists(file.path("esATAC_pipeline","intermediate_results"))){
-                dir.create(file.path("esATAC_pipeline","intermediate_results"))
-            }else{
-                warning(sprintf("path '%s' is exist",file.path("esATAC_pipeline","intermediate_results")))
-            }
-            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","intermediate_results")))
-            tmpdir <- "esATAC_pipeline"
-        }
-        if(is.null(param.tmp[["esATAC_result"]])){
-            esATAC_result<-file.path(dirname(.obtainConfigure("tmpdir")),"esATAC_result")
-            dir.create(esATAC_result)
-        }else{
-            esATAC_result <- param.tmp[["esATAC_result"]]
-        }
-        if(is.null(param.tmp[["esATAC_report"]])){
-            esATAC_report<-file.path(dirname(.obtainConfigure("tmpdir")),"esATAC_report")
-            dir.create(esATAC_report)
-        }else{
-            esATAC_report <- param.tmp[["esATAC_report"]]
-        }
+    
+    dir.create(tmpdir,recursive = TRUE)
+    setTmpDir(tmpdir)
+    
+    setJobName(pipelineName)
+    
+    setPipeName(pipelineName)
+    
+    setRefDir(refdir)
+    
+    setGenome(genome)
+    setThreads(threads)
+    unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave, ...)
+    atacQC <- atacQCReport(atacProc = unzipAndMerge, ...)
+    renamer <- atacRenamer(unzipAndMerge, ...)
+    if(is.null(adapter1) || is.null(adapter2)){
+        findAdapterObj <-atacFindAdapter(renamer, ...)
+        removeAdapter <- atacRemoveAdapter(findAdapterObj, ...)
     }else{
-        if(is.null(param.tmp[["esATAC_result"]])){
-            esATAC_result<-NULL
-        }else{
-            esATAC_result <- param.tmp[["esATAC_result"]]
-        }
-        if(is.null(param.tmp[["esATAC_report"]])){
-            esATAC_report<-NULL
-        }else{
-            esATAC_report <- param.tmp[["esATAC_report"]]
-        }
+        removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2, ...)
     }
-    message("final esATAC_result")
-    message(esATAC_result)
-    message("final esATAC_report")
-    message(esATAC_report)
-
-    unzipAndMerge <- atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2,interleave = interleave)
-    atacQC <- atacQCReport(atacProc = unzipAndMerge)
-    renamer <- atacRenamer(unzipAndMerge)
-    removeAdapter <- atacRemoveAdapter(renamer, adapter1 = adapter1, adapter2 = adapter2)
-    bowtie2Mapping <- atacBowtie2Mapping(removeAdapter)
-    libComplexQC <- atacLibComplexQC(bowtie2Mapping)
-    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFragLen = 2000)
-    bedToBigWig <- atacBedToBigWig(sam2Bed)
-    tssqc100 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc100")),fragLenRange = c(0,100))
-
+    bowtie2Mapping <- atacBowtie2Mapping(removeAdapter, ...)
+    libComplexQC <- atacLibComplexQC(bowtie2Mapping, ...)
+    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFragLen = 2000, ...)
+    bedToBigWig <- atacBedToBigWig(sam2Bed, ...)
+    tssqc100 <-atacTSSQC(sam2Bed,fragLenRange = c(0,100), newStepType = "TSSQCNFR", ...)
+    
     if(is.null(fastqInput2)&&!interleave){
-        peakCalling <- atacPeakCalling(sam2Bed)
-        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
-        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
-        fripQC <- atacFripQC(atacProcReads = sam2Bed,atacProcPeak = peakCalling)
+        peakCalling <- atacPeakCalling(sam2Bed, ...)
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS", ...)
+        fripQC <- atacFripQC(atacProc = sam2Bed,atacProcPeak = peakCalling, ...)
     }else{
-        tssqc180_247 <-atacTSSQC(sam2Bed,reportPrefix = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".tssqc180_247")),fragLenRange = c(180,247))
-        fragLenDistr <- atacFragLenDistr(sam2Bed)
-        shortBed <- atacBedUtils(sam2Bed,maxFragLen = 100, chrFilterList = NULL)
-        peakCalling <- atacPeakCalling(shortBed)
-        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".DHSQC")))
-        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist",reportOutput = file.path(.obtainConfigure("tmpdir"),paste0(getSuffixlessFileName0(fastqInput1[1]),".blacklistQC")))
-        fripQC <- atacFripQC(atacProcReads = shortBed,atacProcPeak = peakCalling)
-
-        Peakanno <- atacPeakAnno(atacProc = peakCalling)
+        tssqc180_247 <- atacTSSQC(sam2Bed,fragLenRange = c(180,247),  newStepType = "TSSQCneucleosome", ...)
+        fragLenDistr <- atacFragLenDistr(sam2Bed, ...)
+        shortBed <- atacBedUtils(sam2Bed,maxFragLen = 100, chrFilterList = NULL, ...)
+        peakCalling <- atacPeakCalling(shortBed, ...)
+        DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",newStepType = "PeakQCDHS", ...)
+        blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist", newStepType = "PeakQCblacklist", ...)
+        fripQC <- atacFripQC(atacProc = shortBed,atacProcPeak = peakCalling, ...)
+        
+        Peakanno <- atacPeakAnno(atacProc = peakCalling, ...)
         if(!basicAnalysis){
             # GO term
-            goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01)
-
+            goAna <- atacGOAnalysis(atacProc = Peakanno, ont = "BP", pvalueCutoff = 0.01, ...)
+            
             # set default motif
             if(is.null(motifs)){
                 opts <- list()
                 opts[["tax_group"]] <- "vertebrates"
-                pfm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+                pfm <- getMatrixSet(JASPAR2018::JASPAR2018, opts)
                 names(pfm) <- TFBSTools::name(pfm)
                 names(pfm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pfm), perl = TRUE)
             }else{
                 pfm <- motifs
             }
-            output_motifscan <- atacMotifScan(atacProc = peakCalling, motifs = pfm, p.cutoff = p.cutoff, prefix = prefix)
-
-            cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix)
+            output_motifscan <- atacMotifScan(atacProc = peakCalling, motifs = pfm, p.cutoff = p.cutoff, prefix = prefix, ...)
+            
+            cs_output <- atacExtractCutSite(atacProc = sam2Bed, prefix = prefix, ...)
             footprint <- atacCutSiteCount(atacProcCutSite = cs_output, atacProcMotifScan = output_motifscan,
-                                          strandLength = 100, prefix = prefix, chr = chr)
+                                          strandLength = 100, prefix = prefix, chr = chr, ...)
+            robj <- atacSingleRepReport(footprint, ...)
         }
     }
-
-    if(interleave){
-        seqtype <- "paired end (PE,interleave)"
-        frag <- 2
-    }else if(is.null(fastqInput2)){
-        seqtype <- "single end (SE)"
-        frag <- 1
-    }else{
-        seqtype <- "paired end (PE)"
-        frag <- 2
-    }
-    if(is.null(fastqInput2)){
-        filelist <- data.frame(`File(s)`=fastqInput1)
-    }else{
-        filelist <- data.frame(`Mate1 files`=fastqInput1,
-                               `Mate2 files`=fastqInput2)
-    }
-    if(is.null(fastqInput2)&&!interleave){
-        wholesummary = data.frame(Item=c("Sequence Files Type",
-                                         "Original total reads",
-                                         "-- Reads after adapter removing (ratio)",
-                                         "-- -- Total mapped reads (ratio of original reads)",
-                                         "-- -- -- Unique locations mapped uniquely by reads",
-                                         "-- -- -- Uniquely mappable reads",
-                                         "-- -- -- Non-Redundant Fraction (NRF)",
-                                         "-- -- -- Locations with only 1 reads mapping uniquely",
-                                         "-- -- -- Locations with only 2 reads mapping uniquely",
-                                         "-- -- -- PCR Bottlenecking Coefficients 1 (PBC1)",
-                                         "-- -- -- PCR Bottlenecking Coefficients 2 (PBC2)",
-                                         "-- -- -- Non-mitochondrial reads (ratio)",
-                                         "-- -- -- -- Unique mapped reads (ratio)",
-                                         "-- -- -- -- -- Duplicate removed reads (final for use)",
-                                         "-- -- -- -- -- -- -- Total peaks",
-                                         "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
-                                         "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
-                                         "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
-
-                                  Value=c(seqtype,
-                                          getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                          getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
-                                                     getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                          getVMRShow(getReportVal(sam2Bed,"total"),
-                                                     getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                          getVMShow(getReportVal(libComplexQC,"total")),
-                                          #sam2Bed$getReportVal("non-mitochondrial-multimap")),
-                                          getVMShow(getReportVal(libComplexQC,"nonMultimap")),
-                                          #getf(libComplexQC$getReportVal("NRF")),
-                                          getRshow(getReportVal(libComplexQC,"total"),
-                                                   getReportVal(libComplexQC,"nonMultimap")),
-                                          getVMShow(getReportVal(libComplexQC,"one")),
-                                          #sam2Bed$getReportVal("non-mitochondrial-multimap")),
-                                          getVMShow(getReportVal(libComplexQC,"two")),
-                                          #sam2Bed$getReportVal("non-mitochondrial-multimap")),
-                                          #getf(libComplexQC$getReportVal("PBC1")),
-                                          getRshow(getReportVal(libComplexQC,"one"),
-                                                   getReportVal(libComplexQC,"total")),
-                                          #getf(libComplexQC$getReportVal("PBC2")),
-                                          getRshow(getReportVal(libComplexQC,"one"),
-                                                   getReportVal(libComplexQC,"two")),
-                                          getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
-                                                     getReportVal(sam2Bed,"total")),
-                                          getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
-                                                     getReportVal(sam2Bed,"total")),
-                                          getVMRShow(getReportVal(sam2Bed,"save"),
-                                                     getReportVal(sam2Bed,"total")),
-                                          sprintf("%d",as.numeric(getReportVal(fripQC,"totalPeaks"))),
-                                          ifelse(is.null(DHSQC),"NA",getPer(getReportVal(DHSQC,"qcbedRate"))),
-                                          ifelse(is.null(blacklistQC),"NA",getPer(getReportVal(blacklistQC,"qcbedRate"))),
-                                          getPer(getReportVal(fripQC,"FRiP")))
-                                  ,
-                                  `Reference`=c("SE / PE",
-                                                "",
-                                                ">99%",
-                                                ">95%",
-                                                "",
-                                                "",
-                                                ">0.7",
-                                                "",
-                                                "",
-                                                ">0.7",
-                                                ">3",
-                                                ">70%",
-                                                "",
-                                                ">25M",
-                                                "",
-                                                "",
-                                                "",
-                                                ""
-                                  )
-                                  #`Annotation`=c()
-        )
-        filtstat = data.frame(
-            Item=c("Original total reads",
-                   "Reads after adapter removing (ratio)",
-                   "Total mapped reads (ratio of original reads)",
-                   "-- Non-mitochondrial reads (ratio)",
-                   "-- -- Unique mapped reads (ratio)",
-                   "-- -- -- Duplicate removed reads (ratio final for use)"
-            ),
-            Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                    getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
-                               getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                    getVMRShow(getReportVal(sam2Bed,"total"),
-                               getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                    getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
-                               getReportVal(sam2Bed,"total"),TRUE),
-                    getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
-                               getReportVal(sam2Bed,"total"),TRUE),
-                    getVMRShow(getReportVal(sam2Bed,"save"),
-                               getReportVal(sam2Bed,"total"),TRUE)
-            ),
-            `Reference`=c("",
-                          ">99%",
-                          ">95%",
-                          ">70%",
-                          ">60%",
-                          ">25M,>60%"
-            )
-        )
-        atacProcs=list(unzipAndMerge = unzipAndMerge,
-                       renamer = renamer,
-                       removeAdapter = removeAdapter,
-                       bowtie2Mapping = bowtie2Mapping,
-                       libComplexQC = libComplexQC,
-                       sam2Bed = sam2Bed,
-                       bedToBigWig = bedToBigWig,
-                       tssqc100 = tssqc100,
-                       peakCalling = peakCalling,
-                       DHSQC = DHSQC,
-                       blacklistQC = blacklistQC,
-                       fripQC = fripQC,
-                       atacQC = atacQC
-        )
-        conclusion <- list(filelist=filelist,
-                           wholesummary = wholesummary,
-                           atacProcs = atacProcs,
-                           filtstat = filtstat
-        )
-        return(conclusion)
-    }
-
-    wholesummary = data.frame(Item=c("Sequence Files Type",
-                                     "Original total reads",
-                                     "-- Reads after adapter removing (ratio)",
-                                     "-- -- Total mapped reads (ratio of original reads)",
-                                     "-- -- -- Unique locations mapped uniquely by reads",
-                                     "-- -- -- Uniquely mappable reads",
-                                     "-- -- -- Non-Redundant Fraction (NRF)",
-                                     "-- -- -- Locations with only 1 reads mapping uniquely",
-                                     "-- -- -- Locations with only 2 reads mapping uniquely",
-                                     "-- -- -- PCR Bottlenecking Coefficients 1 (PBC1)",
-                                     "-- -- -- PCR Bottlenecking Coefficients 2 (PBC2)",
-                                     "-- -- -- Non-mitochondrial reads (ratio)",
-                                     "-- -- -- -- Unique mapped reads (ratio)",
-                                     "-- -- -- -- -- Duplicate removed reads (final for use)",
-                                     #"---- -- -- -- -- Transcription start site (TSS) enrichment",
-                                     "-- -- -- -- -- -- Nucleosome free reads (<100bp)",
-                                     "-- -- -- -- -- -- -- Total peaks",
-                                     "-- -- -- -- -- -- -- Peaks overlaped with union DHS ratio",
-                                     "-- -- -- -- -- -- -- Peaks overlaped with blacklist ratio",
-                                     "-- -- -- -- -- -- Fraction of reads in peaks (FRiP)"),
-
-                              Value=c(seqtype,
-                                      getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                      getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
-                                                 getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                      getVMRShow(getReportVal(sam2Bed,"total"),
-                                                 getReportVal(removeAdapter,"statisticslist")[[1]]),
-                                      getVMShow(getReportVal(libComplexQC,"total")),
-                                      #sam2Bed$getReportVal("non-mitochondrial-multimap")),
-                                      getVMShow(getReportVal(libComplexQC,"nonMultimap")),
-                                      #getf(libComplexQC$getReportVal("NRF")),
-                                      getRshow(getReportVal(libComplexQC,"total"),
-                                               getReportVal(libComplexQC,"nonMultimap")),
-                                      getVMShow(getReportVal(libComplexQC,"one")),
-                                      #sam2Bed$getReportVal("non-mitochondrial-multimap")),
-                                      getVMShow(getReportVal(libComplexQC,"two")),
-                                      #sam2Bed$getReportVal("non-mitochondrial-multimap")),
-                                      #getf(libComplexQC$getReportVal("PBC1")),
-                                      getRshow(getReportVal(libComplexQC,"one"),
-                                               getReportVal(libComplexQC,"total")),
-                                      #getf(libComplexQC$getReportVal("PBC2")),
-                                      getRshow(getReportVal(libComplexQC,"one"),
-                                               getReportVal(libComplexQC,"two")),
-                                      getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
-                                                 getReportVal(sam2Bed,"total")),
-                                      getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
-                                                 getReportVal(sam2Bed,"total")),
-                                      getVMRShow(getReportVal(sam2Bed,"save"),
-                                                 getReportVal(sam2Bed,"total")),
-                                      #"",
-                                      getVMRShow(getReportVal(shortBed,"save"),
-                                                 getReportVal(shortBed,"total")),
-                                      sprintf("%d",as.numeric(getReportVal(fripQC,"totalPeaks"))),
-                                      ifelse(is.null(DHSQC),"NA",getPer(getReportVal(DHSQC,"qcbedRate"))),
-                                      ifelse(is.null(blacklistQC),"NA",getPer(getReportVal(blacklistQC,"qcbedRate"))),
-                                      getPer(getReportVal(fripQC,"FRiP")))
-                              ,
-                              `Reference`=c("SE / PE",
-                                            "",
-                                            ">99%",
-                                            ">95%",
-                                            "",
-                                            "",
-                                            ">0.7",
-                                            "",
-                                            "",
-                                            ">0.7",
-                                            ">3",
-                                            ">70%",
-                                            "",
-                                            ">25M",
-                                            #"",
-                                            "",
-                                            "",
-                                            "",
-                                            "",
-                                            ""
-                              )
-                              #`Annotation`=c()
-    )
-    filtstat = data.frame(
-        Item=c("Original total reads",
-               "Reads after adapter removing (ratio)",
-               "Total mapped reads (ratio of original reads)",
-               "-- Non-mitochondrial reads (ratio)",
-               "-- -- Unique mapped reads (ratio)",
-               "-- -- -- Duplicate removed reads (ratio final for use)"
-        ),
-        Value=c(getVMShow(getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                getVMRShow(as.integer(getReportVal(removeAdapter,"statisticslist")[["Number of retained reads"]])/frag,
-                           getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                getVMRShow(getReportVal(sam2Bed,"total"),
-                           getReportVal(removeAdapter,"statisticslist")[[1]],TRUE),
-                getVMRShow(getReportVal(sam2Bed,"non-mitochondrial"),
-                           getReportVal(sam2Bed,"total"),TRUE),
-                getVMRShow(getReportVal(sam2Bed,"non-mitochondrial-multimap"),
-                           getReportVal(sam2Bed,"total"),TRUE),
-                getVMRShow(getReportVal(sam2Bed,"save"),
-                           getReportVal(sam2Bed,"total"),TRUE)
-        ),
-        `Reference`=c("",
-                      ">99%",
-                      ">95%",
-                      ">70%",
-                      ">60%",
-                      ">25M,>60%"
-        )
-    )
-    if(basicAnalysis){
-        atacProcs=list(unzipAndMerge = unzipAndMerge,
-                       renamer = renamer,
-                       removeAdapter = removeAdapter,
-                       bowtie2Mapping = bowtie2Mapping,
-                       libComplexQC = libComplexQC,
-                       sam2Bed = sam2Bed,
-                       bedToBigWig = bedToBigWig,
-                       tssqc100 = tssqc100,
-                       tssqc180_247 = tssqc180_247,
-                       fragLenDistr = fragLenDistr,
-                       peakCalling = peakCalling,
-                       DHSQC = DHSQC,
-                       blacklistQC = blacklistQC,
-                       fripQC = fripQC,
-                       shortBed = shortBed,
-                       Peakanno = Peakanno,
-                       atacQC = atacQC
-        )
-    }else{
-        atacProcs=list(unzipAndMerge = unzipAndMerge,
-                       renamer = renamer,
-                       removeAdapter = removeAdapter,
-                       bowtie2Mapping = bowtie2Mapping,
-                       libComplexQC = libComplexQC,
-                       sam2Bed = sam2Bed,
-                       bedToBigWig = bedToBigWig,
-                       tssqc100 = tssqc100,
-                       tssqc180_247 = tssqc180_247,
-                       fragLenDistr = fragLenDistr,
-                       peakCalling = peakCalling,
-                       DHSQC = DHSQC,
-                       blacklistQC = blacklistQC,
-                       fripQC = fripQC,
-                       shortBed = shortBed,
-                       Peakanno = Peakanno,
-                       goAna = goAna,
-                       output_motifscan = output_motifscan,
-                       cs_output = cs_output,
-                       footprint = footprint,
-                       atacQC = atacQC
-        )
-    }
-
-    conclusion <- list(filelist=filelist,
-                       wholesummary = wholesummary,
-                       atacProcs = atacProcs,
-                       filtstat = filtstat
-    )
-
-    if(createReport){
-        message("Begin to generate report")
-        filename <- strsplit(fastqInput1,".fastq|.FASTQ|.FQ|.fq")[[1]][1]
-        filename <- basename(filename)
-
-        if(basicAnalysis){
-            rmdfile<-system.file(package="esATAC", "extdata", "basicReport.Rmd")
-        }else{
-            rmdfile<-system.file(package="esATAC", "extdata", "Report.Rmd")
-        }
-
-        rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
-        #rmdtext<-sprintf(rmdtext,filename)
-
-        workdir <- getwd()
-        save(filelist,wholesummary,filtstat,atacProcs,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report.Rdata"))
-
-        writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report.Rmd"),useBytes = TRUE)
-        render(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"))
-        #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
-        #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
-        #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
-        message("Generate report done")
-
-        if(!is.null(esATAC_report)&&!is.null(esATAC_result)){
-            file.copy(file.path(.obtainConfigure("tmpdir"),"Report.html"),esATAC_report, overwrite = TRUE)
-            file.copy(getReportVal(atacQC,"pdf"),esATAC_report, overwrite = TRUE)
-            dir.create(file.path(esATAC_result,"peak"))
-            file.copy(getParam(peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
-            file.copy(getReportVal(Peakanno,"annoOutput"),esATAC_result, overwrite = TRUE)
-            if(!basicAnalysis){
-                file.copy(getReportVal(goAna,"goOutput"),esATAC_report, overwrite = TRUE)
-                file.copy(from = getReportVal(atacProcs$footprint,"pdf.dir"),
-                          to = esATAC_result, overwrite = TRUE, recursive = TRUE)
-            }
-            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Report.html")))
-        }else{
-            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report.html")))
-        }
-    }
-
-    invisible(conclusion)
-
+    
 
 
 }
@@ -813,69 +433,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
         stop("fastqInput2 for control can not be NULL")
     }
 
-    param.tmp <- list(...)
-    if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
-        if(!is.null(refdir)){
-            options(atacConf=setConfigure("refdir",refdir))
-        }else{
-            if(!dir.exists("esATAC_pipeline")){
-                dir.create("esATAC_pipeline")
-            }
-            if(!dir.exists(file.path("esATAC_pipeline","refdir"))){
-                dir.create(file.path("esATAC_pipeline","refdir"))
-            }
-            options(atacConf=setConfigure("refdir",file.path("esATAC_pipeline","refdir")))
-        }
-        if(!is.null(threads)){
-            options(atacConf=setConfigure("threads",as.numeric(threads)))
-            message(getConfigure("threads"))
-        }else{
-            options(atacConf=setConfigure("threads",2))
-        }
-        if(!is.null(genome)){
-            options(atacConf=setConfigure("genome",genome))
-        }else{
-            stop("parameter genome is required")
-        }
-        if(!is.null(tmpdir)){
-            options(atacConf=setConfigure("tmpdir",tmpdir))
-        }else{
-            if(!dir.exists("esATAC_pipeline")){
-                dir.create("esATAC_pipeline")
-            }
-            if(!dir.exists(file.path("esATAC_pipeline","intermediate_results"))){
-                dir.create(file.path("esATAC_pipeline","intermediate_results"))
-            }else{
-                warning(sprintf("path '%s' is exist",file.path("esATAC_pipeline","intermediate_results")))
-            }
-            options(atacConf=setConfigure("tmpdir",file.path("esATAC_pipeline","intermediate_results")))
-            tmpdir <- "esATAC_pipeline"
-        }
-        if(is.null(param.tmp[["esATAC_result"]])){
-            esATAC_result<-file.path(dirname(.obtainConfigure("tmpdir")),"esATAC_result")
-            dir.create(esATAC_result)
-        }else{
-            esATAC_result <- param.tmp[["esATAC_result"]]
-        }
-        if(is.null(param.tmp[["esATAC_report"]])){
-            esATAC_report<-file.path(dirname(.obtainConfigure("tmpdir")),"esATAC_report")
-            dir.create(esATAC_report)
-        }else{
-            esATAC_report <- param.tmp[["esATAC_report"]]
-        }
-    }else{
-        if(is.null(param.tmp[["esATAC_result"]])){
-            esATAC_result<-NULL
-        }else{
-            esATAC_result <- param.tmp[["esATAC_result"]]
-        }
-        if(is.null(param.tmp[["esATAC_report"]])){
-            esATAC_report<-NULL
-        }else{
-            esATAC_report <- param.tmp[["esATAC_report"]]
-        }
-    }
-
+   
     if(is.null(motifs)){
         opts <- list()
         opts[["tax_group"]] <- "vertebrates"
@@ -889,7 +447,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
     message("Begin to process case sample...")
     caselist <- atacPipe(fastqInput1 = case[["fastqInput1"]],fastqInput2 = case[["fastqInput2"]],
                          adapter1 = case[["adapter1"]], adapter2 = case[["adapter2"]],interleave = interleave,
-                         createReport = FALSE, motifs = pwm, prefix = "Case_data", chr = chr,
+                         createReport = FALSE, motifs = pwm, pipelineName = "caseIntermediateResult", chr = chr,
                          p.cutoff = p.cutoff, dontSet = TRUE) #saveTmp = TRUE,
     message("Case sample process done")
 
@@ -898,7 +456,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
     message("Begin to process control sample")
     ctrllist <- atacPipe(fastqInput1 = control[["fastqInput1"]],fastqInput2 = control[["fastqInput2"]],
                          adapter1 = control[["adapter1"]], adapter2 = control[["adapter2"]],interleave = interleave,
-                         createReport = FALSE, motifs = pwm, prefix = "Control_data", chr = chr,
+                         createReport = FALSE, motifs = pwm, pipelineName = "controlIntermediateResult", chr = chr,
                          p.cutoff = p.cutoff, dontSet = TRUE) #saveTmp = TRUE,
     message("control sample process done")
 
