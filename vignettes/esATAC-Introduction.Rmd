@@ -541,8 +541,8 @@ library(esATAC)
 # we use temp directiory "td" here 
 # Change it to your directiory because the intermediate file may be huge
 td<-tempdir()
-options(atacConf=setConfigure("tmpdir",td))
-options(atacConf=setConfigure("threads",8))
+setTmpDir(td)
+setThreads(8)
 ```
 
 ### Reference Data Installation and Loading
@@ -564,8 +564,8 @@ library(esATAC)
 ```
 
 ```{r config, eval=FALSE}
-options(atacConf=setConfigure("refdir","path/to/refdatafolder"))
-options(atacConf=setConfigure("genome","hg19"))
+setRefDir("path/to/refdatafolder")
+setGenome("hg19")
 ```
 
 NOTE: The installation will consume several hours for data download and
@@ -612,24 +612,25 @@ dir.create("./esATAC_pipeline/refdir")
 dir.create("./esATAC_pipeline/result")
 
 #configure reference path, result path, the max number of threads, genome
-options(atacConf=setConfigure("refdir","esATAC_pipeline/refdir"))
-options(atacConf=setConfigure("tmpdir","esATAC_pipeline/result"))
-options(atacConf=setConfigure("threads",2))
-options(atacConf=setConfigure("genome","hg19"))
+setRefDir("esATAC_pipeline/refdir")
+setTmpDir("esATAC_pipeline/result")
+setThreads(2)
+setGenome("hg19")
 
 #raw reads
 fastqInput1 = system.file(package="esATAC", "extdata", "chr20_1.1.fq.gz")
 fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz") 
 
 #pipeline           
-atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2) %T>%
+atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2) %>%
 atacQCReport %>%
 atacRenamer %>%
+atacFindAdapter %>%
 atacRemoveAdapter %>%
-atacBowtie2Mapping %T>% 
+atacBowtie2Mapping %>% 
 atacLibComplexQC %>% 
-atacSamToBed(maxFragLen = 2000) %T>%
-atacBedToBigWig %T>% 
+atacSamToBed(maxFragLen = 2000) %>%
+atacBedToBigWig %>% 
 atacFragLenDistr %>%
 atacBedUtils(maxFragLen = 100, chrFilterList = NULL) %>%
 atacPeakCalling
@@ -658,10 +659,11 @@ dir.create("./esATAC_pipeline/refdir")
 dir.create("./esATAC_pipeline/result")
 
 #configure reference path, result path, the max number of threads, genome
-options(atacConf=setConfigure("refdir","esATAC_pipeline/refdir"))
-options(atacConf=setConfigure("tmpdir","esATAC_pipeline/result"))
-options(atacConf=setConfigure("threads",2))
-options(atacConf=setConfigure("genome","hg19"))
+setRefDir("esATAC_pipeline/refdir")
+setTmpDir("esATAC_pipeline/result")
+setThreads(2)
+setGenome("hg19")
+
 ```
 
 In this example, we create folder "./esATAC_pipeline/refdir" for "refdir"  and "./esATAC_pipeline/result" for "tmpdir". Two threads are allowed. Genome reference and annotations will be install under "./esATAC_pipeline/refdir" if they are not complete.
@@ -680,11 +682,12 @@ fastqInput2 = system.file(package="esATAC", "extdata", "chr20_2.1.fq.gz")
 atacUnzipAndMerge(fastqInput1 = fastqInput1,fastqInput2 = fastqInput2) %T>%
 atacQCReport %>%
 atacRenamer %>%
+atacFindAdapter %>%
 atacRemoveAdapter %>%
-atacBowtie2Mapping %T>% 
+atacBowtie2Mapping %>% 
 atacLibComplexQC %>% 
-atacSamToBed(maxFragLen = 2000) %T>%
-atacBedToBigWig %T>% 
+atacSamToBed(maxFragLen = 2000) %>%
+atacBedToBigWig %>% 
 atacFragLenDistr %>%
 atacBedUtils(maxFragLen = 100, chrFilterList = NULL) %>%
 atacPeakCalling
@@ -712,7 +715,7 @@ reads_merged_1 <- file.path(td,"reads1.fastq")
 reads_merged_2 <- file.path(td,"reads2.fastq")
 atacproc <- 
 atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2) %>%
-atacRenamer %>% atacRemoveAdapter
+atacRenamer %>% atacFindAdapter %>% atacRemoveAdapter
 ```
 If you want to modify the parameters of AdapterRemoval,
 you have to refer to Rbowtie2 package:
@@ -833,7 +836,7 @@ library(esATAC)
 library(ChIPseeker)
 ```
 ```{r eval = TRUE, echo = FALSE, warning = FALSE, results = 'hide', message = FALSE}
-peakanno <- getReportVal(AnnoInfo, "annoOutput.rds")
+peakanno <- report(AnnoInfo)[["annoOutput.rds"]]
 plotAnnoPie(x = peakanno)
 ```
 
@@ -881,7 +884,7 @@ library(esATAC)
 ```
 
 ```{r eval = TRUE, echo = FALSE, warning = FALSE}
-go_path <- getReportVal(goAna, "goOutput")
+go_path <- report(goAna)[["goOutput"]]
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
 knitr::kable(go_data[1:5, ])
@@ -990,7 +993,7 @@ bunzip2(bedbzfile,destname=bedfile,overwrite=TRUE,remove=FALSE)
 peakproc <-bedUtils(bedInput = bedfile,maxFragLen = 100, chrFilterList = NULL) %>%
 atacPeakCalling 
 
-peakproc %>%  printMap
+printMap(stepType = stepType(peakproc))
 
 ```
 
@@ -1009,7 +1012,9 @@ library(esATAC)
 
 ```{r qpara, warning=FALSE, message=FALSE}
 #query all of available parameters
-getParamItems(peakproc)
+names(input(peakproc))
+names(output(peakproc))
+names(param(peakproc))
 ```
 
 The value of a specific parameter can be obtain like this:
@@ -1048,7 +1053,7 @@ library(esATAC)
 ```
 
 ```{r getReport1,message=FALSE}
-getReportItems(samToBedProc)
+names(report(samToBedProc))
 ```
 
 The value of specific report item can be get like this:
@@ -1059,7 +1064,7 @@ library(esATAC)
 
 ```{r getReport2,message=FALSE, results = 'hide'}
 #query a parameter value
-getReportVal(samToBedProc,"report")
+report(samToBedProc)$table
 
 ```
 
@@ -1073,8 +1078,14 @@ library(esATAC)
 ```
 
 ```{r clearcache, warning=FALSE, results='hide', message=FALSE}
-clearProcCache(peakproc)
-process(peakproc)
+clearStepCache(peakproc)
+```
+
+and rerun the script
+```{r clearcache1, warning=FALSE, results='hide', message=FALSE}
+
+peakproc <-bedUtils(bedInput = bedfile,maxFragLen = 100, chrFilterList = NULL) %>%
+atacPeakCalling 
 ```
 
 # Acknowledgement

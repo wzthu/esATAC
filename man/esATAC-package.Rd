@@ -10,8 +10,8 @@ atacPipe(
   genome,
   fastqInput1,
   fastqInput2 = NULL,
-  refdir = NULL,
-  tmpdir = NULL,
+  tmpdir = file.path(getwd(), "esATAC-pipeline"),
+  refdir = file.path(tmpdir, "refdir"),
   threads = 2,
   adapter1 = NULL,
   adapter2 = NULL,
@@ -19,7 +19,7 @@ atacPipe(
   basicAnalysis = FALSE,
   createReport = TRUE,
   motifs = NULL,
-  prefix = NULL,
+  pipelineName = "pipe",
   chr = c(1:22, "X", "Y"),
   p.cutoff = 1e-06,
   ...
@@ -41,9 +41,9 @@ For single-end sequencing files and interleaved paired-end sequencing
 files(argument interleaved=\code{TRUE}),
 it must be \code{NULL}.}
 
-\item{refdir}{\code{Character} scalar. The path for reference data being installed to and storage.}
-
 \item{tmpdir}{\code{Character} scalar. The temporary file storage path.}
+
+\item{refdir}{\code{Character} scalar. The path for reference data being installed to and storage.}
 
 \item{threads}{\code{Integer} scalar. The max threads allowed to be created.}
 
@@ -63,9 +63,6 @@ like GO annoation and motif analysis}
 \item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.}
 
-\item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
-when multiple pipeline generating file in the same tempdir.}
-
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
@@ -73,6 +70,9 @@ Default:c(1:22, "X", "Y").}
 \item{p.cutoff}{p-value cutoff for returning motifs, default: 1e-6.}
 
 \item{...}{Additional arguments, currently unused.}
+
+\item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
+when multiple pipeline generating file in the same tempdir.}
 }
 \value{
 \code{List} scalar. It is a list that save the result of the pipeline.

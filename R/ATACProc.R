@@ -45,6 +45,8 @@
 #' @importMethodsFrom pipeFrame init
 #' @importMethodsFrom pipeFrame isReady
 #' @importMethodsFrom pipeFrame writeLog
+#' 
+#' 
 
 
 #' @name ATACProc-class
