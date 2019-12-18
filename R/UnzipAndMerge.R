@@ -151,24 +151,6 @@ setMethod(
 )
 
 
-setGeneric(
-    name = "removeCompressSuffix",
-    def = function(.Object,filename,...){
-        standardGeneric("removeCompressSuffix")
-    }
-)
-setMethod(
-    f = "removeCompressSuffix",
-    signature = "UnzipAndMerge",
-    definition = function(.Object,filename,...){
-        filename<-gsub(sprintf("[.]%s$", "bz2"), "", filename, ignore.case=TRUE)
-        filename<-gsub(sprintf("[.]%s$", "gz"), "", filename, ignore.case=TRUE)
-        filename<-gsub(sprintf("[.]%s$", "fastq"), "", filename, ignore.case=TRUE)
-        filename<-gsub(sprintf("[.]%s$", "fq"), "", filename, ignore.case=TRUE)
-        filename<-paste0(filename,".",getProcName(.Object),".fq")
-        return(filename)
-    }
-)
 
 
 setMethod(
@@ -226,6 +208,9 @@ setMethod(
 #' \code{\link{atacRenamer}}
 #' \code{\link{atacQCReport}}
 #' @examples
+#' 
+#' ignoreCheck() # warnning: run this for fast test only
+#' 
 #' td<-tempdir()
 #' setTmpDir(td)
 #' 

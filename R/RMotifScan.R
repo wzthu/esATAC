@@ -118,7 +118,7 @@ setMethod(
 #' Input region path. UCSC bed file is recommented. Other file should be able
 #' to import as \code{\link{GRanges}} objects through
 #' \code{\link{import}}.
-#' @param genome BSgenome object, Default: from \code{\link{setConfigure}}.
+#' @param genome BSgenome object, Default: from \code{\link{setRefRc}}.
 #' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 #' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.
 #' @param p.cutoff p-value cutoff for returning motifs.

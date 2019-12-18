@@ -85,8 +85,8 @@ setMethod(
             if(param(.Object)$threads>1){
                 threadparam<-c("--threads",as.character(param(.Object)$threads))
             }
-        }else if(.obtainConfigure("threads")>1){
-            threadparam<-c("--threads",as.character(.obtainConfigure("threads")))
+        }else if(getThreads()>1){
+            threadparam<-c("--threads",as.character(getThreads()))
         }else{
             threadparam<-NULL
         }

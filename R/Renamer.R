@@ -151,6 +151,8 @@ singleCall<-function(number,.renamer_call,.Object){
 #' \code{\link{atacQCReport}}
 #' \code{\link{atacRemoveAdapter}}
 #' @examples
+#' 
+#' ignoreCheck() # warnning: run this for fast test only
 #' library(magrittr)
 #' td <- tempdir()
 #' setTmpDir(td)

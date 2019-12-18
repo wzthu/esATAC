@@ -56,7 +56,7 @@ It has to be the return value of upstream process:
 
 \item{background}{background peak file path.}
 
-\item{genome}{BSgenome object, Default: from \code{\link{setConfigure}}.}
+\item{genome}{BSgenome object, Default: from \code{\link{getRefRc}}.}
 
 \item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.}

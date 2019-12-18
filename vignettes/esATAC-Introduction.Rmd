@@ -61,6 +61,7 @@ you need to load esATAC like this each time before using the package.
 
 ```{r loading00,message=FALSE}
 library(esATAC)
+ignoreCheck()
 ```
 
 

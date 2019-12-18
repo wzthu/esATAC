@@ -57,6 +57,9 @@ An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \examples{
+
+ignoreCheck() # warnning: run this for fast test only
+
 td<-tempdir()
 setTmpDir(td)
 
