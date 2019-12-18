@@ -37,6 +37,7 @@
 #' @importFrom pipeFrame regAttachedStep
 #' @importFrom pipeFrame checkAndInstallTxDb
 #' @importFrom pipeFrame checkAndInstallOrgDb
+#' @importFrom pipeFrame ignoreCheck
 #' @importMethodsFrom pipeFrame checkAllPath
 #' @importMethodsFrom pipeFrame checkRequireParam
 #' @importMethodsFrom pipeFrame clearStepCache
