@@ -106,6 +106,9 @@ The minimum fragment size will be retained.}
 \item{maxFragLen}{\code{Integer} scalar
 The maximum fragment size will be retained.}
 
+\item{newStepType}{\code{Character} scalar.
+New step type name for different default parameters.}
+
 \item{...}{Additional arguments, currently unused.}
 
 \item{reportOutput}{\code{Character} scalar.

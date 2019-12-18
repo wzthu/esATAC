@@ -63,6 +63,9 @@ like GO annoation and motif analysis}
 \item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.}
 
+\item{pipelineName}{\code{Character} scalar. Temporary file prefix for identifying files
+when multiple pipeline generating file in the same tempdir.}
+
 \item{chr}{Which chromatin the program will processing. It must be identical
 with the filename of cut site information files or subset of .
 Default:c(1:22, "X", "Y").}
@@ -70,9 +73,6 @@ Default:c(1:22, "X", "Y").}
 \item{p.cutoff}{p-value cutoff for returning motifs, default: 1e-6.}
 
 \item{...}{Additional arguments, currently unused.}
-
-\item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
-when multiple pipeline generating file in the same tempdir.}
 }
 \value{
 \code{List} scalar. It is a list that save the result of the pipeline.

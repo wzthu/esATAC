@@ -3,7 +3,6 @@
 \name{UnzipAndMerge}
 \alias{UnzipAndMerge}
 \alias{atacUnzipAndMerge}
-\alias{removeAdapter}
 \alias{unzipAndMerge}
 \title{Unzip and merge fastq files}
 \usage{
