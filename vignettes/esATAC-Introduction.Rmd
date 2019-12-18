@@ -1,8 +1,7 @@
 ---
 title: "esATAC: an Easy-to-use Systematic pipeline for ATAC-seq data analysis"
-author:
-- name: "Zheng Wei and Wei Zhang"
-  date: "`r Sys.Date()`"
+author: "Zheng Wei and Wei Zhang"
+date: "`r Sys.Date()`"
 output:
   prettydoc::html_pretty:
     theme: architect
