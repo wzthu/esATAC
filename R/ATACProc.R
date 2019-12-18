@@ -32,6 +32,12 @@
 #' @importFrom pipeFrame addFileSuffix
 #' @importFrom pipeFrame loadConfig
 #' @importFrom pipeFrame saveConfig
+#' @importFrom pipeFrame input "input<-" output "output<-" "param" "param<-" 
+#' @importFrom pipeFrame "property" "property<-" "report" "report<-"
+#' @importFrom pipeFrame regAttachedStep
+#' @importFrom pipeFrame checkAndInstallTxDb
+#' @importFrom pipeFrame checkAndInstallOrgDb
+#' @importFrom pipeFrame ignoreCheck
 #' @importMethodsFrom pipeFrame checkAllPath
 #' @importMethodsFrom pipeFrame checkRequireParam
 #' @importMethodsFrom pipeFrame clearStepCache
