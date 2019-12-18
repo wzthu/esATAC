@@ -90,6 +90,8 @@ If you want to use this function independently,
 you can use \code{renamer} instead.
 }
 \examples{
+
+ignoreCheck() # warnning: run this for fast test only
 library(magrittr)
 td <- tempdir()
 setTmpDir(td)

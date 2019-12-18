@@ -30,7 +30,8 @@ setMethod(
             input(.Object)[["qcbedInput"]]<-getRefFiles("blacklist");
             property(.Object)$fixtag <- "blacklist"
         }else{
-            input(.Object)[["qcbedInput"]]<-qcbedInput;
+            input(.Object)[["qcbedInput"]]<-qcbedInput
+            property(.Object)$fixtag <- "other"
         }
         if(!is.null(bedInput)){
             input(.Object)[["bedInput"]] <- bedInput;

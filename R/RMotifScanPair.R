@@ -235,7 +235,7 @@ setMethod(
 #' @param peak1 peak file path.
 #' @param peak2 peak file path.
 #' @param background background peak file path.
-#' @param genome BSgenome object, Default: from \code{\link{setConfigure}}.
+#' @param genome BSgenome object, Default: from \code{\link{getRefRc}}.
 #' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 #' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.
 #' @param p.cutoff p-value cutoff for returning motifs.

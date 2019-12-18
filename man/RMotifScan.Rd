@@ -49,7 +49,7 @@ Input region path. UCSC bed file is recommented. Other file should be able
 to import as \code{\link{GRanges}} objects through
 \code{\link{import}}.}
 
-\item{genome}{BSgenome object, Default: from \code{\link{setConfigure}}.}
+\item{genome}{BSgenome object, Default: from \code{\link{setRefRc}}.}
 
 \item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.}
