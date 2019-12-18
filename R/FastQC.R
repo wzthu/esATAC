@@ -4,41 +4,44 @@ setClass(Class = "FastQC",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "FastQC",
-    definition = function(.Object, atacProc, ..., input_file = NULL, output_file = NULL, editable = FALSE){
-        .Object <- init(.Object,"FastQC",editable,list(arg1=atacProc))
-
+    definition = function(.Object,prevSteps = list(), ...){
+        atacProc <- NULL
+        if(length(prevSteps)>0){
+            atacProc <- prevSteps[[1]]
+        }
+        allparam <- list(...)
+        input_file <- allparam[["input_file"]]
+        output_file <- allparam[["output_file"]]
+        
         if((!is.null(atacProc)) && (class(atacProc)[1] == "UnzipAndMerge")){ # atacproc from UnzipAndMerge
             if(is.null(getParam(atacProc,"fastqOutput2"))){ # single end
-                .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
+                input(.Object)[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
             }else{ # paired end
-                .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
+                input(.Object)[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
                                                   as.vector(unlist(getParam(atacProc, "fastqOutput2"))))
             }
         }else if((!is.null(atacProc)) && (class(atacProc)[1] == "Renamer")){ # atacproc from renamer
             if(is.null(getParam(atacProc,"fastqOutput2"))){ # single end
-                .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
+                input(.Object)[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))))
             }else{ # paired end
-                .Object@paramlist[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
+                input(.Object)[["Input"]] <- c(as.vector(unlist(getParam(atacProc, "fastqOutput1"))),
                                                   as.vector(unlist(getParam(atacProc, "fastqOutput2"))))
             }
         }else if(((!is.null(atacProc)) && (class(atacProc)[1] != "UnzipAndMerge")) ||
                  ((!is.null(atacProc)) && (class(atacProc)[1] != "Renamer"))){
             stop("Input class must be got from 'UnzipAndMerge' or 'Renamer'!")
         }else{
-            .Object@paramlist[["Input"]] <- input_file
+            input(.Object)[["Input"]] <- input_file
         }
 
         if(is.null(output_file)){
-            output_name <- paste(basename(tools::file_path_sans_ext(.Object@paramlist[["Input"]][1])),
-                                 "_FastQC.pdf", sep = "")
-            .Object@paramlist[["Output"]] <- file.path(.obtainConfigure("tmpdir"), output_name)
+            output(.Object)[["Output"]] <- getAutoPath(.Object,input(.Object)[["Input"]][1],"fastq|fq","FastQC.pdf")
         }else{
-            .Object@paramlist[["Output"]] <- output_file
+            output(.Object)[["Output"]] <- addFileSuffix(output_file,".pdf")
         }
 
-        paramValidation(.Object)
         .Object
     }
 )
@@ -48,55 +51,20 @@ setMethod(
     f = "processing",
     signature = "FastQC",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object,paste0("processing file:"))
-        .Object <- writeLog(.Object,sprintf("source:%s", .Object@paramlist[["Input"]]))
-        .Object <- writeLog(.Object,sprintf("destination:%s", .Object@paramlist[["Output"]]))
-        qQCReport(input = .Object@paramlist[["Input"]], pdfFilename = .Object@paramlist[["Output"]])
+        qQCReport(input = input(.Object)[["Input"]], pdfFilename = output(.Object)[["Output"]])
+
         .Object
     }
 )
 
-
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "FastQC",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["Input"]])){
-            stop("Parameter input_file is required!")
-        }
+    definition = function(.Object, ...){
+        report(.Object)$pdf <- output(.Object)[["Output"]]
+        .Object
     }
 )
-
-
-setMethod(
-    f = "checkAllPath",
-    signature = "FastQC",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["Input"]])
-        checkPathExist(.Object,.Object@paramlist[["Output"]])
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "FastQC",
-    definition = function(.Object, item){
-        if(item == "pdf"){
-            return(.Object@paramlist[["Output"]])
-        }
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "FastQC",
-    definition = function(.Object){
-        return(c("pdf"))
-    }
-)
-
 
 
 
@@ -154,13 +122,9 @@ setMethod(
     definition = function(atacProc,
                           input_file = NULL,
                           output_file = NULL, ...){
-        atacproc <- new(
-            "FastQC",
-            atacProc = atacProc,
-            input_file = input_file,
-            output_file = output_file)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "FastQC", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -169,11 +133,7 @@ setMethod(
 #' @aliases qcreport
 #' @export
 qcreport <- function(input_file, output_file = NULL, ...){
-    atacproc <- new(
-        "FastQC",
-        atacProc = NULL,
-        input_file = input_file,
-        output_file = output_file)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "FastQC", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

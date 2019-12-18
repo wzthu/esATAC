@@ -4,70 +4,66 @@ setClass(Class = "RPeakAnno",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "RPeakAnno",
-    definition = function(.Object, atacProc, ..., peakInput = NULL, tssRegion = NULL, TxDb = NULL, level = NULL,
-                          genomicAnnotationPriority = NULL, annoDb = NULL, addFlankGeneInfo = NULL,
-                          flankDistance = NULL, sameStrand = NULL, ignoreOverlap = NULL, ignoreUpstream = NULL,
-                          ignoreDownstream = NULL, overlap = NULL, annoOutput = NULL, editable = FALSE){
-        .Object <- init(.Object, "RPeakAnno", editable, list(arg1 = atacProc))
-
+    definition = function(.Object, prevSteps = list(), ...){
+        allparam <- list(...)
+        peakInput <- allparam[["peakInput"]]
+        tssRegion <- allparam[["tssRegion"]]
+        TxDb <- allparam[["TxDb"]]
+        level <- allparam[["level"]]
+        genomicAnnotationPriority <- allparam[["genomicAnnotationPriority"]]
+        annoDb <- allparam[["annoDb"]]
+        addFlankGeneInfo <- allparam[["addFlankGeneInfo"]]
+        flankDistance <- allparam[["flankDistance"]]
+        sameStrand <- allparam[["sameStrand"]]
+        ignoreOverlap <- allparam[["ignoreOverlap"]]
+        ignoreUpstream <- allparam[["ignoreUpstream"]]
+        ignoreDownstream <- allparam[["ignoreDownstream"]]
+        overlap <- allparam[["overlap"]]
+        annoOutput <- allparam[["annoOutput"]]
+      
+        atacProc <- NULL
+        if(length(prevSteps) > 0){
+            atacProc <- prevSteps[[1]]
+        }
         if(!is.null(atacProc)){ # class from PeakCallingFseq
-            .Object@paramlist[["peakInput"]] <- getParam(atacProc, "bedOutput")
-            regexProcName <- sprintf("(bed|%s)", getProcName(atacProc))
+            input(.Object)[["peakInput"]] <- getParam(atacProc, "bedOutput")
         }else{
-            .Object@paramlist[["peakInput"]] <- peakInput
-            regexProcName <- "(bed|%s)"
+            input(.Object)[["peakInput"]] <- peakInput
         }
-        .Object@paramlist[["tssRegion"]] <- tssRegion
+        param(.Object)[["tssRegion"]] <- tssRegion
         if(!is.null(TxDb)){
-            .Object@paramlist[["TxDb"]] <- TxDb
+            param(.Object)[["TxDb"]] <- TxDb
         }else{
-            .Object@paramlist[["TxDb"]] <- .obtainConfigure("knownGene")
+            param(.Object)[["TxDb"]] <- getRefRc("knownGene")
         }
 
-        .Object@paramlist[["level"]] <- level
-        .Object@paramlist[["genomicAnnotationPriority"]] <- genomicAnnotationPriority
+        param(.Object)[["level"]] <- level
+        param(.Object)[["genomicAnnotationPriority"]] <- genomicAnnotationPriority
         if(is.null(annoDb)){
-            .Object@paramlist[["annoDb"]] <- .obtainConfigure("annoDb")
+            param(.Object)[["annoDb"]] <- getRefRc("knownGene")
         }else{
-            .Object@paramlist[["annoDb"]] <- annoDb
+            param(.Object)[["annoDb"]] <- annoDb
         }
-        .Object@paramlist[["addFlankGeneInfo"]] <- addFlankGeneInfo
-        .Object@paramlist[["flankDistance"]] <- flankDistance
-        .Object@paramlist[["sameStrand"]] <- sameStrand
-        .Object@paramlist[["ignoreOverlap"]] <- ignoreOverlap
-        .Object@paramlist[["ignoreUpstream"]] <- ignoreUpstream
-        .Object@paramlist[["ignoreDownstream"]] <- ignoreDownstream
-        .Object@paramlist[["overlap"]] <- overlap
+        param(.Object)[["addFlankGeneInfo"]] <- addFlankGeneInfo
+        param(.Object)[["flankDistance"]] <- flankDistance
+        param(.Object)[["sameStrand"]] <- sameStrand
+        param(.Object)[["ignoreOverlap"]] <- ignoreOverlap
+        param(.Object)[["ignoreUpstream"]] <- ignoreUpstream
+        param(.Object)[["ignoreDownstream"]] <- ignoreDownstream
+        param(.Object)[["overlap"]] <- overlap
 
         # unnecessary parameters
         if(is.null(annoOutput)){
-            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["peakInput"]], regexProcName)
-            annoOutput.dir <- file.path(.obtainConfigure("tmpdir"),
-                                        paste0(prefix, ".", getProcName(.Object)))
-            .Object@paramlist[["annoOutput.pdf"]] <- paste(annoOutput.dir,
-                                                           ".pdf", sep = "")
-            .Object@paramlist[["annoOutput.txt"]] <- paste(annoOutput.dir,
-                                                          ".txt", sep = "")
-            .Object@paramlist[["annoOutput.rds"]] <- paste(annoOutput.dir,
-                                                           ".rds", sep = "")
+            output(.Object)[["annoOutput.pdf"]] <- getAutoPath(.Object, input(.Object)[["peakInput"]], "bed", ".pdf")
+            output(.Object)[["annoOutput.txt"]] <- getAutoPath(.Object, input(.Object)[["peakInput"]], "bed", ".txt")
+            output(.Object)[["annoOutput.rds"]] <- getAutoPath(.Object, input(.Object)[["peakInput"]], "bed", ".rds")
         }else{
-            name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
-            suffix <- tail(name_split, 1)
-            name_split <- head(name_split, -1)
-            if(suffix == "df"){
-                .Object@paramlist[["annoOutput.txt"]] <- annoOutput
-                .Object@paramlist[["annoOutput.pdf"]] <- paste(name_split, "pdf", sep = ".")
-                .Object@paramlist[["annoOutput.rds"]] <- paste(name_split, "rds", sep = ".")
-            }else{
-                .Object@paramlist[["annoOutput.txt"]] <- paste(annoOutput, "df", sep = ".")
-                .Object@paramlist[["annoOutput.pdf"]] <- paste(annoOutput, "pdf", sep = ".")
-                .Object@paramlist[["annoOutput.rds"]] <- paste(annoOutput, "rds", sep = ".")
-            }
+            output(.Object)[["annoOutput.txt"]] <- addFileSuffix(annoOutput,".txt")
+            output(.Object)[["annoOutput.pdf"]] <-  addFileSuffix(annoOutput,".pdf")
+            output(.Object)[["annoOutput.rds"]] <-  addFileSuffix(annoOutput,".rds")
         }
-
-        paramValidation(.Object)
         .Object
     }
 )
@@ -77,85 +73,51 @@ setMethod(
     f = "processing",
     signature = "RPeakAnno",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object,paste0("processing file:"))
-        .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["peakInput"]]))
-        .Object <- writeLog(.Object,sprintf("dataframe destination:%s",.Object@paramlist[["annoOutput.txt"]]))
-        .Object <- writeLog(.Object,sprintf("Image destination:%s",.Object@paramlist[["annoOutput.pdf"]]))
-
-        peakGRange <- rtracklayer::import(con = .Object@paramlist[["peakInput"]], format = "bed")
+        peakGRange <- rtracklayer::import(con = input(.Object)[["peakInput"]], format = "bed")
+        txdb<-param(.Object)[["TxDb"]]
+        if(is.character(txdb)){
+          library(txdb,character.only = TRUE)
+          txdb <- get0(txdb)
+        }
         peakAn <- ChIPseeker::annotatePeak(peak = peakGRange,
-                                           tssRegion = .Object@paramlist[["tssRegion"]],
-                                           TxDb = .Object@paramlist[["TxDb"]],
-                                           level = .Object@paramlist[["level"]],
-                                           genomicAnnotationPriority = .Object@paramlist[["genomicAnnotationPriority"]],
-                                           annoDb = .Object@paramlist[["annoDb"]],
-                                           addFlankGeneInfo = .Object@paramlist[["addFlankGeneInfo"]],
-                                           flankDistance = .Object@paramlist[["flankDistance"]],
-                                           sameStrand = .Object@paramlist[["sameStrand"]],
-                                           ignoreOverlap = .Object@paramlist[["ignoreOverlap"]],
-                                           ignoreUpstream = .Object@paramlist[["ignoreUpstream"]],
-                                           ignoreDownstream = .Object@paramlist[["ignoreDownstream"]],
-                                           overlap = .Object@paramlist[["overlap"]])
-        saveRDS(peakAn, .Object@paramlist[["annoOutput.rds"]])
-        pdf(file = .Object@paramlist[["annoOutput.pdf"]])
+                                           tssRegion = param(.Object)[["tssRegion"]],
+                                           TxDb = txdb,
+                                           level = param(.Object)[["level"]],
+                                           genomicAnnotationPriority = param(.Object)[["genomicAnnotationPriority"]],
+                                           annoDb = param(.Object)[["annoDb"]],
+                                           addFlankGeneInfo = param(.Object)[["addFlankGeneInfo"]],
+                                           flankDistance = param(.Object)[["flankDistance"]],
+                                           sameStrand = param(.Object)[["sameStrand"]],
+                                           ignoreOverlap = param(.Object)[["ignoreOverlap"]],
+                                           ignoreUpstream = param(.Object)[["ignoreUpstream"]],
+                                           ignoreDownstream = param(.Object)[["ignoreDownstream"]],
+                                           overlap = param(.Object)[["overlap"]])
+        saveRDS(peakAn, output(.Object)[["annoOutput.rds"]])
+        pdf(file = output(.Object)[["annoOutput.pdf"]])
         ChIPseeker::plotAnnoPie(x = peakAn)
         dev.off()
         tmp_file <- as.data.frame(peakAn)
         colnames(tmp_file)[1] <- "chromatin"
-        write.table(x = tmp_file, file = .Object@paramlist[["annoOutput.txt"]],
+        write.table(x = tmp_file, file = output(.Object)[["annoOutput.txt"]],
                     quote = FALSE, row.names = FALSE, sep = "\t",
                     col.names = TRUE, append = FALSE)
+        
+
+        
         .Object
     }
 )
 
 
 setMethod(
-    f = "checkRequireParam",
-    signature = "RPeakAnno",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["peakInput"]])){
-            stop("peakInput is required.")
-        }
-    }
+  f = "genReport",
+  signature = "RPeakAnno",
+  definition = function(.Object, ...){
+    report(.Object)$annoOutput.rds <- readRDS(output(.Object)[["annoOutput.rds"]])
+    report(.Object)$annoOutput <- output(.Object)[["annoOutput.txt"]]
+    .Object
+  }
 )
-
-
-setMethod(
-    f = "checkAllPath",
-    signature = "RPeakAnno",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["peakInput"]])
-        checkPathExist(.Object,.Object@paramlist[["annoOutput.txt"]])
-        checkPathExist(.Object,.Object@paramlist[["annoOutput.pdf"]])
-        checkPathExist(.Object,.Object@paramlist[["annoOutput.rds"]])
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "RPeakAnno",
-    definition = function(.Object, item, ...){
-        if(item == "annoOutput.rds"){
-            peakAnno <- readRDS(.Object@paramlist[["annoOutput.rds"]])
-        }else if(item == "annoOutput"){
-            peakAnno <- .Object@paramlist[["annoOutput.txt"]]
-        }
-        return(peakAnno)
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RPeakAnno",
-    definition = function(.Object, ...){
-        return(c("annoOutput.rds", "annoOutput"))
-    }
-)
-
-
 
 #' @name RPeakAnno
 #' @title Annotate ATAC-seq Peak
@@ -245,25 +207,9 @@ setMethod(
                           ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                           ignoreDownstream = FALSE, overlap = "TSS",
                           annoOutput = NULL, ...){
-        atacproc <- new(
-            "RPeakAnno",
-            atacProc = atacProc,
-            peakInput = peakInput,
-            tssRegion = tssRegion,
-            TxDb = TxDb,
-            level = level,
-            genomicAnnotationPriority = genomicAnnotationPriority,
-            annoDb = annoDb,
-            addFlankGeneInfo = addFlankGeneInfo,
-            flankDistance = flankDistance,
-            sameStrand = sameStrand,
-            ignoreOverlap = ignoreOverlap,
-            ignoreUpstream = ignoreUpstream,
-            ignoreDownstream = ignoreDownstream,
-            overlap = overlap,
-            annoOutput = annoOutput)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "RPeakAnno", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -280,23 +226,7 @@ peakanno <- function(peakInput, tssRegion = c(-1000, 1000),
                      ignoreOverlap = FALSE, ignoreUpstream = FALSE,
                      ignoreDownstream = FALSE, overlap = "TSS",
                      annoOutput = NULL, ...){
-    atacproc <- new(
-        "RPeakAnno",
-        atacProc = NULL,
-        peakInput = peakInput,
-        tssRegion = tssRegion,
-        TxDb = TxDb,
-        level = level,
-        genomicAnnotationPriority = genomicAnnotationPriority,
-        annoDb = annoDb,
-        addFlankGeneInfo = addFlankGeneInfo,
-        flankDistance = flankDistance,
-        sameStrand = sameStrand,
-        ignoreOverlap = ignoreOverlap,
-        ignoreUpstream = ignoreUpstream,
-        ignoreDownstream = ignoreDownstream,
-        overlap = overlap,
-        annoOutput = annoOutput)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "RPeakAnno", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

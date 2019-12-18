@@ -3,48 +3,54 @@ setClass(Class = "TSSQC",
 )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "TSSQC",
-    definition = function(.Object,atacProc, ..., txdbKnownGene = NULL,
-                          bsgenome = NULL,reportPrefix=NULL,bedInput = NULL,
-                          fregLenRange=c(0,2000),tssUpdownstream=1000,editable=FALSE){
-        .Object <- init(.Object,"TSSQC",editable,list(arg1=atacProc))
-        if(!is.null(atacProc)){
-            .Object@paramlist[["bedInput"]] <- getParam(atacProc, "bedOutput");
-            regexProcName<-sprintf("(BED|bed|Bed|%s)", getProcName(atacProc))
-        }else{
-            regexProcName<-"(BED|bed|Bed)"
+    definition = function(.Object,prevSteps, ...){
+        allparam <- list(...)
+        bedInput <- allparam[["bedInput"]]
+        txdbKnownGene <- allparam[["txdbKnownGene"]]
+        bsgenome <- allparam[["bsgenome"]]
+        reportPrefix <- allparam[["reportPrefix"]]
+        fragLenRange <- allparam[["fragLenRange"]]
+        tssUpdownstream <- allparam[["tssUpdownstream"]]
+        
+        if(length(prevSteps) > 0){
+            if(!is.null(prevSteps[[1]])){
+                atacProc <- prevSteps[[1]]
+                atacProc<-c(unlist(atacProc),list())
+                atacProc <- atacProc[[length(atacProc)]]
+                input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
+            }
         }
+        
         if(!is.null(txdbKnownGene)){
-            .Object@paramlist[["knownGene"]] <- txdbKnownGene;
+            param(.Object)[["knownGene"]] <- txdbKnownGene;
         }else{
-            .Object@paramlist[["knownGene"]]<-.obtainConfigure("knownGene");
+            param(.Object)[["knownGene"]]<- getRefRc("knownGene")
         }
 
         if(!is.null(bedInput)){
-            .Object@paramlist[["bedInput"]] <- bedInput;
+            input(.Object)[["bedInput"]] <- bedInput;
         }
 
         if(is.null(reportPrefix)){
-            if(!is.null(.Object@paramlist[["bedInput"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["bedInput"]],regexProcName)
-                .Object@paramlist[["tsspdfOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".pdf"))
-                .Object@paramlist[["tsstxtOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".txt"))
-                .Object@paramlist[["tssreportOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".report.txt"))
+            if(!is.null(input(.Object)[["bedInput"]])){
+                output(.Object)[["tsspdfOutput"]] <- getAutoPath(.Object,input(.Object)[["bedInput"]],"BED|bed|Bed","pdf")
+                output(.Object)[["tsstxtOutput"]] <- getAutoPath(.Object,input(.Object)[["bedInput"]],"BED|bed|Bed","txt")
+                output(.Object)[["tssreportOutput"]] <- getAutoPath(.Object,input(.Object)[["bedInput"]],"BED|bed|Bed","report.txt")
             }
             #.Object@paramlist[["reportPrefix"]] <- paste0(.Object@paramlist[["bedInput"]],".TSSQCreport");
         }else{
-            .Object@paramlist[["tsspdfOutput"]] <- paste0(reportPrefix,".pdf")
-            .Object@paramlist[["tsstxtOutput"]] <- paste0(reportPrefix,".txt")
-            .Object@paramlist[["tssreportOutput"]] <- paste0(reportPrefix,".report.txt")
+            output(.Object)[["tsspdfOutput"]] <- paste0(reportPrefix,".pdf")
+            output(.Object)[["tsstxtOutput"]] <- paste0(reportPrefix,".txt")
+            output(.Object)[["tssreportOutput"]] <- paste0(reportPrefix,".report.txt")
         }
 
-        .Object@paramlist[["updownstream"]] <- tssUpdownstream
-        .Object@paramlist[["fregLenRange"]] <- fregLenRange
+        param(.Object)[["updownstream"]] <- tssUpdownstream
+        param(.Object)[["fragLenRange"]] <- fragLenRange
 
-        .Object@paramlist[["bsgenome"]] <- bsgenome
+        param(.Object)[["bsgenome"]] <- bsgenome
 
-        paramValidation(.Object)
         .Object
     }
 )
@@ -54,30 +60,34 @@ setMethod(
     f = "processing",
     signature = "TSSQC",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bsgenome"]])){
-            genome <- seqinfo(.obtainConfigure("bsgenome"))
+        if(is.null(param(.Object)[["bsgenome"]])){
+            genome <- seqinfo(getRefRc("bsgenome"))
         }else{
-            genome <- seqinfo(.Object@paramlist[["bsgenome"]])
+            genome <- seqinfo(param(.Object)[["bsgenome"]])
         }
         #unique confilict with rJava, if solved, uncommented:
         #readsbed <- unique(import(.Object@paramlist[["bedInput"]], genome = genome))
 #        readsbed <- import(.Object@paramlist[["bedInput"]], genome = genome)
-       readsbed <- import(.Object@paramlist[["bedInput"]])
-        readsbed<-readsbed[(width(readsbed)>=.Object@paramlist[["fregLenRange"]][1])&
-                               (width(readsbed)<=.Object@paramlist[["fregLenRange"]][2])]
+       readsbed <- import(input(.Object)[["bedInput"]])
+        readsbed<-readsbed[(width(readsbed)>=param(.Object)[["fragLenRange"]][1])&
+                               (width(readsbed)<=param(.Object)[["fragLenRange"]][2])]
 
-        txdb<-.Object@paramlist[["knownGene"]]
+        txdb<-param(.Object)[["knownGene"]]
+        if(is.character(txdb)){
+            library(txdb,character.only = TRUE)
+            txdb <- get0(txdb)
+        }
         #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
 
-        TSS <- promoters(txdb, upstream=.Object@paramlist[["updownstream"]], downstream=1+.Object@paramlist[["updownstream"]])
+        TSS <- promoters(txdb, upstream=param(.Object)[["updownstream"]], downstream=1+param(.Object)[["updownstream"]])
         #end(trans)<-start(trans)+1
 
         #unique confilict with rJava, if solved, uncommented:
         #TSS<-unique(TSS)
 
 
-        #end(trans)<-start(trans)+.Object@paramlist[["updownstream"]]
-        #start(trans)<-start(trans)-.Object@paramlist[["updownstream"]]
+        #end(trans)<-start(trans)+param(.Object)[["updownstream"]]
+        #start(trans)<-start(trans)-param(.Object)[["updownstream"]]
 
         pairs<-findOverlapPairs(readsbed, TSS,ignore.strand = TRUE)
         reads<-ranges(first(pairs))
@@ -89,13 +99,13 @@ setMethod(
 
         rs<-start(reads)-start(transspan)
         #rs[rs<0] <- 0
-        rre<-2*.Object@paramlist[["updownstream"]]+1-rs[rvlist]
+        rre<-2*param(.Object)[["updownstream"]]+1-rs[rvlist]
         re<-end(reads)-start(transspan)
-        #re[re>2*.Object@paramlist[["updownstream"]]+1] <- 2*.Object@paramlist[["updownstream"]]+1
-        rrs<-2*.Object@paramlist[["updownstream"]]+1-re[rvlist]
+        #re[re>2*param(.Object)[["updownstream"]]+1] <- 2*param(.Object)[["updownstream"]]+1
+        rrs<-2*param(.Object)[["updownstream"]]+1-re[rvlist]
         rs[rvlist]<-rrs
         re[rvlist]<-rre
-        re[re>2*.Object@paramlist[["updownstream"]]+1] <- 2*.Object@paramlist[["updownstream"]]+1
+        re[re>2*param(.Object)[["updownstream"]]+1] <- 2*param(.Object)[["updownstream"]]+1
         rs[rs<0] <- 0
         start(reads)<-0
         end(reads)<-0
@@ -104,27 +114,27 @@ setMethod(
 
 
 
-        totaldistr<-as.numeric(coverage(reads,width = 2*.Object@paramlist[["updownstream"]]+1))
+        totaldistr<-as.numeric(coverage(reads,width = 2*param(.Object)[["updownstream"]]+1))
 
-        df<-data.frame(counts=totaldistr,pos=-.Object@paramlist[["updownstream"]]:.Object@paramlist[["updownstream"]])
+        df<-data.frame(counts=totaldistr,pos=-param(.Object)[["updownstream"]]:param(.Object)[["updownstream"]])
         ggplot(df,aes(pos,counts))+geom_line()+xlab("upstream<-TSS->downstream")+ylab("reads count")
-        ggsave(.Object@paramlist[["tsspdfOutput"]])
+        ggsave(output(.Object)[["tsspdfOutput"]])
 
-        write.table(df,file = .Object@paramlist[["tsstxtOutput"]],sep="\t",quote = FALSE,row.names = FALSE,col.names = TRUE)
+        write.table(df,file = output(.Object)[["tsstxtOutput"]],sep="\t",quote = FALSE,row.names = FALSE,col.names = TRUE)
 
 
 
         ############# drawing heatmap
         # gp<-mcols(transspan)$gene_id#tx_name
         # readsgps<-split(reads[width(reads)>100],gp)
-        # heatmapdistr<-as.matrix(coverage(readsgps,width = 2*.Object@paramlist[["updownstream"]]+1))
+        # heatmapdistr<-as.matrix(coverage(readsgps,width = 2*param(.Object)[["updownstream"]]+1))
         # idx<-order(sapply(1:nrow(heatmapdistr),function(i) max(heatmapdistr[i,])),decreasing = TRUE)
         # heatmapdistr<-heatmapdistr[idx,]
         #
         #
         #
         # dtst<-melt(t(heatmapdistr[100:20,]))
-        # dtst$Var1<-dtst$Var1-.Object@paramlist[["updownstream"]]-1
+        # dtst$Var1<-dtst$Var1-param(.Object)[["updownstream"]]-1
         # plt<-ggplot(dtst,aes(Var1,Var2, fill=value))+geom_raster()+coord_cartesian(expand = FALSE)+
         #     theme(axis.ticks.y = element_blank(),panel.grid=element_blank(),axis.text.y = element_blank())+xlab("upstream<-TSS->downstream")+ylab("gene")
         #
@@ -139,57 +149,28 @@ setMethod(
         writeLog(.Object,sprintf("TSS Reads: %.0f",qcval[["TSSReads"]]))
         qcval[["TSSRate"]]<-qcval[["TSSReads"]]/qcval[["totalUniqReads"]]
         writeLog(.Object,sprintf("TSS Rate: %f",qcval[["TSSRate"]]))
-        qcval<-as.matrix(qcval)
+        
 
-        write.table(qcval,file = .Object@paramlist[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+        write.table(data.frame(qcval),file = output(.Object)[["tssreportOutput"]],sep="\t",quote = FALSE,col.names = FALSE)
+        
+        
         .Object
     }
 )
 
 
-
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "TSSQC",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["knownGene"]])){
-            stop("txdbKnownGene is required.")
-        }
-        if(is.null(.Object@paramlist[["bedInput"]])){
-            stop("bedInput is required.")
-        }
-    }
-)
+    definition = function(.Object, ...){
+        tss <- read.table(file= output(.Object)[["tsstxtOutput"]],header=TRUE)
+        report(.Object)$tss <- tss
+        qcval <- as.list(read.table(output(.Object)[["tssreportOutput"]],header = TRUE,sep = "\t"))
 
-setMethod(
-    f = "checkAllPath",
-    signature = "TSSQC",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["tsspdfOutput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["tsstxtOutput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["tssreportOutput"]]);
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "TSSQC",
-    definition = function(.Object, item,...){
-        tss <- read.table(file= .Object@paramlist[["tsstxtOutput"]],header=TRUE)
-        if(item == "tss"){
-            return(tss)
-        }
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "TSSQC",
-    definition = function(.Object){
-        return(c("tss"))
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
+        .Object
     }
 )
 
@@ -215,6 +196,8 @@ setMethod(
 #' The fragment length ranges.
 #' @param tssUpdownstream \code{Interger} scalar.
 #' The upstream and downstrem from TSS locations.
+#' @param newStepType \code{Character} scalar.
+#' New class name
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -236,7 +219,7 @@ setMethod(
 #' @examples
 #' library(R.utils)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
@@ -250,8 +233,9 @@ setMethod(
 
 
 setGeneric("atacTSSQC",function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
-                                  reportPrefix=NULL,bedInput = NULL,
-                                  fragLenRange=c(0,2000),tssUpdownstream=1000, ...) standardGeneric("atacTSSQC"))
+                                reportPrefix=NULL,bedInput = NULL,
+                                fragLenRange=c(0,2000),tssUpdownstream=1000, 
+                                newStepType = "TSSQC", ...) standardGeneric("atacTSSQC"))
 
 #' @rdname TSSQC
 #' @aliases atacTSSQC
@@ -261,18 +245,10 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, txdbKnownGene = NULL,bsgenome = NULL,
                           reportPrefix=NULL,bedInput = NULL,
-                          fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
-        atacproc <- new(
-            "TSSQC",
-            atacProc = atacProc,
-            txdbKnownGene = txdbKnownGene,
-            bsgenome = bsgenome,
-            reportPrefix = reportPrefix,
-            bedInput = bedInput,
-            fregLenRange = fragLenRange,
-            tssUpdownstream = tssUpdownstream)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+                          fragLenRange=c(0,2000),tssUpdownstream=1000, newStepType = "TSSQC", ...){
+        allpara <- c(list(Class = regAttachedStep(newStepType,"TSSQC"), prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -282,18 +258,12 @@ setMethod(
 #' @rdname TSSQC
 #' @aliases tssQC
 #' @export
-tssQC<-function(bedInput, txdbKnownGene = NULL,bsgenome = NULL,reportPrefix=NULL,fragLenRange=c(0,2000),tssUpdownstream=1000, ...){
-    atacproc <- new(
-        "TSSQC",
-        atacProc = NULL,
-        txdbKnownGene = txdbKnownGene,
-        bsgenome = bsgenome,
-        reportPrefix = reportPrefix,
-        bedInput = bedInput,
-        fregLenRange = fragLenRange,
-        tssUpdownstream = tssUpdownstream)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+tssQC<-function(bedInput, txdbKnownGene = NULL,
+                bsgenome = NULL,reportPrefix=NULL,
+                fragLenRange=c(0,2000),tssUpdownstream=1000, newStepType = "TSSQC", ...){
+    allpara <- c(list(Class = regAttachedStep(newStepType,"TSSQC"), prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 
 

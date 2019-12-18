@@ -3,36 +3,32 @@ setClass(Class = "Rsortbam",
 )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "Rsortbam",
-    definition = function(.Object,atacProc, ..., bamInput = NULL, bamOutput = NULL, editable=FALSE){
-        .Object <- init(.Object,"Rsortbam",editable,list(arg1=atacProc))
+    definition = function(.Object,prevSteps = list(), ...){
+        atacProc <- NULL
+        if(length(prevSteps)>0){
+            atacProc <- prevSteps[[1]]
+        }
+        allparam <- list(...)
+        bamInput <- allparam[["bamInput"]]
+        bamOutput <- allparam[["bamOutput"]]
         # necessary parameters
         if(!is.null(atacProc)){ # atacproc from SamToBam
-            .Object@paramlist[["bamInput"]] <- getParam(atacProc, "bamOutput")
-            regexProcName <- sprintf("(bam|%s)", getProcName(atacProc))
+            input(.Object)[["bamInput"]] <- getParam(atacProc, "bamOutput")
         }else if(is.null(atacProc)){ # input
-            .Object@paramlist[["bamInput"]] <- bamInput
-            regexProcName <- "(bam)"
+            input(.Object)[["bamInput"]] <- bamInput
         }
         # unnecessary parameters
         if(is.null(bamOutput)){
-            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["bamInput"]], regexProcName)
-            .Object@paramlist[["bamOutput_tmp"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                              paste0(prefix, ".", getProcName(.Object)))
-            .Object@paramlist[["bamOutput"]] <- paste0(.Object@paramlist[["bamOutput_tmp"]], ".bam", collapse = "")
+            param(.Object)[["bamOutput_tmp"]] <- getAutoPath(.Object, input(.Object)[["bamInput"]],"bam", "")
+            output(.Object)[["bamOutput"]] <- getAutoPath(.Object, input(.Object)[["bamInput"]],"bam", ".bam")
         }else{
-            name_split <- unlist(base::strsplit(x = bamOutput, split = ".", fixed = TRUE))
-            suffix <- tail(name_split, 1)
-            if(suffix == "bam"){
-                .Object@paramlist[["bamOutput_tmp"]] <- paste0(name_split[-length(name_split)], collapse = ".")
-                .Object@paramlist[["bamOutput"]] <- bamOutput
-            }else{
-                .Object@paramlist[["bamOutput_tmp"]] <- bamOutput
-                .Object@paramlist[["bamOutput"]] <- paste0(.Object@paramlist[["bamOutput_tmp"]], ".bam", collapse = "")
-            }
+            bamOutput <- addFileSuffix(bamOutput,".bam")
+            param(.Object)[["bamOutput_tmp"]] <- substring(bamOutput,first = 1,last = nchar(bamOutput) - 4)
+            output(.Object)[["bamOutput"]] <- bamOutput
+            
         }
-        paramValidation(.Object)
         .Object
     }
 )
@@ -42,32 +38,19 @@ setMethod(
     f = "processing",
     signature = "Rsortbam",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object,paste0("processing file:"))
-        .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["bamInput"]]))
-        .Object <- writeLog(.Object,sprintf("destination:%s",.Object@paramlist[["bamOutput"]]))
-        Rsamtools::sortBam(file = .Object@paramlist[["bamInput"]], destination = .Object@paramlist[["bamOutput_tmp"]])
-        Rsamtools::indexBam(files = .Object@paramlist[["bamOutput"]])
+        Rsamtools::sortBam(file = input(.Object)[["bamInput"]], destination = param(.Object)[["bamOutput_tmp"]])
+        Rsamtools::indexBam(files = output(.Object)[["bamOutput"]])
         .Object
     }
 )
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "Rsortbam",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bamInput"]])){
-            stop("Parameter bamInput or atacProc is required!")
-        }
-    }
-)
 
 
 setMethod(
-    f = "checkAllPath",
+    f = "genReport",
     signature = "Rsortbam",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["bamInput"]])
-        checkPathExist(.Object,.Object@paramlist[["bamOutput"]])
+    definition = function(.Object, ...){
+        .Object
     }
 )
 
@@ -108,13 +91,9 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc,
                           bamInput = NULL, bamOutput = NULL, ...){
-        atacproc <- new(
-            "Rsortbam",
-            atacProc = atacProc,
-            bamInput = bamInput,
-            bamOutput = bamOutput)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "Rsortbam", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -122,11 +101,7 @@ setMethod(
 #' @aliases bamsort
 #' @export
 bamsort <- function(bamInput = NULL, bamOutput = NULL, ...){
-    atacproc <- new(
-        "Rsortbam",
-        atacProc = NULL,
-        bamInput = bamInput,
-        bamOutput = bamOutput)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "Rsortbam", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

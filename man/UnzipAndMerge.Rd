@@ -6,11 +6,23 @@
 \alias{unzipAndMerge}
 \title{Unzip and merge fastq files}
 \usage{
-atacUnzipAndMerge(fastqInput1, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE, ...)
+atacUnzipAndMerge(
+  fastqInput1,
+  fastqInput2 = NULL,
+  fastqOutput1 = NULL,
+  fastqOutput2 = NULL,
+  interleave = FALSE,
+  ...
+)
 
-unzipAndMerge(fastqInput1, fastqInput2 = NULL, fastqOutput1 = NULL,
-  fastqOutput2 = NULL, interleave = FALSE, ...)
+unzipAndMerge(
+  fastqInput1,
+  fastqInput2 = NULL,
+  fastqOutput1 = NULL,
+  fastqOutput2 = NULL,
+  interleave = FALSE,
+  ...
+)
 }
 \arguments{
 \item{fastqInput1}{\code{Character} vector. For single-end sequencing,
@@ -45,16 +57,18 @@ Unzip and merge fastq files that are in format of bzip, gzip or fastq
 }
 \examples{
 
+ignoreCheck() # warnning: run this for fast test only
+
 td<-tempdir()
-options(atacConf=setConfigure("tmpdir",td))
+setTmpDir(td)
 
 # Identify adapters
 prefix<-system.file(package="esATAC", "extdata", "uzmg")
 (reads_1 <-file.path(prefix,"m1",dir(file.path(prefix,"m1"))))
 (reads_2 <-file.path(prefix,"m2",dir(file.path(prefix,"m2"))))
 
-reads_merged_1 <- file.path(td,"reads1.fastq")
-reads_merged_2 <- file.path(td,"reads2.fastq")
+reads_merged_1 <- file.path(td,"reads_1.fq")
+reads_merged_2 <- file.path(td,"reads_2.fq")
 atacproc <- atacUnzipAndMerge(fastqInput1 = reads_1,fastqInput2 = reads_2)
 dir(td)
 

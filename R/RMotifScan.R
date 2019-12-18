@@ -3,49 +3,51 @@ setClass(Class = "RMotifScan",
 )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "RMotifScan",
-    definition = function(.Object, atacProc, ..., peak = NULL, genome = NULL,
-                          motifs = NULL, p.cutoff = NULL, scanO.dir = NULL,
-                          prefix = NULL, editable = FALSE){
-        .Object <- init(.Object, "RMotifScan", editable, list(arg1 = atacProc))
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        peak <- allparam[["peak"]]
+        genome <- allparam[["genome"]]
+        motifs <- allparam[["motifs"]]
+        p.cutoff <- allparam[["p.cutoff"]]
+        scanO.dir <- allparam[["scanO.dir"]]
+        prefix <- allparam[["prefix"]]
 
+        
+        atacProc <- NULL
+        if(length(prevSteps) > 0){
+            atacProc <- prevSteps[[1]]
+        }
+        
+        
         # necessary parameters
         if(!is.null(atacProc)){
-            .Object@paramlist[["peak"]] <- getParam(atacProc, "bedOutput");
+            input(.Object)[["peak"]] <- getParam(atacProc, "bedOutput");
         }else{
-            .Object@paramlist[["peak"]] <- peak
+            input(.Object)[["peak"]] <- peak
         }
         if(!is.null(genome)){
-            .Object@paramlist[["genome"]] <- genome
+            param(.Object)[["genome"]] <- genome
         }else{
-            .Object@paramlist[["genome"]] <- .obtainConfigure("bsgenome")
+            param(.Object)[["genome"]] <- getRefRc("bsgenome")
         }
-        .Object@paramlist[["motifs"]] <- motifs
-        .Object@paramlist[["motifs.len"]] <- lapply(X = .Object@paramlist[["motifs"]], FUN = ncol)
-        .Object@paramlist[["p.cutoff"]] <- p.cutoff
+        param(.Object)[["motifs"]] <- motifs
+        param(.Object)[["motifs.len"]] <- lapply(X = param(.Object)[["motifs"]], FUN = ncol)
+        param(.Object)[["p.cutoff"]] <- p.cutoff
         if(is.null(prefix)){
-            .Object@paramlist[["prefix"]] <- "MotifScan"
+            param(.Object)[["prefix"]] <- "MotifScan"
         }else{
-            .Object@paramlist[["prefix"]] <- prefix
+            param(.Object)[["prefix"]] <- prefix
         }
         # unnecessary parameters
         if(is.null(scanO.dir)){
-            .Object@paramlist[["scanO.dir"]] <- paste(tools::file_path_sans_ext(.Object@paramlist[["peak"]]),
-                                                      "_", .Object@paramlist[["prefix"]],
-                                                      "_MotifScanOutput", sep = "")
-            dir.create(.Object@paramlist[["scanO.dir"]])
+            output(.Object)[["scanO.dir"]] <- getAutoPath(.Object, input(.Object)[["peak"]],"bed", "MotifScanOutput")
         }else{
-            .Object@paramlist[["scanO.dir"]] <- scanO.dir
+            output(.Object)[["scanO.dir"]] <- scanO.dir
         }
-        .Object@paramlist[["rdsOutput"]] <- paste(
-            .Object@paramlist[["scanO.dir"]],
-            "/", .Object@paramlist[["prefix"]], "_",
-            "RMotifScan.rds",
-            sep = ""
-        )
-
-        paramValidation(.Object)
+        output(.Object)[["rdsOutput"]] <- getAutoPath(.Object, input(.Object)[["peak"]],"bed", "RMotifScan.rds")
+        
 
         .Object
     }
@@ -56,31 +58,29 @@ setMethod(
     f = "processing",
     signature = "RMotifScan",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object, paste0("processing file:"))
-        .Object <- writeLog(.Object, sprintf("peak file:%s", .Object@paramlist[["peak"]]))
-        .Object <- writeLog(.Object, sprintf("Output destination:%s", .Object@paramlist[["scanO.dir"]]))
+        dir.create(output(.Object)[["scanO.dir"]])
 
-        peaks <- rtracklayer::import(con = .Object@paramlist[["peak"]])
-        SiteSetList <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+        peaks <- rtracklayer::import(con = input(.Object)[["peak"]])
+        SiteSetList <- motifmatchr::matchMotifs(pwms = param(.Object)[["motifs"]],
                                                 subject = peaks,
-                                                genome = .Object@paramlist[["genome"]],
+                                                genome = param(.Object)[["genome"]],
                                                 out = "positions",
-                                                p.cutoff = .Object@paramlist[["p.cutoff"]])
+                                                p.cutoff = param(.Object)[["p.cutoff"]])
 
         save_info <- data.frame()
         WriteMotifOrder <- 1
 
         for(i in seq(length(SiteSetList))){
             motif.name <- names(SiteSetList[i])
-            motif.len <- .Object@paramlist[["motifs.len"]][[motif.name]]
+            motif.len <- param(.Object)[["motifs.len"]][[motif.name]]
             motif <- SiteSetList[[motif.name]]
             motif <- sort.GenomicRanges(x = motif, ignore.strand = TRUE)
             motif <- as.data.frame(motif)
             motif <- within(motif, rm(width))
 
-            output.path <- paste(.Object@paramlist[["scanO.dir"]],
-                                 "/", .Object@paramlist[["prefix"]], "_",
-                                 motif.name, sep = "")
+            output.path <- paste0(output(.Object)[["scanO.dir"]],
+                                 "/", param(.Object)[["prefix"]], "_",
+                                 motif.name)
 
             save_info[WriteMotifOrder, 1] <- motif.name
             save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.path)
@@ -91,7 +91,7 @@ setMethod(
                         col.names = FALSE, quote = FALSE, sep = "\t",
                         append = FALSE)
         }
-        saveRDS(object = save_info, file = .Object@paramlist[["rdsOutput"]])
+        saveRDS(object = save_info, file = output(.Object)[["rdsOutput"]])
 
         .Object
     }
@@ -99,26 +99,10 @@ setMethod(
 
 
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "RMotifScan",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["peak"]])){
-            stop("Parameter peak is required!")
-        }
-        if(is.null(.Object@paramlist[["motifs"]])){
-            stop("Parameter motifs is required!")
-        }
-
-    }
-)
-
-
-setMethod(
-    f = "checkAllPath",
-    signature = "RMotifScan",
-    definition = function(.Object,...){
-        checkFileExist(.Object, .Object@paramlist[["peak"]]);
-        checkPathExist(.Object, .Object@paramlist[["scanO.dir"]]);
+    definition = function(.Object, ...){
+        .Object
     }
 )
 
@@ -134,7 +118,7 @@ setMethod(
 #' Input region path. UCSC bed file is recommented. Other file should be able
 #' to import as \code{\link{GRanges}} objects through
 #' \code{\link{import}}.
-#' @param genome BSgenome object, Default: from \code{\link{setConfigure}}.
+#' @param genome BSgenome object, Default: from \code{\link{getRefRc}}.
 #' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 #' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.
 #' @param p.cutoff p-value cutoff for returning motifs.
@@ -188,17 +172,9 @@ setMethod(
     function(atacProc, peak = NULL, genome = NULL,
              motifs = NULL, p.cutoff = 1e-6, scanO.dir = NULL,
              prefix = NULL, ...){
-        atacproc <- new(
-            "RMotifScan",
-            atacProc = atacProc,
-            peak = peak,
-            genome = genome,
-            motifs = motifs,
-            p.cutoff = p.cutoff,
-            scanO.dir = scanO.dir,
-            prefix = prefix)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "RMotifScan", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -208,17 +184,9 @@ setMethod(
 motifscan <- function(peak = NULL, genome = NULL,
                       motifs = NULL, p.cutoff = 1e-6, scanO.dir = NULL,
                       prefix = NULL, ...){
-    atacproc <- new(
-        "RMotifScan",
-        atacProc = NULL,
-        peak = peak,
-        genome = genome,
-        motifs = motifs,
-        p.cutoff = p.cutoff,
-        scanO.dir = scanO.dir,
-        prefix = prefix)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "RMotifScan", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 
 

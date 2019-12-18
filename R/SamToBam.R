@@ -4,42 +4,35 @@ setClass(Class = "SamToBam",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "SamToBam",
-    definition = function(.Object,atacProc, ..., samInput = NULL, bamOutput = NULL, editable = FALSE){
-        .Object <- init(.Object,"SamToBam",editable,list(arg1=atacProc))
+    definition = function(.Object,prevSteps = list(), ..., samInput = NULL, bamOutput = NULL, editable = FALSE){
+        atacProc <- NULL
+        if(length(prevSteps)>0){
+            atacProc <- prevSteps[[1]]
+        }
+        allparam <- list(...)
+        input_file <- allparam[["input_file"]]
+        output_file <- allparam[["output_file"]]
+        
         # necessary parameters
         if((!is.null(atacProc)) ){
-            .Object@paramlist[["samInput"]] <- getParam(atacProc, "samOutput")
-            regexProcName <- sprintf("(sam|%s)", getProcName(atacProc))
+            input(.Object)[["samInput"]] <- getParam(atacProc, "samOutput")
         }else if(is.null(atacProc)){ # input
-            .Object@paramlist[["samInput"]] <- samInput
-            regexProcName <- "(sam)"
+            input(.Object)[["samInput"]] <- samInput
         }
         # unnecessary parameters
         if(is.null(bamOutput)){
-            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["samInput"]], regexProcName)
-            .Object@paramlist[["name_tmp"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                         paste0(prefix, ".", getProcName(.Object)))
-            .Object@paramlist[["bamOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                          paste0(prefix, ".", getProcName(.Object), ".bam"))
-            .Object@paramlist[["baiOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                          paste0(prefix, ".", getProcName(.Object), ".bam.bai"))
+            param(.Object)[["name_tmp"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","" )
+        
+            output(.Object)[["bamOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","bam")
+            output(.Object)[["baiOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","bam.bai")
         }else{
-            name_split <- unlist(base::strsplit(x = bamOutput, split = ".", fixed = TRUE))
-            suffix <- tail(name_split, 1)
-            if(suffix == "bam"){
-                .Object@paramlist[["name_tmp"]] <- paste0(name_split[-length(name_split)], collapse = ".")
-                .Object@paramlist[["bamOutput"]] <- bamOutput
-                .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
-            }else{
-                .Object@paramlist[["name_tmp"]] <- bamOutput
-                .Object@paramlist[["bamOutput"]] <- paste0(.Object@paramlist[["name_tmp"]], ".bam", collapse = "")
-                .Object@paramlist[["baiOutput"]] <- paste0(.Object@paramlist[["bamOutput"]], ".bai", collapse = "")
-            }
-
+            bamOutput <- addFileSuffix(bamOutput,".bam")
+            param(.Object)[["name_tmp"]] <- substring(bamOutput,first = 1,last = nchar(bamOutput) - 4)
+            output(.Object)[["bamOutput"]] <- bamOutput
+            output(.Object)[["baiOutput"]] <- addFileSuffix(bamOutput,".bai")
         }
-        paramValidation(.Object)
         .Object
 
     }
@@ -52,31 +45,17 @@ setMethod(
     f = "processing",
     signature = "SamToBam",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object,paste0("processing file:"))
-        .Object <- writeLog(.Object,sprintf("source:%s",.Object@paramlist[["samInput"]]))
-        .Object <- writeLog(.Object,sprintf("Bam destination:%s",.Object@paramlist[["bamOutput"]]))
-        .Object <- writeLog(.Object,sprintf("Bai destination:%s",.Object@paramlist[["baiOutput"]]))
-        Rsamtools::asBam(file = .Object@paramlist[["samInput"]], destination = .Object@paramlist[["name_tmp"]])
+        Rsamtools::asBam(file = input(.Object)[["samInput"]], destination = param(.Object)[["name_tmp"]],overwrite = TRUE)
         .Object
     }
 )
 
-setMethod(
-    f = "checkRequireParam",
-    signature = "SamToBam",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["samInput"]])){
-            stop("Parameter samInput is required!")
-        }
-    }
-)
 
 setMethod(
-    f = "checkAllPath",
+    f = "genReport",
     signature = "SamToBam",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["samInput"]])
-        checkPathExist(.Object,.Object@paramlist[["bamOutput"]])
+    definition = function(.Object, ...){
+        .Object
     }
 )
 
@@ -124,24 +103,16 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc,
                           samInput = NULL, bamOutput = NULL, ...){
-        atacproc <- new(
-            "SamToBam",
-            atacProc = atacProc,
-            samInput = samInput,
-            bamOutput = bamOutput)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "SamToBam", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname SamToBam
 #' @aliases sam2bam
 #' @export
 sam2bam <- function(samInput, bamOutput = NULL, ...){
-    atacproc <- new(
-        "SamToBam",
-        atacProc = NULL,
-        samInput = samInput,
-        bamOutput = bamOutput)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "SamToBam", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

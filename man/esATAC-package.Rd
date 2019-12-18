@@ -6,11 +6,24 @@
 \alias{atacPipe}
 \title{An Easy-to-use Systematic pipeline for ATACseq data analysis}
 \usage{
-atacPipe(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
-  tmpdir = NULL, threads = 2, adapter1 = NULL, adapter2 = NULL,
-  interleave = FALSE, basicAnalysis = FALSE, createReport = TRUE,
-  motifs = NULL, prefix = NULL, chr = c(1:22, "X", "Y"),
-  p.cutoff = 1e-06, ...)
+atacPipe(
+  genome,
+  fastqInput1,
+  fastqInput2 = NULL,
+  tmpdir = file.path(getwd(), "esATAC-pipeline"),
+  refdir = file.path(tmpdir, "refdir"),
+  threads = 2,
+  adapter1 = NULL,
+  adapter2 = NULL,
+  interleave = FALSE,
+  basicAnalysis = FALSE,
+  createReport = TRUE,
+  motifs = NULL,
+  pipelineName = "pipe",
+  chr = c(1:22, "X", "Y"),
+  p.cutoff = 1e-06,
+  ...
+)
 }
 \arguments{
 \item{genome}{\code{Character} scalar. The genome(like hg19, mm10, etc.) reference data in "refdir" to be used in the pipeline.}
@@ -28,9 +41,9 @@ For single-end sequencing files and interleaved paired-end sequencing
 files(argument interleaved=\code{TRUE}),
 it must be \code{NULL}.}
 
-\item{refdir}{\code{Character} scalar. The path for reference data being installed to and storage.}
-
 \item{tmpdir}{\code{Character} scalar. The temporary file storage path.}
+
+\item{refdir}{\code{Character} scalar. The path for reference data being installed to and storage.}
 
 \item{threads}{\code{Integer} scalar. The max threads allowed to be created.}
 
@@ -50,7 +63,7 @@ like GO annoation and motif analysis}
 \item{motifs}{either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.}
 
-\item{prefix}{\code{Character} scalar. Temporary file prefix for identifying files
+\item{pipelineName}{\code{Character} scalar. Temporary file prefix for identifying files
 when multiple pipeline generating file in the same tempdir.}
 
 \item{chr}{Which chromatin the program will processing. It must be identical

@@ -2,6 +2,12 @@
 .Rhistory
 .Rapp.history
 
+# Mac
+.DS_Store
+
+#test
+esATAC-pipeline/
+
 # Session Data files
 .RData
 

@@ -2,56 +2,71 @@ setClass(Class = "BedUtils",
          contains = "ATACProc"
 )
 
+
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "BedUtils",
-    definition = function(.Object,atacProc, ..., bedInput = NULL, bedOutput = NULL, reportOutput = NULL, mergePair = FALSE, downSample = NULL,
-                          posOffset = 0L, negOffset= 0L, chrFilterList= NULL,select = TRUE,
-                          sortBed = TRUE, uniqueBed = TRUE, minFregLen = 0,maxFregLen = 2e9, editable=FALSE){
-        .Object <- init(.Object,"BedUtils",editable,list(arg1=atacProc))
-        if(!is.null(atacProc)){
-            .Object@paramlist[["bedInput"]] <- getParam(atacProc, "bedOutput");
-            regexProcName<-sprintf("(BED|Bed|bed|%s)",getProcName(atacProc))
-        }else{
-            regexProcName<-"(BED|Bed|bed)"
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        bedInput <- allparam[["bedInput"]]
+        bedOutput <- allparam[["bedOutput"]]
+        mergePair <- allparam[["mergePair"]]
+        downSample <- allparam[["downSample"]]
+        reportOutput <- allparam[["reportOutput"]]
+        posOffset <- allparam[["posOffset"]]
+        negOffset <- allparam[["negOffset"]]
+        chrFilterList <- allparam[["chrFilterList"]]
+        select <- allparam[["select"]]
+        sortBed <- allparam[["sortBed"]]
+        uniqueBed <- allparam[["uniqueBed"]]
+        minFragLen <- allparam[["minFragLen"]]
+        maxFragLen <- allparam[["maxFragLen"]]
+        if(length(prevSteps) > 0){
+            if(!is.null(prevSteps[[1]])){
+                atacProc <- prevSteps[[1]]
+                atacProc<-c(unlist(atacProc),list())
+                atacProc <- atacProc[[length(atacProc)]]
+                input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
+            }
         }
 
         if(!is.null(bedInput)){
-            .Object@paramlist[["bedInput"]] <- bedInput;
+            input(.Object)[["bedInput"]] <- bedInput;
         }
         if(is.null(bedOutput)){
-            if(!is.null(.Object@paramlist[["bedInput"]])){
-                .Object@paramlist[["bedOutput"]] <- getAutoPath(.Object, .Object@paramlist[["bedInput"]],regexProcName,".bed")
+            if(!is.null(input(.Object)[["bedInput"]])){
+                output(.Object)[["bedOutput"]] <- 
+                    getAutoPath(.Object, input(.Object)[["bedInput"]],"BED|bed|Bed","bed")
             }
         }else{
-            .Object@paramlist[["bedOutput"]] <- bedOutput;
+            output(.Object)[["bedOutput"]] <- bedOutput;
         }
 
         if(is.null(reportOutput)){
-            if(!is.null(.Object@paramlist[["bedInput"]])){
+            if(!is.null(input(.Object)[["bedInput"]])){
 
-                .Object@paramlist[["reportOutput"]] <- getAutoPath(.Object, .Object@paramlist[["bedInput"]],regexProcName,".report")
+                output(.Object)[["reportOutput"]] <- 
+                    getAutoPath(.Object, input(.Object)[["bedInput"]],"BED|bed|Bed",".report")
             }
         }else{
-            .Object@paramlist[["reportOutput"]] <- reportOutput;
+            output(.Object)[["reportOutput"]] <- reportOutput;
         }
 
-        .Object@paramlist[["mergePair"]] <- mergePair;
+        param(.Object)[["mergePair"]] <- mergePair;
         if(is.null(downSample)){
-            .Object@paramlist[["downSample"]]<-2e9
+            param(.Object)[["downSample"]]<-2e9
         }else{
-            .Object@paramlist[["downSample"]]<-downSample
+            param(.Object)[["downSample"]]<-downSample
         }
-        .Object@paramlist[["posOffset"]] <- posOffset;
-        .Object@paramlist[["negOffset"]] <- negOffset;
-        .Object@paramlist[["filterList"]] <- chrFilterList;
-        .Object@paramlist[["select"]] <- select;
-        .Object@paramlist[["sortBed"]] <- sortBed
-        .Object@paramlist[["uniqueBed"]] <- uniqueBed
-        .Object@paramlist[["minFregLen"]] <- minFregLen
-        .Object@paramlist[["maxFregLen"]] <- maxFregLen
+        param(.Object)[["posOffset"]] <- posOffset;
+        param(.Object)[["negOffset"]] <- negOffset;
+        param(.Object)[["filterList"]] <- chrFilterList;
+        param(.Object)[["select"]] <- select;
+        param(.Object)[["sortBed"]] <- sortBed
+        param(.Object)[["uniqueBed"]] <- uniqueBed
+        param(.Object)[["minFragLen"]] <- minFragLen
+        param(.Object)[["maxFragLen"]] <- maxFragLen
 
-        paramValidation(.Object)
         .Object
     }
 )
@@ -60,62 +75,38 @@ setMethod(
     f = "processing",
     signature = "BedUtils",
     definition = function(.Object,...){
-        qcval<-.bedOprUtils_call(ibedfile = .Object@paramlist[["bedInput"]],
-                                 obedfile = .Object@paramlist[["bedOutput"]],
+        qcval<-.bedOprUtils_call(ibedfile = input(.Object)[["bedInput"]],
+                                 obedfile = output(.Object)[["bedOutput"]],
                                  reportPrefix = "",
-                                 mergePair = .Object@paramlist[["mergePair"]],
-                                 downSample = .Object@paramlist[["downSample"]],
-                                 posOffset = .Object@paramlist[["posOffset"]],
-                                 negOffset = .Object@paramlist[["negOffset"]],
-                                 sortBed = .Object@paramlist[["sortBed"]],
-                                 uniqueBed = .Object@paramlist[["uniqueBed"]],
-                                 minFregLen = .Object@paramlist[["minFregLen"]],
-                                 maxFregLen = .Object@paramlist[["maxFregLen"]],
-                                 filterList = .Object@paramlist[["filterList"]],
-                                 select = .Object@paramlist[["select"]])
-        write.table(as.data.frame(qcval),file = .Object@paramlist[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+                                 mergePair = param(.Object)[["mergePair"]],
+                                 downSample = param(.Object)[["downSample"]],
+                                 posOffset = param(.Object)[["posOffset"]],
+                                 negOffset = param(.Object)[["negOffset"]],
+                                 sortBed = param(.Object)[["sortBed"]],
+                                 uniqueBed = param(.Object)[["uniqueBed"]],
+                                 minFragLen = param(.Object)[["minFragLen"]],
+                                 maxFragLen = param(.Object)[["maxFragLen"]],
+                                 filterList = param(.Object)[["filterList"]],
+                                 select = param(.Object)[["select"]])
+        write.table(as.data.frame(qcval),file = output(.Object)[["reportOutput"]],quote=FALSE,sep="\t",row.names=FALSE)
+        
         .Object
     }
 )
 
 
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "BedUtils",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bedInput"]])){
-            stop(paste("bedInput is requied"));
-        }
+    definition = function(.Object, ...){
+        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
+        .Object
     }
 )
 
-setMethod(
-    f = "checkAllPath",
-    signature = "BedUtils",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["bedOutput"]]);
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "BedUtils",
-    definition = function(.Object, item){
-        qcval <- as.list(read.table(file= .Object@paramlist[["reportOutput"]],header=TRUE))
-        return(qcval[[item]])
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "BedUtils",
-    definition = function(.Object){
-        return(c("total","save","filted","extlen","unique"))
-    }
-)
 
 #' @name  BedUtils
 #' @title process bed file with limit memory
@@ -161,6 +152,8 @@ setMethod(
 #' The minimum fragment size will be retained.
 #' @param maxFragLen \code{Integer} scalar
 #' The maximum fragment size will be retained.
+#' @param newStepType \code{Character} scalar.
+#' New step type name for different default parameters.
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically
@@ -187,7 +180,7 @@ setMethod(
 #' library(R.utils)
 #' library(magrittr)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' sambzfile <- system.file(package="esATAC", "extdata", "Example.sam.bz2")
 #' samfile <- file.path(td,"Example.sam")
@@ -196,9 +189,15 @@ setMethod(
 #' atacBedUtils(maxFragLen = 100, chrFilterList = NULL)
 #'
 
-setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
-                                  posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                                  sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...) standardGeneric("atacBedUtils"))
+setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, 
+                                   bedOutput = NULL,  mergePair = FALSE, 
+                                   downSample = NULL,
+                                  posOffset = 0L, negOffset= 0L, 
+                                  chrFilterList= c("chrM"),select = FALSE,
+                                  sortBed = FALSE, uniqueBed = FALSE, 
+                                  minFragLen = 0,maxFragLen = 2e9,  
+                                  newStepType = "BedUtils",...) 
+    standardGeneric("atacBedUtils"))
 
 #' @rdname BedUtils
 #' @aliases atacBedUtils
@@ -206,49 +205,37 @@ setGeneric("atacBedUtils",function(atacProc, bedInput = NULL, bedOutput = NULL, 
 setMethod(
     f = "atacBedUtils",
     signature = "ATACProc",
-    definition = function(atacProc, bedInput = NULL, bedOutput = NULL,  mergePair = FALSE, downSample = NULL,
-                          posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                          sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...){
-        atacproc <- new(
-            "BedUtils",
-            atacProc = atacProc,
-            bedInput = bedInput,
-            bedOutput = bedOutput,
-            mergePair = mergePair,
-            downSample = downSample,
-            posOffset = posOffset,
-            negOffset = negOffset,
-            chrFilterList = chrFilterList,
-            select = select,
-            sortBed = sortBed,
-            uniqueBed = uniqueBed,
-            minFregLen = minFragLen,
-            maxFregLen = maxFragLen)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+    definition = function(atacProc, bedInput = NULL, 
+                          bedOutput = NULL,  mergePair = FALSE, 
+                          downSample = NULL,
+                          posOffset = 0L, negOffset= 0L, 
+                          chrFilterList = c("chrM"),select = FALSE,
+                          sortBed = FALSE, uniqueBed = FALSE, 
+                          minFragLen = 0,maxFragLen = 2e9, 
+                          newStepType = "BedUtils", ...){
+        allpara <- c(list(Class = regAttachedStep(newStepType,"BedUtils"), 
+                          prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname BedUtils
 #' @aliases bedUtils
 #' @export
-bedUtils <- function(bedInput, bedOutput = NULL, mergePair = FALSE, downSample = NULL,reportOutput = NULL,
-                         posOffset = 0L, negOffset= 0L, chrFilterList= c("chrM"),select = FALSE,
-                         sortBed = FALSE, uniqueBed = FALSE, minFragLen = 0,maxFragLen = 2e9, ...){
-    atacproc <- new(
-        "BedUtils",
-        atacProc = NULL,
-        bedInput = bedInput,
-        bedOutput = bedOutput,
-        mergePair = mergePair,
-        downSample = downSample,
-        posOffset = posOffset,
-        negOffset = negOffset,
-        chrFilterList = chrFilterList,
-        select = select,
-        sortBed = sortBed,
-        uniqueBed = uniqueBed,
-        minFregLen = minFragLen,
-        maxFregLen = maxFragLen)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+bedUtils <- function(bedInput, bedOutput = NULL, 
+                     mergePair = FALSE, downSample = NULL,
+                     reportOutput = NULL,
+                     posOffset = 0L, negOffset= 0L, 
+                     chrFilterList = c("chrM"),select = FALSE,
+                     sortBed = FALSE, uniqueBed = FALSE, 
+                     minFragLen = 0,maxFragLen = 2e9, 
+                     newStepType = "BedUtils", ...){
+    allpara <- c(list(Class = regAttachedStep(newStepType,"BedUtils"), 
+                      prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
+
+
+
+

@@ -4,58 +4,54 @@ setClass(Class = "RSNPs",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "RSNPs",
-    definition = function(.Object, atacProc, ..., snp.info = NULL, region.info = NULL,
-                          annoOutput = NULL, editable = FALSE){
-        .Object <- init(.Object,"RSNPs",editable,list(arg1=atacProc))
+    definition = function(.Object,prevSteps = list(), ...){
+        allparam <- list(...)
+        snp.info <- allparam[["snp.info"]]
+        region.info <- allparam[["region.info"]]
+        annoOutput <- allparam[["annoOutput"]]
+        
+        withend <- allparam[["withend"]]
 
-        param.tmp <- list(...)
-        if("withend" %in% names(param.tmp)){
-            .Object@paramlist[["withend"]] <- TRUE
+        if(!is.null(withend)){
+            param(.Object)[["withend"]] <- TRUE
         }else{
-            .Object@paramlist[["withend"]] <- FALSE
+            param(.Object)[["withend"]] <- FALSE
+        }
+        
+        
+        atacProc <- NULL
+        if(length(prevSteps) > 0){
+            atacProc <- prevSteps[[1]]
         }
 
-        if((!is.null(atacProc)) && (class(atacProc)[1] == "PeakCallingFseq")){
-            .Object@paramlist[["type"]] <- "file"
-            .Object@paramlist[["region.info"]] <- atacProc$getParam("bedOutput")
-            regexProcName <- sprintf("(bed|%s)", atacProc$getProcName())
-        }else if((!is.null(atacProc)) && (class(atacProc)[1] == "RMotifScan")){
-            .Object@paramlist[["type"]] <- "rds"
-            .Object@paramlist[["region.info"]] <- atacProc$getParam("rdsOutput")
-            regexProcName <- sprintf("(rds|%s)", atacProc$getProcName())
+        if((!is.null(atacProc)) && (stepType(atacProc) == "PeakCallingFseq")){
+            param(.Object)[["type"]] <- "file"
+            input(.Object)[["region.info"]] <- output(atacProc)[["bedOutput"]]
+        }else if((!is.null(atacProc)) && (stepType(atacProc) == "RMotifScan")){
+            param(.Object)[["type"]] <- "rds"
+            input(.Object)[["region.info"]] <- output(atacProc)[["rdsOutput"]]
         }else{
-            .Object@paramlist[["type"]] <- "file"
-            .Object@paramlist[["region.info"]] <- region.info
-            regexProcName <- "(bed)"
+            param(.Object)[["type"]] <- "file"
+            input(.Object)[["region.info"]] <- region.info
         }
         if(!is.null(snp.info)){
-            .Object@paramlist[["snp.info"]] <- snp.info
+            input(.Object)[["snp.info"]] <- snp.info
         }else{
-            .Object@paramlist[["snp.info"]] <- .obtainConfigure("SNP")
-            .Object@paramlist[["withend"]] <- TRUE
+            input(.Object)[["snp.info"]] <- getRefFiles("SNP")
+            param(.Object)[["withend"]] <- TRUE
         }
 
 
         if(is.null(annoOutput)){
-            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["region.info"]], regexProcName)
-            .Object@paramlist[["annoOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                           paste0(prefix, ".", getProcName(.Object), ".txt"))
+            output(.Object)[["annoOutput"]] <- 
+                getAutoPath(.Object, input(.Object)[["region.info"]],"bed|rds", ".txt")
+               
         }else{
-            name_split <- unlist(base::strsplit(x = annoOutput, split = ".", fixed = TRUE))
-            suffix <- tail(name_split, 1)
-            name_split <- head(name_split, -1)
-            if(suffix == "df"){
-                .Object@paramlist[["annoOutput"]] <- annoOutput
-            }else{
-                .Object@paramlist[["annoOutput"]] <- paste(annoOutput, "df", sep = ".")
-            }
+            output(.Object)[["annoOutput"]] <- addFileSuffix(annoOutput,"txt")
         }
 
-
-
-        paramValidation(.Object)
         .Object
 
     }
@@ -66,34 +62,29 @@ setMethod(
     f = "processing",
     signature = "RSNPs",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object,paste0("processing file:"))
-        .Object <- writeLog(.Object,sprintf("SNP source:%s",.Object@paramlist[["snp.info"]]))
-        .Object <- writeLog(.Object,sprintf("Region source:%s",.Object@paramlist[["region.info"]]))
-        .Object <- writeLog(.Object,sprintf("Destination:%s",.Object@paramlist[["annoOutput"]]))
-
-        SNP_info <- read.delim(file = .Object@paramlist[["snp.info"]],
+        SNP_info <- read.delim(file = input(.Object)[["snp.info"]],
                                header = FALSE)
-        if(.Object@paramlist[["withend"]]){
+        if(param(.Object)[["withend"]]){
             snp_gr <- with(SNP_info, GRanges(SNP_info[, 1], IRanges(SNP_info[, 2] - 1, SNP_info[, 3])))
         }else{
             snp_gr <- with(SNP_info, GRanges(SNP_info[, 1], IRanges(SNP_info[, 2] - 1, SNP_info[, 2])))
         }
 
-        if(.Object@paramlist[["type"]] == "file"){
-            peak_info <- read.table(file = .Object@paramlist[["region.info"]],
+        if(param(.Object)[["type"]] == "file"){
+            peak_info <- read.table(file = input(.Object)[["region.info"]],
                                     header = FALSE)
             peak_gr <- with(peak_info, GRanges(peak_info[, 1], IRanges(peak_info[, 2], peak_info[, 3])))
 
             overlaps <- GenomicRanges::findOverlaps(query = peak_gr,
                                                     subject = snp_gr,
                                                     ignore.strand = TRUE)
-            output <- cbind(peak_info[S4Vectors::queryHits(overlaps), ],
+            output0 <- cbind(peak_info[S4Vectors::queryHits(overlaps), ],
                             SNP_info[S4Vectors::subjectHits(overlaps), ])
-            write.table(x = output, file = .Object@paramlist[["annoOutput"]],
+            write.table(x = output0, file = output(.Object)[["annoOutput"]],
                         quote = FALSE, sep = "\t", row.names = FALSE,
                         col.names = FALSE)
         }else{
-            motif_info <- readRDS(.Object@paramlist[["region.info"]])
+            motif_info <- readRDS(input(.Object)[["region.info"]])
             motif_num <- nrow(motif_info)
             names(motif_info) <- c("name", "path", "length")
             file_name.txt <- data.frame()
@@ -108,15 +99,15 @@ setMethod(
                 overlaps <- GenomicRanges::findOverlaps(query = peak_gr,
                                                         subject = snp_gr,
                                                         ignore.strand = TRUE)
-                output <- cbind(motif_df[S4Vectors::queryHits(overlaps), ],
+                output0 <- cbind(motif_df[S4Vectors::queryHits(overlaps), ],
                                 SNP_info[S4Vectors::subjectHits(overlaps), ])
-                file_name <- file.path(dirname(.Object@paramlist[["annoOutput"]]),
+                file_name <- file.path(dirname(output(.Object)[["annoOutput"]]),
                                        paste(motif_info$name[i], "_snps", sep = ""))
-                write.table(x = output, file = file_name, quote = FALSE,
+                write.table(x = output0, file = file_name, quote = FALSE,
                             sep = "\t", row.names = FALSE, col.names = FALSE)
                 file_name.txt[i, 1] <- file_name
             }
-            write.table(x = file_name.txt, file = .Object@paramlist[["annoOutput"]],
+            write.table(x = file_name.txt, file = output(.Object)[["annoOutput"]],
                         quote = FALSE, sep = "\t", row.names = FALSE,
                         col.names = FALSE)
         }
@@ -126,22 +117,10 @@ setMethod(
 
 
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "RSNPs",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["region.info"]])){
-            stop("Parameter region.info is required!")
-        }
-    }
-)
-
-
-setMethod(
-    f = "checkAllPath",
-    signature = "RSNPs",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["snp.info"]])
-        checkPathExist(.Object,.Object@paramlist[["annoOutput"]])
+    definition = function(.Object, ...){
+        .Object
     }
 )
 
@@ -201,26 +180,16 @@ setMethod(
     signature = "ATACProc",
     definition = function(atacProc, snp.info = NULL, region.info = NULL,
                           annoOutput = NULL, ...){
-        atacproc <- new(
-            "RSNPs",
-            atacProc = atacProc,
-            snp.info = snp.info,
-            region.info = region.info,
-            annoOutput = annoOutput)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "RSNPs", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname RSNPs
 #' @aliases snpanno
 #' @export
 snpanno <- function(snp.info = NULL, region.info = NULL, annoOutput = NULL, ...){
-    atacproc <- new(
-        "RSNPs",
-        atacProc = NULL,
-        snp.info = snp.info,
-        region.info = region.info,
-        annoOutput = annoOutput)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "RSNPs", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

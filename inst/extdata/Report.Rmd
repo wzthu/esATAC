@@ -17,7 +17,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r eval=TRUE, echo=TRUE,message=FALSE}
-load("Report.Rdata")
+#load("Report.Rdata")
+library(esATAC)
+loadConfig(file.path("ReportData","SummaryInfo","config.rds"))
+suminfo <- readRDS(file.path("ReportData","SummaryInfo","suminfo.rds"))
+allsteps <- suminfo[["prevSteps"]]
+wholesummary <- suminfo[["wholesummary"]]
+filtstat <- suminfo[["filtstat"]]
 ```
 
 # Summary Table
@@ -25,7 +31,8 @@ load("Report.Rdata")
 Sequence files below are set as inputs of the pipeline. 
 
 ```{r cols.print=3, eval=TRUE, echo=FALSE,warning=FALSE}
-filelist
+
+report(allsteps[["UnzipAndMerge"]])$filelist
 ```
 
 Summerized infomation on sequence files has been shown showed below. You can see details in later sections
@@ -39,7 +46,7 @@ A mononucleosome peak must be present in the fragment length distribution. These
 
 ```{r eval=TRUE,echo=FALSE}
 library(ggplot2)
-readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
+readsCounts<-report(allsteps$FragLenDistr)[["readsCounts"]]
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + geom_vline(xintercept = c(147,294), linetype=2) + annotate("text", x = 147, y = max(readsCounts[1:1000,2]),label="147bp") + annotate("text", x = 147*2, y = max(readsCounts[1:1000,2]),label="147bp*2")+ labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 ```
 
@@ -50,7 +57,7 @@ ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fr
 
 Quality control for the sequence data
 ```{r eval=TRUE, echo=FALSE, warning=FALSE}
-QC_path <- getReportVal(atacProcs$atacQC,"pdf")
+QC_path <- report(allsteps$FastQC)[["pdf"]]
 ```
 [Click to Visit Report](`r basename(QC_path)`)
 
@@ -59,14 +66,14 @@ QC_path <- getReportVal(atacProcs$atacQC,"pdf")
 The adapter sequence are shown below. For paired end reads, if adapters were not setted, the adapters below are identified by AdapterRemoval.
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(getReportVal(atacProcs$removeAdapter,"adapters"))
+knitr::kable(report(allsteps$RemoveAdapter)[["adapters"]])
 
 ```
 
 The statistic of adapter removing are show below. 
 
 ```{r cols.print=2, rows.print=20, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(getReportVal(atacProcs$removeAdapter,"statistics"))
+knitr::kable(report(allsteps$RemoveAdapter)[["statistics"]])
 ```
 
 For detail, you can visit [Website of AdapterRemoval on Github](https://github.com/MikkelSchubert/adapterremoval).
@@ -76,13 +83,13 @@ For detail, you can visit [Website of AdapterRemoval on Github](https://github.c
 ## Bowtie2 alignment log
 
 ```{r eval=TRUE, echo=FALSE,warning=FALSE}
-getReportVal(atacProcs$bowtie2Mapping,"detail")
+report(allsteps$Bowtie2Mapping)[["detail"]]
 ```
 
 ## Library complexity
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = getReportVal(atacProcs$libComplexQC,"report"))
+knitr::kable(x = report(allsteps$LibComplexQC)[["table"]])
 ```
 The annotation you can see in section 1.
 
@@ -97,8 +104,8 @@ knitr::kable(x = filtstat)
 
 ```{r fegdist, eval=TRUE,message=FALSE,warning=FALSE}
 library(ggplot2)
-load("Report.Rdata")
-readsCounts<-getReportVal(atacProcs$fragLenDistr,"readsCounts")
+
+readsCounts<-report(allsteps$FragLenDistr)[["readsCounts"]]
 ggplot(readsCounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Fragment Length Distribution") + theme(plot.title = element_text(hjust = 0.5))
 
 library(stats)
@@ -123,10 +130,9 @@ grid.arrange(g1, g2, ncol=2)
 The nucleosome free reads (<100bp) and monnucleosome span reads (180~247bp) enrichment around transcription starting site (TSS) are shown below.
 ```{r TSSenrich, eval=TRUE}
 library(ggplot2)
-load("Report.Rdata")
-df<-getReportVal(atacProcs$tssqc100,"tss")
+df<-report(allsteps$TSSQCNFR)[["tss"]]
 g1<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Nucleosome Free Reads") + theme(plot.title = element_text(hjust = 0.5))
-df<-getReportVal(atacProcs$tssqc180_247,"tss")
+df<-report(allsteps$TSSQCneucleosome)[["tss"]]
 g2<-ggplot(df,aes(pos,counts))+geom_line()+ geom_vline(xintercept = 0, linetype=2)+xlab("upstream<-TSS->downstream")+ylab("reads count")+theme_bw() + theme(panel.grid =element_blank()) + labs(title = "Monnucleosome Span Reads") + theme(plot.title = element_text(hjust = 0.5))
 grid.arrange(g1, g2, ncol=2)
 ```
@@ -136,21 +142,29 @@ grid.arrange(g1, g2, ncol=2)
 ## Blacklist ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-ifelse(is.null(atacProcs$blacklistQC),"NA",
-knitr::kable(x = getReportVal(atacProcs$blacklistQC,"report")))
+if(!is.null(allsteps$PeakQCblacklist)){
+    knitr::kable(x = report(allsteps$PeakQCblacklist)[["table"]])
+}else{
+    message("Blacklist ratio is not available.")
+}
+
 ```
 
 ## DHS ratio
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-ifelse(is.null(atacProcs$DHSQC),"NA",
-knitr::kable(x = getReportVal(atacProcs$DHSQC,"report")))
+if(!is.null(allsteps$PeakQCDHS)){
+    knitr::kable(x = report(allsteps$PeakQCDHS)[["table"]])
+}else{
+    message("DHS is ratio not available.")
+}
+
 ```
 
 ## Fraction of reads in peaks (FRiP)
 
 ```{r cols.print=2, eval=TRUE, echo=FALSE,warning=FALSE}
-knitr::kable(x = getReportVal(atacProcs$fripQC,"report"))
+knitr::kable(x = report(allsteps$FRiPQC)[["table"]])
 ```
 
 
@@ -159,7 +173,7 @@ knitr::kable(x = getReportVal(atacProcs$fripQC,"report"))
 
 ```{r eval=TRUE, echo=FALSE, message=FALSE,warning=FALSE}
 library(ChIPseeker)
-peakanno <- getReportVal(atacProcs$Peakanno,"annoOutput.rds")
+peakanno <- report(allsteps$RPeakAnno)[["annoOutput.rds"]]
 plotAnnoPie(x = peakanno)
 ```
 
@@ -168,7 +182,7 @@ plotAnnoPie(x = peakanno)
 Gene ontology analysis for all genes around peak regions.
 
 ```{r cols.print=5, rows.print=20, eval=TRUE, echo=FALSE, warning=FALSE}
-go_path <- getReportVal(atacProcs$goAna, "goOutput")
+go_path <- report(allsteps$RGo)[["goOutput"]]
 go_data <- read.table(file = go_path, header = TRUE, sep = "\t")
 go_data <- subset(go_data, select = c("ID", "Description", "GeneRatio", "pvalue", "qvalue"))
 go_data$pvalue <- signif(go_data$pvalue, digits = 3)
@@ -189,7 +203,7 @@ if(nrow(go_data)==0){
 # Footprint Analysis
 
 ```{r eval=TRUE, echo=FALSE, warning=FALSE, message=FALSE}
-footprint_data <- getReportVal(atacProcs$footprint, "footprint.data")
+footprint_data <- report(allsteps$CutSiteCountR)[["footprint.data"]]
 if("CTCF" %in% names(footprint_data)){
     footprint_figure.name <- "CTCF"
     footprint_figure.data <- as.vector(footprint_data$CTCF)
@@ -218,7 +232,7 @@ axis(2, padj = 1.0,tck = -0.02)
 
 abline(v = c(100, 100 + footprint_figure.length + 1), lty = 2)
 
-pdf.dir <- getReportVal(atacProcs$footprint,"pdf.dir")
+pdf.dir <- report(allsteps$CutSiteCountR)[["pdf.dir"]]
 
 ```
 

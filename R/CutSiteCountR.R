@@ -4,73 +4,78 @@ setClass(Class = "CutSiteCountR",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "CutSiteCountR",
-    definition = function(.Object, atacProcCutSite, atacProcMotifScan, ..., csInput = NULL,
-                          motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
-                          strandLength = NULL, FootPrint = TRUE, prefix = NULL, editable = FALSE){
-        .Object <- init(.Object, "CutSiteCountR", editable, list(arg1 = atacProcCutSite, arg2 = atacProcMotifScan))
+    definition = function(.Object, prevSteps = list(), ...){
+        allparam <- list(...)
+        atacProcCutSite  <- NULL
+        atacProcMotifScan <- NULL
+        if(length(prevSteps)>0){
+            atacProcCutSite <- prevSteps[[1]]
+            atacProcMotifScan <- prevSteps[[2]]
+        }
+        csInput <- allparam[["csInput"]]
+        motif_info <- allparam[["motif_info"]]
+        chr <- allparam[["chr"]]
+        matrixOutput <- allparam[["matrixOutput"]]
+        strandLength <- allparam[["strandLength"]]
+        FootPrint <- allparam[["FootPrint"]]
+        prefix <- allparam[["prefix"]]
+        editable <- allparam[["editable"]]
 
         # necessary parameters
         if(!is.null(atacProcCutSite)){
-            .Object@paramlist[["csfile.dir"]] <- getParam(atacProcCutSite, "csfile.dir");
+            param(.Object)[["csfile.dir"]] <- getParam(atacProcCutSite, "csfile.dir");
         }else{
-            .Object@paramlist[["csfile.dir"]] <- csInput
+            param(.Object)[["csfile.dir"]] <- csInput
         }
         if(!is.null(atacProcMotifScan)){
-            .Object@paramlist[["motif_info"]] <- readRDS(getParam(atacProcMotifScan, "rdsOutput"))
+            param(.Object)[["motif_info"]] <- readRDS(getParam(atacProcMotifScan, "rdsOutput"))
         }else{
-            .Object@paramlist[["motif_info"]] <- readRDS(motif_info)
+            param(.Object)[["motif_info"]] <- readRDS(motif_info)
         }
 
-        .Object@paramlist[["chr"]] <- as.list(chr)
-        .Object@paramlist[["strandLength"]] <- strandLength
-        .Object@paramlist[["FootPrint"]] <- FootPrint
+        param(.Object)[["chr"]] <- as.list(chr)
+        param(.Object)[["strandLength"]] <- strandLength
+        param(.Object)[["FootPrint"]] <- FootPrint
         if(is.null(prefix)){
-            .Object@paramlist[["prefix"]] <- "ATAC_CutSite"
+            param(.Object)[["prefix"]] <- "ATAC_CutSite"
             warning("Please specify a prefix, otherwise your file will be overwrite!")
         }else{
-            .Object@paramlist[["prefix"]] <- prefix
+            param(.Object)[["prefix"]] <- prefix
         }
 
         if(is.null(matrixOutput)){
-            .Object@paramlist[["matrixfile.dir"]] <- paste(
-                .obtainConfigure("tmpdir"),
-                "/Footprint_",
-                .Object@paramlist[["prefix"]],
-                sep = ""
-            )
-            .Object@paramlist[["fp_pdf.dir"]] <- paste(
-                .Object@paramlist[["matrixfile.dir"]],
+            output(.Object)[["matrixfile.dir"]] <- 
+                getStepWorkDir(.Object,
+                                paste0("/Footprint_",
+                                       param(.Object)[["prefix"]]))
+            output(.Object)[["fp_pdf.dir"]] <- paste0(
+                output(.Object)[["matrixfile.dir"]],
                 "/FP_PDF_",
-                .Object@paramlist[["prefix"]],
-                sep = ""
+                param(.Object)[["prefix"]]
             )
-            .Object@paramlist[["footprint.data"]] <- paste(
-                .Object@paramlist[["matrixfile.dir"]], "/Footprint_",
-                .Object@paramlist[["prefix"]],
-                "_data.rds",
-                sep = ""
+            output(.Object)[["footprint.data"]] <- paste0(
+                output(.Object)[["matrixfile.dir"]], "/Footprint_",
+                param(.Object)[["prefix"]],
+                "_data.rds"
             )
         }else{
-            .Object@paramlist[["matrixfile.dir"]] <- matrixOutput
-            .Object@paramlist[["fp_pdf.dir"]] <- paste(
-                .Object@paramlist[["matrixfile.dir"]],
+            output(.Object)[["matrixfile.dir"]] <- matrixOutput
+            output(.Object)[["fp_pdf.dir"]] <- paste0(
+                output(.Object)[["matrixfile.dir"]],
                 "/FP_PDF_",
-                .Object@paramlist[["prefix"]],
-                sep = ""
+                param(.Object)[["prefix"]]
             )
-            .Object@paramlist[["footprint.data"]] <- paste(
-                .Object@paramlist[["matrixfile.dir"]],
+            output(.Object)[["footprint.data"]] <- paste0(
+                output(.Object)[["matrixfile.dir"]],
                 "/Footprint_",
-                .Object@paramlist[["prefix"]],
-                "_data.rds",
-                sep = ""
+                param(.Object)[["prefix"]],
+                "_data.rds"
             )
         }
-        dir.create(.Object@paramlist[["matrixfile.dir"]])
-        dir.create(.Object@paramlist[["fp_pdf.dir"]])
-        paramValidation(.Object)
+        dir.create(output(.Object)[["matrixfile.dir"]])
+        dir.create(output(.Object)[["fp_pdf.dir"]])
         .Object
     }
 )
@@ -80,24 +85,24 @@ setMethod(
     f = "processing",
     signature = "CutSiteCountR",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object, paste0("Now, start processing!"))
-        motif_num <- nrow(.Object@paramlist[["motif_info"]])
+
+        motif_num <- nrow(param(.Object)[["motif_info"]])
         # list to save footprint data
         footprint_data <- list()
         for(i in seq(motif_num)){
-            motif_name <- .Object@paramlist[["motif_info"]][i,1]
-            motif_file <- .Object@paramlist[["motif_info"]][i,2]
-            motif_length <- .Object@paramlist[["motif_info"]][i,3]
-            matrixsave.dir <- file.path(.Object@paramlist[["matrixfile.dir"]], motif_name)
+            motif_name <- param(.Object)[["motif_info"]][i,1]
+            motif_file <- param(.Object)[["motif_info"]][i,2]
+            motif_length <- param(.Object)[["motif_info"]][i,3]
+            matrixsave.dir <- file.path(output(.Object)[["matrixfile.dir"]], motif_name)
             dir.create(matrixsave.dir)
             footprint.path <- file.path(
-                .Object@paramlist[["fp_pdf.dir"]],
-                paste(.Object@paramlist[["prefix"]], "_", motif_name, ".pdf", sep = "")
+                output(.Object)[["fp_pdf.dir"]],
+                paste(param(.Object)[["prefix"]], "_", motif_name, ".pdf", sep = "")
             )
             # start!
-            .Object <- writeLog(.Object, sprintf("Generating footprint for %s......", motif_name))
+            writeLog(.Object, sprintf("Generating footprint for %s......", motif_name))
             # .Object <- writeLog(.Object, sprintf("Matrix Destination:%s", matrixsave.dir))
-            # .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", .Object@paramlist[["fp_pdf.dir"]]))
+            # .Object <- writeLog(.Object, sprintf("Footprint PDF Destination:%s", output(.Object)[["fp_pdf.dir"]]))
             tmp_dir <- paste(tempdir(), "/", Sys.getpid(), sep="")
             # using tmp dir to save temp data
             dir.create(tmp_dir, FALSE, TRUE, "0700")
@@ -108,13 +113,13 @@ setMethod(
             motif_file_index <- normalizePath(motif_file_index)
 
 
-            chr <- .Object@paramlist[["chr"]]
+            chr <- param(.Object)[["chr"]]
             chr_len <- length(chr)
             data <- data.frame()  # save all matrix
             for(i in seq(1:chr_len)){
                 # echo_str <- paste("Now, processing chr", chr[[i]], "......", sep = "")
                 # print(echo_str)
-                CutSiteInput <- paste0(.Object@paramlist[["csfile.dir"]], "_chr", chr[[i]], ".cs", collapse = "")
+                CutSiteInput <- paste0(param(.Object)[["csfile.dir"]], "_chr", chr[[i]], ".cs", collapse = "")
                 MotifInput <- normalizePath(
                     paste0(motif_tmp, "_chr", chr[[i]], ".bed", collapse = "")
                 )
@@ -131,7 +136,7 @@ setMethod(
                 MatrixOutput <- paste0(matrixsave.dir, "/", motif_name , "_chr", chr[[i]], ".matrix", collapse = "")
                 # only two file exist, the program will run
                 .CutSiteCount(readsfile = CutSiteInput, motiffile = MotifInput, matrixfile = MatrixOutput,
-                              motif_len = motif_length, strand_len = .Object@paramlist[["strandLength"]])
+                              motif_len = motif_length, strand_len = param(.Object)[["strandLength"]])
                 temp <- try(read.table(MatrixOutput), silent = TRUE)
                 if(inherits(temp, "try-error")){
                     temp <- data.frame()
@@ -141,9 +146,9 @@ setMethod(
                 # echo_str <- paste("Now, finishing chr", chr[[i]], "......", sep = "")
                 # print(echo_str)
             }
-            if(.Object@paramlist[["FootPrint"]]){
+            if(param(.Object)[["FootPrint"]]){
                 if(nrow(data) == 0){
-                    tmp_len <- motif_length + 2 * .Object@paramlist[["strandLength"]]
+                    tmp_len <- motif_length + 2 * param(.Object)[["strandLength"]]
                     fp <- seq(from = 0, to = 0, length.out = tmp_len)
                 }else{
                     fp <- apply(data, 2, sum)
@@ -151,67 +156,39 @@ setMethod(
                 footprint_data[[motif_name]] <- fp
                 pdf(file = footprint.path)
                 plot(fp, type = "l", col = "blue", lwd = 2, xlab = "Relative Distance From Motif (bp)", ylab = "Cut Site Count", xaxt = "n", yaxt = "n")
-                axis(1, at = seq(1, .Object@paramlist[["strandLength"]], len = 3),
-                     labels = -(.Object@paramlist[["strandLength"]] + 1 - seq(1, .Object@paramlist[["strandLength"]] + 1, len = 3)),
+                axis(1, at = seq(1, param(.Object)[["strandLength"]], len = 3),
+                     labels = -(param(.Object)[["strandLength"]] + 1 - seq(1, param(.Object)[["strandLength"]] + 1, len = 3)),
                      padj = -1.0, tck = -0.01)
-                axis(1, at = .Object@paramlist[["strandLength"]] + motif_length + seq(1, .Object@paramlist[["strandLength"]], len = 3),
-                     labels = seq(0, .Object@paramlist[["strandLength"]], len = 3),
+                axis(1, at = param(.Object)[["strandLength"]] + motif_length + seq(1, param(.Object)[["strandLength"]], len = 3),
+                     labels = seq(0, param(.Object)[["strandLength"]], len = 3),
                      padj = -1.0, tck = -0.01)
                 axis(2, padj = 1.0,tck = -0.02)
-                abline(v = c(.Object@paramlist[["strandLength"]], .Object@paramlist[["strandLength"]] + motif_length + 1),
+                abline(v = c(param(.Object)[["strandLength"]], param(.Object)[["strandLength"]] + motif_length + 1),
                        lty = 2)
                 dev.off()
             }
 
         }
-        saveRDS(object = footprint_data, file = .Object@paramlist[["footprint.data"]])
+        saveRDS(object = footprint_data, file = output(.Object)[["footprint.data"]])
+        
+        
         .Object
     }
 )
 
 
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "CutSiteCountR",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["csfile.dir"]])){
-            stop("Parameter csfile.dir is required.")
-        }
+    definition = function(.Object, ...){
+        footprint_data <- readRDS( output(.Object)[["footprint.data"]])
+        report(.Object)[["footprint.data"]] <- footprint_data
+        report(.Object)[["pdf.dir"]] <- output(.Object)[["fp_pdf.dir"]]
+        .Object
     }
 )
 
 
-setMethod(
-    f = "checkAllPath",
-    signature = "CutSiteCountR",
-    definition = function(.Object,...){
-        checkPathExist(.Object, .Object@paramlist[["csfile.dir"]])
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "CutSiteCountR",
-    definition = function(.Object, item){
-        if(item == "footprint.data"){
-            fp <- readRDS(.Object@paramlist[["footprint.data"]])
-            return(fp)
-        }else if(item == "pdf.dir"){
-            return(.Object@paramlist[["fp_pdf.dir"]])
-        }
-    }
-)
-
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "CutSiteCountR",
-    definition = function(.Object){
-        return(c("footprint.data", "pdf.dir"))
-    }
-)
 
 #' @name CutSiteCountR
 #' @title Count cut site number in given motif region and plot footprint.
@@ -273,7 +250,7 @@ setMethod(
 #' destname = file.path(getwd(), "Example_peak1.bed"),
 #' ext="bz2", FUN = bzfile, overwrite=TRUE, remove = FALSE))
 #' # motif <- readRDS(system.file("extdata", "MotifPFM.rds", package="esATAC"))
-#' # motif.data <- motifscan(peak = peak.path, genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
+#' # motif.data <- motifscan(peak = peak1_path, genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
 #'
 #' ## plot footprint
 #' # atacCutSiteCount(atacProcCutSite = cs.data, atacProcMotifScan = motif.data)
@@ -300,19 +277,9 @@ setMethod(
                           motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                           strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
 
-        atacproc <- new(
-            "CutSiteCountR",
-            atacProcCutSite = atacProcCutSite,
-            atacProcMotifScan = atacProcMotifScan,
-            csInput = csInput,
-            motif_info = motif_info,
-            chr = chr,
-            matrixOutput = matrixOutput,
-            strandLength = strandLength,
-            FootPrint = FootPrint,
-            prefix = prefix)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "CutSiteCountR", prevSteps = list(atacProcCutSite)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -322,17 +289,7 @@ setMethod(
 cutsitecount <- function(csInput = NULL, motif_info = NULL, chr = c(1:22, "X", "Y"), matrixOutput = NULL,
                          strandLength = 100, FootPrint = TRUE, prefix = NULL, ...){
 
-    atacproc <- new(
-        "CutSiteCountR",
-        atacProcCutSite = NULL,
-        atacProcMotifScan = NULL,
-        csInput = csInput,
-        motif_info = motif_info,
-        chr = chr,
-        matrixOutput = matrixOutput,
-        strandLength = strandLength,
-        FootPrint = FootPrint,
-        prefix = prefix)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "CutSiteCountR", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

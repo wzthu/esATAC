@@ -4,37 +4,41 @@ setClass(Class = "FragLenDistr",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "FragLenDistr",
-    definition = function(.Object,atacProc,...,reportPrefix=NULL,bedInput=NULL,editable=FALSE){
-        .Object <- init(.Object,"FragLenDistr",editable,list(arg1=atacProc))
-        if(.Object@singleEnd){
-            .Object <- writeLog(.Object,"This process is for pair-end sequencing data.",isWarnning=TRUE)
-        }
-        if(!is.null(atacProc)){
-            .Object@paramlist[["bedInput"]] <- getParam(atacProc, "bedOutput");
-            regexProcName<-sprintf("(BED|bed|Bed|%s)",getProcName(atacProc))
-        }else{
-            regexProcName<-"(BED|bed|Bed)"
+    definition = function(.Object,prevSteps = list(), ...){
+        allparam <- list(...)
+        bedInput <- allparam[["bedInput"]]
+        reportPrefix <- allparam[["reportPrefix"]]
+        
+
+#        if(property(.Object)[["singleEnd"]]){
+#            writeLog(.Object,"This process is for pair-end sequencing data.",isWarnning=TRUE)
+#        }
+        if(length(prevSteps) > 0){
+            if(!is.null(prevSteps[[1]])){
+                atacProc <- prevSteps[[1]]
+                atacProc<-c(unlist(atacProc),list())
+                atacProc <- atacProc[[length(atacProc)]]
+                input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
+            }
         }
         if(!is.null(bedInput)){
-            .Object@paramlist[["bedInput"]] <- bedInput;
+            input(.Object)[["bedInput"]] <- bedInput;
         }
         if(is.null(reportPrefix)){
-            if(!is.null(.Object@paramlist[["bedInput"]])){
-                prefix<-getBasenamePrefix(.Object,.Object@paramlist[["bedInput"]],regexProcName)
-                .Object@paramlist[["lendistrpdfOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".lendistr.pdf"))
-                .Object@paramlist[["lendistrtxtOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".lendistr.txt"))
-                .Object@paramlist[["dnagroovepdfOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".dnagroove.pdf"))
-                .Object@paramlist[["histonepdfOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),".histone.pdf"))
+            if(!is.null(input(.Object)[["bedInput"]])){
+                output(.Object)[["lendistrpdfOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed","lendistr.pdf")
+                output(.Object)[["lendistrtxtOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed","lendistr.txt")
+                output(.Object)[["dnagroovepdfOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed","dnagroove.pdf")
+                output(.Object)[["histonepdfOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed","histone.pdf")
             }
         }else{
-            .Object@paramlist[["lendistrpdfOutput"]] <- paste0(reportPrefix,".lendistr.pdf")
-            .Object@paramlist[["lendistrtxtOutput"]] <- paste0(reportPrefix,".lendistr.txt")
-            .Object@paramlist[["dnagroovepdfOutput"]] <- paste0(reportPrefix,".dnagroove.pdf")
-            .Object@paramlist[["histonepdfOutput"]] <- paste0(reportPrefix,".histone.pdf")
+            output(.Object)[["lendistrpdfOutput"]] <- paste0(reportPrefix,".lendistr.pdf")
+            output(.Object)[["lendistrtxtOutput"]] <- paste0(reportPrefix,".lendistr.txt")
+            output(.Object)[["dnagroovepdfOutput"]] <- paste0(reportPrefix,".dnagroove.pdf")
+            output(.Object)[["histonepdfOutput"]] <- paste0(reportPrefix,".histone.pdf")
         }
-        paramValidation(.Object)
         .Object
     }
 )
@@ -43,12 +47,12 @@ setMethod(
     f = "processing",
     signature = "FragLenDistr",
     definition = function(.Object,...){
-        readslist<-read.table(file = .Object@paramlist[["bedInput"]],nrows = 1)
+        readslist<-read.table(file = input(.Object)[["bedInput"]],nrows = 1)
         bedcol=length(colnames(readslist))
         if(bedcol>3){
-            readslist<-read.table(file = .Object@paramlist[["bedInput"]],colClasses = c("NULL","integer","integer",rep("NULL",bedcol-3)))
+            readslist<-read.table(file = input(.Object)[["bedInput"]],colClasses = c("NULL","integer","integer",rep("NULL",bedcol-3)))
         }else{
-            readslist<-read.table(file = .Object@paramlist[["bedInput"]],colClasses = c("NULL","integer","integer") )
+            readslist<-read.table(file = input(.Object)[["bedInput"]],colClasses = c("NULL","integer","integer") )
         }
 
 
@@ -81,9 +85,9 @@ setMethod(
 
         
         
-        write.table(x=readscounts,file = .Object@paramlist[["lendistrtxtOutput"]],quote = FALSE,row.names = FALSE,sep="\t")
+        write.table(x=readscounts,file = output(.Object)[["lendistrtxtOutput"]],quote = FALSE,row.names = FALSE,sep="\t")
         ggplot(readscounts[1:1000,], aes(length,counts))+geom_path(color="Red")+xlab("Fragment length (bp)")+ylab("Read counts") + theme_bw() + theme(panel.grid =element_blank()) 
-        ggsave(.Object@paramlist[["lendistrpdfOutput"]])
+        ggsave(output(.Object)[["lendistrpdfOutput"]])
         
         strength<-Mod(fft(readscounts$counts))/length(readscounts$counts)
         periodx<-length(readscounts$counts)/(1:(length(readscounts$counts)-1))
@@ -101,63 +105,29 @@ setMethod(
             theme_bw() + theme(panel.grid =element_blank()) + 
             annotate("text", x = 10.4, y = max(rs[rs["check"]==0,2]), 
                      label = "10.4bp") +xlab("period") + ylab("strength")
-        ggsave(.Object@paramlist[["dnagroovepdfOutput"]])
+        ggsave(output(.Object)[["dnagroovepdfOutput"]])
         g2<-ggplot(rs[rs["check"]==1,]) + 
             geom_vline(xintercept = 186, linetype=2)+ 
             geom_line(aes(x=period,y=strength),color="Red")+ 
             theme_bw() + theme(panel.grid =element_blank()) + 
             annotate("text", x = 186, y = max(rs[rs["check"]==1,2]), 
                      label = "186bp") +xlab("period") + ylab("strength")  
-        ggsave(.Object@paramlist[["histonepdfOutput"]])
-
+        ggsave(output(.Object)[["histonepdfOutput"]])
+        
         .Object
     }
 )
 
-
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "FragLenDistr",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bedInput"]])){
-            stop("bedInput is required.")
-        }
+    definition = function(.Object, ...){
+        readscounts <- read.table(file= output(.Object)[["lendistrtxtOutput"]],header=TRUE)
+        report(.Object)$readsCounts <- readscounts
+        .Object
     }
 )
 
-
-setMethod(
-    f = "checkAllPath",
-    signature = "FragLenDistr",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["lendistrpdfOutput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["lendistrtxtOutput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["dnagroovepdfOutput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["histonepdfOutput"]]);
-    }
-)
-
-
-setMethod(
-    f = "getReportValImp",
-    signature = "FragLenDistr",
-    definition = function(.Object, item){
-        readscounts <- read.table(file= .Object@paramlist[["lendistrtxtOutput"]],header=TRUE)
-        if(item == "readsCounts"){
-            return(readscounts)
-        }
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "FragLenDistr",
-    definition = function(.Object){
-        return(c("readsCounts"))
-    }
-)
 
 #' @name FragLenDistr
 #' @title Quality control for fragment length distribution
@@ -197,7 +167,7 @@ setMethod(
 #' 
 #' library(R.utils)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
@@ -222,13 +192,9 @@ setMethod(
     f = "atacFragLenDistr",
     signature = "ATACProc",
     definition = function(atacProc,reportPrefix=NULL,bedInput=NULL, ...){
-        atacproc <- new(
-            "FragLenDistr",
-            atacProc = atacProc,
-            reportPrefix = reportPrefix,
-            bedInput = bedInput)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "FragLenDistr", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -239,11 +205,7 @@ setMethod(
 #' @export
 
 fragLenDistr<-function(bedInput, reportPrefix=NULL, ...){
-    atacproc <- new(
-        "FragLenDistr",
-        atacProc = NULL,
-        reportPrefix = reportPrefix,
-        bedInput = bedInput)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "FragLenDistr", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

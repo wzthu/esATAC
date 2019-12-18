@@ -11,70 +11,64 @@ setClass(Class = "RMotifScanPair",
 
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "RMotifScanPair",
-    definition = function(.Object, atacProc, ..., peak1 = NULL, peak2 = NULL,
-                          background = NULL, genome = NULL, motifs = NULL,
-                          p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL,
-                          editable = FALSE){
-        .Object <- init(.Object, "RMotifScanPair", editable, list(arg1 = atacProc))
+    definition = function(.Object,prevSteps = list(),...){
+        allparam <- list(...)
+        peak1 <- allparam[["peak1"]]
+        peak2 <- allparam[["peak2"]]
+        background <- allparam[["background"]]
+        genome <- allparam[["genome"]]
+        motifs <- allparam[["motifs"]]
+        p.cutoff <- allparam[["p.cutoff"]]
+        prefix <- allparam[["prefix"]]
 
+        atacProc <- NULL
+        if(length(prevSteps)>0){
+            atacProc <- prevSteps[[1]]
+        }
+        
         if(!is.null(atacProc)){
-            .Object@paramlist[["peak1"]] <- getParam(atacProc, "bedOutput")[1]
-            .Object@paramlist[["peak2"]] <- getParam(atacProc, "bedOutput")[2]
-            .Object@paramlist[["background"]] <- getParam(atacProc, "bedOutput")[3]
+            input(.Object)[["peak1"]] <- getParam(atacProc, "bedOutput1")
+            input(.Object)[["peak2"]] <- getParam(atacProc, "bedOutput2")
+            input(.Object)[["background"]] <- getParam(atacProc, "bedOutput")
         }else{
-            .Object@paramlist[["peak1"]] <- peak1
-            .Object@paramlist[["peak2"]] <- peak2
-            .Object@paramlist[["background"]] <- background
+            input(.Object)[["peak1"]] <- peak1
+            input(.Object)[["peak2"]] <- peak2
+            input(.Object)[["background"]] <- background
         }
 
         if(!is.null(genome)){
-            .Object@paramlist[["genome"]] <- genome
+            param(.Object)[["genome"]] <- genome
         }else{
-            .Object@paramlist[["genome"]] <- .obtainConfigure("bsgenome")
+            param(.Object)[["genome"]] <- getRefRc("bsgenome")
         }
 
-        .Object@paramlist[["motifs"]] <- motifs
-        .Object@paramlist[["motifs.len"]] <- lapply(X = .Object@paramlist[["motifs"]], FUN = ncol)
-        .Object@paramlist[["p.cutoff"]] <- p.cutoff
+        param(.Object)[["motifs"]] <- motifs
+        param(.Object)[["motifs.len"]] <- lapply(X = param(.Object)[["motifs"]], FUN = ncol)
+        param(.Object)[["p.cutoff"]] <- p.cutoff
 
+        output(.Object)[["rdsOutput.peak1"]] <- 
+            getAutoPath(.Object, input(.Object)[["peak1"]], 
+                        "peak1.bed", "peak1.RMotifScanPair.rds")
+        output(.Object)[["rdsOutput.peak2"]] <- 
+            getAutoPath(.Object, input(.Object)[["peak2"]], 
+                        "peak1.bed", "peak2.RMotifScanPair.rds")
+        output(.Object)[["rdsOutput.background"]] <- 
+            getAutoPath(.Object, input(.Object)[["background"]], 
+                        "overlap.bed", "background.RMotifScanPair.rds")
+        
+        
         if(is.null(prefix)){
-            peak1.prefix <- tools::file_path_sans_ext(base::basename(.Object@paramlist[["peak1"]]))
-            peak2.prefix <- tools::file_path_sans_ext(base::basename(.Object@paramlist[["peak2"]]))
-            background.prefix <- tools::file_path_sans_ext(base::basename(.Object@paramlist[["background"]]))
-            .Object@paramlist[["prefix"]] <- c(peak1.prefix, peak2.prefix, background.prefix)
+            peak1.prefix <- getAutoPath(.Object, input(.Object)[["peak1"]], "peak1.bed", "peak1" )
+            peak2.prefix <- getAutoPath(.Object, input(.Object)[["peak2"]], "peak2.bed", "peak2" )
+            background.prefix <- getAutoPath(.Object, input(.Object)[["background"]], "overlap.bed", "background" )
+            output(.Object)[["prefix"]] <- c(peak1.prefix, peak2.prefix, background.prefix)
         }else{
-            .Object@paramlist[["prefix"]] <- prefix
+            output(.Object)[["prefix"]] <- prefix
         }
 
-        if(is.null(scanO.dir)){
-            pre_prefix <- paste(.Object@paramlist[["prefix"]], sep = "", collapse = "_")
-            .Object@paramlist[["scanO.dir"]] <- paste(dirname(.Object@paramlist[["peak1"]]),
-                                                      "/",
-                                                      pre_prefix,
-                                                      "_MotifScanOutput",
-                                                      sep = "")
-            dir.create(.Object@paramlist[["scanO.dir"]])
-        }else{
-            .Object@paramlist[["scanO.dir"]] <- scanO.dir
-        }
-
-        .Object@paramlist[["rdsOutput.peak1"]] <- paste(
-            .Object@paramlist[["scanO.dir"]], "/",
-            .Object@paramlist[["prefix"]][1],
-            "_", "RMotifScanPair.rds", sep = ""
-        )
-        .Object@paramlist[["rdsOutput.peak2"]] <- paste(
-            .Object@paramlist[["scanO.dir"]], "/",
-            .Object@paramlist[["prefix"]][2],
-            "_", "RMotifScanPair.rds", sep = ""
-        )
-        .Object@paramlist[["rdsOutput.background"]] <- paste(
-            .Object@paramlist[["scanO.dir"]], "/",
-            .Object@paramlist[["prefix"]][3],
-            "_", "RMotifScanPair.rds", sep = ""
-        )
+        
         .Object
     }
 )
@@ -84,16 +78,15 @@ setMethod(
     f = "processing",
     signature = "RMotifScanPair",
     definition = function(.Object,...){
-        .Object <- writeLog(.Object, paste0("processing file:"))
-        .Object <- writeLog(.Object, sprintf("peak1 file:%s", .Object@paramlist[["peak1"]]))
-        .Object <- writeLog(.Object, sprintf("peak2 file:%s", .Object@paramlist[["peak2"]]))
-        .Object <- writeLog(.Object, sprintf("background file:%s", .Object@paramlist[["background"]]))
-        .Object <- writeLog(.Object, sprintf("Output destination:%s", .Object@paramlist[["scanO.dir"]]))
-
+        
+        dir.create(output(.Object)[["prefix"]][1])
+        dir.create(output(.Object)[["prefix"]][2])
+        dir.create(output(.Object)[["prefix"]][3])
+       
         # original peak
-        case.peak <- rtracklayer::import(.Object@paramlist[["peak1"]], format = "bed")
-        ctrl.peak <- rtracklayer::import(.Object@paramlist[["peak2"]], format = "bed")
-        backg.peak <- rtracklayer::import(.Object@paramlist[["background"]], format = "bed")
+        case.peak <- rtracklayer::import(input(.Object)[["peak1"]], format = "bed")
+        ctrl.peak <- rtracklayer::import(input(.Object)[["peak2"]], format = "bed")
+        backg.peak <- rtracklayer::import(input(.Object)[["background"]], format = "bed")
 
         # middle interval peak
         case_mid.peak <- mid_interval(x = case.peak)
@@ -112,23 +105,23 @@ setMethod(
 
         # start finding motif occurence
         # for case
-        SiteSetList.case <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+        SiteSetList.case <- motifmatchr::matchMotifs(pwms = param(.Object)[["motifs"]],
                                                      subject = case.peak,
-                                                     genome = .Object@paramlist[["genome"]],
+                                                     genome = param(.Object)[["genome"]],
                                                      out = "positions",
-                                                     p.cutoff = .Object@paramlist[["p.cutoff"]])
+                                                     p.cutoff = param(.Object)[["p.cutoff"]])
         # for ctrl
-        SiteSetList.ctrl <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+        SiteSetList.ctrl <- motifmatchr::matchMotifs(pwms = param(.Object)[["motifs"]],
                                                      subject = ctrl.peak,
-                                                     genome = .Object@paramlist[["genome"]],
+                                                     genome = param(.Object)[["genome"]],
                                                      out = "positions",
-                                                     p.cutoff = .Object@paramlist[["p.cutoff"]])
+                                                     p.cutoff = param(.Object)[["p.cutoff"]])
         # for background
-        SiteSetList.bg <- motifmatchr::matchMotifs(pwms = .Object@paramlist[["motifs"]],
+        SiteSetList.bg <- motifmatchr::matchMotifs(pwms = param(.Object)[["motifs"]],
                                                    subject = backg.peak,
-                                                   genome = .Object@paramlist[["genome"]],
+                                                   genome = param(.Object)[["genome"]],
                                                    out = "positions",
-                                                   p.cutoff = .Object@paramlist[["p.cutoff"]])
+                                                   p.cutoff = param(.Object)[["p.cutoff"]])
 
         # length check
         Motif.caselen <- length(SiteSetList.case)
@@ -148,16 +141,15 @@ setMethod(
         # save files and compute motif enrichment
         for(i in seq(Motif.caselen)){
             motif.name <- names(SiteSetList.case[i])
-            motif.len <- .Object@paramlist[["motifs.len"]][[motif.name]]
+            motif.len <- param(.Object)[["motifs.len"]][[motif.name]]
 
             # for case
             motif.case <- SiteSetList.case[[motif.name]]
             motif.case <- sort.GenomicRanges(x = motif.case, ignore.strand = TRUE)
             motif.case <- as.data.frame(motif.case)
             motif.case <- within(motif.case, rm(width))
-            output.case <- paste(.Object@paramlist[["scanO.dir"]],
-                                 "/", .Object@paramlist[["prefix"]][1], "_",
-                                 motif.name, sep = "")
+            output.case <- file.path(output(.Object)[["prefix"]][1],
+                                     paste0("peak1_",motif.name))
             case_save_info[WriteMotifOrder, 1] <- motif.name
             case_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.case)
             case_save_info[WriteMotifOrder, 3] <- motif.len
@@ -169,9 +161,8 @@ setMethod(
             motif.ctrl <- sort.GenomicRanges(x = motif.ctrl, ignore.strand = TRUE)
             motif.ctrl <- as.data.frame(motif.ctrl)
             motif.ctrl <- within(motif.ctrl, rm(width))
-            output.ctrl <- paste(.Object@paramlist[["scanO.dir"]],
-                                 "/", .Object@paramlist[["prefix"]][2], "_",
-                                 motif.name, sep = "")
+            output.ctrl <- file.path(output(.Object)[["prefix"]][2],
+                                     paste0("peak2_",motif.name))
             ctrl_save_info[WriteMotifOrder, 1] <- motif.name
             ctrl_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.ctrl)
             ctrl_save_info[WriteMotifOrder, 3] <- motif.len
@@ -183,9 +174,8 @@ setMethod(
             motif.bg <- sort.GenomicRanges(x = motif.bg, ignore.strand = TRUE)
             motif.bg <- as.data.frame(motif.bg)
             motif.bg <- within(motif.bg, rm(width))
-            output.bg <- paste(.Object@paramlist[["scanO.dir"]],
-                                 "/", .Object@paramlist[["prefix"]][3], "_",
-                                 motif.name, sep = "")
+            output.bg <- file.path(output(.Object)[["prefix"]][3],
+                                   paste0("background_",motif.name))
             backg_save_info[WriteMotifOrder, 1] <- motif.name
             backg_save_info[WriteMotifOrder, 2] <- R.utils::getAbsolutePath(output.bg)
             backg_save_info[WriteMotifOrder, 3] <- motif.len
@@ -213,70 +203,27 @@ setMethod(
             WriteMotifOrder <- WriteMotifOrder + 1
         }
 
-        saveRDS(object = case_save_info, file = .Object@paramlist[["rdsOutput.peak1"]])
-        saveRDS(object = ctrl_save_info, file = .Object@paramlist[["rdsOutput.peak2"]])
-        saveRDS(object = backg_save_info, file = .Object@paramlist[["rdsOutput.background"]])
+        saveRDS(object = case_save_info, file = output(.Object)[["rdsOutput.peak1"]])
+        saveRDS(object = ctrl_save_info, file = output(.Object)[["rdsOutput.peak2"]])
+        saveRDS(object = backg_save_info, file = output(.Object)[["rdsOutput.background"]])
 
+        
+        
         .Object
     }
 )
 
-
-
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "RMotifScanPair",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["peak1"]])){
-            stop("Parameter atacProc or peak1 is required!")
-        }
-        if(is.null(.Object@paramlist[["peak2"]])){
-            stop("Parameter atacProc or peak2 is required!")
-        }
-        if(is.null(.Object@paramlist[["background"]])){
-            stop("Parameter atacProc or background is required!")
-        }
-        if(is.null(.Object@paramlist[["motifs"]])){
-            stop("Parameter motifs is required!")
-        }
+    definition = function(.Object, ...){
+        report(.Object)$rdsOutput.peak1 <- readRDS(output(.Object)[["rdsOutput.peak1"]])
+        report(.Object)$rdsOutput.peak2 <- readRDS(output(.Object)[["rdsOutput.peak2"]])
+        report(.Object)$rdsOutput.background <- readRDS(output(.Object)[["rdsOutput.background"]])
+        .Object
     }
 )
 
-
-setMethod(
-    f = "checkAllPath",
-    signature = "RMotifScanPair",
-    definition = function(.Object,...){
-        checkFileExist(.Object, .Object@paramlist[["peak1"]]);
-        checkFileExist(.Object, .Object@paramlist[["peak2"]]);
-        checkFileExist(.Object, .Object@paramlist[["background"]]);
-        checkPathExist(.Object, .Object@paramlist[["scanO.dir"]]);
-    }
-)
-
-setMethod(
-    f = "getReportValImp",
-    signature = "RMotifScanPair",
-    definition = function(.Object, item){
-        if(item == "rdsOutput.peak1"){
-            fp <- readRDS(.Object@paramlist[["rdsOutput.peak1"]])
-        }else if(item == "rdsOutput.peak2"){
-            fp <- readRDS(.Object@paramlist[["rdsOutput.peak2"]])
-        }else if(item == "rdsOutput.background"){
-            fp <- readRDS(.Object@paramlist[["rdsOutput.background"]])
-        }
-        return(fp)
-    }
-)
-
-
-setMethod(
-    f = "getReportItemsImp",
-    signature = "RMotifScanPair",
-    definition = function(.Object){
-        return(c("rdsOutput.peak1", "rdsOutput.peak2", "rdsOutput.background"))
-    }
-)
 
 #' @name RMotifScanPair
 #' @title Search Motif Position in Given Regions
@@ -288,7 +235,7 @@ setMethod(
 #' @param peak1 peak file path.
 #' @param peak2 peak file path.
 #' @param background background peak file path.
-#' @param genome BSgenome object, Default: from \code{\link{setConfigure}}.
+#' @param genome BSgenome object, Default: from \code{\link{getRefRc}}.
 #' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 #' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.
 #' @param p.cutoff p-value cutoff for returning motifs.
@@ -345,19 +292,9 @@ setMethod(
     definition = function(atacProc, peak1 = NULL, peak2 = NULL,
                           background = NULL, genome = NULL, motifs = NULL,
                           p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL, ...){
-        atacproc <- new(
-            "RMotifScanPair",
-            atacProc = atacProc,
-            peak1 = peak1,
-            peak2 = peak2,
-            background = background,
-            genome = genome,
-            motifs = motifs,
-            p.cutoff = p.cutoff,
-            scanO.dir = scanO.dir,
-            prefix = prefix)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "RMotifScanPair", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -367,19 +304,9 @@ setMethod(
 motifscanpair <- function(peak1 = NULL, peak2 = NULL,
                           background = NULL, genome = NULL, motifs = NULL,
                           p.cutoff = 0.0001, scanO.dir = NULL, prefix = NULL, ...){
-    atacproc <- new(
-        "RMotifScanPair",
-        atacProc = NULL,
-        peak1 = peak1,
-        peak2 = peak2,
-        background = background,
-        genome = genome,
-        motifs = motifs,
-        p.cutoff = p.cutoff,
-        scanO.dir = scanO.dir,
-        prefix = prefix)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "RMotifScanPair", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
 
 

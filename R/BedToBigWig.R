@@ -2,42 +2,50 @@ setClass(Class = "BedToBigWig",
          contains = "ATACProc"
 )
 
-setMethod(
-    f = "initialize",
-    signature = "BedToBigWig",
-    definition = function(.Object,atacProc, ..., bedInput = NULL, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, editable=FALSE){
-        .Object <- init(.Object,"BedToBigWig",editable,list(arg1=atacProc))
 
-        if(!is.null(atacProc)){
-            .Object@paramlist[["bedInput"]] <- getParam(atacProc, "bedOutput");
-            regexProcName<-sprintf("(BED|bed|Bed|%s)",getProcName(atacProc))
-        }else{
-            regexProcName<-"(BED|bed|Bed)"
+setMethod(
+    f = "init",
+    signature = "BedToBigWig",
+    definition = function(.Object,prevSteps = list(), ...){
+        allparam <- list(...)
+        bedInput <- allparam[["bedInput"]]
+        bsgenome <- allparam[["bsgenome"]]
+        bwOutput <- allparam[["bwOutput"]]
+        toWig <- allparam[["toWig"]]
+        
+
+        if(length(prevSteps) > 0){
+            if(!is.null(prevSteps[[1]])){
+                atacProc <- prevSteps[[1]]
+                atacProc<-c(unlist(atacProc),list())
+                atacProc <- atacProc[[length(atacProc)]]
+                input(.Object)[["bedInput"]] <- output(atacProc)[["bedOutput"]]
+            }
         }
+       
 
         if(!is.null(bedInput)){
-            .Object@paramlist[["bedInput"]] <- bedInput;
+            input(.Object)[["bedInput"]] <- bedInput;
         }
+        
         if(toWig){
-            sfx<-".wig"
+            sfx<-"wig"
         }else{
-            sfx<-".bw"
+            sfx<-"bw"
         }
 
         if(is.null(bwOutput)){
-            if(!is.null(.Object@paramlist[["bedInput"]])){
-                prefix <- getBasenamePrefix(.Object, .Object@paramlist[["bedInput"]],regexProcName)
-                .Object@paramlist[["bwOutput"]] <- file.path(.obtainConfigure("tmpdir"),paste0(prefix,".",getProcName(.Object),sfx))
+            if(!is.null(input(.Object)[["bedInput"]])){
+                output(.Object)[["bwOutput"]] <- getAutoPath(.Object, input(.Object)[["bedInput"]], "BED|Bed|bed", sfx)
             }
         }else{
-            .Object@paramlist[["bwOutput"]] <- bwOutput;
+            output(.Object)[["bwOutput"]] <- bwOutput;
         }
 
-        .Object@paramlist[["bsgenome"]] <- bsgenome
+        param(.Object)[["bsgenome"]] <- bsgenome
 
-        .Object@paramlist[["toWig"]] <- toWig
+        param(.Object)[["toWig"]] <- toWig
 
-        paramValidation(.Object)
         .Object
     }
 )
@@ -46,20 +54,20 @@ setMethod(
     f = "processing",
     signature = "BedToBigWig",
     definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bsgenome"]])){
-            genome <- seqinfo(.obtainConfigure("bsgenome"))
+        if(is.null(param(.Object)[["bsgenome"]])){
+            genome <- seqinfo(getRefRc("bsgenome"))
         }else{
-            genome <- seqinfo(.Object@paramlist[["bsgenome"]])
+            genome <- seqinfo(param(.Object)[["bsgenome"]])
         }
-#        bedranges <- import(.Object@paramlist[["bedInput"]], genome = genome)
-       bedranges <- import(.Object@paramlist[["bedInput"]])
+#        bedranges <- import(input(.Object)[["bedInput"]], genome = genome)
+       bedranges <- import(input(.Object)[["bedInput"]])
         cov <- coverage(bedranges)
         ans <- GRanges(cov)
         ans <- subset(ans, score > 0)
-        if(.Object@paramlist[["toWig"]]){
-            export.wig(as(ans, "UCSCData"),.Object@paramlist[["bwOutput"]])
+        if(param(.Object)[["toWig"]]){
+            export.wig(as(ans, "UCSCData"),output(.Object)[["bwOutput"]])
         }else{
-            export.bw(ans,.Object@paramlist[["bwOutput"]])
+            export.bw(ans,output(.Object)[["bwOutput"]])
         }
         .Object
     }
@@ -67,21 +75,10 @@ setMethod(
 
 
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "BedToBigWig",
-    definition = function(.Object,...){
-        if(is.null(.Object@paramlist[["bedInput"]])){
-            stop(paste("bedInput is requied"));
-        }
-    }
-)
-
-setMethod(
-    f = "checkAllPath",
-    signature = "BedToBigWig",
-    definition = function(.Object,...){
-        checkFileExist(.Object,.Object@paramlist[["bedInput"]]);
-        checkFileCreatable(.Object,.Object@paramlist[["bwOutput"]]);
+    definition = function(.Object, ...){
+        .Object
     }
 )
 
@@ -124,7 +121,7 @@ setMethod(
 #' @examples
 #' library(R.utils)
 #' td <- tempdir()
-#' options(atacConf=setConfigure("tmpdir",td))
+#' setTmpDir(td)
 #'
 #' bedbzfile <- system.file(package="esATAC", "extdata", "chr20.50000.bed.bz2")
 #' bedfile <- file.path(td,"chr20.50000.bed")
@@ -153,29 +150,16 @@ setMethod(
     definition = function(atacProc, bedInput = NULL,
                           bsgenome = NULL, bwOutput = NULL,
                           toWig = FALSE, ...){
-
-        atacproc <- new(
-            "BedToBigWig",
-            atacProc = atacProc,
-            bedInput = bedInput,
-            bsgenome = bsgenome,
-            bwOutput = bwOutput,
-            toWig = toWig)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "BedToBigWig", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 #' @rdname BedToBigWig
 #' @aliases bedToBigWig
 #' @export
 bedToBigWig <- function(bedInput, bsgenome = NULL, bwOutput = NULL, toWig = FALSE, ...){
-    atacproc <- new(
-        "BedToBigWig",
-        atacProc = NULL,
-        bedInput = bedInput,
-        bsgenome = bsgenome,
-        bwOutput = bwOutput,
-        toWig = toWig)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "BedToBigWig", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }

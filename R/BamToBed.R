@@ -3,34 +3,26 @@ setClass(Class = "BamToBed",
 )
 
 setMethod(
-    f = "initialize",
+    f = "init",
     signature = "BamToBed",
-    definition = function(.Object, atacProc, ..., bamInput = NULL, bedOutput = NULL, editable = FALSE){
-        .Object <- init(.Object,"BamToBed",editable,list(arg1 = atacProc))
-
-        if(!is.null(atacProc)){
-            .Object@paramlist[["bamInput"]] <- getParam(atacProc, "bamOutput")
-            regexProcName <- sprintf("(bam|%s)", getProcName(atacProc))
+    definition = function(.Object, prevSteps = list(),...){
+        allparam <- list(...)
+        bamInput <- allparam[["bamInput"]]
+        bedOutput <- allparam[["bedOutput"]]
+       
+        if(length(prevSteps) > 0){
+            prevSteps <- prevSteps[[1]]
+            input(.Object)[["bamInput"]] <- output(prevSteps)[["bamOutput"]]
         }else{
-            .Object@paramlist[["bamInput"]] <- bamInput
-            regexProcName <- "(bam)"
+            input(.Object)[["bamInput"]] <- bamInput
         }
 
         if(is.null(bedOutput)){
-            prefix <- getBasenamePrefix(.Object, .Object@paramlist[["bamInput"]], regexProcName)
-            .Object@paramlist[["bedOutput"]] <- file.path(.obtainConfigure("tmpdir"),
-                                                          paste(prefix, ".", getProcName(.Object), ".bed", sep = ""))
+            output(.Object)[["bedOutput"]] <- getAutoPath(.Object, input(.Object)[["bamInput"]],"bam","bed")
         }else{
-            name_split <- unlist(base::strsplit(x = bedOutput, split = ".", fixed = TRUE))
-            suffix <- tail(name_split, 1)
-            if(suffix == "bed"){
-                .Object@paramlist[["bedOutput"]] <- bedOutput
-            }else{
-                .Object@paramlist[["bedOutput"]] <- paste(bedOutput, ".bed", sep = "")
-            }
+            output(.Object)[["bedOutput"]] <- addFileSuffix(bedOutput, ".bed")
         }
-        # parameter check and return
-        paramValidation(.Object)
+
         .Object
     } # definition end
 ) # setMethod initialize end
@@ -41,37 +33,24 @@ setMethod(
     f = "processing",
     signature = "BamToBed",
     definition = function(.Object, ...){
-        .Object <- writeLog(.Object, paste0("processing file:"))
-        .Object <- writeLog(.Object, sprintf("Bam Input Source:%s", .Object@paramlist[["bamInput"]]))
-        .Object <- writeLog(.Object, sprintf("Bed Output Destination:%s", .Object@paramlist[["bedOutput"]]))
-        rtracklayer::export(con = .Object@paramlist[["bedOutput"]],
-                            object = rtracklayer::import(con = .Object@paramlist[["bamInput"]], format = "bam", paired = TRUE, use.names = TRUE),
+        rtracklayer::export(con = output(.Object)[["bedOutput"]],
+                            object = rtracklayer::import(con = input(.Object)[["bamInput"]], format = "bam", paired = TRUE, use.names = TRUE),
                             format = "bed")
         .Object
     }
 )
 
 
-
-
 setMethod(
-    f = "checkRequireParam",
+    f = "genReport",
     signature = "BamToBed",
     definition = function(.Object, ...){
-        if(is.null(.Object@paramlist[["bamInput"]])){
-            stop("bamInput is required.")
-        }
+        .Object
     }
 )
 
-setMethod(
-    f = "checkAllPath",
-    signature = "BamToBed",
-    definition = function(.Object, ...){
-        checkFileExist(.Object, .Object@paramlist[["bamInput"]])
-        checkFileCreatable(.Object, .Object@paramlist[["bedOutput"]])
-    }
-)
+
+
 
 #' @name BamToBed
 #' @title Convert bam format to bed format.
@@ -116,10 +95,9 @@ setMethod(
     signature = "ATACProc",
 
     definition = function(atacProc, bamInput = NULL, bedOutput = NULL, ...){
-
-        atacproc <- new("BamToBed", atacProc = atacProc, bamInput = bamInput, bedOutput = bedOutput)
-        atacproc <- process(atacproc)
-        invisible(atacproc)
+        allpara <- c(list(Class = "BamToBed", prevSteps = list(atacProc)),as.list(environment()),list(...))
+        step <- do.call(new,allpara)
+        invisible(step)
     }
 )
 
@@ -128,7 +106,7 @@ setMethod(
 #' @export
 
 bam2bed <- function(bamInput, bedOutput = NULL, ...){
-    atacproc <- new("BamToBed", atacProc = NULL, bamInput = bamInput, bedOutput = bedOutput)
-    atacproc <- process(atacproc)
-    invisible(atacproc)
+    allpara <- c(list(Class = "BamToBed", prevSteps = list()),as.list(environment()),list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
 }
