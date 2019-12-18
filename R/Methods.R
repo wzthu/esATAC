@@ -374,7 +374,7 @@ atacPipe <- function(genome,
 #' @author Zheng Wei and Wei Zhang
 #' @seealso
 #' \code{\link{atacPipe}}
-#' @import JASPAR2016
+#' @import JASPAR2018
 #' @importFrom TFBSTools getMatrixSet
 #' @importFrom TFBSTools name
 #' @examples
@@ -437,7 +437,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
     if(is.null(motifs)){
         opts <- list()
         opts[["tax_group"]] <- "vertebrates"
-        pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+        pwm <- getMatrixSet(JASPAR2018::JASPAR2018, opts)
         names(pwm) <- TFBSTools::name(pwm)
         names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
     }else{
@@ -740,7 +740,7 @@ atacRepsPipe <- function(genome, fastqInput1, fastqInput2 = NULL, refdir = NULL,
     if(is.null(motifs)){
         opts <- list()
         opts[["tax_group"]] <- "vertebrates"
-        pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+        pwm <- getMatrixSet(JASPAR2018::JASPAR2018, opts)
         names(pwm) <- TFBSTools::name(pwm)
         names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
     }else{
@@ -1147,7 +1147,7 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 #' @author Zheng Wei and Wei Zhang
 #' @seealso
 #' \code{\link{atacPipe}}
-#' @import JASPAR2016
+#' @import JASPAR2018
 #' @importFrom TFBSTools getMatrixSet
 #' @importFrom TFBSTools toPWM
 #' @importFrom TFBSTools name
@@ -1341,7 +1341,7 @@ atacRepsPipe2 <- function(genome, caseFastqInput1,caseFastqInput2, ctrlFastqInpu
     if(is.null(motifs)){
         opts <- list()
         opts[["tax_group"]] <- "vertebrates"
-        pwm <- getMatrixSet(JASPAR2016::JASPAR2016, opts)
+        pwm <- getMatrixSet(JASPAR2018::JASPAR2018, opts)
         names(pwm) <- TFBSTools::name(pwm)
         names(pwm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = names(pwm), perl = TRUE)
     }else{

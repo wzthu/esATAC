@@ -104,7 +104,7 @@ setMethod(
 #' @title Quality control for fraction of reads in peaks (FRiP)
 #' @description
 #' Calculate the fraction of reads falling within peak regions
-#' @param atacProcReads \code{\link{ATACProc-class}} object scalar.
+#' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacSamToBed}}
 #' \code{\link{samToBed}}

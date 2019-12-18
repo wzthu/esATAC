@@ -138,6 +138,8 @@ setMethod(
 #' the output bed file path
 #' @param ploidyDir \code{Character} scalar.
 #' ploidy/input directory. default: NULL
+#' @param fileformat \code{Character} scalar.
+#' File format of result. default: bed
 #' @param wiggleTrackStep \code{Integer} scalar.
 #' wiggle track step default: NULL (1)
 #' @param threshold \code{Numeric} scalar.

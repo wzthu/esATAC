@@ -84,6 +84,9 @@ the output bed file path}
 \item{ploidyDir}{\code{Character} scalar.
 ploidy/input directory. default: NULL}
 
+\item{fileformat}{\code{Character} scalar.
+File format of result. default: bed}
+
 \item{wiggleTrackStep}{\code{Integer} scalar.
 wiggle track step default: NULL (1)}
 
