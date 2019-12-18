@@ -152,6 +152,8 @@ setMethod(
 #' The minimum fragment size will be retained.
 #' @param maxFragLen \code{Integer} scalar
 #' The maximum fragment size will be retained.
+#' @param newStepType \code{Character} scalar.
+#' New step type name for different default parameters.
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically

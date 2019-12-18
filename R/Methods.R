@@ -153,7 +153,7 @@ getSuffixlessFileName0 <- function(filePath){
 #' @param createReport \code{Logical} scalar. If the HTML report file will be created.
 #' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 #' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}, default: vertebrates motif from JASPAR.
-#' @param prefix \code{Character} scalar. Temporary file prefix for identifying files
+#' @param pipelineName \code{Character} scalar. Temporary file prefix for identifying files
 #' when multiple pipeline generating file in the same tempdir.
 #' @param chr Which chromatin the program will processing. It must be identical
 #' with the filename of cut site information files or subset of .

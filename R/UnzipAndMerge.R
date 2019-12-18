@@ -179,8 +179,6 @@ setMethod(
 
 
 #' @name UnzipAndMerge
-#' @aliases atacUnzipAndMerge
-#' @aliases removeAdapter
 #' @title Unzip and merge fastq files
 #' @description
 #' Unzip and merge fastq files that are in format of bzip, gzip or fastq

@@ -73,8 +73,10 @@ setMethod(
                                (width(readsbed)<=param(.Object)[["fragLenRange"]][2])]
 
         txdb<-param(.Object)[["knownGene"]]
-        library(txdb,character.only = TRUE)
-        txdb <- get0(txdb)
+        if(is.character(txdb)){
+            library(txdb,character.only = TRUE)
+            txdb <- get0(txdb)
+        }
         #trans<-GenomicFeatures::genes(txdb)#check gene tss or transcripts tss
 
         TSS <- promoters(txdb, upstream=param(.Object)[["updownstream"]], downstream=1+param(.Object)[["updownstream"]])
