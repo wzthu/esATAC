@@ -13,6 +13,7 @@ setMethod(
         findParamList <- allparam[["findParamList"]]
         reportPrefix <- allparam[["reportPrefix"]]
         threads <- allparam[["threads"]]
+        interleave <-  allparam[["interleave"]]
         
         if(length(prevSteps) >0){
             prevSteps <- prevSteps[[1]]

@@ -38,6 +38,7 @@
 #' @importFrom pipeFrame checkAndInstallTxDb
 #' @importFrom pipeFrame checkAndInstallOrgDb
 #' @importFrom pipeFrame ignoreCheck
+#' @importFrom pipeFrame setPipeName
 #' @importMethodsFrom pipeFrame checkAllPath
 #' @importMethodsFrom pipeFrame checkRequireParam
 #' @importMethodsFrom pipeFrame clearStepCache
