@@ -50,7 +50,7 @@ Imports:
     tools, 
     VennDiagram, 
     grid,
-    JASPAR2016, 
+    JASPAR2018, 
     TFBSTools, 
     grDevices, 
     graphics,

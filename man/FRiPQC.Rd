@@ -30,6 +30,13 @@ atacFripQC(
 fripQC(readsBedInput, peakBedInput, bsgenome = NULL, reportOutput = NULL, ...)
 }
 \arguments{
+\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
+It has to be the return value of upstream process:
+\code{\link{atacSamToBed}}
+\code{\link{samToBed}}
+\code{\link{atacBedUtils}}
+\code{\link{bedUtils}}}
+
 \item{atacProcPeak}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
 \code{\link{atacPeakCalling}},
@@ -48,13 +55,6 @@ Reads BED file for peak calling.}
 Peaks BED file}
 
 \item{...}{Additional arguments, currently unused.}
-
-\item{atacProcReads}{\code{\link{ATACProc-class}} object scalar.
-It has to be the return value of upstream process:
-\code{\link{atacSamToBed}}
-\code{\link{samToBed}}
-\code{\link{atacBedUtils}}
-\code{\link{bedUtils}}}
 }
 \value{
 An invisible \code{\link{fripQC}} object scalar for downstream analysis.

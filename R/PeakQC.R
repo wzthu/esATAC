@@ -130,6 +130,8 @@ setMethod(
 #' Other quality control BED file input path.
 #' @param bedInput \code{Character} scalar.
 #' BED file input path for quality control.
+#' @param newStepType \code{Character} scalar.
+#' New step type name for different default parameters.
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
 #' will be automatically

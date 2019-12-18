@@ -55,6 +55,9 @@ Other quality control BED file input path.}
 \item{bedInput}{\code{Character} scalar.
 BED file input path for quality control.}
 
+\item{newStepType}{\code{Character} scalar.
+New step type name for different default parameters.}
+
 \item{...}{Additional arguments, currently unused.}
 }
 \value{
