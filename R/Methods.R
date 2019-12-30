@@ -298,6 +298,12 @@ atacPipe <- function(genome,
             robj <- atacSingleRepReport(footprint, ...)
         }
     }
+
+    reportDir <- file.path(getTmpDir(), "report")
+    dir.create(reportDir)
+    file.copy(from = output(peakCalling)$bedOutput, to=file.path(reportDir,"peak.bed"))
+    file.copy(from = output(sam2Bed)$bedOutput, to=file.path(reportDir, "frag.bed"))
+
     
 
 
