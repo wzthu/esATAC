@@ -71,7 +71,10 @@ setMethod(
             writeLog(.Object,paste0("processing file:"))
             writeLog(.Object,sprintf("source:%s",input(.Object)[["fastqInput2"]]))
             writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput2"]]))
-            mclapply(X = 1:2,FUN = singleCall,.renamer_call=.renamer_call, .Object=.Object, mc.cores=2)
+            cl <- makeCluster(2)
+            parLapply(cl = cl, X = 1:2, fun = singleCall,.renamer_call=.renamer_call, .Object=.Object)
+            stopCluster(cl)
+#            mclapply(X = 1:2,FUN = singleCall,.renamer_call=.renamer_call, .Object=.Object, mc.cores=2)
         }else{
             singleCall(1,.renamer_call=.renamer_call,.Object=.Object)
             writeLog(.Object,paste0("processing file:"))
