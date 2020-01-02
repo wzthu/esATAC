@@ -82,7 +82,7 @@ setMethod(
 #' @param bamOutput \code{Character} scalar.
 #' Bam file output path. If ignored, bed file will be put in the same path as
 #' the sam file.
-#' @param sort \code{Logical} scalar.
+#' @param isSort \code{Logical} scalar.
 #' Sort bam.
 #' @param ... Additional arguments, currently unused.
 #' @details The parameter related to input and output file path
@@ -112,7 +112,7 @@ setMethod(
 
 
 setGeneric("atacSam2Bam",function(atacProc,
-                                  samInput = NULL, bamOutput = NULL, isSort=FALSE, ...) standardGeneric("atacSam2Bam"))
+                                  samInput = NULL, bamOutput = NULL, isSort=TRUE, ...) standardGeneric("atacSam2Bam"))
 #' @rdname SamToBam
 #' @aliases atacSam2Bam
 #' @export
@@ -120,7 +120,7 @@ setMethod(
     f = "atacSam2Bam",
     signature = "ATACProc",
     definition = function(atacProc,
-                          samInput = NULL, bamOutput = NULL, isSort=FALSE, ...){
+                          samInput = NULL, bamOutput = NULL, isSort=TRUE, ...){
         allpara <- c(list(Class = "SamToBam", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -129,7 +129,7 @@ setMethod(
 #' @rdname SamToBam
 #' @aliases sam2bam
 #' @export
-sam2bam <- function(samInput, bamOutput = NULL, isSort=FALSE, ...){
+sam2bam <- function(samInput, bamOutput = NULL, isSort=TRUE, ...){
     allpara <- c(list(Class = "SamToBam", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
