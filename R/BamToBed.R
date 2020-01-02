@@ -49,7 +49,7 @@ setMethod(
         param(.Object)[["filterList"]] <- chrFilterList
         param(.Object)[["sortBed"]] <- sortBed
         param(.Object)[['rmMultiMap']] <- rmMultiMap
-        param(.Object)[["uniqueBed"]] <- uniqueBed
+        param(.Object)[["uniqueBed"]] <- match.arg(uniqueBed, c("auto","yes","no"))
         param(.Object)[["minFragLen"]] <- minFragLen
         param(.Object)[["maxFragLen"]] <- maxFragLen
         param(.Object)[["saveExtLen"]] <- saveExtLen
@@ -135,7 +135,7 @@ setMethod(
                     obj<-readGAlignmentPairs(file = bamInput,param = p)
                     rtracklayer::export.bed(obj,
                                             con = file.path(originBedDir,paste0(x,'.bed')))
-                    return(first(obj)$XS)
+                    return(mcols(first(obj))$XS)
                 }else{
                     p <- ScanBamParam(which=do.call(IRangesList,s))
                     rtracklayer::export.bed(readGAlignmentPairs(file = bamInput,param = p),
@@ -148,7 +148,7 @@ setMethod(
             
             names(XS) <- allchrWithM
             beds <- lapply(allchr, function(x){
-                gr <-import.bed(con = getStepWorkDir(.Object,paste0('origin.',x,'.bed')))
+                gr <-import.bed(con = file.path(originBedDir,paste0(x,'.bed')))
                 
                 readsAfterFiltered <- readsAfterFiltered + length(gr)
                 
@@ -177,7 +177,7 @@ setMethod(
                 
                 
                 saveReads <- length(gr)
-                export.bed(gr, con = getStepWorkDir(.Object,paste0('clean.',x,'.bed')))
+                export.bed(gr, con = file.path(cleanBedDir,paste0(x,'.bed')))
             })
             
             mutiMapReads <- mutiMapReads * 2
@@ -208,7 +208,7 @@ setMethod(
             
             names(XS) <- allchrWithM
             beds <- lapply(allchr, function(x){
-                gr <-import.bed(con = getStepWorkDir(.Object,paste0('origin.',x,'.bed')))
+                gr <-import.bed(con =  file.path(originBedDir,paste0(x,'.bed')))
                 
                 readsAfterFiltered <- readsAfterFiltered + length(gr)
                 
@@ -235,7 +235,7 @@ setMethod(
                 
                 
                 saveReads <- length(gr)
-                export.bed(gr, con = getStepWorkDir(.Object,paste0('clean.',x,'.bed')))
+                export.bed(gr, con =  file.path(cleanBedDir,paste0(x,'.bed')))
             })
             filteredReads <- totalReads - readsAfterFiltered 
         }
@@ -243,16 +243,18 @@ setMethod(
             file.remove(output(.Object)[['bedOutput']])
         }
         if(param(.Object)[["sortBed"]]){
-            lapply(allchr, function(x){
-                tmpbed <- paste0(output(.Object)[['bedOutput']],'.tmp.bed')
-                file.append(tmpbed, getStepWorkDir(.Object,paste0('clean.',allchr[1],'.bed')))
-                gr<-import.bed(tmpbed)
-                export.bed(sort(gr),output(.Object)[['bedOutput']])
+            tmpbed <- paste0(output(.Object)[['bedOutput']],'.tmp.bed')
+            if(file.exists(tmpbed)){
                 file.remove(tmpbed)
+            }
+            lapply(allchr, function(x){
+                file.append(tmpbed, file.path(cleanBedDir,paste0(x,'.bed')))
             })
+            export.bed(sort(import.bed(tmpbed)),output(.Object)[['bedOutput']])
+            file.remove(tmpbed)
         }else{
             lapply(allchr, function(x){
-                file.append(output(.Object)[['bedOutput']], getStepWorkDir(.Object,paste0('clean.',allchr[1],'.bed')))
+                file.append(output(.Object)[['bedOutput']], file.path(cleanBedDir,paste0(x,'.bed')))
             })
         }
         
