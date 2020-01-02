@@ -100,7 +100,7 @@ setMethod(
         allchr <- seqnames(param(.Object)[['bsgenome']])
         chrlen <- seqlengths(param(.Object)[['bsgenome']])
         
-        allchr <- allchr[grep(chrFilterList,allchr,invert = TRUE)]
+        allchr <- allchr[grep(param(.Object)[["filterList"]],allchr,invert = TRUE)]
         chrlen <- chrlen[allchr]
         
         totalReads <- length(scanBam(file=bamInput, param =ScanBamParam(what=c('strand')))[[1]]$strand)
