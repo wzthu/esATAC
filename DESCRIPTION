@@ -40,6 +40,7 @@ Imports:
     digest,
     BSgenome,
     AnnotationDbi,
+    GenomicAlignments,
     GenomicFeatures,
     R.utils,
     GenomeInfoDb,

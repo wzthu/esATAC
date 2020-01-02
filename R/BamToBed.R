@@ -64,6 +64,11 @@ setMethod(
 ) # setMethod initialize end
 
 
+#' @importFrom Rsamtools testPairedEndBam scanBam ScanBamParam
+#' @importFrom GenomeInfoDb seqnames seqlengths
+#' @importFrom IRanges IRanges
+#' @importFrom GenomicAlignments readGAlignmentPairs readGAlignmentPairs
+#' @importFrom rtracklayer import export import.bed export.bed
 
 setMethod(
     f = "processing",
@@ -72,7 +77,7 @@ setMethod(
         bamInput <- input(.Object)[["bamInput"]]
         mergePairIntoFrag <- param(.Object)[['mergePairIntoFrag']]
         uniqueBed <- param(.Object)[['uniqueBed']]
-        isPaired <- testPairedEndBam(bamInput)
+        isPaired <- Rsamtools::testPairedEndBam(bamInput)
         if(isPaired){
             if(mergePairIntoFrag == 'auto' || mergePairIntoFrag == 'yes'){
                 mergePairIntoFrag <- TRUE
@@ -118,8 +123,8 @@ setMethod(
         originBedDir <- getStepWorkDir(.Object,'origin')
         cleanBedDir <- getStepWorkDir(.Object,'clean')
         
-        mkdirs(originBedDir)
-        mkdirs(cleanBedDir)
+        dir.create(originBedDir)
+        dir.create(cleanBedDir)
         
         if(mergePairIntoFrag){
             XS <- lapply(allchrWithM, function(x){
