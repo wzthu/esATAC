@@ -107,7 +107,7 @@ setMethod(
 
 
 setGeneric("atacSam2Bam",function(atacProc,
-                                  samInput = NULL, bamOutput = NULL, sort=FALSE, ...) standardGeneric("atacSam2Bam"))
+                                  samInput = NULL, bamOutput = NULL, isSort=FALSE, ...) standardGeneric("atacSam2Bam"))
 #' @rdname SamToBam
 #' @aliases atacSam2Bam
 #' @export

@@ -7,7 +7,7 @@
 \alias{sam2bam}
 \title{Convert sam format to bam format.}
 \usage{
-atacSam2Bam(atacProc, samInput = NULL, bamOutput = NULL, sort = FALSE, ...)
+atacSam2Bam(atacProc, samInput = NULL, bamOutput = NULL, isSort = FALSE, ...)
 
 \S4method{atacSam2Bam}{ATACProc}(atacProc, samInput = NULL, bamOutput = NULL, isSort = FALSE, ...)
 
@@ -25,10 +25,10 @@ Sam file input path.}
 Bam file output path. If ignored, bed file will be put in the same path as
 the sam file.}
 
+\item{...}{Additional arguments, currently unused.}
+
 \item{sort}{\code{Logical} scalar.
 Sort bam.}
-
-\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for

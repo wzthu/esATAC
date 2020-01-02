@@ -237,9 +237,20 @@ setMethod(
         if(file.exists(output(.Object)[['bedOutput']])){
             file.remove(output(.Object)[['bedOutput']])
         }
-        lapply(allchr, function(x){
-            file.append(output(.Object)[['bedOutput']], getStepWorkDir(.Object,paste0('clean.',allchr[1],'.bed')))
-        })
+        if(param(.Object)[["sortBed"]]){
+            lapply(allchr, function(x){
+                tmpbed <- paste0(output(.Object)[['bedOutput']],'.tmp.bed')
+                file.append(tmpbed, getStepWorkDir(.Object,paste0('clean.',allchr[1],'.bed')))
+                gr<-import.bed(tmpbed)
+                export.bed(sort(gr),output(.Object)[['bedOutput']])
+                file.remove(tmpbed)
+            })
+        }else{
+            lapply(allchr, function(x){
+                file.append(output(.Object)[['bedOutput']], getStepWorkDir(.Object,paste0('clean.',allchr[1],'.bed')))
+            })
+        }
+        
         
         
         write.table(data.frame(total=totalReads,
@@ -315,9 +326,11 @@ setMethod(
 #' @param bedOutput \code{Character} scalar.
 #' Bed file output path. If ignored, bed file will be put in the same path as
 #' the bam file.
-#' @param reportOutput \code{Character} scalar
-#' report file path
-#' @param merge \code{Logical} scalar
+#' @param reportOutput \code{Character} scalar.
+#' Report file path.
+#' @param bsgenome \code{BSgenome} object.
+#' This object from bioconductor
+#' @param mergePairIntoFrag \code{Logical} scalar
 #' Merge paired end reads.
 #' @param posOffset \code{Integer} scalar
 #' The offset that positive strand reads will shift.
@@ -333,8 +346,10 @@ setMethod(
 #' The minimum fragment size will be retained.
 #' @param maxFragLen \code{Integer} scalar
 #' The maximum fragment size will be retained.
-#' @param saveExtLen \code{Logical} scaler
+#' @param saveExtLen \code{Logical} scaler.
 #' Save the fragment that are not in the range of minFragLen and maxFragLen
+#' @param rmMultiMap \code{Logical} scalar.
+#' Remove multi-map reads.
 #' @param ... Additional arguments, currently unused.
 #' @details The bam file wiil be automatically obtained from
 #' object(\code{atacProc}) or input by hand. Output can be ignored.

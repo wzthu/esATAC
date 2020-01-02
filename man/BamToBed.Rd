@@ -76,8 +76,14 @@ Bam file input path.}
 Bed file output path. If ignored, bed file will be put in the same path as
 the bam file.}
 
-\item{reportOutput}{\code{Character} scalar
-report file path}
+\item{reportOutput}{\code{Character} scalar.
+Report file path.}
+
+\item{bsgenome}{\code{BSgenome} object.
+This object from bioconductor}
+
+\item{mergePairIntoFrag}{\code{Logical} scalar
+Merge paired end reads.}
 
 \item{posOffset}{\code{Integer} scalar
 The offset that positive strand reads will shift.}
@@ -91,22 +97,22 @@ The chromatin(or regex of chromatin) will be discard}
 \item{sortBed}{\code{Logical} scalar
 Sort bed file in the order of chromatin, start, end}
 
+\item{rmMultiMap}{\code{Logical} scalar.
+Remove multi-map reads.}
+
 \item{minFragLen}{\code{Integer} scalar
 The minimum fragment size will be retained.}
 
 \item{maxFragLen}{\code{Integer} scalar
 The maximum fragment size will be retained.}
 
-\item{saveExtLen}{\code{Logical} scaler
+\item{saveExtLen}{\code{Logical} scaler.
 Save the fragment that are not in the range of minFragLen and maxFragLen}
 
 \item{uniqueBed}{\code{Logical} scalar
 Remove duplicates reads in bed if TRUE. default: FALSE}
 
 \item{...}{Additional arguments, currently unused.}
-
-\item{merge}{\code{Logical} scalar
-Merge paired end reads.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for
