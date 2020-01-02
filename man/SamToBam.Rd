@@ -7,11 +7,11 @@
 \alias{sam2bam}
 \title{Convert sam format to bam format.}
 \usage{
-atacSam2Bam(atacProc, samInput = NULL, bamOutput = NULL, ...)
+atacSam2Bam(atacProc, samInput = NULL, bamOutput = NULL, sort = FALSE, ...)
 
-\S4method{atacSam2Bam}{ATACProc}(atacProc, samInput = NULL, bamOutput = NULL, ...)
+\S4method{atacSam2Bam}{ATACProc}(atacProc, samInput = NULL, bamOutput = NULL, isSort = FALSE, ...)
 
-sam2bam(samInput, bamOutput = NULL, ...)
+sam2bam(samInput, bamOutput = NULL, isSort = FALSE, ...)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -25,6 +25,9 @@ Sam file input path.}
 Bam file output path. If ignored, bed file will be put in the same path as
 the sam file.}
 
+\item{sort}{\code{Logical} scalar.
+Sort bam.}
+
 \item{...}{Additional arguments, currently unused.}
 }
 \value{
@@ -35,8 +38,14 @@ downstream analysis.
 This function convert a sam file into a bam file.
 }
 \details{
-The sam file wiil be automatically obtained from
-object(\code{atacProc}) or input by hand. bamOutput can be ignored.
+The parameter related to input and output file path
+will be automatically
+obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
+generated based on known parameters
+if their values are default(e.g. \code{NULL}).
+Otherwise, the generated values will be overwrited.
+If you want to use this function independently,
+you can use \code{bamToBed} instead.
 }
 \examples{
 

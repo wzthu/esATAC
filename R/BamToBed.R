@@ -9,6 +9,18 @@ setMethod(
         allparam <- list(...)
         bamInput <- allparam[["bamInput"]]
         bedOutput <- allparam[["bedOutput"]]
+        reportOutput <- allparam[["reportOutput"]]
+        mergePairIntoFrag <- allparam[["mergePairIntoFrag"]]
+        posOffset <- allparam[["posOffset"]]
+        negOffset <- allparam[["negOffset"]]
+        chrFilterList <- allparam[["chrFilterList"]]
+        sortBed <- allparam[["sortBed"]]
+        rmMultiMap <- allparam[["rmMultiMap"]]
+        minFragLen <- allparam[["minFragLen"]]
+        maxFragLen <- allparam[["maxFragLen"]]
+        saveExtLen <- allparam[["saveExtLen"]]
+        uniqueBed <- allparam[["uniqueBed"]]
+        bsgenome <- allparam[["bsgenome"]]
        
         if(length(prevSteps) > 0){
             prevSteps <- prevSteps[[1]]
@@ -22,7 +34,31 @@ setMethod(
         }else{
             output(.Object)[["bedOutput"]] <- addFileSuffix(bedOutput, ".bed")
         }
-
+        
+        if(is.null(reportOutput)){
+            if(!is.null(input(.Object)[["bamInput"]])){
+                output(.Object)[["reportOutput"]] <- getAutoPath(.Object, input(.Object)[["bamInput"]], "BAM|bam|Bam",".report.txt")
+            }
+        }else{
+            output(.Object)[["reportOutput"]] <- reportOutput;
+        }
+        
+        param(.Object)[["mergePairIntoFrag"]] <-  match.arg(mergePairIntoFrag, c("auto","yes","no"))
+        param(.Object)[["posOffset"]] <- posOffset
+        param(.Object)[["negOffset"]] <- negOffset
+        param(.Object)[["filterList"]] <- chrFilterList
+        param(.Object)[["sortBed"]] <- sortBed
+        param(.Object)[['rmMultiMap']] <- rmMultiMap
+        param(.Object)[["uniqueBed"]] <- uniqueBed
+        param(.Object)[["minFragLen"]] <- minFragLen
+        param(.Object)[["maxFragLen"]] <- maxFragLen
+        param(.Object)[["saveExtLen"]] <- saveExtLen
+        if(is.null(bsgenome)){
+            param(.Object)[['bsgenome']] <- getRefRc('bsgenome')
+        }else{
+            param(.Object)[['bsgenome']] <- bsgenome
+        }
+        
         .Object
     } # definition end
 ) # setMethod initialize end
@@ -33,9 +69,188 @@ setMethod(
     f = "processing",
     signature = "BamToBed",
     definition = function(.Object, ...){
-        rtracklayer::export(con = output(.Object)[["bedOutput"]],
-                            object = rtracklayer::import(con = input(.Object)[["bamInput"]], format = "bam", paired = TRUE, use.names = TRUE),
-                            format = "bed")
+        bamInput <- input(.Object)[["bamInput"]]
+        mergePairIntoFrag <- param(.Object)[['mergePairIntoFrag']]
+        uniqueBed <- param(.Object)[['uniqueBed']]
+        isPaired <- testPairedEndBam(bamInput)
+        if(isPaired){
+            if(mergePairIntoFrag == 'auto' || mergePairIntoFrag == 'yes'){
+                mergePairIntoFrag <- TRUE
+            }else{
+                mergePairIntoFrag <- FALSE
+            }
+            if(uniqueBed == 'auto' || uniqueBed == 'yes'){
+                uniqueBed <- TRUE
+            }else{
+                uniqueBed <- FALSE
+            }
+        }else{
+            if(mergePairIntoFrag == 'auto' || mergePairIntoFrag == 'no'){
+                mergePairIntoFrag <- FALSE
+            }else{
+                stop('mergePairIntoFrag can not be yes: single end reads can not be merged!')
+            }
+            if(uniqueBed == 'auto' || uniqueBed == 'no'){
+                uniqueBed <- FALSE
+            }else{
+                uniqueBed <- TRUE
+            }
+        }
+        
+        allchr <- seqnames(param(.Object)[['bsgenome']])
+        chrlen <- seqlengths(param(.Object)[['bsgenome']])
+        
+        allchr <- allchr[grep(chrFilterList,allchr,invert = TRUE)]
+        chrlen <- chrlen[allchr]
+        
+        totalReads <- length(scanBam(file=bamInput, param =ScanBamParam(what=c('strand')))[[1]]$strand)
+        mutiMapReads <- 0
+        extLenReads <- 0
+        pcrReads <- 0
+        chrMReads <- 0
+        filteredReads <- 0
+        saveReads <- 0
+        
+        readsAfterFiltered <- 0
+        
+        allchrWithM <- c(allchr,'chrM')
+        
+        originBedDir <- getStepWorkDir(.Object,'origin')
+        cleanBedDir <- getStepWorkDir(.Object,'clean')
+        
+        mkdirs(originBedDir)
+        mkdirs(cleanBedDir)
+        
+        if(mergePairIntoFrag){
+            XS <- lapply(allchrWithM, function(x){
+                s<-list()
+                s[[x]] <- IRanges(start = 1,end = 536870912)
+                if(param(.Object)[['rmMultiMap']]){
+                    p <- ScanBamParam(which=do.call(IRangesList,s), tag = c('XS'))
+                    obj<-readGAlignmentPairs(file = bamInput,param = p)
+                    rtracklayer::export.bed(obj,
+                                            con = file.path(originBedDir,paste0(x,'.bed')))
+                    return(first(obj)$XS)
+                }else{
+                    p <- ScanBamParam(which=do.call(IRangesList,s))
+                    rtracklayer::export.bed(readGAlignmentPairs(file = bamInput,param = p),
+                                            con = file.path(originBedDir,paste0(x,'.bed')))
+                }
+                
+            })
+            
+            chrMReads <- length(import.bed(con = file.path(originBedDir,"chrM.bed")))
+            
+            names(XS) <- allchrWithM
+            beds <- lapply(allchr, function(x){
+                gr <-import.bed(con = getStepWorkDir(.Object,paste0('origin.',x,'.bed')))
+                
+                readsAfterFiltered <- readsAfterFiltered + length(gr)
+                
+                if(param(.Object)[['rmMultiMap']]){
+                    gr <- gr[is.na(XS[[x]])]
+                    mutiMapReads <- mutiMapReads + sum(!is.na(XS[[x]]))
+                }
+                start(gr[strand(gr)=='+']) <- start(gr[strand(gr)=='+']) + param(.Object)[["posOffset"]]
+                end(gr[strand(gr)=='+']) <- end(gr[strand(gr)=='+']) + param(.Object)[["negOffset"]]
+                start(gr[strand(gr)=='-']) <- start(gr[strand(gr)=='-']) + param(.Object)[["negOffset"]]
+                end(gr[strand(gr)=='-']) <- end(gr[strand(gr)=='-']) + param(.Object)[["posOffset"]]
+                
+                extLenReads <- extLenReads + sum(width(gr)<param(.Object)[["minFragLen"]] | 
+                                                 width(gr)>param(.Object)[["maxFragLen"]])
+                
+                gr <- gr[width(gr)>=param(.Object)[["minFragLen"]] & 
+                             width(gr)<=param(.Object)[["maxFragLen"]] ]
+                
+                
+                
+                if(uniqueBed){
+                    beforeUnique <- length(gr)
+                    gr <- unique(gr)
+                    pcrReads <- pcrReads + beforeUnique - length(gr)
+                }
+                
+                
+                saveReads <- length(gr)
+                export.bed(gr, con = getStepWorkDir(.Object,paste0('clean.',x,'.bed')))
+            })
+            
+            mutiMapReads <- mutiMapReads * 2
+            extLenReads <- extLenReads * 2
+            pcrReads <- pcrReads * 2
+            chrMReads <- chrMReads * 2
+            filteredReads <- totalReads - readsAfterFiltered * 2
+            saveReads <- saveReads * 2
+        }else{
+            XS <- lapply(allchrWithM, function(x){
+                s<-list()
+                s[[x]] <- IRanges(start = 1,end = 536870912)
+                if(param(.Object)[['rmMultiMap']]){
+                    p <- ScanBamParam(which=do.call(IRangesList,s), tag = c('XS'))
+                    obj<-readGAlignments(file = bamInput,param = p)
+                    rtracklayer::export.bed(obj,
+                                            con = file.path(originBedDir,paste0(x,'.bed')))
+                    return(first(obj)$XS)
+                }else{
+                    p <- ScanBamParam(which=do.call(IRangesList,s))
+                    rtracklayer::export.bed(readGAlignments(file = bamInput,param = p),
+                                            con = file.path(originBedDir,paste0(x,'.bed')))
+                }
+                
+            })
+            
+            chrMReads <- length(import.bed(con = file.path(originBedDir,"chrM.bed")))
+            
+            names(XS) <- allchrWithM
+            beds <- lapply(allchr, function(x){
+                gr <-import.bed(con = getStepWorkDir(.Object,paste0('origin.',x,'.bed')))
+                
+                readsAfterFiltered <- readsAfterFiltered + length(gr)
+                
+                if(param(.Object)[['rmMultiMap']]){
+                    gr <- gr[is.na(XS[[x]])]
+                    mutiMapReads <- mutiMapReads + sum(!is.na(XS[[x]]))
+                }
+                start(gr[strand(gr)=='+']) <- start(gr[strand(gr)=='+']) + param(.Object)[["posOffset"]]
+                end(gr[strand(gr)=='-']) <- end(gr[strand(gr)=='-']) + param(.Object)[["negOffset"]]
+                
+                extLenReads <- extLenReads + sum(width(gr)<param(.Object)[["minFragLen"]] | 
+                                                     width(gr)>param(.Object)[["maxFragLen"]])
+                
+                gr <- gr[width(gr)>=param(.Object)[["minFragLen"]] & 
+                             width(gr)<=param(.Object)[["maxFragLen"]] ]
+                
+                
+                
+                if(uniqueBed){
+                    beforeUnique <- length(gr)
+                    gr <- unique(gr)
+                    pcrReads <- pcrReads + beforeUnique - length(gr)
+                }
+                
+                
+                saveReads <- length(gr)
+                export.bed(gr, con = getStepWorkDir(.Object,paste0('clean.',x,'.bed')))
+            })
+            filteredReads <- totalReads - readsAfterFiltered 
+        }
+        if(file.exists(output(.Object)[['bedOutput']])){
+            file.remove(output(.Object)[['bedOutput']])
+        }
+        lapply(allchr, function(x){
+            file.append(output(.Object)[['bedOutput']], getStepWorkDir(.Object,paste0('clean.',allchr[1],'.bed')))
+        })
+        
+        
+        write.table(data.frame(total=totalReads,
+                               save=saveReads,
+                               filted=filteredReads,
+                               extlen=extLenReads,
+                               unique = uniqueBed,
+                               multimap=mutiMapReads),
+                    file = output(.Object)[["reportOutput"]],
+                    quote=FALSE,sep="\t",row.names=FALSE)
+        
         .Object
     }
 )
@@ -45,6 +260,35 @@ setMethod(
     f = "genReport",
     signature = "BamToBed",
     definition = function(.Object, ...){
+        qcval <- as.list(read.table(file= output(.Object)[["reportOutput"]],header=TRUE))
+        report(.Object)$table <- data.frame(
+            Item = c("Total mapped reads",
+                     sprintf("Chromasome %s filted reads",paste(param(.Object)[["filterList"]],collapse = "/")),
+                     "Filted multimap reads",
+                     "Removed fragment size out of range",
+                     "Removed duplicate reads"
+            ),
+            Retain = c(qcval[["total"]],
+                       as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]])),
+                       as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]])),
+                       as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]] - as.integer(qcval[["extlen"]]))),
+                       qcval[["save"]]
+                       
+            ),
+            Filted = c("/",
+                       qcval[["filted"]],
+                       qcval[["multimap"]],
+                       qcval[["unique"]],
+                       qcval[["extlen"]]
+            )
+            
+        )
+        report(.Object)$report <- data.frame(Item=names(qcval),Value=as.character(qcval))
+        report(.Object)[["non-mitochondrial"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]))
+        report(.Object)[["non-mitochondrial-multimap"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]]))
+        for(n in names(qcval)){
+            report(.Object)[[n]] <- qcval[[n]]
+        }  
         .Object
     }
 )
@@ -55,8 +299,13 @@ setMethod(
 #' @name BamToBed
 #' @title Convert bam format to bed format.
 #' @description
-#' This function convert a bam file into a bed file.
-#' Note:bed file is 0-based.
+#' This function is used to convert SAM file to BED file and
+#' merge interleave paired end reads,
+#' shift reads,
+#' filter reads according to chromosome,
+#' filter reads according to fragment size,
+#' sort,
+#' remove duplicates reads before generating BED file.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
 #' \code{\link{atacBamSort}},
@@ -66,12 +315,32 @@ setMethod(
 #' @param bedOutput \code{Character} scalar.
 #' Bed file output path. If ignored, bed file will be put in the same path as
 #' the bam file.
+#' @param reportOutput \code{Character} scalar
+#' report file path
+#' @param merge \code{Logical} scalar
+#' Merge paired end reads.
+#' @param posOffset \code{Integer} scalar
+#' The offset that positive strand reads will shift.
+#' @param negOffset \code{Integer} scalar
+#' The offset that negative strand reads will shift.
+#' @param chrFilterList \code{Character} vector
+#' The chromatin(or regex of chromatin) will be discard
+#' @param sortBed \code{Logical} scalar
+#' Sort bed file in the order of chromatin, start, end
+#' @param uniqueBed \code{Logical} scalar
+#' Remove duplicates reads in bed if TRUE. default: FALSE
+#' @param minFragLen \code{Integer} scalar
+#' The minimum fragment size will be retained.
+#' @param maxFragLen \code{Integer} scalar
+#' The maximum fragment size will be retained.
+#' @param saveExtLen \code{Logical} scaler
+#' Save the fragment that are not in the range of minFragLen and maxFragLen
 #' @param ... Additional arguments, currently unused.
 #' @details The bam file wiil be automatically obtained from
 #' object(\code{atacProc}) or input by hand. Output can be ignored.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
-#' @author Wei Zhang
+#' @author Zheng Wei, Wei Zhang
 #' @examples
 #'
 #' library(Rsamtools)
@@ -85,7 +354,14 @@ setMethod(
 
 
 
-setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, ...) standardGeneric("atacBam2Bed"))
+setGeneric("atacBam2Bed", function(atacProc, bamInput = NULL, bedOutput = NULL, 
+                                   reportOutput =NULL, bsgenome = NULL,
+                                   mergePairIntoFrag = c("auto","yes","no"), 
+                                   posOffset = +4, negOffset= -5, 
+                                   chrFilterList= "chrM|_",
+                                   sortBed = TRUE, rmMultiMap=TRUE,
+                                   minFragLen = 0,maxFragLen = 2000,
+                                   saveExtLen = FALSE,uniqueBed = c("auto","yes","no"), ...) standardGeneric("atacBam2Bed"))
 
 #' @rdname BamToBed
 #' @aliases atacBam2Bed
@@ -94,7 +370,14 @@ setMethod(
     f = "atacBam2Bed",
     signature = "ATACProc",
 
-    definition = function(atacProc, bamInput = NULL, bedOutput = NULL, ...){
+    definition = function(atacProc, bamInput = NULL, bedOutput = NULL, 
+                          reportOutput =NULL, bsgenome = NULL,
+                          mergePairIntoFrag = c("auto","yes","no"), 
+                          posOffset = +4, negOffset= -5, 
+                          chrFilterList= "chrM|_",#chrUn.*|chrM|.*random.*
+                          sortBed = TRUE, rmMultiMap=TRUE,
+                          minFragLen = 0,maxFragLen = 2000,
+                          saveExtLen = FALSE,uniqueBed = TRUE,...){
         allpara <- c(list(Class = "BamToBed", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -105,7 +388,14 @@ setMethod(
 #' @aliases bam2bed
 #' @export
 
-bam2bed <- function(bamInput, bedOutput = NULL, ...){
+bam2bed <- function(bamInput, bedOutput = NULL, 
+                    reportOutput =NULL, bsgenome = NULL,
+                    mergePairIntoFrag = c("auto","yes","no"), 
+                    posOffset = +4, negOffset= -5, 
+                    chrFilterList= "chrM|_",#chrUn.*|chrM|.*random.*
+                    sortBed = TRUE, rmMultiMap=TRUE,
+                    minFragLen = 0,maxFragLen = 2000,
+                    saveExtLen = FALSE,uniqueBed = TRUE, ...){
     allpara <- c(list(Class = "BamToBed", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)

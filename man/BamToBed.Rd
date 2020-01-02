@@ -7,11 +7,61 @@
 \alias{bam2bed}
 \title{Convert bam format to bed format.}
 \usage{
-atacBam2Bed(atacProc, bamInput = NULL, bedOutput = NULL, ...)
+atacBam2Bed(
+  atacProc,
+  bamInput = NULL,
+  bedOutput = NULL,
+  reportOutput = NULL,
+  bsgenome = NULL,
+  mergePairIntoFrag = c("auto", "yes", "no"),
+  posOffset = +4,
+  negOffset = -5,
+  chrFilterList = "chrM|_",
+  sortBed = TRUE,
+  rmMultiMap = TRUE,
+  minFragLen = 0,
+  maxFragLen = 2000,
+  saveExtLen = FALSE,
+  uniqueBed = c("auto", "yes", "no"),
+  ...
+)
 
-\S4method{atacBam2Bed}{ATACProc}(atacProc, bamInput = NULL, bedOutput = NULL, ...)
+\S4method{atacBam2Bed}{ATACProc}(
+  atacProc,
+  bamInput = NULL,
+  bedOutput = NULL,
+  reportOutput = NULL,
+  bsgenome = NULL,
+  mergePairIntoFrag = c("auto", "yes", "no"),
+  posOffset = +4,
+  negOffset = -5,
+  chrFilterList = "chrM|_",
+  sortBed = TRUE,
+  rmMultiMap = TRUE,
+  minFragLen = 0,
+  maxFragLen = 2000,
+  saveExtLen = FALSE,
+  uniqueBed = TRUE,
+  ...
+)
 
-bam2bed(bamInput, bedOutput = NULL, ...)
+bam2bed(
+  bamInput,
+  bedOutput = NULL,
+  reportOutput = NULL,
+  bsgenome = NULL,
+  mergePairIntoFrag = c("auto", "yes", "no"),
+  posOffset = +4,
+  negOffset = -5,
+  chrFilterList = "chrM|_",
+  sortBed = TRUE,
+  rmMultiMap = TRUE,
+  minFragLen = 0,
+  maxFragLen = 2000,
+  saveExtLen = FALSE,
+  uniqueBed = TRUE,
+  ...
+)
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
@@ -26,15 +76,50 @@ Bam file input path.}
 Bed file output path. If ignored, bed file will be put in the same path as
 the bam file.}
 
+\item{reportOutput}{\code{Character} scalar
+report file path}
+
+\item{posOffset}{\code{Integer} scalar
+The offset that positive strand reads will shift.}
+
+\item{negOffset}{\code{Integer} scalar
+The offset that negative strand reads will shift.}
+
+\item{chrFilterList}{\code{Character} vector
+The chromatin(or regex of chromatin) will be discard}
+
+\item{sortBed}{\code{Logical} scalar
+Sort bed file in the order of chromatin, start, end}
+
+\item{minFragLen}{\code{Integer} scalar
+The minimum fragment size will be retained.}
+
+\item{maxFragLen}{\code{Integer} scalar
+The maximum fragment size will be retained.}
+
+\item{saveExtLen}{\code{Logical} scaler
+Save the fragment that are not in the range of minFragLen and maxFragLen}
+
+\item{uniqueBed}{\code{Logical} scalar
+Remove duplicates reads in bed if TRUE. default: FALSE}
+
 \item{...}{Additional arguments, currently unused.}
+
+\item{merge}{\code{Logical} scalar
+Merge paired end reads.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar for
 downstream analysis.
 }
 \description{
-This function convert a bam file into a bed file.
-Note:bed file is 0-based.
+This function is used to convert SAM file to BED file and
+merge interleave paired end reads,
+shift reads,
+filter reads according to chromosome,
+filter reads according to fragment size,
+sort,
+remove duplicates reads before generating BED file.
 }
 \details{
 The bam file wiil be automatically obtained from
@@ -52,5 +137,5 @@ bam2bed(bamInput = ex1_file)
 \code{\link{atacSam2Bam}}
 }
 \author{
-Wei Zhang
+Zheng Wei, Wei Zhang
 }

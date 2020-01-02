@@ -6,7 +6,7 @@ setClass(Class = "SamToBam",
 setMethod(
     f = "init",
     signature = "SamToBam",
-    definition = function(.Object,prevSteps = list(), ..., samInput = NULL, bamOutput = NULL, editable = FALSE){
+    definition = function(.Object,prevSteps = list(),...){
         atacProc <- NULL
         if(length(prevSteps)>0){
             atacProc <- prevSteps[[1]]
@@ -14,6 +14,7 @@ setMethod(
         allparam <- list(...)
         input_file <- allparam[["input_file"]]
         output_file <- allparam[["output_file"]]
+        isSort <- allparam[["isSort"]]
         
         # necessary parameters
         if((!is.null(atacProc)) ){
@@ -33,6 +34,7 @@ setMethod(
             output(.Object)[["bamOutput"]] <- bamOutput
             output(.Object)[["baiOutput"]] <- addFileSuffix(bamOutput,".bai")
         }
+        param(.Object)[['isSort']] <- isSort
         .Object
 
     }
@@ -45,7 +47,10 @@ setMethod(
     f = "processing",
     signature = "SamToBam",
     definition = function(.Object,...){
-        Rsamtools::asBam(file = input(.Object)[["samInput"]], destination = param(.Object)[["name_tmp"]],overwrite = TRUE)
+        
+        Rsamtools::asBam(file = input(.Object)[["samInput"]], 
+                         destination = param(.Object)[["name_tmp"]],
+                         overwrite = TRUE, indexDestination = param(.Object)[['isSort']])
         .Object
     }
 )
@@ -72,9 +77,17 @@ setMethod(
 #' @param bamOutput \code{Character} scalar.
 #' Bam file output path. If ignored, bed file will be put in the same path as
 #' the sam file.
+#' @param sort \code{Logical} scalar.
+#' Sort bam.
 #' @param ... Additional arguments, currently unused.
-#' @details The sam file wiil be automatically obtained from
-#' object(\code{atacProc}) or input by hand. bamOutput can be ignored.
+#' @details The parameter related to input and output file path
+#' will be automatically
+#' obtained from \code{\link{ATACProc-class}} object(\code{atacProc}) or
+#' generated based on known parameters
+#' if their values are default(e.g. \code{NULL}).
+#' Otherwise, the generated values will be overwrited.
+#' If you want to use this function independently,
+#' you can use \code{bamToBed} instead.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for
 #' downstream analysis.
 #' @author Wei Zhang
@@ -94,7 +107,7 @@ setMethod(
 
 
 setGeneric("atacSam2Bam",function(atacProc,
-                                  samInput = NULL, bamOutput = NULL, ...) standardGeneric("atacSam2Bam"))
+                                  samInput = NULL, bamOutput = NULL, sort=FALSE, ...) standardGeneric("atacSam2Bam"))
 #' @rdname SamToBam
 #' @aliases atacSam2Bam
 #' @export
@@ -102,7 +115,7 @@ setMethod(
     f = "atacSam2Bam",
     signature = "ATACProc",
     definition = function(atacProc,
-                          samInput = NULL, bamOutput = NULL, ...){
+                          samInput = NULL, bamOutput = NULL, isSort=FALSE, ...){
         allpara <- c(list(Class = "SamToBam", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -111,7 +124,7 @@ setMethod(
 #' @rdname SamToBam
 #' @aliases sam2bam
 #' @export
-sam2bam <- function(samInput, bamOutput = NULL, ...){
+sam2bam <- function(samInput, bamOutput = NULL, isSort=FALSE, ...){
     allpara <- c(list(Class = "SamToBam", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
