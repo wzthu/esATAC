@@ -397,7 +397,7 @@ setMethod(
                           chrFilterList= "chrM|_",#chrUn.*|chrM|.*random.*
                           sortBed = TRUE, rmMultiMap=TRUE,
                           minFragLen = 0,maxFragLen = 2000,
-                          saveExtLen = FALSE,uniqueBed = TRUE,...){
+                          saveExtLen = FALSE,uniqueBed = c("auto","yes","no"),...){
         allpara <- c(list(Class = "BamToBed", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -415,7 +415,7 @@ bam2bed <- function(bamInput, bedOutput = NULL,
                     chrFilterList= "chrM|_",#chrUn.*|chrM|.*random.*
                     sortBed = TRUE, rmMultiMap=TRUE,
                     minFragLen = 0,maxFragLen = 2000,
-                    saveExtLen = FALSE,uniqueBed = TRUE, ...){
+                    saveExtLen = FALSE,uniqueBed = c("auto","yes","no"), ...){
     allpara <- c(list(Class = "BamToBed", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
