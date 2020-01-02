@@ -12,8 +12,8 @@ setMethod(
             atacProc <- prevSteps[[1]]
         }
         allparam <- list(...)
-        input_file <- allparam[["input_file"]]
-        output_file <- allparam[["output_file"]]
+        samInput <- allparam[["samInput"]]
+        bamOutput <- allparam[["bamOutput"]]
         isSort <- allparam[["isSort"]]
         
         # necessary parameters
@@ -27,12 +27,17 @@ setMethod(
             param(.Object)[["name_tmp"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","" )
         
             output(.Object)[["bamOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","bam")
-            output(.Object)[["baiOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","bam.bai")
+            if(isSort){
+                output(.Object)[["baiOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","bam.bai")
+            }
         }else{
             bamOutput <- addFileSuffix(bamOutput,".bam")
             param(.Object)[["name_tmp"]] <- substring(bamOutput,first = 1,last = nchar(bamOutput) - 4)
             output(.Object)[["bamOutput"]] <- bamOutput
-            output(.Object)[["baiOutput"]] <- addFileSuffix(bamOutput,".bai")
+            if(isSort){
+                output(.Object)[["baiOutput"]] <- addFileSuffix(bamOutput,".bai")
+            }
+            
         }
         param(.Object)[['isSort']] <- isSort
         .Object
