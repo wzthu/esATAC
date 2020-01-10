@@ -51,6 +51,7 @@
                   "SamToBed", "BedToBigWig",
                   #"SamToBed", "PeakQC",
                   "BamToBed", "BedUtils",
+                  "BamToBed","BedToBigWig",
                   #"BamToBed", "PeakQC",
                   "BedUtils", "BedToBigWig",
                   "BedUtils", "BedUtils",
