@@ -56,6 +56,9 @@ setMethod(
         bowtie2Mapping <- prevSteps[["Bowtie2Mapping"]]
         libComplexQC <- prevSteps[["LibComplexQC"]]
         sam2Bed <- prevSteps[["SamToBed"]]
+        if(is.null(sam2Bed)){
+          sam2Bed <- prevSteps[["BamToBed"]]
+        }
         bedToBigWig <- prevSteps[["BedToBigWig"]]
         tssqc100 <- prevSteps[["TSSQCNFR"]]
         tssqc180_247 <- prevSteps[["TSSQCneucleosome"]]
