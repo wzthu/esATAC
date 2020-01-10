@@ -135,7 +135,9 @@ setMethod(
                     obj<-readGAlignmentPairs(file = bamInput,param = p)
                     rtracklayer::export.bed(obj,
                                             con = file.path(originBedDir,paste0(x,'.bed')))
-                    return(mcols(first(obj))$XS)
+                    f <- mcols(first(obj))$XS
+                    s <- mcols(second(obj))$XS
+                    return(is.na(f) | is.na(s))
                 }else{
                     p <- ScanBamParam(which=do.call(IRangesList,s))
                     rtracklayer::export.bed(readGAlignmentPairs(file = bamInput,param = p),
@@ -153,13 +155,13 @@ setMethod(
                 readsAfterFiltered <- readsAfterFiltered + length(gr)
                 
                 if(param(.Object)[['rmMultiMap']]){
-                    gr <- gr[is.na(XS[[x]])]
-                    mutiMapReads <- mutiMapReads + sum(!is.na(XS[[x]]))
+                    gr <- gr[XS[[x]]]
+                    mutiMapReads <- mutiMapReads + sum(!XS[[x]])
                 }
                 start(gr[strand(gr)=='+']) <- start(gr[strand(gr)=='+']) + param(.Object)[["posOffset"]]
-                end(gr[strand(gr)=='+']) <- end(gr[strand(gr)=='+']) + param(.Object)[["negOffset"]]
+                end(gr[strand(gr)=='+']) <- end(gr[strand(gr)=='+']) + param(.Object)[["posOffset"]]
                 start(gr[strand(gr)=='-']) <- start(gr[strand(gr)=='-']) + param(.Object)[["negOffset"]]
-                end(gr[strand(gr)=='-']) <- end(gr[strand(gr)=='-']) + param(.Object)[["posOffset"]]
+                end(gr[strand(gr)=='-']) <- end(gr[strand(gr)=='-']) + param(.Object)[["negOffset"]]
                 
                 extLenReads <- extLenReads + sum(width(gr)<param(.Object)[["minFragLen"]] | 
                                                  width(gr)>param(.Object)[["maxFragLen"]])
@@ -195,7 +197,9 @@ setMethod(
                     obj<-readGAlignments(file = bamInput,param = p)
                     rtracklayer::export.bed(obj,
                                             con = file.path(originBedDir,paste0(x,'.bed')))
-                    return(first(obj)$XS)
+                    f <- mcols(first(obj))$XS
+                    s <- mcols(second(obj))$XS
+                    return(is.na(f) | is.na(s))
                 }else{
                     p <- ScanBamParam(which=do.call(IRangesList,s))
                     rtracklayer::export.bed(readGAlignments(file = bamInput,param = p),
@@ -213,8 +217,8 @@ setMethod(
                 readsAfterFiltered <- readsAfterFiltered + length(gr)
                 
                 if(param(.Object)[['rmMultiMap']]){
-                    gr <- gr[is.na(XS[[x]])]
-                    mutiMapReads <- mutiMapReads + sum(!is.na(XS[[x]]))
+                    gr <- gr[XS[[x]]]
+                    mutiMapReads <- mutiMapReads + sum(!XS[[x]])
                 }
                 start(gr[strand(gr)=='+']) <- start(gr[strand(gr)=='+']) + param(.Object)[["posOffset"]]
                 end(gr[strand(gr)=='-']) <- end(gr[strand(gr)=='-']) + param(.Object)[["negOffset"]]
