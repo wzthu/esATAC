@@ -149,7 +149,7 @@ setMethod(
             chrMReads <- length(import.bed(con = file.path(originBedDir,"chrM.bed")))
             
             names(XS) <- allchrWithM
-            beds <- lapply(allchr, function(x){
+            for(x in allchr){
                 gr <-import.bed(con = file.path(originBedDir,paste0(x,'.bed')))
                 
                 readsAfterFiltered <- readsAfterFiltered + length(gr)
@@ -178,9 +178,9 @@ setMethod(
                 }
                 
                 
-                saveReads <- length(gr)
+                saveReads <-saveReads + length(gr)
                 export.bed(gr, con = file.path(cleanBedDir,paste0(x,'.bed')))
-            })
+            }
             
             mutiMapReads <- mutiMapReads * 2
             extLenReads <- extLenReads * 2
@@ -211,7 +211,7 @@ setMethod(
             chrMReads <- length(import.bed(con = file.path(originBedDir,"chrM.bed")))
             
             names(XS) <- allchrWithM
-            beds <- lapply(allchr, function(x){
+            for(x in allchr){
                 gr <-import.bed(con =  file.path(originBedDir,paste0(x,'.bed')))
                 
                 readsAfterFiltered <- readsAfterFiltered + length(gr)
@@ -238,9 +238,9 @@ setMethod(
                 }
                 
                 
-                saveReads <- length(gr)
+                saveReads <-saveReads + length(gr)
                 export.bed(gr, con =  file.path(cleanBedDir,paste0(x,'.bed')))
-            })
+            }
             filteredReads <- totalReads - readsAfterFiltered 
         }
         if(file.exists(output(.Object)[['bedOutput']])){
