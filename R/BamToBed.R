@@ -268,7 +268,7 @@ setMethod(
                                save=saveReads,
                                filted=filteredReads,
                                extlen=extLenReads,
-                               unique = uniqueBed,
+                               unique = pcrReads,
                                multimap=mutiMapReads),
                     file = output(.Object)[["reportOutput"]],
                     quote=FALSE,sep="\t",row.names=FALSE)
