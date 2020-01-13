@@ -91,7 +91,7 @@ checkAndInstallGenomeSize <- function(refFilePath){
     bsgenomobj <- getBSgenome(genome)
     lens <-seqlengths(bsgenomobj)
     dt<-data.frame(chrom=names(lens), size = as.integer(lens))
-    write.table(dt,file=refFilePath,sep='\t',row.names = FALSE, col.names = FALSE)
+    write.table(dt,file=refFilePath,sep='\t',row.names = FALSE, col.names = FALSE,quote = FALSE)
 }
 
 
