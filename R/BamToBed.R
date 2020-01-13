@@ -269,7 +269,8 @@ setMethod(
                                filted=filteredReads,
                                extlen=extLenReads,
                                unique = pcrReads,
-                               multimap=mutiMapReads),
+                               multimap=mutiMapReads,
+                               chrM = chrMReads),
                     file = output(.Object)[["reportOutput"]],
                     quote=FALSE,sep="\t",row.names=FALSE)
         
@@ -306,7 +307,8 @@ setMethod(
             
         )
         report(.Object)$report <- data.frame(Item=names(qcval),Value=as.character(qcval))
-        report(.Object)[["non-mitochondrial"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]))
+        report(.Object)[["non-mitochondrial"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["chrM"]]))
+        report(.Object)[["non-filtered-chr"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]))
         report(.Object)[["non-mitochondrial-multimap"]] <- as.character(as.integer(qcval[["total"]])-as.integer(qcval[["filted"]]) -as.integer(qcval[["multimap"]]))
         for(n in names(qcval)){
             report(.Object)[[n]] <- qcval[[n]]
