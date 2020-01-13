@@ -83,6 +83,17 @@ checkAndInstallBSgenomeTestgenome <- function(refFilePath){
     checkAndInstallBSgenome(refFilePath, genome)
 }
 
+checkAndInstallGenomeSize <- function(refFilePath){
+    genome <- getGenome()
+    if(genome == "testgenome"){
+        genome <- "hg19"
+    }
+    bsgenomobj <- getBSgenome(genome)
+    lens <-seqlengths(bsgenomobj)
+    dt<-data.frame(chrom=names(lens), size = as.integer(lens))
+    write.table(dt,file=refFilePath,sep='\t',row.names = FALSE, col.names = FALSE)
+}
+
 
 checkAndInstallBt2Idx <- function(refFilePath){
     threads <- getThreads()
@@ -115,6 +126,7 @@ downloadSNP <- function(refFilePath){
 
 checkAndInstall <- function(check = TRUE, ...){
     runWithFinishCheck(func = checkAndInstallBSgenome,refName = "bsgenome")
+    runWithFinishCheck(func = checkAndInstallGenomeSize, refName = "chromSize",refFilePath = "chrom.size.txt")
     runWithFinishCheck(func = checkAndInstallTxDb,refName = "knownGene")
     runWithFinishCheck(func = checkAndInstallOrgDb,refName = "annoDb")
     runWithFinishCheck(func = checkAndInstallGenomeFa,refName = "fasta", refFilePath = "genome.fa")
