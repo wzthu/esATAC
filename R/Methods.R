@@ -308,10 +308,8 @@ atacPipe <- function(genome,
     dir.create(reportDir)
     file.copy(from = output(peakCalling)$bedOutput, to=file.path(reportDir,"peak.bed"))
     file.copy(from = output(sam2Bed)$bedOutput, to=file.path(reportDir, "frag.bed"))
-
-    
-
-
+    file.copy(from = output(samToBam)$bamOutput, to=file.path(reportDir, "reads.bam"))
+    file.copy(from = paste0(output(samToBam)$bamOutput,'.bai'), to=file.path(reportDir, "reads.bam.bai"))
 }
 
 
