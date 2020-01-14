@@ -226,6 +226,9 @@ atacPipe <- function(genome,
     
     prefix = pipelineName
     
+    print(fastqInput1)
+    print(fastqInput2)
+        
     if(is.null(fastqInput2)&&!interleave&&is.null(adapter1)){
         stop("adapter1 should not be NULL for single end sequencing data")
     }
@@ -258,7 +261,9 @@ atacPipe <- function(genome,
     }
     bowtie2Mapping <- atacBowtie2Mapping(removeAdapter, ...)
     libComplexQC <- atacLibComplexQC(bowtie2Mapping, ...)
-    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFragLen = 2000, ...)
+    samToBam <- atacSam2Bam(bowtie2Mapping,...)
+#    sam2Bed <-atacSamToBed(bowtie2Mapping,maxFragLen = 2000, ...)
+    sam2Bed <- atacBam2Bed(samToBam, ...)
     bedToBigWig <- atacBedToBigWig(sam2Bed, ...)
     tssqc100 <-atacTSSQC(sam2Bed,fragLenRange = c(0,100), newStepType = "TSSQCNFR", ...)
     
