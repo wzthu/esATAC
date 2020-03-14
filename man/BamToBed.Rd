@@ -41,7 +41,7 @@ atacBam2Bed(
   minFragLen = 0,
   maxFragLen = 2000,
   saveExtLen = FALSE,
-  uniqueBed = TRUE,
+  uniqueBed = c("auto", "yes", "no"),
   ...
 )
 
@@ -59,7 +59,7 @@ bam2bed(
   minFragLen = 0,
   maxFragLen = 2000,
   saveExtLen = FALSE,
-  uniqueBed = TRUE,
+  uniqueBed = c("auto", "yes", "no"),
   ...
 )
 }
