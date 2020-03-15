@@ -38,7 +38,7 @@ setMethod(
         }
         outputPrefix <- getStepWorkDir(.Object,'MACS')
         param(.Object)[['outputPrefix']] <- outputPrefix
-        if(!is.null(genomeSize)){
+        if(is.null(genomeSize)){
             bsgenome<-getRefRc('bsgenome')
             lens<-seqlengths(bsgenome)
             chrs <- names(lens)
