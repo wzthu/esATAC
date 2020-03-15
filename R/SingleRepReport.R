@@ -9,6 +9,7 @@ setMethod(
     definition = function(.Object,prevSteps = list(),...){
         allparam <- list(...)
         htmlOutput <- allparam[["htmlOutput"]]
+        param(.Object)[["createHTML"]] <-  allparam[["createHTML"]]
         
         
         if(is.null(htmlOutput)){
@@ -33,6 +34,7 @@ setMethod(
     definition = function(.Object, ...){
         htmlOutput <- output(.Object)[["htmlOutput"]]
         prevSteps <- list(...)[["prevSteps"]]
+        createHTML <- param(.Object)[["createHTML"]]
         dir.create(output(.Object)$reportData)
         sumDir <- file.path(output(.Object)$reportData,"SummaryInfo")
         dir.create(sumDir)
@@ -307,8 +309,12 @@ setMethod(
         
   #      file.copy(from = system.file(package = "enrichTF", "extdata","Report.code.Rmd"),
   #                to = reportmkd1,overwrite = TRUE)
+        if(createHTML){
+           render(reportmkd)
+        }else{
+           writeLines('html is not generated', htmlOutput)
+        }
         
-        render(reportmkd)
         
   #      render(reportmkd1, quiet = TRUE)
         
@@ -340,6 +346,10 @@ setMethod(
 #' @param htmlOutput \code{Character} scalar.
 #' HTML report file directory
 #' Default: NULL ("Report.html")
+#' @param createHTML \code{Logical} scalar.
+#' If create HTML file. Default: TRUE. 
+#' This parameter needs to be set FALSE 
+#' when pandoc or other dependence softwares are not available for rmarkdown package. 
 #' @param ... Additional arguments, currently unused.
 #' @details
 #' The report is HTML format. All link in HTML file is the relative directory
@@ -355,7 +365,7 @@ setMethod(
 
 
 setGeneric("atacSingleRepReport",
-           function(prevStep, htmlOutput = NULL,...)
+           function(prevStep, htmlOutput = NULL, createHTML = TRUE,...)
                standardGeneric("atacSingleRepReport"))
 
 
@@ -366,7 +376,7 @@ setGeneric("atacSingleRepReport",
 setMethod(
     f = "atacSingleRepReport",
     signature = "Step",
-    definition = function(prevStep, htmlOutput = NULL, ...){
+    definition = function(prevStep, htmlOutput = NULL, createHTML = TRUE, ...){
         allpara <- c(list(Class = "SingleRepReport",
                           prevSteps = list(prevStep), isReportStep = TRUE),
                      as.list(environment()),list(...))

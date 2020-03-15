@@ -312,7 +312,7 @@ atacPipe <- function(genome,
         }
     }
 
-    reportDir <- file.path(getTmpDir(), "report")
+    reportDir <- file.path(getTmpDir(), paste0(pipelineName,"report"))
     dir.create(reportDir)
     file.copy(from = output(peakCalling)$bedOutput, to=file.path(reportDir,"peak.bed"))
     file.copy(from = output(sam2Bed)$bedOutput, to=file.path(reportDir, "frag.bed"))
@@ -437,7 +437,55 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
                       chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
-    stop("this function is still under developing")
+    #stop("this function is still under developing")
+    if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
+        stop("fastqInput1 for case can not be NULL")
+    }
+    if(!interleave && (case[["fastqInput2"]]=="paths/To/fastq2"|| is.null(case[["fastqInput2"]]))){
+        stop("fastqInput2 for case can not be NULL")
+    }
+    if(control[["fastqInput1"]]=="paths/To/fastq1"||is.null(control[["fastqInput1"]])){
+        stop("fastqInput1 for control can not be NULL")
+    }
+    if(!interleave && (control[["fastqInput2"]]=="paths/To/fastq2"||is.null(control[["fastqInput2"]]))){
+        stop("fastqInput2 for control can not be NULL")
+    }
+    
+    # case
+    atacPipe(genome=genome, 
+             fastqInput1=case[["fastqInput1"]], 
+             fastqInput2=case[["fastqInput2"]], 
+             tmpdir = tmpdir, 
+             refdir = refdir, 
+             threads = threads, 
+             adapter1 = case[["adapter1"]], 
+             adapter2 = case[["adapter2"]],
+             interleave = FALSE,  
+             basicAnalysis = FALSE, 
+             createReport = TRUE, 
+             motifs = motifs, 
+             pipelineName = "case_pipe",
+             chr = chr, 
+             p.cutoff = p.cutoff, ...)
+    
+    #control
+    atacPipe(genome=genome, 
+             fastqInput1=control[["fastqInput1"]], 
+             fastqInput2=control[["fastqInput2"]], 
+             tmpdir = tmpdir, 
+             refdir = refdir, 
+             threads = threads, 
+             adapter1 = control[["adapter1"]], 
+             adapter2 = control[["adapter2"]],
+             interleave = FALSE,  
+             basicAnalysis = FALSE, 
+             createReport = TRUE, 
+             motifs = motifs, 
+             pipelineName = "control_pipe",
+             chr = chr, 
+             p.cutoff = p.cutoff, ...)
+    
+    
 
 }
 
