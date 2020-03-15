@@ -34,9 +34,9 @@ setMethod(
         if(!is.null(outputPrefix)){
             output(.Object)[["bedOutput"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak"))
         }else{
+            outputPrefix <- getStepWorkDir(.Object,'MACS')
             output(.Object)[["bedOutput"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak"))
         }
-        outputPrefix <- getStepWorkDir(.Object,'MACS')
         param(.Object)[['outputPrefix']] <- outputPrefix
         if(is.null(genomeSize)){
             bsgenome<-getRefRc('bsgenome')
