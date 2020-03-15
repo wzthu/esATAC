@@ -268,14 +268,22 @@ atacPipe <- function(genome,
     tssqc100 <-atacTSSQC(sam2Bed,fragLenRange = c(0,100), newStepType = "TSSQCNFR", ...)
     
     if(is.null(fastqInput2)&&!interleave){
-        peakCalling <- atacPeakCalling(sam2Bed, ...)
+        if(testPeakCallingMACS2()){
+            peakCalling <- atacPeakCallingMACS2(sam2Bed, ...)
+        }else{
+            peakCalling <- atacPeakCalling(sam2Bed, ...)
+        }
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS", ...)
         fripQC <- atacFripQC(atacProc = sam2Bed,atacProcPeak = peakCalling, ...)
     }else{
         tssqc180_247 <- atacTSSQC(sam2Bed,fragLenRange = c(180,247),  newStepType = "TSSQCneucleosome", ...)
         fragLenDistr <- atacFragLenDistr(sam2Bed, ...)
         shortBed <- atacBedUtils(sam2Bed,maxFragLen = 100, chrFilterList = NULL, ...)
-        peakCalling <- atacPeakCalling(shortBed, ...)
+        if(testPeakCallingMACS2()){
+            peakCalling <- atacPeakCallingMACS2(sam2Bed, ...)
+        }else{
+            peakCalling <- atacPeakCalling(sam2Bed, ...)
+        }
         DHSQC <- atacPeakQC(peakCalling,qcbedInput = "DHS",newStepType = "PeakQCDHS", ...)
         blacklistQC <- atacPeakQC(peakCalling,qcbedInput = "blacklist", newStepType = "PeakQCblacklist", ...)
         fripQC <- atacFripQC(atacProc = shortBed,atacProcPeak = peakCalling, ...)

@@ -70,7 +70,10 @@ setMethod(
                           '--shift', param(.Object)[['shift']],
                           '--extsize', param(.Object)[['extsize']],
                           '--nomodel -B --SPMR --keep-dup all --call-summits')
-        system(command = cmdline)
+        result <- system(command = cmdline, intern = TRUE)
+        for(aline in result){
+            writeLog(.Object, msg = aline)
+        }
         .Object
     }
 )
@@ -155,11 +158,19 @@ setMethod(
 )
 
 #' @rdname PeakCallingMACS2
-#' @aliases peakCalling
+#' @aliases peakCallingMACS2
 #' @export
 peakCallingMACS2 <- function(bedInput, background=NULL,outputPrefix=NULL, genomeSize=NULL,
                              pvalueThreshold=0.01, extsize=150, shift=-round(extsize/2.0), ...){
     allpara <- c(list(Class = "PeakCallingMACS2", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
+}
+
+#' @rdname PeakCallingMACS2
+#' @aliases testPeakCallingMACS2
+#' @export
+testPeakCallingMACS2 <- function(){
+    tryCatch({system(command = 'macs2 --help', intern = T); return(TRUE)}, 
+             error = function(e) {message('macs2 is not available for esATAC. Please install MACS2 first');return(FALSE)})
 }

@@ -5,7 +5,7 @@
 \alias{atacPeakCallingMACS2,ATACProc-method}
 \alias{atacPeakCallingMACS2}
 \alias{peakCallingMACS2}
-\alias{peakCalling}
+\alias{testPeakCallingMACS2}
 \title{Use MACS2 to call peak}
 \usage{
 atacPeakCallingMACS2(
@@ -42,6 +42,8 @@ peakCallingMACS2(
   shift = -round(extsize/2),
   ...
 )
+
+testPeakCallingMACS2()
 }
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
