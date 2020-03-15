@@ -35,7 +35,7 @@ setMethod(
             output(.Object)[["bedOutput"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak"))
         }else{
             outputPrefix <- getStepWorkDir(.Object,'MACS')
-            output(.Object)[["bedOutput"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak"))
+            output(.Object)[["bedOutput"]] <-paste0(outputPrefix,"_peaks.narrowPeak")
         }
         param(.Object)[['outputPrefix']] <- outputPrefix
         if(is.null(genomeSize)){
