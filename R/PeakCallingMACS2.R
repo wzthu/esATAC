@@ -61,7 +61,7 @@ setMethod(
     f = "processing",
     signature = "PeakCallingMACS2",
     definition = function(.Object,...){
-        cmdline <- paste0('macs2', 'callpeak', 
+        cmdline <- paste('macs2', 'callpeak', 
                           '-t', input(.Object)[['bedInput']],
                           '-f', 'BED',
                           '-n', param(.Object)[['outputPrefix']],
