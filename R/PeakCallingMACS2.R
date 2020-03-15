@@ -32,10 +32,12 @@ setMethod(
             input(.Object)[["background"]] <- background
         }
         if(!is.null(outputPrefix)){
-            output(.Object)[["bedOutput"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak"))
+            output(.Object)[["bedOutput"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak.bed"))
+            output(.Object)[["narrowPeak"]] <-getStepWorkDir(.Object,filename = paste0(outputPrefix,"_peaks.narrowPeak"))
         }else{
             outputPrefix <- getStepWorkDir(.Object,'MACS')
-            output(.Object)[["bedOutput"]] <-paste0(outputPrefix,"_peaks.narrowPeak")
+            output(.Object)[["bedOutput"]] <-paste0(outputPrefix,"_peaks.narrowPeak.bed")
+            output(.Object)[["narrowPeak"]] <-paste0(outputPrefix,"_peaks.narrowPeak")
         }
         param(.Object)[['outputPrefix']] <- outputPrefix
         if(is.null(genomeSize)){
@@ -74,6 +76,10 @@ setMethod(
         for(aline in result){
             writeLog(.Object, msg = aline)
         }
+        bedfile <- read.table(file = output(.Object)[['narrowPeak']],sep = '\t' ,header = FALSE)
+        bedfile <- bedfile[,1:6]
+        bedfile$V6 <-'*'
+        write.table(bedfile, file = output(.Object)[['bedOutput']],sep = "\t", col.names = FALSE, row.names = FALSE , quote = FALSE)
         .Object
     }
 )
