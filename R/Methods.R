@@ -435,7 +435,8 @@ atacPipe <- function(genome,
 #'
 atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
                       control =list(fastqInput1="paths/To/fastq1",fastqInput2="paths/To/fastq2", adapter1 = NULL, adapter2 = NULL),
-                      refdir=NULL, tmpdir=NULL, threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
+                      tmpdir = file.path(getwd(),"esATAC-pipeline"), 
+                      refdir = file.path(tmpdir,"refdir"),  threads=2, interleave = FALSE, createReport = TRUE, motifs = NULL,
                       chr = c(1:22, "X", "Y"), p.cutoff = 1e-6, ...){ #saveTmp = TRUE,
     #stop("this function is still under developing")
     if(case[["fastqInput1"]]=="paths/To/fastq1"||is.null(case[["fastqInput1"]])){
