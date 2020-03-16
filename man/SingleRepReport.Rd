@@ -6,9 +6,9 @@
 \alias{atacSingleRepReport}
 \title{Final report for single group of regions}
 \usage{
-atacSingleRepReport(prevStep, htmlOutput = NULL, ...)
+atacSingleRepReport(prevStep, htmlOutput = NULL, createHTML = TRUE, ...)
 
-\S4method{atacSingleRepReport}{Step}(prevStep, htmlOutput = NULL, ...)
+\S4method{atacSingleRepReport}{Step}(prevStep, htmlOutput = NULL, createHTML = TRUE, ...)
 }
 \arguments{
 \item{prevStep}{\code{\link{Step-class}} object scalar.
@@ -17,6 +17,11 @@ Any steps object in this package is acceptable when the pipeline is ready.}
 \item{htmlOutput}{\code{Character} scalar.
 HTML report file directory
 Default: NULL ("Report.html")}
+
+\item{createHTML}{\code{Logical} scalar.
+If create HTML file. Default: TRUE. 
+This parameter needs to be set FALSE 
+when pandoc or other dependence softwares are not available for rmarkdown package.}
 
 \item{...}{Additional arguments, currently unused.}
 }

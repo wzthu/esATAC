@@ -178,14 +178,14 @@ setMethod(
 #' \code{\link{atacPeakCalling}}
 
 
-setGeneric("atacpeakComp",function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
-                                   bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...) standardGeneric("atacpeakComp"))
+setGeneric("atacPeakComp",function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
+                                   bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...) standardGeneric("atacPeakComp"))
 
 #' @rdname RPeakComp
-#' @aliases atacpeakComp
+#' @aliases atacPeakComp
 #' @export
 setMethod(
-    f = "atacpeakComp",
+    f = "atacPeakComp",
     signature = "ATACProc",
     definition = function(atacProcPeak1, atacProcPeak2, bedInput1 = NULL,
                           bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){

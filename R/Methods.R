@@ -451,6 +451,7 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
         stop("fastqInput2 for control can not be NULL")
     }
     
+    casePipe <- "CasePipe"
     # case
     atacPipe(genome=genome, 
              fastqInput1=case[["fastqInput1"]], 
@@ -464,10 +465,11 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
              basicAnalysis = FALSE, 
              createReport = TRUE, 
              motifs = motifs, 
-             pipelineName = "case_pipe",
+             pipelineName = casePipe,
              chr = chr, 
              p.cutoff = p.cutoff, ...)
     
+    controlPipe <- "ControlPipe"
     #control
     atacPipe(genome=genome, 
              fastqInput1=control[["fastqInput1"]], 
@@ -481,9 +483,145 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
              basicAnalysis = FALSE, 
              createReport = TRUE, 
              motifs = motifs, 
-             pipelineName = "control_pipe",
+             pipelineName = controlPipe,
              chr = chr, 
              p.cutoff = p.cutoff, ...)
+    
+    casePipeObj <-getObjsInPipe(casePipe)
+    controlPipeObj <- getObjsInPipe(controlPipe)
+    
+    setJobName("CaseControlCmp")
+    setPipeName("CaseControlCmp")
+    
+
+
+    
+    message("Begin to generate summary")
+    case.frag.obj <- casePipeObj[[paste0(casePipe,'_BamToBed')]]
+    ctrl.frag.obj <- controlPipeObj[[paste0(controlPipe,'_BamToBed')]]
+    
+    case.peak.obj <- casePipeObj[[paste0(casePipe,'_PeakCallingMACS2')]]
+    ctrl.peak.obj <- controlPipeObj[[paste0(controlPipe,'_PeakCallingMACS2')]]
+    
+    
+    atacPeakComp(bed.case,)
+    
+    peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak)
+    case_specific.peak <- getParam(peakCom, "bedOutput")[1]
+    ctrl_specific.peak <- getParam(peakCom, "bedOutput")[2]
+    overlap.peak <- getParam(peakCom, "bedOutput")[3]
+    
+    # for case
+    Peakanno.case <- peakanno(peakInput = case_specific.peak)
+    goAna.case <- atacGOAnalysis(atacProc = Peakanno.case, ont = "BP", pvalueCutoff = 0.01)
+    
+    # for ctrl
+    Peakanno.ctrl <- peakanno(peakInput = ctrl_specific.peak)
+    goAna.ctrl <- atacGOAnalysis(atacProc = Peakanno.ctrl, ont = "BP", pvalueCutoff = 0.01)
+    
+    # motif analysis
+    mout <- atacMotifScanPair(atacProc = peakCom, motifs = pwm, p.cutoff = p.cutoff)
+    cs_case <- extractcutsite(bedInput = bed.case, prefix = "CASE")
+    cs_ctrl <- extractcutsite(bedInput = bed.ctrl, prefix = "CONTROL")
+    footprint.case <- atacCutSiteCount(atacProcCutSite = cs_case,
+                                       motif_info = getParam(mout, "rdsOutput.peak1"),
+                                       strandLength = 100, prefix = "Case_specific", chr = chr)
+    footprint.ctrl <- atacCutSiteCount(atacProcCutSite = cs_ctrl,
+                                       motif_info = getParam(mout, "rdsOutput.peak2"),
+                                       strandLength = 100, prefix = "Control_specific", chr = chr)
+    
+    comp_result <- list(
+        Peakanno.case = Peakanno.case,
+        Peakanno.ctrl = Peakanno.ctrl,
+        peakCom = peakCom,
+        goAna.case = goAna.case,
+        goAna.ctrl = goAna.ctrl,
+        mout = mout,
+        footprint.case = footprint.case,
+        footprint.ctrl = footprint.ctrl
+    )
+    
+    wholesummary <- data.frame(Item = caselist[["wholesummary"]][["Item"]],
+                               Case = caselist[["wholesummary"]][["Value"]],
+                               Control = ctrllist[["wholesummary"]][["Value"]],
+                               Reference = ctrllist[["wholesummary"]][["Reference"]])
+    
+    conclusion <- list(caselist = caselist,
+                       ctrllist = ctrllist,
+                       wholesummary = wholesummary
+    )
+    casefilelist <- caselist[["filelist"]]
+    ctrlfilelist <- ctrllist[["filelist"]]
+    
+    filtstat <- data.frame(Item = caselist[["filtstat"]][["Item"]],
+                           Case = caselist[["filtstat"]][["Value"]],
+                           Control = ctrllist[["filtstat"]][["Value"]],
+                           Reference = ctrllist[["filtstat"]][["Reference"]])
+    message("Generate summary done")
+    if(createReport){
+        message("Begin to generate Report")
+        #filename <- strsplit(case[["fastqInput1"]],".fastq|.FASTQ|.FQ|.fq")[[1]][1]
+        #filename <- basename(filename)
+        
+        rmdfile<-system.file(package="esATAC", "extdata", "Report2.Rmd")
+        rmdtext<-readChar(rmdfile,nchars=file.info(rmdfile)$size,useBytes = TRUE)
+        #rmdtext<-sprintf(rmdtext,filename)
+        
+        workdir <- getwd()
+        save(casefilelist,ctrlfilelist,wholesummary,filtstat,caselist,ctrllist,workdir,file = file.path(.obtainConfigure("tmpdir"),"Report2.Rdata"))
+        
+        writeChar(rmdtext,con = file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"),useBytes = TRUE)
+        render(file.path(.obtainConfigure("tmpdir"),"Report2.Rmd"))
+        #knit(file.path(.obtainConfigure("tmpdir"),"Report.Rmd"), file.path(.obtainConfigure("tmpdir"),"Report.md"))
+        #markdownToHTML(file.path(.obtainConfigure("tmpdir"),"Report.md"), file.path(.obtainConfigure("tmpdir"),"Report.html"))
+        #browseURL(paste0('file://', file.path(.obtainConfigure("tmpdir"),"Report.html")))
+        message("Generate report done")
+        if(!(!is.null(param.tmp[["dontSet"]])&&param.tmp[["dontSet"]])){
+            file.copy(file.path(.obtainConfigure("tmpdir"),"Report2.html"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(caselist$atacProcs$atacQC,"pdf"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(ctrllist$atacProcs$atacQC,"pdf"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(goAna.case,"goOutput"),esATAC_report, overwrite = TRUE)
+            file.copy(getReportVal(goAna.ctrl,"goOutput"),esATAC_report, overwrite = TRUE)
+            dir.create(file.path(esATAC_result,"peak"))
+            file.copy(getParam(caselist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
+            file.copy(getParam(ctrllist$atacProcs$peakCalling,"bedOutput"),file.path(esATAC_result,"peak"), overwrite = TRUE)
+            
+            file.copy(getReportVal(caselist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
+            file.copy(getReportVal(ctrllist$atacProcs$Peakanno,"annoOutput"), esATAC_result, overwrite = TRUE)
+            file.copy(getReportVal(comp_result$Peakanno.case,"annoOutput"), esATAC_result, overwrite = TRUE)
+            file.copy(getReportVal(comp_result$Peakanno.ctrl,"annoOutput"), esATAC_result, overwrite = TRUE)
+            
+            file.copy(from = getReportVal(caselist$atacProcs$footprint, "pdf.dir"),
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
+            file.copy(from = getReportVal(ctrllist$atacProcs$footprint, "pdf.dir"),
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
+            file.copy(from = getReportVal(comp_result$footprint.case, "pdf.dir"),
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
+            file.copy(from = getReportVal(comp_result$footprint.ctrl, "pdf.dir"),
+                      to = esATAC_result, overwrite = TRUE, recursive = TRUE)
+            # generate motif enrichment file
+            motif_enrich.case <- getReportVal(comp_result$mout, "rdsOutput.peak1")
+            motif_enrich.case <- motif_enrich.case[, c(1, 3, 4)]
+            colnames(motif_enrich.case) <- c("motif", "motif length", "p_value")
+            motif_enrich.case <- motif_enrich.case[order(motif_enrich.case$p_value), ]
+            rownames(motif_enrich.case) <- seq(nrow(motif_enrich.case))
+            motif_enrich.case_file <- paste(esATAC_result, "/motif_enrichment_Case.txt", sep = "")
+            write.table(x = motif_enrich.case, file = motif_enrich.case_file, sep = "\t",
+                        row.names = TRUE, col.names = TRUE)
+            
+            motif_enrich.ctrl <- getReportVal(comp_result$mout, "rdsOutput.peak2")
+            motif_enrich.ctrl <- motif_enrich.ctrl[, c(1, 3, 4)]
+            colnames(motif_enrich.ctrl) <- c("motif", "motif length", "p_value")
+            motif_enrich.ctrl <- motif_enrich.ctrl[order(motif_enrich.ctrl$p_value), ]
+            rownames(motif_enrich.ctrl) <- seq(nrow(motif_enrich.ctrl))
+            motif_enrich.ctrl_file <- paste(esATAC_result, "/motif_enrichment_Control.txt", sep = "")
+            write.table(x = motif_enrich.ctrl, file = motif_enrich.ctrl_file, sep = "\t",
+                        row.names = TRUE, col.names = TRUE)
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(esATAC_report,"Report2.html")))
+        }else{
+            message(sprintf("type `browseURL(\"%s\")` to view Report in web browser",file.path(.obtainConfigure("tmpdir"),"Report2.html")))
+        }
+    }
     
     
 
