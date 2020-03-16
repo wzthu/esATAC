@@ -505,7 +505,14 @@ atacPipe2 <- function(genome, case = list(fastqInput1="paths/To/fastq1",fastqInp
     ctrl.peak.obj <- controlPipeObj[[paste0(controlPipe,'_PeakCallingMACS2')]]
     
     
-    atacPeakComp(bed.case,)
+    
+    peak.cmp.obj <- atacPeakComp(case.peak.obj,ctrl.peak.obj)
+    
+    if(testPeakCallingMACS2()){
+        atacPeakCallingMACS2(case.peak.obj)
+    }else{
+        atacPeakCalling()
+    }
     
     peakCom <- peakcomp(bedInput1 = case.peak, bedInput2 = ctrl.peak)
     case_specific.peak <- getParam(peakCom, "bedOutput")[1]

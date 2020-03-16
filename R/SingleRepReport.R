@@ -41,6 +41,9 @@ setMethod(
         rsDir <- file.path(output(.Object)$reportData,"ResultData")
         dir.create(rsDir)
         prevStepsType <- lapply(prevSteps, function(step){
+            if(is.null(step)){
+               return(paste0("NULL", sample(1:100,1)))
+            }
             st <- stepType(step)
             return(st)
         })
