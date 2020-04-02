@@ -48,6 +48,9 @@ setMethod(
             chrs <- chrs[chrs!='chrM']
             lens <- lens[chrs]
             genomeSize <- sum(lens)
+            param(.Object)[['genomeSizes']] <- lens
+        }else{
+            param(.Object)[['genomeSizes']] <- NULL
         }
         param(.Object)[['genomeSize']] <- genomeSize
         param(.Object)[['pvalueThreshold']] <- pvalueThreshold
@@ -80,6 +83,21 @@ setMethod(
         bedfile <- bedfile[,1:6]
         bedfile$V6 <-'*'
         write.table(bedfile, file = output(.Object)[['bedOutput']],sep = "\t", col.names = FALSE, row.names = FALSE , quote = FALSE)
+        if(!is.null(param(.Object)[['genomeSizes']])){
+            bedfile <- import.bed(output(.Object)[['bedOutput']])
+            bsgenome <- getRefRc('bsgenome')
+            sl <- seqlengths(bsgenome)
+            chrs <- unique(seqnames(bedfile))
+            sl<-sl[chrs]
+            for(i in 1:length(sl)){
+                a <- names(sl)[i]
+                b <- sl[i]
+                end(bedfile[(as.character(seqnames(bedfile))==a) & 
+                            (end(bedfile)>as.integer(b))])  <- as.integer(b)
+            }
+            export.bed(bedfile, output(.Object)[['bedOutput']])
+        }
+       
         .Object
     }
 )
