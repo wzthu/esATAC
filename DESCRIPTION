@@ -1,7 +1,7 @@
 Package: esATAC
 Type: Package
 Title: An Easy-to-use Systematic pipeline for ATACseq data analysis
-Version: 1.15.0
+Version: 1.15.1
 Date: 2017-06-25
 Author: Zheng Wei, Wei Zhang
 Maintainer: Zheng Wei <wzweizheng@qq.com>
@@ -16,7 +16,7 @@ Description: This package provides a framework and complete preset pipeline for
     quality control and preliminary statistical results, or customize workflow 
     starting from any intermediate stages with esATAC functions easily and flexibly. 
 Depends:
-    R (>= 3.5),
+    R (>= 4.0.0),
     Rsamtools,
     GenomicRanges,
     ShortRead,
