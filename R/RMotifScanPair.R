@@ -231,7 +231,7 @@ setMethod(
 #' Search motif position in genome according thr given motif and peak information.
 #' @param atacProc \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacpeakComp}}.
+#' \code{\link{atacPeakComp}}.
 #' @param peak1 peak file path.
 #' @param peak2 peak file path.
 #' @param background background peak file path.
@@ -271,7 +271,7 @@ setMethod(
 #'}
 #'
 #' @seealso
-#' \code{\link{atacpeakComp}}
+#' \code{\link{atacPeakComp}}
 #'
 #' @importFrom motifmatchr matchMotifs
 #' @importFrom GenomicRanges sort.GenomicRanges

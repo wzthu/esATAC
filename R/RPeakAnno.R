@@ -1,3 +1,4 @@
+#' @importFrom rtracklayer import
 setClass(Class = "RPeakAnno",
          contains = "ATACProc"
 )

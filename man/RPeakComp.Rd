@@ -2,12 +2,12 @@
 % Please edit documentation in R/RPeakComp.R
 \name{RPeakComp}
 \alias{RPeakComp}
-\alias{atacpeakComp,ATACProc-method}
-\alias{atacpeakComp}
+\alias{atacPeakComp,ATACProc-method}
+\alias{atacPeakComp}
 \alias{peakcomp}
 \title{Find the overlap or differential peaks between two samples.}
 \usage{
-atacpeakComp(
+atacPeakComp(
   atacProcPeak1,
   atacProcPeak2,
   bedInput1 = NULL,
@@ -17,7 +17,7 @@ atacpeakComp(
   ...
 )
 
-\S4method{atacpeakComp}{ATACProc}(
+\S4method{atacPeakComp}{ATACProc}(
   atacProcPeak1,
   atacProcPeak2,
   bedInput1 = NULL,

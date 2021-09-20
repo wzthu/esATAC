@@ -1,3 +1,5 @@
+#' @importFrom rtracklayer import
+
 setClass(Class = "RMotifScan",
          contains = "ATACProc"
 )
