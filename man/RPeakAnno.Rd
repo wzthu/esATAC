@@ -74,7 +74,7 @@ It has to be the return value of upstream process:
 \item{peakInput}{\code{Character} scalar.
 Input peak file path. UCSC bed file is recommented. Other file should be
 able to import as \code{\link{GRanges}} objects through
-\code{\link{import}}.}
+\code{\link[rtracklayer]{import}}.}
 
 \item{tssRegion}{Region range of TSS, default:c(-1000, 1000).}
 

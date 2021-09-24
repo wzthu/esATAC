@@ -119,7 +119,7 @@ setMethod(
 #' @param peak \code{Character} scalar.
 #' Input region path. UCSC bed file is recommented. Other file should be able
 #' to import as \code{\link{GRanges}} objects through
-#' \code{\link{import}}.
+#' \code{\link[rtracklayer]{import}}.
 #' @param genome BSgenome object, Default: from \code{\link{getRefRc}}.
 #' @param motifs either\code{\link{PFMatrix}}, \code{\link{PFMatrixList}},
 #' \code{\link{PWMatrix}}, \code{\link{PWMatrixList}}.

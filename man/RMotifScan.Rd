@@ -47,7 +47,7 @@ It has to be the return value of upstream process:
 \item{peak}{\code{Character} scalar.
 Input region path. UCSC bed file is recommented. Other file should be able
 to import as \code{\link{GRanges}} objects through
-\code{\link{import}}.}
+\code{\link[rtracklayer]{import}}.}
 
 \item{genome}{BSgenome object, Default: from \code{\link{getRefRc}}.}
 
