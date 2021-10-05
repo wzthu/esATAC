@@ -47,12 +47,12 @@ It has to be the return value of upstream process:
 \item{bedInput1}{\code{Character} scalar.
 Input peak file path. UCSC bed file is recommented. Other file should be
 able to import as \code{\link{GRanges}} objects through
-\code{\link[rtracklayer]{import}}.}
+ \code{import} in package rtracklayer.}
 
 \item{bedInput2}{\code{Character} scalar.
 Input peak file path. UCSC bed file is recommented. Other file should be
 able to import as \code{\link{GRanges}} objects through
-\code{\link[rtracklayer]{import}}.}
+ \code{import} in package rtracklayer.}
 
 \item{bedOutput}{The output file path for overlap peaks.}
 
