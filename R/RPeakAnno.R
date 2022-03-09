@@ -1,3 +1,4 @@
+#' @importFrom rtracklayer import
 setClass(Class = "RPeakAnno",
          contains = "ATACProc"
 )
@@ -130,7 +131,7 @@ setMethod(
 #' @param peakInput \code{Character} scalar.
 #' Input peak file path. UCSC bed file is recommented. Other file should be
 #' able to import as \code{\link{GRanges}} objects through
-#' \code{\link{import}}.
+#'  \code{import} in package rtracklayer.
 #' @param tssRegion Region range of TSS, default:c(-1000, 1000).
 #' @param TxDb TxDb object, annotation database.
 #' @param level "transcript" or "gene".

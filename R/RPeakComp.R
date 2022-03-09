@@ -1,3 +1,4 @@
+#' @importFrom rtracklayer import
 setClass(Class = "RPeakComp",
          contains = "ATACProc"
 )
@@ -141,11 +142,11 @@ setMethod(
 #' @param bedInput1 \code{Character} scalar.
 #' Input peak file path. UCSC bed file is recommented. Other file should be
 #' able to import as \code{\link{GRanges}} objects through
-#' \code{\link{import}}.
+#'  \code{import} in package rtracklayer.
 #' @param bedInput2 \code{Character} scalar.
 #' Input peak file path. UCSC bed file is recommented. Other file should be
 #' able to import as \code{\link{GRanges}} objects through
-#' \code{\link{import}}.
+#'  \code{import} in package rtracklayer.
 #' @param bedOutput The output file path for overlap peaks.
 #' @param olap.rate Overlap rate, if the overlap region between 2 peak is more
 #' than this rate of the short peak, these two peak are considered to be

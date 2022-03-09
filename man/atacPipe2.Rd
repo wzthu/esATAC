@@ -6,8 +6,8 @@
 \usage{
 atacPipe2(
   genome,
-  case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 = "paths/To/fastq2", adapter1
-    = NULL, adapter2 = NULL),
+  case = list(fastqInput1 = "paths/To/fastq1", fastqInput2 = "paths/To/fastq2",
+    adapter1 = NULL, adapter2 = NULL),
   control = list(fastqInput1 = "paths/To/fastq1", fastqInput2 = "paths/To/fastq2",
     adapter1 = NULL, adapter2 = NULL),
   tmpdir = file.path(getwd(), "esATAC-pipeline"),

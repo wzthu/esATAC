@@ -48,7 +48,7 @@ motifscanpair(
 \arguments{
 \item{atacProc}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacpeakComp}}.}
+\code{\link{atacPeakComp}}.}
 
 \item{peak1}{peak file path.}
 
@@ -104,7 +104,7 @@ genome = BSgenome.Hsapiens.UCSC.hg19, motifs = motif)
 
 }
 \seealso{
-\code{\link{atacpeakComp}}
+\code{\link{atacPeakComp}}
 }
 \author{
 Wei Zhang
