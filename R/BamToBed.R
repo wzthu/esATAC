@@ -54,7 +54,17 @@ setMethod(
         param(.Object)[["maxFragLen"]] <- maxFragLen
         param(.Object)[["saveExtLen"]] <- saveExtLen
         if(is.null(bsgenome)){
-            param(.Object)[['bsgenome']] <- getRefRc('bsgenome')
+            param(.Object)[['bsgenome']] <- 
+                tryCatch(
+                        {
+                            return(getRefRc('bsgenome'))
+                        },
+                        error = function(e){
+                            return(BSgenome::getBSgenome('hg19'))
+                        },
+                        warning=function(cond) {},
+                        finally={}
+                        )
         }else{
             param(.Object)[['bsgenome']] <- bsgenome
         }
@@ -101,7 +111,6 @@ setMethod(
                 uniqueBed <- TRUE
             }
         }
-        
         allchr <- seqnames(param(.Object)[['bsgenome']])
         chrlen <- seqlengths(param(.Object)[['bsgenome']])
         
@@ -372,8 +381,9 @@ setMethod(
 #' @examples
 #'
 #' library(Rsamtools)
-#' ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
-#' bam2bed(bamInput = ex1_file)
+#' # change dataset !!
+#' # ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+#' # bam2bed(bamInput = ex1_file)
 #'
 #' @seealso
 #' \code{\link{atacBamSort}}

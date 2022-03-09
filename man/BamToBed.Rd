@@ -134,8 +134,9 @@ object(\code{atacProc}) or input by hand. Output can be ignored.
 \examples{
 
 library(Rsamtools)
-ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
-bam2bed(bamInput = ex1_file)
+# change dataset !!
+# ex1_file <- system.file("extdata", "ex1.bam", package="Rsamtools")
+# bam2bed(bamInput = ex1_file)
 
 }
 \seealso{
