@@ -297,7 +297,7 @@ atacPipe <- function(genome,
             if(is.null(motifs)){
                 opts <- list()
                 opts[["tax_group"]] <- "vertebrates"
-                pfm <- getMatrixSet(JASPAR2018::JASPAR2018, opts)
+                pfm <- getMatrixSet(JASPAR2018, opts)
                 names(pfm) <- TFBSTools::name(pfm)
                 names(pfm) <- gsub(pattern = "[^a-zA-Z0-9]", replacement = "", x = TFBSTools::name(pfm), perl = TRUE)
             }else{
@@ -391,7 +391,7 @@ atacPipe <- function(genome,
 #' @author Zheng Wei and Wei Zhang
 #' @seealso
 #' \code{\link{atacPipe}}
-#' @import JASPAR2018
+#' @importFrom JASPAR2018 JASPAR2018
 #' @importFrom TFBSTools getMatrixSet
 #' @importFrom TFBSTools name
 #' @examples
@@ -857,7 +857,7 @@ getBinsReadsCount <- function(bedInput,bsgenome,binsize = 1000){
 #' @author Zheng Wei and Wei Zhang
 #' @seealso
 #' \code{\link{atacPipe}}
-#' @import JASPAR2018
+#' @importFrom JASPAR2018 JASPAR2018
 #' @importFrom TFBSTools getMatrixSet
 #' @importFrom TFBSTools toPWM
 #' @importFrom TFBSTools name
