@@ -1,3 +1,6 @@
+CXX_STD = CXX11
+PKG_LIBS+=-lz
+
 PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_WIN -DR_EVN_FLAG
 
 .PHONY: clean all
@@ -9,3 +12,5 @@ all: $(SHLIB)
 clean:
 	rm -f *.dll
 	rm -f *.o
+
+

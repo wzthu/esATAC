@@ -24,6 +24,7 @@ Depends:
 License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
+LinkingTo: Rcpp, RcppEigen
 Imports:
     Rcpp (>= 0.12.11),
     methods,
@@ -60,58 +61,80 @@ Imports:
     parallel,
     corrplot,    
     BiocManager,
-    motifmatchr
+    motifmatchr,
+    Matrix,
+    fastmatch, 
+    future,
+    future.apply, 
+    pbapply,
+    tidyr,
+    BiocGenerics,
+    SeuratObject,
+    biovizBase,
+    dplyr,
+    hdf5r,
+    stringi,
+    stats,
+    tools,
+    S4Vectors,
+    ggplot2,
+    data.table,
+    utils
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
     org.Hs.eg.db,
+    EnsDb.Hsapiens.v75,
     testthat,
     webshot
-LinkingTo: Rcpp
 SystemRequirements: C++11
 Collate: 
-    ATACProc.R
-    BamToBed.R
-    BedToBigWig.R
-    BedUtils.R
-    ConfigVal.R
-    CppInterface.R
-    CutSiteCountR.R
-    CutSitePre.R
-    FRiPQC.R
-    FastQC.R
-    FregLenDistribute.R
-    FindAdapter.R
-    JavaExports.R
-    JavaInterface.R
-    LibComplexQC.R
-    Mapping.R
-    Methods.R
-    PeakCallingFseq.R
-    PeakCallingMACS2.R
-    PeakQC.R
-    RGo.R
-    RMotifScan.R
-    RPeakAnno.R
-    RPeakComp.R
-    RSNPs.R
-    RcppExports.R
-    RemoveAdapter.R
-    Renamer.R
-    Rsortbam.R
-    SamToBam.R
-    SamToBed.R
-    TSSQC.R
-    UnzipAndMerge.R
-    onLoad.R
-    RMotifScanPair.R
-    utilities.R
-    SingleRepReport.R
+    'ATACProc.R'
+    'BamToBed.R'
+    'BedToBigWig.R'
+    'BedUtils.R'
+    'ConfigVal.R'
+    'CppInterface.R'
+    'CutSiteCountR.R'
+    'CutSitePre.R'
+    'FRiPQC.R'
+    'FastQC.R'
+    'FindAdapter.R'
+    'FregLenDistribute.R'
+    'JavaExports.R'
+    'JavaInterface.R'
+    'LibComplexQC.R'
+    'Mapping.R'
+    'Methods.R'
+    'PeakCallingFseq.R'
+    'PeakCallingMACS2.R'
+    'PeakQC.R'
+    'RGo.R'
+    'RMotifScan.R'
+    'RMotifScanPair.R'
+    'RPeakAnno.R'
+    'RPeakComp.R'
+    'RSNPs.R'
+    'RcppExports.R'
+    'RemoveAdapter.R'
+    'Renamer.R'
+    'Rsortbam.R'
+    'SamToBam.R'
+    'SamToBed.R'
+    'SingleRepReport.R'
+    'TSSQC.R'
+    'UnzipAndMerge.R'
+    'generics.R'
+    'fragmentObject.R'
+    'onLoad.R'
+    'reexports.R'
+    'scFunctions.R'
+    'utilities.R'
 biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
-    Coverage, ATACSeq, DNaseSeq
+    Coverage, ATACSeq, DNaseSeq, SingleCell
 VignetteBuilder: knitr
 Archs: x64
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 NeedsCompilation: yes
 URL: https://github.com/wzthu/esATAC
 BugReports: https://github.com/wzthu/esATAC/issues

@@ -1,3 +1,5 @@
+CXX_STD = CXX11
+
 PKG_CPPFLAGS = -DNDEBUG -DPLF_SYS_LINUX  -DR_EVN_FLAG
 
 .PHONY: all clean
@@ -7,5 +9,6 @@ all: $(SHLIB)
 clean:
 	rm -f *.so
 	rm -f *.o
+
 
 
