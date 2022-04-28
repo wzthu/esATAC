@@ -127,7 +127,6 @@ Collate:
     'generics.R'
     'fragmentObject.R'
     'onLoad.R'
-    'reexports.R'
     'scFunctions.R'
     'utilities.R'
 biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
