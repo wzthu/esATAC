@@ -687,7 +687,7 @@ GetTSSPositions <- function(ranges, biotypes = "protein_coding") {
 
 
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
-#' @import data.table
+#' @importFrom data.table as.data.table
 CollapseToLongestTranscript <- function(ranges) {
     range.df <- as.data.table(x = ranges)
     range.df$strand <- as.character(x = range.df$strand)
