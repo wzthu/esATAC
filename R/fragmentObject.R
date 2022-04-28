@@ -32,8 +32,9 @@
 NULL
 
 
-#' The Fragment class
+#' @title The Fragment class
 #'
+#' @description 
 #' The Fragment class is designed to hold information needed for working with
 #' fragment files. This class is from Signac.
 #'
@@ -45,12 +46,16 @@ NULL
 #' as it appears in the fragment file.
 #'
 #' @name Fragment-class
-#' @rdname Fragment-class
+#' 
 #' @exportClass Fragment
+#' 
 #' @concept fragments
 #'
 #' @examples
 #' frag <- new("Fragment", path = "file path", hash = "file hash")
+#'
+#' @keywords internal
+#'
 Fragment <- setClass(
     Class = "Fragment",
     slots = list(
@@ -61,25 +66,29 @@ Fragment <- setClass(
 )
 
 
-#' Get Fragment object data
+#' @title Get Fragment object data
 #'
+#' @description 
 #' Extract data from a \code{\link{Fragment-class}} object
 #'
 #' @param object A \code{\link{Fragment}} object
 #' @param slot Information to pull from object (path, hash, cells, prefix, suffix)
+#' 
 #' @return Fragment object
-#' @export
-#' @concept assay
 #' @examples
 #' frag <- new("Fragment", path = "file path", hash = "file hash")
 #' GetFragmentData(frag)
+#'
+#' @keywords internal
+#'
 GetFragmentData <- function(object, slot = "path") {
     return(slot(object = object, name = slot))
 }
 
 
-#' Return the first rows of a fragment file
+#' @title Return the first rows of a fragment file
 #'
+#' @describeIn 
 #' Returns the first \code{n} rows of a fragment file. This allows the content
 #' of a fragment file to be inspected.
 #'
@@ -90,15 +99,18 @@ GetFragmentData <- function(object, slot = "path") {
 #'
 #' @return The first \code{n} rows of a fragment file as a \code{data.frame}
 #' with the following columns: chrom, start, end, barcode, readCount.
-#'
-#' @export
+#' 
 #' @importFrom utils head read.table
+#' 
 #' @method head Fragment
-#' @concept fragments
+#'
+#' @keywords internal
+#'
 #' @examples
 #' fpath <- system.file("extdata", "fragments.tsv.gz", package="scUtils")
 #' frag <- CreateFragmentObject(fpath)
 #' head(frag)
+#' 
 head.Fragment <- function(x, n = 6L, ...) {
     fpath <- GetFragmentData(object = x, slot = "path")
     df <- read.table(file = fpath, nrows = n, ...)
@@ -111,8 +123,9 @@ head.Fragment <- function(x, n = 6L, ...) {
 
 
 
-#' Count fragments
+#' @title Count fragments
 #'
+#' @description 
 #' Count total fragments per cell barcode present in a fragment file.
 #'
 #' @param fragments Path to a fragment file. If a list of fragment files is
@@ -133,12 +146,12 @@ head.Fragment <- function(x, n = 6L, ...) {
 #'   \item{reads_count: total number of reads sequenced for the cell}
 #' }
 #'
-#' @rdname CountFragments
-#' @export
-#' @concept fragments
+#' @keywords internal
+#'
 #' @examples
 #' fpath <- system.file("extdata", "fragments.tsv.gz", package="scUtils")
 #' counts <- CountFragments(fragments = fpath)
+#' 
 CountFragments <- function(
         fragments,
         cells = NULL,
@@ -187,8 +200,9 @@ CountFragments <- function(
 }
 
 
-#' Filter cells from fragment file
+#' @title Filter cells from fragment file
 #'
+#' @description 
 #' Remove all fragments that are not from an allowed set of cell barcodes from
 #' the fragment file. This will create a new file on disk that only contains
 #' fragments from cells specified in the \code{cells} argument. The output file
@@ -204,8 +218,9 @@ CountFragments <- function(
 #' @return Filter cells from fragment file
 #'
 #' @importFrom Rsamtools bgzip indexTabix
-#' @export
-#' @concept fragments
+#'
+#' @keywords internal
+#'
 #' @examples
 #' fpath <- system.file("extdata", "fragments.tsv.gz", package="scUtils")
 #' cells <- readLines(system.file("extdata", "cell_name.txt", package="scUtils"))
@@ -261,8 +276,10 @@ FilterCells <- function(
 }
 
 
+#' @title 
 #' Split fragment file by cell identities
-#'
+#' 
+#' @description 
 #' Splits a fragment file into separate files for each group of cells. If
 #' splitting multiple fragment files containing common cell types, fragments
 #' originating from different files will be appended to the same file for one
@@ -285,10 +302,8 @@ FilterCells <- function(
 #'
 #' @return SplitFragments
 #'
-#' @concept fragments
-#' @export
-#' @examples
-#' print("see https://satijalab.org/signac/reference/splitfragments")
+#' @keywords internal
+#'
 SplitFragments <- function(
         object,
         assay = NULL,
@@ -362,8 +377,9 @@ SplitFragments <- function(
 }
 
 
-#' Create a Fragment object
-#'
+#' @title Create a Fragment object
+#' 
+#' @description 
 #' Create a \code{Fragment} object to store fragment file information.
 #' This object stores a 32-bit MD5 hash of the fragment file and the fragment
 #' file index so that any changes to the files on-disk can be detected. A check
@@ -389,10 +405,13 @@ SplitFragments <- function(
 #' @return Fragment object
 #'
 #' @importFrom tools md5sum file_ext
-#' @export
+#'
+#' @keywords internal
+#'
 #' @examples
 #' fpath <- system.file("extdata", "fragments.tsv.gz", package="SignacSlim")
 #' fragments <- CreateFragmentObject(fpath)
+#' 
 CreateFragmentObject <- function(
         path,
         cells = NULL,
@@ -464,8 +483,9 @@ CreateFragmentObject <- function(
     }
 }
 
-#' Validate cells present in fragment file
+#' @title Validate cells present in fragment file
 #'
+#' @description 
 #' Search for a fragment from each cell that should exist in the fragment file.
 #' Will iterate through chunks of the fragment file until at least one fragment
 #' from each cell barcode requested is found.
@@ -487,8 +507,8 @@ CreateFragmentObject <- function(
 #'
 #' @return ValidateCells
 #'
-#' @export
-#' @concept fragments
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/reference/validatecells")
 ValidateCells <- function(
@@ -523,18 +543,18 @@ ValidateCells <- function(
     return(valid)
 }
 
-#' Validate hashes for Fragment object
+#' @title Validate hashes for Fragment object
 #'
 #' @param object A \code{\link{Fragment}} object
 #' @param verbose Display messages
 #'
 #' @return ValidateHash
 #'
-#' @export
-#' @concept fragments
+#'
+#' @keywords internal
+#'
 #' @importFrom tools md5sum
-#' @examples
-#' print("see https://satijalab.org/signac/reference/validatehash")
+#' 
 ValidateHash <- function(object, verbose = TRUE) {
     path <- GetFragmentData(object = object, slot = "path")
     index.file <- paste0(path, ".tbi")
@@ -554,8 +574,9 @@ ValidateHash <- function(object, verbose = TRUE) {
     return(all(newhash == oldhash))
 }
 
-#' Validate Fragment object
+#' @title Validate Fragment object
 #'
+#' @description 
 #' Verify that the cells listed in the object exist in the fragment file
 #' and that the fragment file or index have not changed since creating the
 #' fragment object.
@@ -566,10 +587,10 @@ ValidateHash <- function(object, verbose = TRUE) {
 #'
 #' @return ValidateFragments
 #'
-#' @export
+#' @keywords internal
+#'
 #' @concept fragments
-#' @examples
-#' print("see https://satijalab.org/signac/reference/validatefragments")
+#' 
 ValidateFragments <- function(
         object,
         verbose = TRUE,
@@ -580,27 +601,27 @@ ValidateFragments <- function(
     return(valid.cells & valid.hash)
 }
 
-#' Set and get cell barcode information for a \code{\link{Fragment}} object
-#'
+#' @title Set and get cell barcode information for a \code{\link{Fragment}} object
+#' 
+#' @describeIn 
 #' This returns the names of cells in the object that are contained in the
 #' fragment file. These cell barcodes may not match the barcodes present in the
 #' fragment file. The \code{\link{Fragment}} object contains an internal mapping
 #' of the cell names in the ChromatinAssay object to the cell
 #' names in the fragment file, so that cell names can be changed in the
 #' assay without needing to change the cell names on disk.
-#'
+#' 
 #' To access the cell names that are stored in the fragment file itself, use
 #' \code{GetFragmentData(object = x, name = "cells")}.
+#' 
 #' @param x A Fragment object
 #' @param ... Arguments passed to other methods
 #' @return cell barcode information
-#'
-#' @rdname Cells
-#'
-#' @concept fragments
+#' 
 #' @method Cells Fragment
 #' @importFrom SeuratObject Cells
-#' @export
+#'
+#' @keywords internal
 #'
 Cells.Fragment <- function(x, ...) {
     cells <- slot(object = x, name = "cells")
@@ -608,12 +629,15 @@ Cells.Fragment <- function(x, ...) {
 }
 
 
+#' @title Cells
+#' 
 #' @param value A vector of cell names to store in the \code{\link{Fragment}}
 #' object
-#' @rdname Cells
-#' @export
-#' @concept fragments
+#' 
 #' @method Cells<- Fragment
+#'
+#' @keywords internal
+#'
 "Cells<-.Fragment" <- function(x, ..., value) {
     if (is.null(x = names(x = value))) {
         stop("Cells must be a named vector")
@@ -627,8 +651,9 @@ Cells.Fragment <- function(x, ...) {
 }
 
 
-#' Update the file path for a Fragment object
+#' @title Update the file path for a Fragment object
 #'
+#' @description 
 #' Change the path to a fragment file store in a \code{\link{Fragment}}
 #' object. Path must be to the same file that was used to create the fragment
 #' object. An MD5 hash will be computed using the new path and compared to the
@@ -639,9 +664,9 @@ Cells.Fragment <- function(x, ...) {
 #' @param verbose Display messages
 #'
 #' @return UpdatePath
+#' 
+#' @keywords internal
 #'
-#' @concept fragments
-#' @export
 #' @examples
 #' print("see https://satijalab.org/signac/reference/updatepath")
 UpdatePath <- function(object, new.path, verbose = TRUE) {
@@ -671,9 +696,15 @@ UpdatePath <- function(object, new.path, verbose = TRUE) {
     }
 }
 
-# If Fragment object does not contain cell names, assign to given list of names
-# Used in CreateChromatinAssay when adding a Fragment object with no cell names
+#' @title AssignFragCellnames
+#' 
+#' @description  If Fragment object does not contain cell names, assign to given list of names
+#' Used in CreateChromatinAssay when adding a Fragment object with no cell names
+#' 
 #' @importFrom methods slot slot<-
+#' 
+#' @keywords internal
+#'
 AssignFragCellnames <- function(fragments, cellnames) {
     if (is.null(x = Cells(x = fragments))) {
         cells <- cellnames
