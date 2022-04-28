@@ -1,24 +1,29 @@
 #' @useDynLib esATAC
 NULL
 
-#' isRemote
+#' @title isRemote
 #'
-#' Check if path is remote
+#' @description Check if path is remote
 #'
 #' @param x path/s to check
+#' 
 #' @return path
+#' 
+#' @keywords internal
 #'
 isRemote <- function(x) {
     return(grepl(pattern = "^http|^ftp", x = x))
 }
 
 
-#' Set a default value if an object is null
+#' @title Set a default value if an object is null
 #'
 #' @param x An object to set if it's null
 #' @param y The value to provide if x is null
 #'
 #' @return Returns y if x is null, otherwise returns x.
+#' 
+#' @keywords internal
 #'
 SetIfNull <- function(x, y) {
     if (is.null(x = x)) {
@@ -29,9 +34,11 @@ SetIfNull <- function(x, y) {
 }
 
 
-#' String to GRanges
+#' @title StringToGRanges
 #'
-#' Convert a genomic coordinate string to a GRanges object
+#' @description String to GRanges
+#' 
+#' @details Convert a genomic coordinate string to a GRanges object
 #'
 #' @param regions Vector of genomic region strings
 #' @param sep Vector of separators to use for genomic string. First element is
@@ -44,6 +51,8 @@ SetIfNull <- function(x, y) {
 #'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom tidyr separate
+#'
+#' @keywords internal
 #'
 StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
     ranges.df <- data.frame(ranges = regions)
@@ -58,28 +67,25 @@ StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
 }
 
 
-#' Run FeatureMatrix on a single Fragment object
+#' @title SingleFeatureMatrix
+#' 
+#' @description Run FeatureMatrix on a single Fragment object
 #'
 #' @param fragment A list of \code{\link{Fragment}} objects. Note that if
 #' setting the \code{cells} parameter, the requested cells should be present in
 #' the supplied \code{Fragment} objects. However, if the cells information in
 #' the fragment object is not set (\code{Cells(fragments)} is \code{NULL}), then
 #' the fragment object will still be searched.
-#'
 #' @param features A GRanges object containing a set of genomic intervals.
 #' These will form the rows of the matrix, with each entry recording the number
 #' of unique reads falling in the genomic region for each cell.
-#'
 #' @param cells Vector of cells to include. If NULL, include all cells found
 #' in the fragments file
-#'
 #' @param process_n Number of regions to load into memory at a time, per thread.
 #' Processing more regions at once can be faster but uses more memory.
-#'
 #' @param sep Vector of separators to use for genomic string. First element is
 #' used to separate chromosome and coordinates, second separator is used to
 #' separate start and end coordinates.
-#'
 #' @param verbose Display messages
 #'
 #' @return SingleFeatureMatrix
@@ -92,6 +98,8 @@ StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
 #' @importMethodsFrom GenomicRanges intersect
 #' @importFrom Rsamtools TabixFile seqnamesTabix
 #' @importFrom fastmatch fmatch
+#'
+#' @keywords internal
 #'
 SingleFeatureMatrix <- function(
         fragment,
@@ -186,12 +194,17 @@ SingleFeatureMatrix <- function(
 
 
 
-#' Split a genomic ranges object into evenly sized chunks
+#' @title ChunkGRanges
+#' 
+#' @description Split a genomic ranges object into evenly sized chunks
 #'
 #' @param granges A GRanges object
 #' @param nchunk Number of chunks to split into
 #'
 #' @return Returns a list of GRanges objects
+#'
+#' @keywords internal
+#'
 ChunkGRanges <- function(granges, nchunk) {
     if (length(x = granges) < nchunk) {
         nchunk <- length(x = granges)
@@ -213,20 +226,23 @@ ChunkGRanges <- function(granges, nchunk) {
 }
 
 
-#' GRanges to String
+#' @title GRangesToString
+#' 
+#' @description GRanges to String
 #'
-#' Convert GRanges object to a vector of strings
+#' @details Convert GRanges object to a vector of strings
 #'
 #' @param grange A GRanges object
 #' @param sep Vector of separators to use for genomic string. First element is
 #' used to separate chromosome and coordinates, second separator is used to
 #' separate start and end coordinates.
+#' 
 #' @return Returns a character vector
-#' @export
-#' @concept utilities
+#' 
 #' @importMethodsFrom GenomicRanges start end seqnames
-#' @examples
-#' print("see https://satijalab.org/signac/reference/grangestostring")
+#'
+#' @keywords internal
+#'
 GRangesToString <- function(grange, sep = c("-", "-")) {
     regions <- paste0(
         as.character(x = seqnames(x = grange)),
@@ -239,12 +255,19 @@ GRangesToString <- function(grange, sep = c("-", "-")) {
 }
 
 
+#' @title PartialMatrix
+#' 
+#' @describeIn PartialMatrix
+#' 
+#' @details construct sparse matrix for one set of regions names of the cells 
+#' vector can be ignored here, conversion is handled in the parent functions.
+#' 
 #' @importFrom Matrix sparseMatrix
 #' @importFrom S4Vectors elementNROWS
+#'
+#' @keywords internal
+#'
 PartialMatrix <- function(tabix, regions, sep = c("-", "-"), cells = NULL) {
-    # construct sparse matrix for one set of regions
-    # names of the cells vector can be ignored here, conversion is handled in
-    # the parent functions
     open(con = tabix)
     cells.in.regions <- GetCellsInRegion(
         tabix = tabix,
@@ -320,9 +343,11 @@ PartialMatrix <- function(tabix, regions, sep = c("-", "-"), cells = NULL) {
     }
 }
 
-#' Get cells in a region
+#' @title GetCellsInRegion
+#' 
+#' @description Get cells in a region
 #'
-#' Extract cell names containing reads mapped within a given genomic region
+#' @details Extract cell names containing reads mapped within a given genomic region
 #'
 #' @param tabix Tabix object
 #' @param region A string giving the region to extract from the fragments file
@@ -331,9 +356,11 @@ PartialMatrix <- function(tabix, regions, sep = c("-", "-"), cells = NULL) {
 #' @importFrom Rsamtools scanTabix
 #' @importFrom methods is
 #' @importFrom fastmatch fmatch
-#' @export
-#' @concept utilities
+#' 
 #' @return Returns a list
+#'
+#' @keywords internal
+#'
 GetCellsInRegion <- function(tabix, region, cells = NULL) {
     if (!is(object = region, class2 = "GRanges")) {
         region <- StringToGRanges(regions = region)
@@ -353,8 +380,12 @@ GetCellsInRegion <- function(tabix, region, cells = NULL) {
     return(reads)
 }
 
-
+#' @title AddMissingCells
+#' 
 #' @importFrom Matrix sparseMatrix
+#'
+#' @keywords internal
+#'
 AddMissingCells <- function(x, cells) {
     # add columns with zeros for cells not in matrix
     missing.cells <- setdiff(x = cells, y = colnames(x = x))
@@ -373,14 +404,21 @@ AddMissingCells <- function(x, cells) {
 }
 
 
-#' Extract cell
+#' @title ExtractCell
+#' 
+#' @description Extract cell
 #'
-#' Extract cell barcode from list of tab delimited character
+#' @details Extract cell barcode from list of tab delimited character
 #' vectors (output of \code{\link{scanTabix}})
 #'
 #' @param x List of character vectors
+#' 
 #' @return Returns a string
+#' 
 #' @importFrom stringi stri_split_fixed
+#'
+#' @keywords internal
+#'
 ExtractCell <- function(x) {
     if (length(x = x) == 0) {
         return(NULL)
@@ -393,9 +431,12 @@ ExtractCell <- function(x) {
 }
 
 
-#' Extract genomic ranges from EnsDb object
+#' @title GetGRangesFromEnsDb
+#' 
+#' @description Extract genomic ranges from EnsDb object
 #'
-#' Pulls the transcript information for all chromosomes from an EnsDb object.
+#' @details Pulls the transcript information for all chromosomes from 
+#' an EnsDb object.
 #' This wraps \code{\link[biovizBase]{crunch}} and applies the extractor
 #' function to all chromosomes present in the EnsDb object.
 #'
@@ -403,14 +444,19 @@ ExtractCell <- function(x) {
 #' @param standard.chromosomes Keep only standard chromosomes
 #' @param biotypes Biotypes to keep
 #' @param verbose Display messages
+#' 
 #' @return GRanges
 #'
 #' @importFrom GenomeInfoDb keepStandardChromosomes seqinfo
 #' @importFrom biovizBase crunch
-#' @concept utilities
-#' @export
+#'
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/reference/getgrangesfromensdb")
+#'
+#' @keywords internal
+#'
 GetGRangesFromEnsDb <- function(
         ensdb,
         standard.chromosomes = TRUE,
@@ -447,7 +493,9 @@ GetGRangesFromEnsDb <- function(
 }
 
 
-#' Construct a feature x cell matrix from a genomic fragments file
+#' @title FeatureMatrix
+#' 
+#' @description Construct a feature x cell matrix from a genomic fragments file
 #'
 #' @param fragments A list of \code{\link{Fragment}} objects. Note that if
 #' setting the \code{cells} parameter, the requested cells should be present in
@@ -468,7 +516,8 @@ GetGRangesFromEnsDb <- function(
 #'
 #' @return Returns a sparse matrix
 #'
-#' @export
+#' @keywords internal
+#'
 #' @importFrom SeuratObject RowMergeSparseMatrices
 #'
 #' @examples
@@ -480,6 +529,7 @@ GetGRangesFromEnsDb <- function(
 #'  fragments = fragments,
 #'   features = peaks
 #' )
+#' 
 FeatureMatrix <- function(
         fragments,
         features,
@@ -543,10 +593,12 @@ FeatureMatrix <- function(
 }
 
 
-#' Run groupCommand for the first n lines, convert the cell barcodes in the file
+#' @title ExtractFragments
+#' 
+#' @details  Run groupCommand for the first n lines, convert the cell barcodes 
+#' in the file
 #' to the cell names that appear in the fragment object, and subset the output to
-#' cells present in the fragment object
-#'
+#' cells present in the fragment object.
 #' Every cell in the fragment file will be present in the output dataframe. If
 #' the cell information is not set, every cell barcode that appears in the first
 #' n lines will be present.
@@ -556,6 +608,9 @@ FeatureMatrix <- function(
 #' @param verbose Display messages
 #'
 #' @return Returns a data.frame
+#'
+#' @keywords internal
+#'
 ExtractFragments <- function(fragments, n = NULL, verbose = TRUE) {
     fpath <- GetFragmentData(object = fragments, slot = "path")
     if (isRemote(x = fpath)) {
@@ -590,21 +645,27 @@ ExtractFragments <- function(fragments, n = NULL, verbose = TRUE) {
 
 
 
-# Generate cut matrix for many regions
-#
-# Run CutMatrix on multiple regions and add them together.
-# Assumes regions are pre-aligned.
-#
-# @param object A Fragment object
-# @param regions A set of GRanges
-# @param group.by Name of grouping variable to use
-# @param fragments A list of Fragment objects
-# @param assay Name of the assay to use
-# @param cells Vector of cells to include
-# @param verbose Display messages
+#' @title MultiRegionCutMatrix
+#' 
+#' @description Generate cut matrix for many regions
+#' 
+#' @details Run CutMatrix on multiple regions and add them together.
+#' Assumes regions are pre-aligned.
+#'
+#' @param object A Fragment object
+#' @param regions A set of GRanges
+#' @param group.by Name of grouping variable to use
+#' @param fragments A list of Fragment objects
+#' @param assay Name of the assay to use
+#' @param cells Vector of cells to include
+#' @param verbose Display messages
+#' 
 #' @importFrom Rsamtools TabixFile seqnamesTabix
 #' @importFrom SeuratObject DefaultAssay
 #' @importFrom GenomeInfoDb keepSeqlevels seqlevels
+#'
+#' @keywords internal
+#'
 MultiRegionCutMatrix <- function(
         object,
         regions,
@@ -657,8 +718,11 @@ MultiRegionCutMatrix <- function(
 }
 
 
-#' Find transcriptional start sites
+#' @title GetTSSPositions
+#' 
+#' @description Find transcriptional start sites
 #'
+#' @details 
 #' Get the TSS positions from a set of genomic ranges containing gene positions.
 #' Ranges can contain exons, introns, UTRs, etc, rather than the whole
 #' transcript. Only protein coding gene biotypes are included in output.
@@ -668,10 +732,12 @@ MultiRegionCutMatrix <- function(
 #' supplied gene annotation.
 #'
 #' @return transcriptional start sites
-#'
-#' @export
+#' 
 #' @importFrom GenomicRanges resize
 #' @importFrom S4Vectors mcols
+#'
+#' @keywords internal
+#'
 GetTSSPositions <- function(ranges, biotypes = "protein_coding") {
     if (!("gene_biotype" %in% colnames(x = mcols(x = ranges)))) {
         stop("Gene annotation does not contain gene_biotype information")
@@ -686,8 +752,13 @@ GetTSSPositions <- function(ranges, biotypes = "protein_coding") {
 }
 
 
+#' @title CollapseToLongestTranscript
+#' 
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom data.table as.data.table
+#'
+#' @keywords internal
+#'
 CollapseToLongestTranscript <- function(ranges) {
     range.df <- as.data.table(x = ranges)
     range.df$strand <- as.character(x = range.df$strand)
@@ -718,8 +789,9 @@ CollapseToLongestTranscript <- function(ranges) {
 
 
 
-#' Extend
+#' @title Extend
 #'
+#' @description 
 #' Resize GenomicRanges upstream and or downstream.
 #' From \url{https://support.bioconductor.org/p/78652/}
 #'
@@ -729,14 +801,16 @@ CollapseToLongestTranscript <- function(ranges) {
 #' @param from.midpoint Count bases from region midpoint,
 #' rather than the 5' or 3' end for upstream and downstream
 #' respectively.
-#'
+#' 
+#' @return Returns a \code{\link[GenomicRanges]{GRanges}} object
+#' 
 #' @importFrom GenomicRanges trim
 #' @importFrom BiocGenerics start strand end width
 #' @importMethodsFrom GenomicRanges strand start end width
 #' @importFrom IRanges ranges IRanges "ranges<-"
-#' @export
-#' @concept utilities
-#' @return Returns a \code{\link[GenomicRanges]{GRanges}} object
+#'
+#' @keywords internal
+#'
 Extend <- function(
         x,
         upstream = 0,
@@ -769,25 +843,34 @@ Extend <- function(
 }
 
 
-# Generate matrix of integration sites
-#
-# Generates a cell-by-position matrix of Tn5 integration sites
-# centered on a given region (usually a DNA sequence motif). This
-# matrix can be used for downstream footprinting analysis.
-#
-# @param cellmap A mapping of cell names in the fragment file to cell names in
-# the Seurat object. Should be a named vector where each element is a cell name
-# that appears in the fragment file and the name of each element is the
-# name of the cell in the Seurat object.
-# @param region A set of GRanges containing the regions of interest
-# @param cells Which cells to include in the matrix. If NULL, use all cells in
-# the cellmap
-# @param tabix.file A \code{\link[Rsamtools]{TabixFile}} object.
-# @param verbose Display messages
+#' @title SingleFileCutMatrix
+#' 
+#' @description 
+#' Generate matrix of integration sites
+#'
+#' @details 
+#' Generates a cell-by-position matrix of Tn5 integration sites
+#' centered on a given region (usually a DNA sequence motif). This
+#' matrix can be used for downstream footprinting analysis.
+#'
+#' @param cellmap A mapping of cell names in the fragment file to cell names in
+#' the Seurat object. Should be a named vector where each element is a cell name
+#' that appears in the fragment file and the name of each element is the
+#' name of the cell in the Seurat object.
+#' @param region A set of GRanges containing the regions of interest
+#' @param cells Which cells to include in the matrix. If NULL, use all cells in
+#' the cellmap
+#' @param tabix.file A \code{\link[Rsamtools]{TabixFile}} object.
+#' @param verbose Display messages
+#' 
+#' @return Returns a sparse matrix
+#' 
 #' @importFrom Matrix sparseMatrix
 #' @importFrom Rsamtools TabixFile
 #' @importMethodsFrom GenomicRanges width start end
-# @return Returns a sparse matrix
+#'
+#' @keywords internal
+#'
 SingleFileCutMatrix <- function(
         cellmap,
         region,
@@ -843,8 +926,9 @@ SingleFileCutMatrix <- function(
 }
 
 
-#' GetReadsInRegion
+#' @title GetReadsInRegion
 #'
+#' @description 
 #' Extract reads for each cell within a given genomic region or set of regions
 #'
 #' @param cellmap A mapping of cell names in the fragment file to cell names in
@@ -858,11 +942,14 @@ SingleFileCutMatrix <- function(
 #' @param verbose Display messages
 #' @param ... Additional arguments passed to \code{\link{StringToGRanges}}
 #'
+#' @return Returns a data frame
+#'
 #' @importFrom Rsamtools TabixFile scanTabix
 #' @importFrom SeuratObject Idents
 #' @importFrom fastmatch fmatch
 #'
-#' @return Returns a data frame
+#' @keywords internal
+#'
 GetReadsInRegion <- function(
         cellmap,
         region,
@@ -908,15 +995,20 @@ GetReadsInRegion <- function(
 }
 
 
-# TabixOutputToDataFrame
-#
-# Create a single dataframe from list of character vectors
-#
-# @param reads List of character vectors (the output of \code{\link{scanTabix}})
-# @param record.ident Add a column recording which region the reads overlapped
-# with
+#' @title TabixOutputToDataFrame
+#'
+#' @description 
+#' Create a single dataframe from list of character vectors
+#'
+#' @param reads List of character vectors 
+#' (the output of \code{\link{scanTabix}})
+#' @param record.ident Add a column recording which region the reads overlapped
+#' with
 #' @importFrom stringi stri_split_fixed
 #' @importFrom S4Vectors elementNROWS
+#'
+#' @keywords internal
+#'
 TabixOutputToDataFrame <- function(reads, record.ident = TRUE) {
     if (record.ident) {
         nrep <- elementNROWS(x = reads)
@@ -958,8 +1050,12 @@ TabixOutputToDataFrame <- function(reads, record.ident = TRUE) {
 }
 
 
+#' @title ApplyMatrixByGroup
+#' 
+#' @description 
 #' Apply function to integration sites per base per group
 #'
+#' @details 
 #' Perform colSums on a cut matrix with cells in the rows
 #' and position in the columns, for each group of cells
 #' separately.
@@ -979,6 +1075,9 @@ TabixOutputToDataFrame <- function(reads, record.ident = TRUE) {
 #' @return ApplyMatrixByGroup
 #'
 #' @importFrom stats median
+#'
+#' @keywords internal
+#'
 ApplyMatrixByGroup <- function(
         mat,
         groups,
@@ -1039,10 +1138,11 @@ ApplyMatrixByGroup <- function(
 }
 
 
+#' @title FragInRegions
+#' 
+#' @description 
 #' Compute total fragment counts in genomic regions for update single cell
 #' information table.
-#'
-#' Compute total fragment counts in genomic regions for every cell.
 #'
 #' @param fragment A fragment object.
 #' @param GR Genomic regions saved in Granges.
@@ -1055,11 +1155,12 @@ ApplyMatrixByGroup <- function(
 #'
 #' @return a vector of counts number for every cells.
 #'
-#' @export
-#'
 #' @importFrom Matrix colSums
 #' @importFrom tibble rownames_to_column
 #' @importFrom dplyr full_join
+#'
+#' @keywords internal
+#'
 FragInRegions <- function (fragment = NULL,
                            GR = NULL,
                            csvFile = NULL,
@@ -1108,8 +1209,12 @@ FragInRegions <- function (fragment = NULL,
 
 
 
+#' @title nsQC
+#' 
+#' @description 
 #' Quality Control for Nucleosome Signal per Cell
 #'
+#' @details 
 #' Calculate the strength of the nucleosome signal per cell.
 #' Computes the ratio of fragments between 147 bp and 294 bp (mononucleosome) to
 #' fragments < 147 bp (nucleosome-free)
@@ -1127,8 +1232,8 @@ FragInRegions <- function (fragment = NULL,
 #' @importFrom stats ecdf
 #' @importFrom fastmatch fmatch
 #'
-#' @export
-#' @concept QualityControl
+#' @keywords internal
+#'
 nsQC <- function(frags = NULL,
                  n = NULL,
                  verbose = TRUE,
@@ -1184,8 +1289,12 @@ nsQC <- function(frags = NULL,
 }
 
 
+#' @title tssQC
+#' 
+#' @description 
 #' Compute TSS enrichment score per cell
 #'
+#' @details 
 #' Compute the transcription start site (TSS) enrichment score for each cell,
 #' as defined by ENCODE:
 #' \url{https://www.encodeproject.org/data-standards/terms/}.
@@ -1199,7 +1308,9 @@ nsQC <- function(frags = NULL,
 #' @param process_n Number of regions to process at a time if using \code{fast}
 #' option.
 #' @param verbose Display messages
-#'
+#' 
+#' @return Returns two matrix
+#' 
 #' @importFrom Matrix rowMeans
 #' @importFrom methods slot
 #' @importFrom stats ecdf
@@ -1208,9 +1319,8 @@ nsQC <- function(frags = NULL,
 #' @importFrom GenomicRanges start width strand
 #' @importFrom SeuratObject DefaultAssay
 #'
-#' @return Returns two matrix
-#' @export
-#' @concept QualityControl
+#' @keywords internal
+#'
 tssQC <- function (object = NULL,
                    gene.annotation = NULL,
                    n = NULL,
@@ -1351,21 +1461,26 @@ tssQC <- function (object = NULL,
     
 }
 
+#' @title plotTssQC
+#' 
+#' @description 
 #' Plot signal enrichment around TSSs
 #'
+#' @details 
 #' Plot the normalized TSS enrichment score at each position relative to the
 #' TSS.
 #'
 #' @param tssInfo TSS enrichment information from function 'tssQC'
 #' @param threshold Threshold to separate low and high quality cells
 #'
+#' @return Returns a \code{\link[ggplot2]{ggplot2}} object
+#'
 #' @importFrom Matrix colMeans
 #' @importFrom ggplot2 ggplot aes geom_line xlab ylab theme_classic
 #' ggtitle facet_wrap theme element_blank
 #'
-#' @return Returns a \code{\link[ggplot2]{ggplot2}} object
-#' @export
-#' @concept QualityControl
+#' @keywords internal
+#'
 plotTssQC <- function (tssInfo = NULL,
                        threshold = 3) {
     if (is.null(tssInfo)) {
@@ -1402,14 +1517,5 @@ plotTssQC <- function (tssInfo = NULL,
     
     return(p)
 }
-
-
-
-
-
-
-
-
-
 
 
