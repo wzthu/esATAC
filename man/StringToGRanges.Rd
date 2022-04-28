@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{StringToGRanges}
 \alias{StringToGRanges}
-\title{String to GRanges}
+\title{StringToGRanges}
 \usage{
 StringToGRanges(regions, sep = c("-", "-"), ...)
 }
@@ -20,5 +20,9 @@ separate start and end coordinates.}
 Returns a GRanges object
 }
 \description{
+String to GRanges
+}
+\details{
 Convert a genomic coordinate string to a GRanges object
 }
+\keyword{internal}

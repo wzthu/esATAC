@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{GetTSSPositions}
 \alias{GetTSSPositions}
-\title{Find transcriptional start sites}
+\title{GetTSSPositions}
 \usage{
 GetTSSPositions(ranges, biotypes = "protein_coding")
 }
@@ -16,7 +16,11 @@ supplied gene annotation.}
 transcriptional start sites
 }
 \description{
+Find transcriptional start sites
+}
+\details{
 Get the TSS positions from a set of genomic ranges containing gene positions.
 Ranges can contain exons, introns, UTRs, etc, rather than the whole
 transcript. Only protein coding gene biotypes are included in output.
 }
+\keyword{internal}

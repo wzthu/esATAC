@@ -2,8 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{FragInRegions}
 \alias{FragInRegions}
-\title{Compute total fragment counts in genomic regions for update single cell
-information table.}
+\title{FragInRegions}
 \usage{
 FragInRegions(
   fragment = NULL,
@@ -33,5 +32,7 @@ Default: 5000.}
 a vector of counts number for every cells.
 }
 \description{
-Compute total fragment counts in genomic regions for every cell.
+Compute total fragment counts in genomic regions for update single cell
+information table.
 }
+\keyword{internal}

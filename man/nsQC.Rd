@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{nsQC}
 \alias{nsQC}
-\title{Quality Control for Nucleosome Signal per Cell}
+\title{nsQC}
 \usage{
 nsQC(frags = NULL, n = NULL, verbose = TRUE, ...)
 }
@@ -22,8 +22,11 @@ Returns a dataframe for mononucleosomal, nucleosome_free,
 nucleosome_signal and nucleosome_percentile of each cell.
 }
 \description{
+Quality Control for Nucleosome Signal per Cell
+}
+\details{
 Calculate the strength of the nucleosome signal per cell.
 Computes the ratio of fragments between 147 bp and 294 bp (mononucleosome) to
 fragments < 147 bp (nucleosome-free)
 }
-\concept{QualityControl}
+\keyword{internal}

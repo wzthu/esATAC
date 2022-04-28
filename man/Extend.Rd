@@ -24,4 +24,4 @@ Returns a \code{\link[GenomicRanges]{GRanges}} object
 Resize GenomicRanges upstream and or downstream.
 From \url{https://support.bioconductor.org/p/78652/}
 }
-\concept{utilities}
+\keyword{internal}

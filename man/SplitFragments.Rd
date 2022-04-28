@@ -49,7 +49,4 @@ splitting multiple fragment files containing common cell types, fragments
 originating from different files will be appended to the same file for one
 group of cell identities.
 }
-\examples{
-print("see https://satijalab.org/signac/reference/splitfragments")
-}
-\concept{fragments}
+\keyword{internal}

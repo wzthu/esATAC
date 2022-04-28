@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{tssQC}
 \alias{tssQC}
-\title{Compute TSS enrichment score per cell}
+\title{tssQC}
 \usage{
 tssQC(
   object = NULL,
@@ -33,8 +33,11 @@ option.}
 Returns two matrix
 }
 \description{
+Compute TSS enrichment score per cell
+}
+\details{
 Compute the transcription start site (TSS) enrichment score for each cell,
 as defined by ENCODE:
 \url{https://www.encodeproject.org/data-standards/terms/}.
 }
-\concept{QualityControl}
+\keyword{internal}

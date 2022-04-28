@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{GRangesToString}
 \alias{GRangesToString}
-\title{GRanges to String}
+\title{GRangesToString}
 \usage{
 GRangesToString(grange, sep = c("-", "-"))
 }
@@ -17,9 +17,9 @@ separate start and end coordinates.}
 Returns a character vector
 }
 \description{
+GRanges to String
+}
+\details{
 Convert GRanges object to a vector of strings
 }
-\examples{
-print("see https://satijalab.org/signac/reference/grangestostring")
-}
-\concept{utilities}
+\keyword{internal}

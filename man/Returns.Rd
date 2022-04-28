@@ -19,12 +19,18 @@ The first \code{n} rows of a fragment file as a \code{data.frame}
 with the following columns: chrom, start, end, barcode, readCount.
 }
 \description{
-Returns the first \code{n} rows of a fragment file. This allows the content
-of a fragment file to be inspected.
+Return the first rows of a fragment file
 }
+\section{Functions}{
+\itemize{
+\item \code{head.Fragment}: the first \code{n} rows of a fragment file. This allows the content
+of a fragment file to be inspected.
+}}
+
 \examples{
 fpath <- system.file("extdata", "fragments.tsv.gz", package="scUtils")
 frag <- CreateFragmentObject(fpath)
 head(frag)
+
 }
-\concept{fragments}
+\keyword{internal}

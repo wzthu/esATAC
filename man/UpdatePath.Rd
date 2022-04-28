@@ -25,4 +25,4 @@ hash stored in the Fragment object to verify that the files are the same.
 \examples{
 print("see https://satijalab.org/signac/reference/updatepath")
 }
-\concept{fragments}
+\keyword{internal}

@@ -43,4 +43,4 @@ from each cell barcode requested is found.
 \examples{
 print("see https://satijalab.org/signac/reference/validatecells")
 }
-\concept{fragments}
+\keyword{internal}

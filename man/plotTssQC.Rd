@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{plotTssQC}
 \alias{plotTssQC}
-\title{Plot signal enrichment around TSSs}
+\title{plotTssQC}
 \usage{
 plotTssQC(tssInfo = NULL, threshold = 3)
 }
@@ -15,7 +15,10 @@ plotTssQC(tssInfo = NULL, threshold = 3)
 Returns a \code{\link[ggplot2]{ggplot2}} object
 }
 \description{
+Plot signal enrichment around TSSs
+}
+\details{
 Plot the normalized TSS enrichment score at each position relative to the
 TSS.
 }
-\concept{QualityControl}
+\keyword{internal}

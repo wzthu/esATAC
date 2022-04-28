@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{ExtractCell}
 \alias{ExtractCell}
-\title{Extract cell}
+\title{ExtractCell}
 \usage{
 ExtractCell(x)
 }
@@ -13,6 +13,10 @@ ExtractCell(x)
 Returns a string
 }
 \description{
+Extract cell
+}
+\details{
 Extract cell barcode from list of tab delimited character
 vectors (output of \code{\link{scanTabix}})
 }
+\keyword{internal}

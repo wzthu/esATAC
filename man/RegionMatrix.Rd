@@ -21,3 +21,4 @@ cells.
 \examples{
 print("see https://satijalab.org/signac/reference/regionheatmap")
 }
+\keyword{internal}

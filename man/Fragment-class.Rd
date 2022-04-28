@@ -24,5 +24,7 @@ as it appears in the fragment file.}
 
 \examples{
 frag <- new("Fragment", path = "file path", hash = "file hash")
+
 }
 \concept{fragments}
+\keyword{internal}

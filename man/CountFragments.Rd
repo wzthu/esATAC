@@ -35,5 +35,6 @@ Count total fragments per cell barcode present in a fragment file.
 \examples{
 fpath <- system.file("extdata", "fragments.tsv.gz", package="scUtils")
 counts <- CountFragments(fragments = fpath)
+
 }
-\concept{fragments}
+\keyword{internal}

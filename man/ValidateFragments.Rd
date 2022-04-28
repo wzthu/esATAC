@@ -21,7 +21,5 @@ Verify that the cells listed in the object exist in the fragment file
 and that the fragment file or index have not changed since creating the
 fragment object.
 }
-\examples{
-print("see https://satijalab.org/signac/reference/validatefragments")
-}
 \concept{fragments}
+\keyword{internal}

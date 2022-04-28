@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{ChunkGRanges}
 \alias{ChunkGRanges}
-\title{Split a genomic ranges object into evenly sized chunks}
+\title{ChunkGRanges}
 \usage{
 ChunkGRanges(granges, nchunk)
 }
@@ -17,3 +17,4 @@ Returns a list of GRanges objects
 \description{
 Split a genomic ranges object into evenly sized chunks
 }
+\keyword{internal}

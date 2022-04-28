@@ -2,17 +2,12 @@
 % Please edit documentation in R/generics.R
 \name{Links}
 \alias{Links}
-\alias{Links<-}
 \title{Get or set links information}
 \usage{
 Links(object, ...)
-
-Links(object, ...) <- value
 }
 \arguments{
 \item{...}{Arguments passed to other methods}
-
-\item{value}{A \code{\link[GenomicRanges]{GRanges}} object}
 }
 \value{
 Links
@@ -23,3 +18,4 @@ Get or set the genomic link information for a Seurat object
 \examples{
 print("see https://satijalab.org/signac/articles/data_structures.html")
 }
+\keyword{internal}

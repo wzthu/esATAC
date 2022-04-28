@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{FeatureMatrix}
 \alias{FeatureMatrix}
-\title{Construct a feature x cell matrix from a genomic fragments file}
+\title{FeatureMatrix}
 \usage{
 FeatureMatrix(
   fragments,
@@ -51,4 +51,6 @@ FeatureMatrix(
  fragments = fragments,
   features = peaks
 )
+
 }
+\keyword{internal}

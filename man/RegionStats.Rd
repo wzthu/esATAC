@@ -20,4 +20,6 @@ for regions in the assay and add to the feature metadata.
 }
 \examples{
 print("see https://satijalab.org/signac/reference/regionstats")
+
 }
+\keyword{internal}

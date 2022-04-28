@@ -20,3 +20,4 @@ Set counts >1 to 1 in a count matrix
 \examples{
 print("see https://satijalab.org/signac/reference/binarizecounts")
 }
+\keyword{internal}

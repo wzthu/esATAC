@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{SingleFeatureMatrix}
 \alias{SingleFeatureMatrix}
-\title{Run FeatureMatrix on a single Fragment object}
+\title{SingleFeatureMatrix}
 \usage{
 SingleFeatureMatrix(
   fragment,
@@ -42,3 +42,4 @@ SingleFeatureMatrix
 \description{
 Run FeatureMatrix on a single Fragment object
 }
+\keyword{internal}

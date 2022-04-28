@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{GetCellsInRegion}
 \alias{GetCellsInRegion}
-\title{Get cells in a region}
+\title{GetCellsInRegion}
 \usage{
 GetCellsInRegion(tabix, region, cells = NULL)
 }
@@ -17,6 +17,9 @@ GetCellsInRegion(tabix, region, cells = NULL)
 Returns a list
 }
 \description{
+Get cells in a region
+}
+\details{
 Extract cell names containing reads mapped within a given genomic region
 }
-\concept{utilities}
+\keyword{internal}

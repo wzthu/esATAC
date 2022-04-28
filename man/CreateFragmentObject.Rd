@@ -46,4 +46,6 @@ fragment file.
 \examples{
 fpath <- system.file("extdata", "fragments.tsv.gz", package="SignacSlim")
 fragments <- CreateFragmentObject(fpath)
+
 }
+\keyword{internal}
