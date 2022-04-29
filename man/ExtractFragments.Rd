@@ -2,9 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{ExtractFragments}
 \alias{ExtractFragments}
-\title{Run groupCommand for the first n lines, convert the cell barcodes in the file
-to the cell names that appear in the fragment object, and subset the output to
-cells present in the fragment object}
+\title{ExtractFragments}
 \usage{
 ExtractFragments(fragments, n = NULL, verbose = TRUE)
 }
@@ -19,7 +17,15 @@ ExtractFragments(fragments, n = NULL, verbose = TRUE)
 Returns a data.frame
 }
 \description{
+ExtractFragments
+}
+\details{
+Run groupCommand for the first n lines, convert the cell barcodes 
+in the file
+to the cell names that appear in the fragment object, and subset the output to
+cells present in the fragment object.
 Every cell in the fragment file will be present in the output dataframe. If
 the cell information is not set, every cell barcode that appears in the first
 n lines will be present.
 }
+\keyword{internal}

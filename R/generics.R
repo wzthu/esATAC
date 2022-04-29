@@ -27,36 +27,45 @@
 ##
 ##################################################################################################
 
-#' Get the Fragment objects
+#' @title Get the Fragment objects
 #'
 #' @param ... Arguments passed to other methods
 #' @return Returns a list of \code{\link{Fragment}} objects. If there are
 #' no Fragment objects present, returns an empty list.
-#' @rdname Fragments
-#' @export Fragments
+#' 
+#' @keywords internal
+#'
+#' 
+#' @keywords internal
+#'
 Fragments <- function(object, ...) {
     UseMethod(generic = "Fragments", object = object)
 }
 
 
+#' @title Fragments
+#' 
 #' @param value A \code{\link{Fragment}} object or list of Fragment objects
 #'
-#' @rdname Fragments
-#' @export Fragments<-
+#' 
+#' @keywords internal
+#'
 #'
 "Fragments<-" <- function(object, ..., value) {
     UseMethod(generic = 'Fragments<-', object = object)
 }
 
-#' Binarize counts
+#' @title Binarize counts
 #'
+#' @description 
 #' Set counts >1 to 1 in a count matrix
 #'
 #' @param object A Seurat object
 #' @param ... Arguments passed to other methods
 #' @return Returns a \code{\link[SeuratObject]{Seurat}} object
-#' @rdname BinarizeCounts
-#' @export BinarizeCounts
+#' 
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/reference/binarizecounts")
 BinarizeCounts <- function(object, ...) {
@@ -64,13 +73,15 @@ BinarizeCounts <- function(object, ...) {
 }
 
 
-#' Set and get cell barcode information for a Fragment object
+#' @title Set and get cell barcode information for a Fragment object
 #'
 #' @param x A Seurat object
 #' @param value A character vector of cell barcodes
 #' @param ... Arguments passed to other methods
 #' @return cell barcode information
-#' @export Cells<-
+#' 
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/reference/allelefreq")
 "Cells<-" <- function(x, ..., value) {
@@ -79,56 +90,65 @@ BinarizeCounts <- function(object, ...) {
 
 
 
-#' Get or set links information
+#' @title Get or set links information
 #'
+#' @description 
 #' Get or set the genomic link information for a Seurat object
 #'
 #' @param ... Arguments passed to other methods
 #' @return Links
 #'
-#' @rdname Links
-#' @export Links
+#' 
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/articles/data_structures.html")
 Links <- function(object, ...) {
     UseMethod(generic = "Links", object = object)
 }
 
+#' @title Links
+#' 
 #' @param value A \code{\link[GenomicRanges]{GRanges}} object
-#' @rdname Links
-#' @export Links<-
+#' 
+#' @keywords internal
+#'
 "Links<-" <- function(object, ..., value) {
     UseMethod(generic = "Links<-", object = object)
 }
 
-#' Region enrichment analysis
+#' @title Region enrichment analysis
 #'
-#' Count fragments within a set of regions for different groups of
+#' @description Count fragments within a set of regions for different groups of
 #' cells.
 #'
 #' @param object A Seurat object
 #' @param ... Arguments passed to other methods
 #' @return Returns a \code{\link[SeuratObject]{Seurat}} object
-#' @rdname RegionMatrix
-#' @export RegionMatrix
+#' 
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/reference/regionheatmap")
 RegionMatrix <- function(object, ...) {
     UseMethod(generic = "RegionMatrix", object = object)
 }
 
-#' Compute base composition information for genomic ranges
+#' @title Compute base composition information for genomic ranges
 #'
+#' @description 
 #' Compute the GC content, region lengths, and dinucleotide base frequencies
 #' for regions in the assay and add to the feature metadata.
 #'
 #' @param object A Seurat object, Assay object, or set of genomic ranges
 #' @param ... Arguments passed to other methods
 #' @return Returns a dataframe
-#' @rdname RegionStats
-#' @export RegionStats
+#' 
+#' @keywords internal
+#'
 #' @examples
 #' print("see https://satijalab.org/signac/reference/regionstats")
+#' 
 RegionStats <- function(object, ...) {
     UseMethod(generic = "RegionStats", object = object)
 }

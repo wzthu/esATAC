@@ -17,7 +17,4 @@ ValidateHash
 \description{
 Validate hashes for Fragment object
 }
-\examples{
-print("see https://satijalab.org/signac/reference/validatehash")
-}
-\concept{fragments}
+\keyword{internal}

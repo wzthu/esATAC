@@ -20,5 +20,6 @@ Extract data from a \code{\link{Fragment-class}} object
 \examples{
 frag <- new("Fragment", path = "file path", hash = "file hash")
 GetFragmentData(frag)
+
 }
-\concept{assay}
+\keyword{internal}

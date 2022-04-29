@@ -15,3 +15,4 @@ path
 \description{
 Check if path is remote
 }
+\keyword{internal}

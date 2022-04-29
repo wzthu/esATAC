@@ -2,17 +2,12 @@
 % Please edit documentation in R/generics.R
 \name{Fragments}
 \alias{Fragments}
-\alias{Fragments<-}
 \title{Get the Fragment objects}
 \usage{
 Fragments(object, ...)
-
-Fragments(object, ...) <- value
 }
 \arguments{
 \item{...}{Arguments passed to other methods}
-
-\item{value}{A \code{\link{Fragment}} object or list of Fragment objects}
 }
 \value{
 Returns a list of \code{\link{Fragment}} objects. If there are
@@ -21,3 +16,4 @@ no Fragment objects present, returns an empty list.
 \description{
 Get the Fragment objects
 }
+\keyword{internal}

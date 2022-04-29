@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{ApplyMatrixByGroup}
 \alias{ApplyMatrixByGroup}
-\title{Apply function to integration sites per base per group}
+\title{ApplyMatrixByGroup}
 \usage{
 ApplyMatrixByGroup(
   mat,
@@ -35,7 +35,11 @@ median normalization factor for all the groups.}
 ApplyMatrixByGroup
 }
 \description{
+Apply function to integration sites per base per group
+}
+\details{
 Perform colSums on a cut matrix with cells in the rows
 and position in the columns, for each group of cells
 separately.
 }
+\keyword{internal}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/scFunctions.R
 \name{GetGRangesFromEnsDb}
 \alias{GetGRangesFromEnsDb}
-\title{Extract genomic ranges from EnsDb object}
+\title{GetGRangesFromEnsDb}
 \usage{
 GetGRangesFromEnsDb(
   ensdb,
@@ -24,11 +24,16 @@ GetGRangesFromEnsDb(
 GRanges
 }
 \description{
-Pulls the transcript information for all chromosomes from an EnsDb object.
+Extract genomic ranges from EnsDb object
+}
+\details{
+Pulls the transcript information for all chromosomes from 
+an EnsDb object.
 This wraps \code{\link[biovizBase]{crunch}} and applies the extractor
 function to all chromosomes present in the EnsDb object.
 }
 \examples{
 print("see https://satijalab.org/signac/reference/getgrangesfromensdb")
+
 }
-\concept{utilities}
+\keyword{internal}

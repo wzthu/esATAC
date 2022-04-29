@@ -2,34 +2,32 @@
 % Please edit documentation in R/fragmentObject.R
 \name{Cells.Fragment}
 \alias{Cells.Fragment}
-\alias{Cells<-.Fragment}
 \title{Set and get cell barcode information for a \code{\link{Fragment}} object}
 \usage{
 \method{Cells}{Fragment}(x, ...)
-
-\method{Cells}{Fragment}(x, ...) <- value
 }
 \arguments{
 \item{x}{A Fragment object}
 
 \item{...}{Arguments passed to other methods}
-
-\item{value}{A vector of cell names to store in the \code{\link{Fragment}}
-object}
 }
 \value{
 cell barcode information
 }
 \description{
-This returns the names of cells in the object that are contained in the
+Set and get cell barcode information for a \code{\link{Fragment}} object
+}
+\section{Functions}{
+\itemize{
+\item \code{Cells.Fragment}: returns the names of cells in the object that are contained in the
 fragment file. These cell barcodes may not match the barcodes present in the
 fragment file. The \code{\link{Fragment}} object contains an internal mapping
 of the cell names in the ChromatinAssay object to the cell
 names in the fragment file, so that cell names can be changed in the
 assay without needing to change the cell names on disk.
-}
-\details{
+
 To access the cell names that are stored in the fragment file itself, use
 \code{GetFragmentData(object = x, name = "cells")}.
-}
-\concept{fragments}
+}}
+
+\keyword{internal}

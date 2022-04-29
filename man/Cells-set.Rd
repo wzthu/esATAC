@@ -22,3 +22,4 @@ Set and get cell barcode information for a Fragment object
 \examples{
 print("see https://satijalab.org/signac/reference/allelefreq")
 }
+\keyword{internal}

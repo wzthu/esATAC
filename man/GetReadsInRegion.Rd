@@ -36,3 +36,4 @@ Returns a data frame
 \description{
 Extract reads for each cell within a given genomic region or set of regions
 }
+\keyword{internal}

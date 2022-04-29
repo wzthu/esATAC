@@ -17,3 +17,4 @@ Returns y if x is null, otherwise returns x.
 \description{
 Set a default value if an object is null
 }
+\keyword{internal}
