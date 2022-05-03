@@ -27,7 +27,7 @@ void Renamer::renameFastq(){
             if(i%4L==0L){
                 fout <<"@"<< (i/4L+1L) << std::endl;
             }else{
-                fout <<"+"<< (i/4L+1L) << std::endl;
+                fout <<"+"<< std::endl;
             }
         }else{
             fout << line << std::endl;
@@ -45,7 +45,7 @@ void Renamer::renameInterleaveFastq(){
             if(i%4L==0L){
                 fout <<"@"<< (i/8L+1L) << std::endl;
             }else{
-                fout <<"+"<< (i/8L+1L) << std::endl;
+                fout <<"+"<< std::endl;
             }
         }else{
             fout << line << std::endl;

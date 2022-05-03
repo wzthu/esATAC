@@ -13,6 +13,10 @@ fastxrenamer <- function(argvs) {
     .Call('_esATAC_fastxrenamer', PACKAGE = 'esATAC', argvs)
 }
 
+sc_fastxrenamer <- function(argvs) {
+    .Call('_esATAC_sc_fastxrenamer', PACKAGE = 'esATAC', argvs)
+}
+
 mergeFile <- function(destFile, fileList) {
     invisible(.Call('_esATAC_mergeFile', PACKAGE = 'esATAC', destFile, fileList))
 }

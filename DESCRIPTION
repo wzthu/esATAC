@@ -79,7 +79,8 @@ Imports:
     S4Vectors,
     ggplot2,
     data.table,
-    utils
+    utils,
+    tibble
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
@@ -119,6 +120,7 @@ Collate:
     'RemoveAdapter.R'
     'Renamer.R'
     'Rsortbam.R'
+    'SCMapping.R'
     'SamToBam.R'
     'SamToBed.R'
     'SingleRepReport.R'
@@ -127,7 +129,12 @@ Collate:
     'generics.R'
     'fragmentObject.R'
     'onLoad.R'
+    'scFindAdapter.R'
     'scFunctions.R'
+    'scRemoveAdapter.R'
+    'scRenamer.R'
+    'scSamToBam.R'
+    'scUnzipAndMerge.R'
     'utilities.R'
 biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq, SingleCell

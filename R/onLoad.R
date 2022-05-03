@@ -27,7 +27,8 @@
                   "PeakCallingMACS2","RPeakComp",
                   "FindAdapter", "RemoveAdapter",
                   "RMotifScan", "CutSiteCountR",
-                  "RMotifScanPair",  "CutSiteCountR"
+                  "RMotifScanPair",  "CutSiteCountR",
+                  "SCFindAdapter", "SCRemoveAdapter"
               ),
              argOrder = 2)
     addEdges(edges = c(
@@ -86,7 +87,12 @@
                   "CutSitePre", "CutSiteCountR",
                   "RPeakAnno", "RGo",
                   "RMotifScan", "RSNPs",
-                  "RPeakComp", "RMotifScanPair"
+                  "RPeakComp", "RMotifScanPair",
+                  "SCUnzipAndMerge","SCRenamer",
+                  "SCRenamer","SCFindAdapter",
+                  "SCRenamer","SCRemoveAdapter",
+                  "SCRemoveAdapter", "SCBowtie2Mapping",
+                  "SCBowtie2Mapping", "SCSamToBam"
               ),
              argOrder = 1)
 

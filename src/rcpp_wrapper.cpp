@@ -1,6 +1,7 @@
 #include <string>
 #include <iostream>
 #include "renamer.h"
+#include "sc_renamer.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,7 +33,23 @@ int fastxrenamer(Rcpp::List argvs) {
         return 0;
 }
 
+// [[Rcpp::export]]
+int sc_fastxrenamer(Rcpp::List argvs) {
+        std::string ipath = Rcpp::as<std::string>(argvs["inputFile"]);
+        std::string opath = Rcpp::as<std::string>(argvs["outputFile"]);
+        std::string filetype = Rcpp::as<std::string>(argvs["fileType"]);
+        bool interleave= Rcpp::as<bool>(argvs["interleave"]);
+        SC_Renamer rn((char*)ipath.c_str(),(char*)opath.c_str());
+        if(interleave){
+            rn.renameInterleaveFastq();
+        }else if(filetype=="fq"){
+                rn.renameFastq();
+        }else if(filetype=="fa"){
+                rn.renameFasta();
+        }
 
+        return 0;
+}
 
 // [[Rcpp::export]]
 void mergeFile(Rcpp::CharacterVector destFile,Rcpp::CharacterVector fileList){

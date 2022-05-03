@@ -3,6 +3,11 @@
     invisible(fastxrenamer(argv));
 }
 
+.sc_renamer_call<-function(inputFile,outputFile,fileType="fq",interleave = FALSE){
+    argv<-list(inputFile=inputFile,outputFile=outputFile,fileType=fileType,interleave=interleave);
+    invisible(sc_fastxrenamer(argv));
+}
+
 .sam2bed_merge_call <- function(samfile, bedfile,posOffset,negOffset,sortBed,uniqueBed,filterList,minFragLen,maxFragLen,saveExtLen,downSample = 2e9)
 {
     argv <- list(samfile = samfile, bedfile = bedfile ,posOffset = posOffset,negOffset = negOffset,

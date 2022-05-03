@@ -51,6 +51,17 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// sc_fastxrenamer
+int sc_fastxrenamer(Rcpp::List argvs);
+RcppExport SEXP _esATAC_sc_fastxrenamer(SEXP argvsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type argvs(argvsSEXP);
+    rcpp_result_gen = Rcpp::wrap(sc_fastxrenamer(argvs));
+    return rcpp_result_gen;
+END_RCPP
+}
 // mergeFile
 void mergeFile(Rcpp::CharacterVector destFile, Rcpp::CharacterVector fileList);
 RcppExport SEXP _esATAC_mergeFile(SEXP destFileSEXP, SEXP fileListSEXP) {
@@ -181,6 +192,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_esATAC_filterCells", (DL_FUNC) &_esATAC_filterCells, 5},
     {"_esATAC_groupCommand", (DL_FUNC) &_esATAC_groupCommand, 4},
     {"_esATAC_fastxrenamer", (DL_FUNC) &_esATAC_fastxrenamer, 1},
+    {"_esATAC_sc_fastxrenamer", (DL_FUNC) &_esATAC_sc_fastxrenamer, 1},
     {"_esATAC_mergeFile", (DL_FUNC) &_esATAC_mergeFile, 2},
     {"_esATAC_R_sam2bed_wrapper", (DL_FUNC) &_esATAC_R_sam2bed_wrapper, 2},
     {"_esATAC_R_sam2bed_merge_wrapper", (DL_FUNC) &_esATAC_R_sam2bed_merge_wrapper, 2},
