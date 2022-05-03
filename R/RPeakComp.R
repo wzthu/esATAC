@@ -200,7 +200,7 @@ setMethod(
 #' @aliases peakcomp
 #' @export
 peakcomp <- function(bedInput1 = NULL, bedInput2 = NULL, bedOutput = NULL, olap.rate = 0.2, ...){
-    allpara <- c(list(Class = "RPeakComp", prevSteps = list()),as.list(environment()),list(...))
+    allpara <- c(list(Class = "RPeakComp", prevSteps = list()), as.list(environment()), list(...))
     step <- do.call(new,allpara)
     invisible(step)
 }
