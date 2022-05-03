@@ -493,9 +493,7 @@ GetGRangesFromEnsDb <- function(
 }
 
 
-#' @title FeatureMatrix
-#' 
-#' @description Construct a feature x cell matrix from a genomic fragments file
+#' @title Construct a feature x cell matrix from a genomic fragments file
 #'
 #' @param fragments A list of \code{\link{Fragment}} objects. Note that if
 #' setting the \code{cells} parameter, the requested cells should be present in
@@ -718,9 +716,7 @@ MultiRegionCutMatrix <- function(
 }
 
 
-#' @title GetTSSPositions
-#' 
-#' @description Find transcriptional start sites
+#' @title Find transcriptional start sites
 #'
 #' @details 
 #' Get the TSS positions from a set of genomic ranges containing gene positions.
@@ -843,9 +839,7 @@ Extend <- function(
 }
 
 
-#' @title SingleFileCutMatrix
-#' 
-#' @description 
+#' @title
 #' Generate matrix of integration sites
 #'
 #' @details 
@@ -926,9 +920,7 @@ SingleFileCutMatrix <- function(
 }
 
 
-#' @title GetReadsInRegion
-#'
-#' @description 
+#' @title
 #' Extract reads for each cell within a given genomic region or set of regions
 #'
 #' @param cellmap A mapping of cell names in the fragment file to cell names in
@@ -1050,9 +1042,7 @@ TabixOutputToDataFrame <- function(reads, record.ident = TRUE) {
 }
 
 
-#' @title ApplyMatrixByGroup
-#' 
-#' @description 
+#' @title
 #' Apply function to integration sites per base per group
 #'
 #' @details 
@@ -1209,9 +1199,7 @@ FragInRegions <- function (fragment = NULL,
 
 
 
-#' @title nsQC
-#' 
-#' @description 
+#' @title
 #' Quality Control for Nucleosome Signal per Cell
 #'
 #' @details 
@@ -1234,7 +1222,7 @@ FragInRegions <- function (fragment = NULL,
 #'
 #' @keywords internal
 #'
-nsQC <- function(frags = NULL,
+scNucleosomeQC <- function(frags = NULL,
                  n = NULL,
                  verbose = TRUE,
                  ...){
@@ -1289,9 +1277,7 @@ nsQC <- function(frags = NULL,
 }
 
 
-#' @title tssQC
-#' 
-#' @description 
+#' @title
 #' Compute TSS enrichment score per cell
 #'
 #' @details 
@@ -1321,7 +1307,7 @@ nsQC <- function(frags = NULL,
 #'
 #' @keywords internal
 #'
-tssQC <- function (object = NULL,
+scTssQC <- function (object = NULL,
                    gene.annotation = NULL,
                    n = NULL,
                    cells = NULL,
@@ -1461,9 +1447,8 @@ tssQC <- function (object = NULL,
     
 }
 
-#' @title plotTssQC
-#' 
-#' @description 
+
+#' @title 
 #' Plot signal enrichment around TSSs
 #'
 #' @details 
@@ -1481,7 +1466,7 @@ tssQC <- function (object = NULL,
 #'
 #' @keywords internal
 #'
-plotTssQC <- function (tssInfo = NULL,
+scPlotTssQC <- function (tssInfo = NULL,
                        threshold = 3) {
     if (is.null(tssInfo)) {
         stop("tssInfo is NULL!")
