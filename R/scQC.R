@@ -122,7 +122,7 @@ setMethod(
 #' print(123)
 setGeneric("atacSCQC", function(atacProc, ...) standardGeneric("atacSCQC"))
 
-
+123131
 #' @rdname SCQC
 #' @aliases atacSCQC
 #' @export
