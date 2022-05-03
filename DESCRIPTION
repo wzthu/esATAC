@@ -129,12 +129,14 @@ Collate:
     'generics.R'
     'fragmentObject.R'
     'onLoad.R'
+    'scCollect.R'
     'scFindAdapter.R'
-    'scFunctions.R'
+    'scQC.R'
     'scRemoveAdapter.R'
     'scRenamer.R'
     'scSamToBam.R'
     'scUnzipAndMerge.R'
+    'scUtilities.R'
     'utilities.R'
 biocViews: ImmunoOncology, Sequencing, DNASeq, QualityControl, Alignment, Preprocessing,
     Coverage, ATACSeq, DNaseSeq, SingleCell
