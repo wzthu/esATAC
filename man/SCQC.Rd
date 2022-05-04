@@ -6,7 +6,14 @@
 \alias{atacSCQC}
 \title{Get Single Cell Pre-processing Information}
 \usage{
-atacSCQC(atacProc, ...)
+atacSCQC(
+  atacProc,
+  n = 2000,
+  gene.annotation = NULL,
+  peak = NULL,
+  blacklist = NULL,
+  ...
+)
 
 \S4method{atacSCQC}{ATACProc}(
   atacProc,
@@ -22,8 +29,6 @@ atacSCQC(atacProc, ...)
 It has to be the return value of upstream process:
 \code{\link{atacSCCollect}}.}
 
-\item{...}{Additional arguments, currently unused.}
-
 \item{n}{Number of lines to read from the fragment file.
 Default: 2000.}
 
@@ -33,6 +38,8 @@ must in UCSC style.}
 \item{peak}{peak regions in GRanges.}
 
 \item{blacklist}{blacklist regions in GRanges.}
+
+\item{...}{Additional arguments, currently unused.}
 }
 \value{
 An invisible \code{\link{ATACProc-class}} object scalar.

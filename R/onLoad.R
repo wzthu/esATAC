@@ -93,7 +93,7 @@
                   "SCRenamer","SCRemoveAdapter",
                   "SCRemoveAdapter", "SCBowtie2Mapping",
                   "SCBowtie2Mapping", "SCSamToBam",
-                  "SCCollect", "SCNucleosomeQC"
+                  "SCCollect", "SCQC"
               ),
              argOrder = 1)
 
