@@ -27,7 +27,7 @@ GRanges
 Extract genomic ranges from EnsDb object
 }
 \details{
-Pulls the transcript information for all chromosomes from 
+Pulls the transcript information for all chromosomes from
 an EnsDb object.
 This wraps \code{\link[biovizBase]{crunch}} and applies the extractor
 function to all chromosomes present in the EnsDb object.

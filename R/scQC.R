@@ -7,37 +7,64 @@ setMethod(
     f = "init",
     signature = "SCQC",
     definition = function(.Object, prevSteps = list(), ...){
-        # necessary parameters
         allparam <- list(...)
+        fragInput <- allparam[["fragInput"]]
+        csvInput <- allparam[["csvInput"]]
+        
+        peak <- allparam[["peak"]]
+        gene.annotation <- allparam[["gene.annotation"]]
+        blacklist <- allparam[["blacklist"]]
+        n <- allparam[["n"]]
+
+        
+        
         param(.Object)[["n"]] <- allparam[["n"]]
         param(.Object)[["gene.annotation"]] <- allparam[["gene.annotation"]]
         param(.Object)[["peak"]] <- allparam[["peak"]]
         param(.Object)[["blacklist"]] <- allparam[["blacklist"]]
-        if (is.null(param(.Object)[["gene.annotation"]])) {
-            stop("Please input gene.annotation!")
-        }
-
-        if (is.null(param(.Object)[["peak"]])) {
-            stop("Please input peak!")
-        }
-
-        if (is.null(param(.Object)[["blacklist"]])) {
-            stop("Please input blacklist!")
-        }
-
-        atacProc <- NULL
-        print(length(prevSteps))
+        
+        
+        atacProcFrag <- NULL
         if(length(prevSteps) > 0){
-            atacProc <- prevSteps[[1]]
+            atacProcFrag <- prevSteps[[1]]
         }
-
-        if(is.null(atacProc)){
-            stop("The upstream of this step must from atacSCCollect!")
+        
+        atacProcPeak <- NULL
+        if(length(prevSteps) > 0){
+            atacProcPeak <- prevSteps[[2]]
+        }
+        
+        
+        # necessary parameters
+        if(is.null(atacProcFrag)){
+            input(.Object)[["fragInput"]] <- fragInput
+            input(.Object)[["csvInput"]] <- csvInput
         }else{
-            input(.Object)[["fragOB.rds"]] <- output(atacProc)[["fragOB.rds"]]
+            input(.Object)[["fragInput"]] <- getParam(atacProcFrag, "fragOutput")
+            input(.Object)[["csvInput"]] <- getParam(atacProcFrag, "csvOutput")
         }
+        
+        if(is.null(atacProcPeak)){
+            param(.Object)[["peak"]] <- peak
+        }else{
+            param(.Object)[["peak"]] <- getParam(atacProcPeak, "peakOUtput")
+        }
+        
+        if (is.null(gene.annotation)) {
+            param(.Object)[["gene.annotation"]] <- getRefFiles("EnsDb.Hsapiens")
+        }else{
+            param(.Object)[["gene.annotation"]] <- gene.annotation
+        }
+        
+        if (is.null(blacklist)) {
+            param(.Object)[["blacklist"]] <- getRefFiles("blacklist")
+        }else{
+            param(.Object)[["blacklist"]] <- blacklist
+        }
+        
+        param(.Object)[["n"]] <- n
 
-        # init output
+        # output
         output(.Object)[["fragInPeaks.rds"]] <- getStepWorkDir(.Object, filename = "fragInPeaks.rds")
         output(.Object)[["fragInBlacklist.rds"]] <- getStepWorkDir(.Object, filename = "fragInBlacklist.rds")
         output(.Object)[["tssQC.rds"]] <- getStepWorkDir(.Object, filename = "tssQC.rds")
@@ -47,29 +74,42 @@ setMethod(
     }
 )
 
-
+#' @importFrom rtracklayer import
 setMethod(
     f = "processing",
     signature = "SCQC",
     definition = function(.Object,...){
-        # reading fragment file
-        print("Reading fragment object......")
-        fragment <- readRDS(input(.Object)[["fragOB.rds"]])
+        ## reading fragment file and create fragment object
+        print("Reading scATAC-seq fragment file......")
+        fragment <- fragCreate(fragment = input(.Object)[["fragInput"]], 
+                               csv = input(.Object)[["csvInput"]])
 
-        # nucleosome QC
-        print("Now, processing nucleosome QC......")
-
-        out_nsQC <- scNucleosomeQC(frags = fragment, n = param(.Object)[["n"]])
-
-        print("Saving results......")
-        saveRDS(object = out_nsQC,
-                file = output(.Object)[["nucleosomeQC.rds"]])
-
-
-        # TSS QC
+        ## nucleosome QC
+        # print("Now, processing scATAC-seq nucleosome QC......")
+        # 
+        # nucleosomeQC <- scNucleosomeQC(frags = fragment, n = NULL)
+        # 
+        # print("Saving scATAC-seq nucleosome QC results......")
+        # saveRDS(object = nucleosomeQC,
+        #         file = output(.Object)[["nucleosomeQC.rds"]])
 
 
+        ## TSS QC
+        print("Now, processing scATAC-seq TSS QC......")
+        if (class(param(.Object)[["gene.annotation"]]) == "EnsDb") {
+            print("Gene annotation detected in 'EnsDb' class, converting to GRanges......")
+            annotations <- GetGRangesFromEnsDb(ensdb = param(.Object)[["gene.annotation"]])
+            seqlevelsStyle(annotations) <- 'UCSC'
+        }else if (class(param(.Object)[["gene.annotation"]]) == "character") {
+            print("Gene annotation detected in file, reading and converting to GRanges......")
+            annotations <- import(param(.Object)[["gene.annotation"]])
+        }
+        
+        tssQC <- scTssQC(object = fragment, gene.annotation = annotations)
 
+        print("Saving scATAC-seq TSS QC results......")
+        saveRDS(object = tssQC,
+                file = output(.Object)[["tssQC.rds"]])
 
         .Object
     }
@@ -95,15 +135,28 @@ setMethod(
 #' @description
 #' Get scATAC-seq pre-processing results and create Fragment Object.
 #'
-#' @param atacProc \code{\link{ATACProc-class}} object scalar.
+#' @param atacProcFrag \code{\link{ATACProc-class}} object scalar.
 #' It has to be the return value of upstream process:
-#' \code{\link{atacSCCollect}}.
-#' @param n Number of lines to read from the fragment file.
+#' ###################
+#' 
+#' @param atacProcPeak \code{\link{ATACProc-class}} object scalar.
+#' It has to be the return value of upstream process:
+#' ###################
+#' 
+#' @param fragInput scATAC-seq fragment file.
+#' 
+#' @param csvInput scATAC-seq csv record file.
+#' 
+#' @param peak scATAC-seq peak file in BED format.
+#' 
+#' @param gene.annotation scATAC-seq gene.annotation file in BED format.
+#' Note: Please using the results from function GetGRangesFromEnsDb.
+#' 
+#' @param blacklist Genome blacklist file in BED format.
+#' 
+#' @param n Number of regions to process at a time.
 #' Default: 2000.
-#' @param gene.annotation gene annotation from \link{GetGRangesFromEnsDb},
-#' must in UCSC style.
-#' @param peak peak regions in GRanges.
-#' @param blacklist blacklist regions in GRanges.
+#' 
 #' @param ... Additional arguments, currently unused.
 #'
 #' @return An invisible \code{\link{ATACProc-class}} object scalar.
@@ -112,10 +165,14 @@ setMethod(
 #'
 #' @examples
 #' print(123)
-setGeneric("atacSCQC", function(atacProc, n = 2000,
-                                gene.annotation = NULL,
+setGeneric("atacSCQC", function(atacProcFrag, 
+                                atacProcPeak, 
+                                fragInput = NULL,
+                                csvInput = NULL,
                                 peak = NULL,
-                                blacklist = NULL, ...) standardGeneric("atacSCQC"))
+                                gene.annotation = NULL,
+                                blacklist = NULL, 
+                                n = 2000, ...) standardGeneric("atacSCQC"))
 
 #' @rdname SCQC
 #' @aliases atacSCQC
@@ -123,11 +180,38 @@ setGeneric("atacSCQC", function(atacProc, n = 2000,
 setMethod(
     f = "atacSCQC",
     signature = "ATACProc",
-    definition = function(atacProc, n = 2000, gene.annotation = NULL,
-                          peak = NULL, blacklist = NULL, ...){
+    definition = function(atacProcFrag, 
+                          atacProcPeak, 
+                          fragInput = NULL,
+                          csvInput = NULL,
+                          peak = NULL,
+                          gene.annotation = NULL,
+                          blacklist = NULL, 
+                          n = 2000, ...){
         allpara <- c(list(Class = "SCQC", prevSteps = list(atacProc)),
                      as.list(environment()), list(...))
         step <- do.call(new, allpara)
         invisible(step)
     }
 )
+
+
+#' @rdname SCQC
+#' @aliases atacscQC
+#' @export
+atacscQC <- function(fragInput = NULL,
+                     csvInput = NULL,
+                     peak = NULL,
+                     gene.annotation = NULL,
+                     blacklist = NULL, 
+                     n = 2000, ...){
+    
+    allpara <- c(list(Class = "SCQC", prevSteps = list()), as.list(environment()), list(...))
+    step <- do.call(new,allpara)
+    invisible(step)
+}
+
+
+
+
+

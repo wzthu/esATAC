@@ -92,8 +92,7 @@
                   "SCRenamer","SCFindAdapter",
                   "SCRenamer","SCRemoveAdapter",
                   "SCRemoveAdapter", "SCBowtie2Mapping",
-                  "SCBowtie2Mapping", "SCSamToBam",
-                  "SCCollect", "SCQC"
+                  "SCBowtie2Mapping", "SCSamToBam"
               ),
              argOrder = 1)
 

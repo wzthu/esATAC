@@ -64,8 +64,6 @@ Imports:
     motifmatchr,
     Matrix,
     fastmatch, 
-    future,
-    future.apply, 
     pbapply,
     tidyr,
     BiocGenerics,
@@ -129,7 +127,6 @@ Collate:
     'generics.R'
     'fragmentObject.R'
     'onLoad.R'
-    'scCollect.R'
     'scFindAdapter.R'
     'scQC.R'
     'scRemoveAdapter.R'

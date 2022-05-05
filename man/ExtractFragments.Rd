@@ -20,7 +20,7 @@ Returns a data.frame
 ExtractFragments
 }
 \details{
-Run groupCommand for the first n lines, convert the cell barcodes 
+Run groupCommand for the first n lines, convert the cell barcodes
 in the file
 to the cell names that appear in the fragment object, and subset the output to
 cells present in the fragment object.

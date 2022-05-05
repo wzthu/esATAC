@@ -21,7 +21,7 @@ setMethod(
         
         atacProcPeak2 <- NULL
         if(length(prevSteps) > 0){
-            atacProcPeak2 <- prevSteps[[1]]
+            atacProcPeak2 <- prevSteps[[2]]
         }
         
         # necessary parameters

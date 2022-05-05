@@ -7,7 +7,7 @@
 TabixOutputToDataFrame(reads, record.ident = TRUE)
 }
 \arguments{
-\item{reads}{List of character vectors 
+\item{reads}{List of character vectors
 (the output of \code{\link{scanTabix}})}
 
 \item{record.ident}{Add a column recording which region the reads overlapped

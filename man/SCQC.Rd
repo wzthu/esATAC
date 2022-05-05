@@ -4,40 +4,65 @@
 \alias{SCQC}
 \alias{atacSCQC,ATACProc-method}
 \alias{atacSCQC}
+\alias{atacscQC}
 \title{Get Single Cell Pre-processing Information}
 \usage{
 atacSCQC(
-  atacProc,
-  n = 2000,
-  gene.annotation = NULL,
+  atacProcFrag,
+  atacProcPeak,
+  fragInput = NULL,
+  csvInput = NULL,
   peak = NULL,
+  gene.annotation = NULL,
   blacklist = NULL,
+  n = 2000,
   ...
 )
 
 \S4method{atacSCQC}{ATACProc}(
-  atacProc,
-  n = 2000,
-  gene.annotation = NULL,
+  atacProcFrag,
+  atacProcPeak,
+  fragInput = NULL,
+  csvInput = NULL,
   peak = NULL,
+  gene.annotation = NULL,
   blacklist = NULL,
+  n = 2000,
+  ...
+)
+
+atacscQC(
+  fragInput = NULL,
+  csvInput = NULL,
+  peak = NULL,
+  gene.annotation = NULL,
+  blacklist = NULL,
+  n = 2000,
   ...
 )
 }
 \arguments{
-\item{atacProc}{\code{\link{ATACProc-class}} object scalar.
+\item{atacProcFrag}{\code{\link{ATACProc-class}} object scalar.
 It has to be the return value of upstream process:
-\code{\link{atacSCCollect}}.}
+###################}
 
-\item{n}{Number of lines to read from the fragment file.
+\item{atacProcPeak}{\code{\link{ATACProc-class}} object scalar.
+It has to be the return value of upstream process:
+###################}
+
+\item{fragInput}{scATAC-seq fragment file.}
+
+\item{csvInput}{scATAC-seq csv record file.}
+
+\item{peak}{scATAC-seq peak file in BED format.}
+
+\item{gene.annotation}{scATAC-seq gene.annotation file in BED format.
+Note: Please using the results from function GetGRangesFromEnsDb.}
+
+\item{blacklist}{Genome blacklist file in BED format.}
+
+\item{n}{Number of regions to process at a time.
 Default: 2000.}
-
-\item{gene.annotation}{gene annotation from \link{GetGRangesFromEnsDb},
-must in UCSC style.}
-
-\item{peak}{peak regions in GRanges.}
-
-\item{blacklist}{blacklist regions in GRanges.}
 
 \item{...}{Additional arguments, currently unused.}
 }

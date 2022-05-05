@@ -10,7 +10,7 @@ PartialMatrix(tabix, regions, sep = c("-", "-"), cells = NULL)
 PartialMatrix
 }
 \details{
-construct sparse matrix for one set of regions names of the cells 
+construct sparse matrix for one set of regions names of the cells
 vector can be ignored here, conversion is handled in the parent functions.
 }
 \section{Functions}{

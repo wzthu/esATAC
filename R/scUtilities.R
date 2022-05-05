@@ -91,8 +91,6 @@ StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
 #' @return SingleFeatureMatrix
 #'
 #' @importFrom GenomeInfoDb keepSeqlevels
-#' @importFrom future.apply future_lapply
-#' @importFrom future nbrOfWorkers
 #' @importFrom pbapply pblapply
 #' @importFrom Matrix sparseMatrix
 #' @importMethodsFrom GenomicRanges intersect
@@ -146,26 +144,41 @@ SingleFeatureMatrix <- function(
     if (verbose) {
         message("Extracting reads overlapping genomic regions")
     }
-    if (nbrOfWorkers() > 1) {
-        matrix.parts <- future_lapply(
-            X = feature.list,
-            FUN = PartialMatrix,
-            tabix = tbx,
-            cells = cells,
-            sep = sep,
-            future.globals = list(),
-            future.scheduling = FALSE
-        )
-    } else {
-        mylapply <- ifelse(test = verbose, yes = pblapply, no = lapply)
-        matrix.parts <- mylapply(
-            X = feature.list,
-            FUN = PartialMatrix,
-            tabix = tbx,
-            cells = cells,
-            sep = sep
-        )
-    }
+    
+    
+    ## using future apply, change to one core
+    
+    # if (nbrOfWorkers() > 1) {
+    #     matrix.parts <- future_lapply(
+    #         X = feature.list,
+    #         FUN = PartialMatrix,
+    #         tabix = tbx,
+    #         cells = cells,
+    #         sep = sep,
+    #         future.globals = list(),
+    #         future.scheduling = FALSE
+    #     )
+    # } else {
+    #     mylapply <- ifelse(test = verbose, yes = pblapply, no = lapply)
+    #     matrix.parts <- mylapply(
+    #         X = feature.list,
+    #         FUN = PartialMatrix,
+    #         tabix = tbx,
+    #         cells = cells,
+    #         sep = sep
+    #     )
+    # }
+    
+    mylapply <- ifelse(test = verbose, yes = pblapply, no = lapply)
+    matrix.parts <- mylapply(
+        X = feature.list,
+        FUN = PartialMatrix,
+        tabix = tbx,
+        cells = cells,
+        sep = sep
+    )
+    
+    
     # remove any that are NULL (no fragments for any cells in the region)
     null.parts <- sapply(X = matrix.parts, FUN = is.null)
     matrix.parts <- matrix.parts[!null.parts]
@@ -1247,13 +1260,13 @@ scNucleosomeQC <- function(frags = NULL,
         verbose = verbose
     )
 
-    if (is.null(fragments@cells)) {
+    if (is.null(frags@cells)) {
         cells.keep <- fastmatch::fmatch(x = counts$CB,
                                         table = counts$CB,
                                         nomatch = 0L)
     } else {
         cells.keep <- fastmatch::fmatch(x = counts$CB,
-                                        table = as.character(fragments@cells),
+                                        table = as.character(frags@cells),
                                         nomatch = 0L)
     }
 
@@ -1358,7 +1371,7 @@ scTssQC <- function (object = NULL,
     minus.strand <- regions[!on_plus, ]
 
     if (verbose) {
-        message("Finding + strand cut sites")
+        message("Processing forward strand cut sites......")
     }
     cut.matrix.plus <- MultiRegionCutMatrix(
         regions = plus.strand,
@@ -1369,7 +1382,7 @@ scTssQC <- function (object = NULL,
     )
 
     if (verbose) {
-        message("Finding - strand cut sites")
+        message("Processing reverse strand cut sites......")
     }
     cut.matrix.minus <- MultiRegionCutMatrix(
         regions = minus.strand,
@@ -1530,8 +1543,6 @@ fragCreate <- function(fragment = NULL, csv = NULL) {
     metadata <- read.csv(file = csv,
                          header = TRUE,
                          row.names = 1)
-
-    print("Processing cell barcode.......")
     cells <- rownames(metadata)
 
     mess <- paste0("Updating Fragment Object......")
