@@ -77,8 +77,8 @@ Imports:
     S4Vectors,
     ggplot2,
     data.table,
-    utils,
-    tibble
+    tibble,
+    rhdf5
 Suggests:
     BSgenome.Hsapiens.UCSC.hg19,
     TxDb.Hsapiens.UCSC.hg19.knownGene,
@@ -127,6 +127,8 @@ Collate:
     'generics.R'
     'fragmentObject.R'
     'onLoad.R'
+    'reexports.R'
+    'sc10XMatrix.R'
     'scFindAdapter.R'
     'scQC.R'
     'scRemoveAdapter.R'
