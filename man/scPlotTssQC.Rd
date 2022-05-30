@@ -7,7 +7,7 @@
 scPlotTssQC(tssInfo = NULL, threshold = 3)
 }
 \arguments{
-\item{tssInfo}{TSS enrichment information from function 'tssQC'}
+\item{tssInfo}{TSS enrichment information from function 'scTssQC'}
 
 \item{threshold}{Threshold to separate low and high quality cells}
 }

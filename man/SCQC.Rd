@@ -57,7 +57,8 @@ It has to be the return value of upstream process:
 \item{peak}{scATAC-seq peak file in BED format.}
 
 \item{gene.annotation}{scATAC-seq gene.annotation file in BED format.
-Note: Please using the results from function GetGRangesFromEnsDb.}
+Note: Please using the results from function GetGRangesFromEnsDb or 
+using the default data.}
 
 \item{blacklist}{Genome blacklist file in BED format.}
 
