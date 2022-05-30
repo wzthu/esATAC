@@ -15,7 +15,7 @@ setMethod(
         gene.annotation <- allparam[["gene.annotation"]]
         blacklist <- allparam[["blacklist"]]
         n <- allparam[["n"]]
-
+        
         
         
         param(.Object)[["n"]] <- allparam[["n"]]
@@ -63,18 +63,29 @@ setMethod(
         }
         
         param(.Object)[["n"]] <- n
-
+        
         # output
-        output(.Object)[["fragInPeaks.rds"]] <- getStepWorkDir(.Object, filename = "fragInPeaks.rds")
-        output(.Object)[["fragInBlacklist.rds"]] <- getStepWorkDir(.Object, filename = "fragInBlacklist.rds")
-        output(.Object)[["tssQC.rds"]] <- getStepWorkDir(.Object, filename = "tssQC.rds")
         output(.Object)[["nucleosomeQC.rds"]] <- getStepWorkDir(.Object, filename = "nucleosomeQC.rds")
-
+        output(.Object)[["nucleosomeQC.pdf"]] <- getStepWorkDir(.Object, filename = "nucleosomeQC.pdf")
+        
+        output(.Object)[["tssQC.rds"]] <- getStepWorkDir(.Object, filename = "tssQC.rds")
+        output(.Object)[["tssQC.pdf"]] <- getStepWorkDir(.Object, filename = "tssQC.pdf")
+        
+        output(.Object)[["peak_bc_matrix.h5"]] <- getStepWorkDir(.Object, filename = "peak_bc_matrix.h5")
+        output(.Object)[["peak_bc_matrix.rds"]] <- getStepWorkDir(.Object, filename = "peak_bc_matrix.rds")
+        output(.Object)[["fragInPeaks.rds"]] <- getStepWorkDir(.Object, filename = "fragInPeaks.rds")
+        
+        output(.Object)[["fragInBlacklist.rds"]] <- getStepWorkDir(.Object, filename = "fragInBlacklist.rds")
+        
+        output(.Object)[["Violin.pdf"]] <- getStepWorkDir(.Object, filename = "Violin.pdf")
+        
         .Object
     }
 )
 
 #' @importFrom rtracklayer import
+#' @importFrom ggplot2 ggsave
+#' @importFrom Matrix colSums
 setMethod(
     f = "processing",
     signature = "SCQC",
@@ -83,17 +94,22 @@ setMethod(
         print("Reading scATAC-seq fragment file......")
         fragment <- fragCreate(fragment = input(.Object)[["fragInput"]], 
                                csv = input(.Object)[["csvInput"]])
-
-        ## nucleosome QC
-        # print("Now, processing scATAC-seq nucleosome QC......")
-        # 
-        # nucleosomeQC <- scNucleosomeQC(frags = fragment, n = NULL)
-        # 
-        # print("Saving scATAC-seq nucleosome QC results......")
-        # saveRDS(object = nucleosomeQC,
-        #         file = output(.Object)[["nucleosomeQC.rds"]])
-
-
+        
+        cells <- as.character(fragment@cells)
+        
+        # nucleosome QC
+        print("Now, processing scATAC-seq nucleosome QC......")
+        nucleosomeQC <- scNucleosomeQC(frags = fragment, n = NULL)
+        
+        print("Saving scATAC-seq nucleosome QC results......")
+        saveRDS(object = nucleosomeQC,
+                file = output(.Object)[["nucleosomeQC.rds"]])
+        
+        p_NucleosomeQC <- scPlotNucleosomeQC(fragment = fragment,
+                                             nsQC = nucleosomeQC)
+        
+        ggsave(output(.Object)[["nucleosomeQC.pdf"]], plot = p_NucleosomeQC)
+        
         ## TSS QC
         print("Now, processing scATAC-seq TSS QC......")
         if (class(param(.Object)[["gene.annotation"]]) == "EnsDb") {
@@ -103,24 +119,91 @@ setMethod(
         }else if (class(param(.Object)[["gene.annotation"]]) == "character") {
             print("Gene annotation detected in file, reading and converting to GRanges......")
             annotations <- import(param(.Object)[["gene.annotation"]])
+        }else{
+            stop("Parameter 'gene.annotation' error!")
         }
         
         tssQC <- scTssQC(object = fragment, gene.annotation = annotations)
-
+        
         print("Saving scATAC-seq TSS QC results......")
         saveRDS(object = tssQC,
                 file = output(.Object)[["tssQC.rds"]])
-
+        
+        p_TssQC <- scPlotTssQC(tssInfo = tssQC)
+        
+        ggsave(output(.Object)[["tssQC.pdf"]], plot = p_TssQC)
+        
+        ## fragInPeaks QC
+        print("Now, processing scATAC-seq FRiP QC......")
+        print("Fetching single cell data in peaks......")
+        
+        if (param(.Object)[["peak"]] == "GRanges") {
+            print("Gene annotation detected in 'GRanges' class......")
+            peaks_GR <- param(.Object)[["peak"]]
+        }else if (class(param(.Object)[["peak"]]) == "character") {
+            print("Peaks detected in file, reading and converting to GRanges......")
+            peaks_GR <- import(param(.Object)[["peak"]])
+        }else{
+            stop("Parameter 'peak' error!")
+        }
+        
+        peak_BC_matrix <- FeatureMatrix(fragments = fragment, 
+                                        features = peaks_GR, 
+                                        process_n = param(.Object)[["n"]])
+        
+        print("Saving Peak x Barcode Matrix............")
+        .write10xCounts(path = output(.Object)[["peak_bc_matrix.h5"]], x = peak_BC_matrix)
+        saveRDS(object = peak_BC_matrix,
+                file = output(.Object)[["peak_bc_matrix.rds"]])
+        
+        frag_in_peaks <- colSums(peak_BC_matrix)
+        
+        saveRDS(object = frag_in_peaks, 
+                file = output(.Object)[["fragInPeaks.rds"]])
+        
+        
+        ## fragInBlacklist QC
+        print("Now, processing scATAC-seq fragInBlacklist QC......")
+        print("Fetching single cell data in blacklist regions......")
+        if (param(.Object)[["blacklist"]] == "GRanges") {
+            print("Gene annotation detected in 'GRanges' class......")
+            blacklist_GR <- param(.Object)[["blacklist"]]
+        }else if (class(param(.Object)[["blacklist"]]) == "character") {
+            print("Peaks detected in file, reading and converting to GRanges......")
+            blacklist_GR <- import(param(.Object)[["blacklist"]])
+        }else{
+            stop("Parameter 'blacklist' error!")
+        }
+        
+        blacklist_GR <- import(param(.Object)[["blacklist"]])
+        
+        blacklist_BC_matrix <- FeatureMatrix(fragments = fragment, 
+                                             features = blacklist_GR, 
+                                             process_n = param(.Object)[["n"]])
+        
+        print("Saving fragments in blacklist informations......")
+        frag_in_blacklist <- colSums(blacklist_BC_matrix)
+        
+        saveRDS(object = frag_in_blacklist, 
+                file = output(.Object)[["fragInBlacklist.rds"]])
+        
         .Object
     }
 )
-
 
 setMethod(
     f = "genReport",
     signature = "SCQC",
     definition = function(.Object, ...){
         report(.Object)[["nucleosomeQC.rds"]] <- output(.Object)[["nucleosomeQC.rds"]]
+        report(.Object)[["nucleosomeQC.pdf"]] <- output(.Object)[["nucleosomeQC.pdf"]]
+        report(.Object)[["tssQC.rds"]] <- output(.Object)[["tssQC.rds"]]
+        report(.Object)[["tssQC.pdf"]] <- output(.Object)[["tssQC.pdf"]]
+        report(.Object)[["peak_bc_matrix.h5"]] <- output(.Object)[["peak_bc_matrix.h5"]]
+        report(.Object)[["peak_bc_matrix.rds"]] <- output(.Object)[["peak_bc_matrix.rds"]]
+        report(.Object)[["fragInPeaks.rds"]] <- output(.Object)[["fragInPeaks.rds"]]
+        report(.Object)[["fragInBlacklist.rds"]] <- output(.Object)[["fragInBlacklist.rds"]]
+        report(.Object)[["Violin.pdf"]] <- output(.Object)[["Violin.pdf"]]
         .Object
     }
 )
@@ -150,7 +233,8 @@ setMethod(
 #' @param peak scATAC-seq peak file in BED format.
 #' 
 #' @param gene.annotation scATAC-seq gene.annotation file in BED format.
-#' Note: Please using the results from function GetGRangesFromEnsDb.
+#' Note: Please using the results from function GetGRangesFromEnsDb or 
+#' using the default data.
 #' 
 #' @param blacklist Genome blacklist file in BED format.
 #' 
