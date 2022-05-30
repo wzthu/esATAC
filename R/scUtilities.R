@@ -1468,7 +1468,7 @@ scTssQC <- function (object = NULL,
 #' Plot the normalized TSS enrichment score at each position relative to the
 #' TSS.
 #'
-#' @param tssInfo TSS enrichment information from function 'tssQC'
+#' @param tssInfo TSS enrichment information from function 'scTssQC'
 #' @param threshold Threshold to separate low and high quality cells
 #'
 #' @return Returns a \code{\link[ggplot2]{ggplot2}} object
@@ -1516,6 +1516,100 @@ scPlotTssQC <- function (tssInfo = NULL,
     return(p)
 }
 
+
+
+#' @title
+#' Plot Nucleosome signal enrichment
+#'
+#' @details
+#' Plot the normalized Nucleosome signal enrichment score.
+#'
+#' @param fragment a fragment object.
+#' @param nsQC Nucleosome QC information from function 'scNucleosomeQC'
+#' @param region Genome region, like "chr1-1-2000000"
+#' @param threshold Threshold to separate low and high quality cells
+#' @param log.scale plot in log scale or not.
+#'
+#' @return Returns a \code{\link[ggplot2]{ggplot2}} object
+#'
+#' @importFrom Rsamtools TabixFile
+#' @importFrom ggplot2 ggplot geom_histogram theme_classic aes facet_wrap xlim
+#' scale_y_log10 theme element_blank
+#'
+#' @keywords internal
+#'
+scPlotNucleosomeQC <- function (fragment = NULL,
+                                nsQC = NULL,
+                                region = "chr1-1-2000000",
+                                threshold = 4,
+                                log.scale = FALSE) {
+    if (is.null(fragment)) {
+        stop("fragment is NULL!")
+    }
+    
+    if (is.null(nsQC)) {
+        stop("fragment is NULL!")
+    }
+    
+    frag <- fragment
+    
+    tag1 <- paste0("NS > ", threshold)
+    tag2 <- paste0("NS <= ", threshold)
+    
+    nsQC$nucleosome_group <- ifelse(nsQC$nucleosome_signal > 4,
+                                    'NS > 4', 
+                                    'NS < 4')
+    object <- frag
+    group.by = 'nucleosome_group'
+    
+    fragment.list <- list(object)
+    
+    # get fragment data
+    res <- data.frame()
+    for (i in seq_along(along.with = fragment.list)) {
+        tbx.path <- GetFragmentData(object = fragment.list[[i]], slot = "path")
+        cellmap <- GetFragmentData(object = fragment.list[[i]], slot = "cells")
+        tabix.file <- TabixFile(file = tbx.path)
+        open(con = tabix.file)
+        reads <- GetReadsInRegion(
+            cellmap = cellmap,
+            region = region,
+            tabix.file = tabix.file
+        )
+        res <- rbind(res, reads)
+        close(con = tabix.file)
+    }
+    reads <- res
+    
+    groups <- nsQC[[group.by]]
+    names(x = groups) <- rownames(x = nsQC)
+    
+    reads$group <- groups[reads$cell]
+    
+    if (length(x = unique(x = reads$group)) == 1) {
+        p <- ggplot(data = reads, aes(length)) +
+            geom_histogram(bins = 200)
+    } else {
+        p <- ggplot(data = reads, mapping = aes(x = length, fill = group)) +
+            geom_histogram(bins = 200) +
+            facet_wrap(~group, scales = "free_y")
+    }
+    
+    p <- p + xlim(c(0, 800)) +
+        theme_classic() +
+        theme(
+            legend.position = "none",
+            strip.background = element_blank()
+        ) +
+        xlab("Fragment length (bp)") +
+        ylab("Count")
+    
+    if (log.scale) {
+        p <- p + scale_y_log10()
+    }
+    
+    return(p)
+}
 
 
 #' @title
