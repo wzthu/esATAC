@@ -6,9 +6,9 @@ NULL
 #' @description Check if path is remote
 #'
 #' @param x path/s to check
-#' 
+#'
 #' @return path
-#' 
+#'
 #' @keywords internal
 #'
 isRemote <- function(x) {
@@ -22,7 +22,7 @@ isRemote <- function(x) {
 #' @param y The value to provide if x is null
 #'
 #' @return Returns y if x is null, otherwise returns x.
-#' 
+#'
 #' @keywords internal
 #'
 SetIfNull <- function(x, y) {
@@ -37,7 +37,7 @@ SetIfNull <- function(x, y) {
 #' @title StringToGRanges
 #'
 #' @description String to GRanges
-#' 
+#'
 #' @details Convert a genomic coordinate string to a GRanges object
 #'
 #' @param regions Vector of genomic region strings
@@ -68,7 +68,7 @@ StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
 
 
 #' @title SingleFeatureMatrix
-#' 
+#'
 #' @description Run FeatureMatrix on a single Fragment object
 #'
 #' @param fragment A list of \code{\link{Fragment}} objects. Note that if
@@ -91,8 +91,6 @@ StringToGRanges <- function(regions, sep = c("-", "-"), ...) {
 #' @return SingleFeatureMatrix
 #'
 #' @importFrom GenomeInfoDb keepSeqlevels
-#' @importFrom future.apply future_lapply
-#' @importFrom future nbrOfWorkers
 #' @importFrom pbapply pblapply
 #' @importFrom Matrix sparseMatrix
 #' @importMethodsFrom GenomicRanges intersect
@@ -138,7 +136,7 @@ SingleFeatureMatrix <- function(
     if (length(x = features) == 0) {
         stop("No matching chromosomes found in fragment file.")
     }
-    
+
     feature.list <- ChunkGRanges(
         granges = features,
         nchunk = ceiling(x = length(x = features) / process_n)
@@ -146,26 +144,41 @@ SingleFeatureMatrix <- function(
     if (verbose) {
         message("Extracting reads overlapping genomic regions")
     }
-    if (nbrOfWorkers() > 1) {
-        matrix.parts <- future_lapply(
-            X = feature.list,
-            FUN = PartialMatrix,
-            tabix = tbx,
-            cells = cells,
-            sep = sep,
-            future.globals = list(),
-            future.scheduling = FALSE
-        )
-    } else {
-        mylapply <- ifelse(test = verbose, yes = pblapply, no = lapply)
-        matrix.parts <- mylapply(
-            X = feature.list,
-            FUN = PartialMatrix,
-            tabix = tbx,
-            cells = cells,
-            sep = sep
-        )
-    }
+    
+    
+    ## using future apply, change to one core
+    
+    # if (nbrOfWorkers() > 1) {
+    #     matrix.parts <- future_lapply(
+    #         X = feature.list,
+    #         FUN = PartialMatrix,
+    #         tabix = tbx,
+    #         cells = cells,
+    #         sep = sep,
+    #         future.globals = list(),
+    #         future.scheduling = FALSE
+    #     )
+    # } else {
+    #     mylapply <- ifelse(test = verbose, yes = pblapply, no = lapply)
+    #     matrix.parts <- mylapply(
+    #         X = feature.list,
+    #         FUN = PartialMatrix,
+    #         tabix = tbx,
+    #         cells = cells,
+    #         sep = sep
+    #     )
+    # }
+    
+    mylapply <- ifelse(test = verbose, yes = pblapply, no = lapply)
+    matrix.parts <- mylapply(
+        X = feature.list,
+        FUN = PartialMatrix,
+        tabix = tbx,
+        cells = cells,
+        sep = sep
+    )
+    
+    
     # remove any that are NULL (no fragments for any cells in the region)
     null.parts <- sapply(X = matrix.parts, FUN = is.null)
     matrix.parts <- matrix.parts[!null.parts]
@@ -195,7 +208,7 @@ SingleFeatureMatrix <- function(
 
 
 #' @title ChunkGRanges
-#' 
+#'
 #' @description Split a genomic ranges object into evenly sized chunks
 #'
 #' @param granges A GRanges object
@@ -227,7 +240,7 @@ ChunkGRanges <- function(granges, nchunk) {
 
 
 #' @title GRangesToString
-#' 
+#'
 #' @description GRanges to String
 #'
 #' @details Convert GRanges object to a vector of strings
@@ -236,9 +249,9 @@ ChunkGRanges <- function(granges, nchunk) {
 #' @param sep Vector of separators to use for genomic string. First element is
 #' used to separate chromosome and coordinates, second separator is used to
 #' separate start and end coordinates.
-#' 
+#'
 #' @return Returns a character vector
-#' 
+#'
 #' @importMethodsFrom GenomicRanges start end seqnames
 #'
 #' @keywords internal
@@ -256,12 +269,12 @@ GRangesToString <- function(grange, sep = c("-", "-")) {
 
 
 #' @title PartialMatrix
-#' 
+#'
 #' @describeIn PartialMatrix
-#' 
-#' @details construct sparse matrix for one set of regions names of the cells 
+#'
+#' @details construct sparse matrix for one set of regions names of the cells
 #' vector can be ignored here, conversion is handled in the parent functions.
-#' 
+#'
 #' @importFrom Matrix sparseMatrix
 #' @importFrom S4Vectors elementNROWS
 #'
@@ -344,7 +357,7 @@ PartialMatrix <- function(tabix, regions, sep = c("-", "-"), cells = NULL) {
 }
 
 #' @title GetCellsInRegion
-#' 
+#'
 #' @description Get cells in a region
 #'
 #' @details Extract cell names containing reads mapped within a given genomic region
@@ -356,7 +369,7 @@ PartialMatrix <- function(tabix, regions, sep = c("-", "-"), cells = NULL) {
 #' @importFrom Rsamtools scanTabix
 #' @importFrom methods is
 #' @importFrom fastmatch fmatch
-#' 
+#'
 #' @return Returns a list
 #'
 #' @keywords internal
@@ -381,7 +394,7 @@ GetCellsInRegion <- function(tabix, region, cells = NULL) {
 }
 
 #' @title AddMissingCells
-#' 
+#'
 #' @importFrom Matrix sparseMatrix
 #'
 #' @keywords internal
@@ -405,16 +418,16 @@ AddMissingCells <- function(x, cells) {
 
 
 #' @title ExtractCell
-#' 
+#'
 #' @description Extract cell
 #'
 #' @details Extract cell barcode from list of tab delimited character
 #' vectors (output of \code{\link{scanTabix}})
 #'
 #' @param x List of character vectors
-#' 
+#'
 #' @return Returns a string
-#' 
+#'
 #' @importFrom stringi stri_split_fixed
 #'
 #' @keywords internal
@@ -432,10 +445,10 @@ ExtractCell <- function(x) {
 
 
 #' @title GetGRangesFromEnsDb
-#' 
+#'
 #' @description Extract genomic ranges from EnsDb object
 #'
-#' @details Pulls the transcript information for all chromosomes from 
+#' @details Pulls the transcript information for all chromosomes from
 #' an EnsDb object.
 #' This wraps \code{\link[biovizBase]{crunch}} and applies the extractor
 #' function to all chromosomes present in the EnsDb object.
@@ -444,7 +457,7 @@ ExtractCell <- function(x) {
 #' @param standard.chromosomes Keep only standard chromosomes
 #' @param biotypes Biotypes to keep
 #' @param verbose Display messages
-#' 
+#'
 #' @return GRanges
 #'
 #' @importFrom GenomeInfoDb keepStandardChromosomes seqinfo
@@ -468,7 +481,7 @@ GetGRangesFromEnsDb <- function(
     if (standard.chromosomes) {
         whole.genome <- keepStandardChromosomes(whole.genome, pruning.mode = "coarse")
     }
-    
+
     # extract genes from each chromosome
     if (verbose) {
         tx <- sapply(X = seq_along(whole.genome), FUN = function(x){
@@ -485,7 +498,7 @@ GetGRangesFromEnsDb <- function(
                 columns = c("tx_id", "gene_name", "gene_id", "gene_biotype")))
         })
     }
-    
+
     # combine
     tx <- do.call(what = c, args = tx)
     tx <- tx[tx$gene_biotype %in% biotypes]
@@ -493,9 +506,7 @@ GetGRangesFromEnsDb <- function(
 }
 
 
-#' @title FeatureMatrix
-#' 
-#' @description Construct a feature x cell matrix from a genomic fragments file
+#' @title Construct a feature x cell matrix from a genomic fragments file
 #'
 #' @param fragments A list of \code{\link{Fragment}} objects. Note that if
 #' setting the \code{cells} parameter, the requested cells should be present in
@@ -529,7 +540,7 @@ GetGRangesFromEnsDb <- function(
 #'  fragments = fragments,
 #'   features = peaks
 #' )
-#' 
+#'
 FeatureMatrix <- function(
         fragments,
         features,
@@ -594,8 +605,8 @@ FeatureMatrix <- function(
 
 
 #' @title ExtractFragments
-#' 
-#' @details  Run groupCommand for the first n lines, convert the cell barcodes 
+#'
+#' @details  Run groupCommand for the first n lines, convert the cell barcodes
 #' in the file
 #' to the cell names that appear in the fragment object, and subset the output to
 #' cells present in the fragment object.
@@ -646,9 +657,9 @@ ExtractFragments <- function(fragments, n = NULL, verbose = TRUE) {
 
 
 #' @title MultiRegionCutMatrix
-#' 
+#'
 #' @description Generate cut matrix for many regions
-#' 
+#'
 #' @details Run CutMatrix on multiple regions and add them together.
 #' Assumes regions are pre-aligned.
 #'
@@ -659,7 +670,7 @@ ExtractFragments <- function(fragments, n = NULL, verbose = TRUE) {
 #' @param assay Name of the assay to use
 #' @param cells Vector of cells to include
 #' @param verbose Display messages
-#' 
+#'
 #' @importFrom Rsamtools TabixFile seqnamesTabix
 #' @importFrom SeuratObject DefaultAssay
 #' @importFrom GenomeInfoDb keepSeqlevels seqlevels
@@ -676,13 +687,13 @@ MultiRegionCutMatrix <- function(
         verbose = FALSE
 ) {
     fragments <- SetIfNull(x = fragments, y = object)
-    
+
     if (length(x = fragments) == 0) {
         stop("No fragment files present in parameter 'object' or 'fragments'!")
     }
-    
+
     res <- list()
-    
+
     for (i in seq_along(along.with = fragments)) {
         frag.path <- GetFragmentData(object = fragments[[i]], slot = "path")
         cellmap <- GetFragmentData(object = fragments[[i]], slot = "cells")
@@ -718,11 +729,9 @@ MultiRegionCutMatrix <- function(
 }
 
 
-#' @title GetTSSPositions
-#' 
-#' @description Find transcriptional start sites
+#' @title Find transcriptional start sites
 #'
-#' @details 
+#' @details
 #' Get the TSS positions from a set of genomic ranges containing gene positions.
 #' Ranges can contain exons, introns, UTRs, etc, rather than the whole
 #' transcript. Only protein coding gene biotypes are included in output.
@@ -732,7 +741,7 @@ MultiRegionCutMatrix <- function(
 #' supplied gene annotation.
 #'
 #' @return transcriptional start sites
-#' 
+#'
 #' @importFrom GenomicRanges resize
 #' @importFrom S4Vectors mcols
 #'
@@ -753,7 +762,7 @@ GetTSSPositions <- function(ranges, biotypes = "protein_coding") {
 
 
 #' @title CollapseToLongestTranscript
-#' 
+#'
 #' @importFrom GenomicRanges makeGRangesFromDataFrame
 #' @importFrom data.table as.data.table
 #'
@@ -791,7 +800,7 @@ CollapseToLongestTranscript <- function(ranges) {
 
 #' @title Extend
 #'
-#' @description 
+#' @description
 #' Resize GenomicRanges upstream and or downstream.
 #' From \url{https://support.bioconductor.org/p/78652/}
 #'
@@ -801,9 +810,9 @@ CollapseToLongestTranscript <- function(ranges) {
 #' @param from.midpoint Count bases from region midpoint,
 #' rather than the 5' or 3' end for upstream and downstream
 #' respectively.
-#' 
+#'
 #' @return Returns a \code{\link[GenomicRanges]{GRanges}} object
-#' 
+#'
 #' @importFrom GenomicRanges trim
 #' @importFrom BiocGenerics start strand end width
 #' @importMethodsFrom GenomicRanges strand start end width
@@ -843,12 +852,10 @@ Extend <- function(
 }
 
 
-#' @title SingleFileCutMatrix
-#' 
-#' @description 
+#' @title
 #' Generate matrix of integration sites
 #'
-#' @details 
+#' @details
 #' Generates a cell-by-position matrix of Tn5 integration sites
 #' centered on a given region (usually a DNA sequence motif). This
 #' matrix can be used for downstream footprinting analysis.
@@ -862,9 +869,9 @@ Extend <- function(
 #' the cellmap
 #' @param tabix.file A \code{\link[Rsamtools]{TabixFile}} object.
 #' @param verbose Display messages
-#' 
+#'
 #' @return Returns a sparse matrix
-#' 
+#'
 #' @importFrom Matrix sparseMatrix
 #' @importFrom Rsamtools TabixFile
 #' @importMethodsFrom GenomicRanges width start end
@@ -926,9 +933,7 @@ SingleFileCutMatrix <- function(
 }
 
 
-#' @title GetReadsInRegion
-#'
-#' @description 
+#' @title
 #' Extract reads for each cell within a given genomic region or set of regions
 #'
 #' @param cellmap A mapping of cell names in the fragment file to cell names in
@@ -960,7 +965,7 @@ GetReadsInRegion <- function(
 ) {
     file.to.object <- names(x = cellmap)
     names(x = file.to.object) <- cellmap
-    
+
     if (verbose) {
         message("Extracting reads in requested region")
     }
@@ -997,10 +1002,10 @@ GetReadsInRegion <- function(
 
 #' @title TabixOutputToDataFrame
 #'
-#' @description 
+#' @description
 #' Create a single dataframe from list of character vectors
 #'
-#' @param reads List of character vectors 
+#' @param reads List of character vectors
 #' (the output of \code{\link{scanTabix}})
 #' @param record.ident Add a column recording which region the reads overlapped
 #' with
@@ -1050,12 +1055,10 @@ TabixOutputToDataFrame <- function(reads, record.ident = TRUE) {
 }
 
 
-#' @title ApplyMatrixByGroup
-#' 
-#' @description 
+#' @title
 #' Apply function to integration sites per base per group
 #'
-#' @details 
+#' @details
 #' Perform colSums on a cut matrix with cells in the rows
 #' and position in the columns, for each group of cells
 #' separately.
@@ -1097,13 +1100,13 @@ ApplyMatrixByGroup <- function(
     }
     ngroup <- length(x = all.groups)
     npos <- ncol(x = mat)
-    
+
     group <- unlist(
         x = lapply(X = all.groups, FUN = function(x) rep(x, npos))
     )
     position <- rep(x = as.numeric(x = colnames(x = mat)), ngroup)
     count <- vector(mode = "numeric", length = npos * ngroup)
-    
+
     for (i in seq_along(along.with = all.groups)) {
         grp <- all.groups[[i]]
         if (is.na(x = grp)) {
@@ -1118,13 +1121,13 @@ ApplyMatrixByGroup <- function(
         }
         count[((i - 1) * npos + 1):((i * npos))] <- totals
     }
-    
+
     # construct dataframe
     coverages <- data.frame(
         "group" = group, "position" = position, "count" = count,
         stringsAsFactors = FALSE
     )
-    
+
     if (normalize) {
         scale.factor <- SetIfNull(
             x = scale.factor, y = median(x = group.scale.factors)
@@ -1139,8 +1142,8 @@ ApplyMatrixByGroup <- function(
 
 
 #' @title FragInRegions
-#' 
-#' @description 
+#'
+#' @description
 #' Compute total fragment counts in genomic regions for update single cell
 #' information table.
 #'
@@ -1180,25 +1183,25 @@ FragInRegions <- function (fragment = NULL,
         cellNum <- length(cells)
         print(paste0("Now, processing ", cellNum, " cells......"))
     }
-    
+
     if (is.null(csvOutputFile)) {
         Stop("csvOutputFile must be specified")
     }
-    
+
     # get feature x cell matrix for all cells with signal
     frag_in_GR <- FeatureMatrix(fragments = fragment, features = GR, process_n = process_n)
-    
+
     record <- dim(frag_in_GR)
     print(paste0("In all ", record[1], " genome regions, ", record[2], " cells have signal."))
-    
+
     # compute total fragment counts for every cell
     frag_in_GR <- Matrix::colSums(frag_in_GR)
-    
+
     # match cells
     frag_in_GR_detected <- frag_in_GR[which(names(frag_in_GR) %in% cells)]
-    
+
     print(paste0("Find ", length(frag_in_GR_detected), " cells which match the input csv file."))
-    
+
     # update csvfiles
     df <- tibble::rownames_to_column(data.frame(frag_in_GR_detected))
     colnames(df) <- c("barcode", name)
@@ -1209,12 +1212,10 @@ FragInRegions <- function (fragment = NULL,
 
 
 
-#' @title nsQC
-#' 
-#' @description 
+#' @title
 #' Quality Control for Nucleosome Signal per Cell
 #'
-#' @details 
+#' @details
 #' Calculate the strength of the nucleosome signal per cell.
 #' Computes the ratio of fragments between 147 bp and 294 bp (mononucleosome) to
 #' fragments < 147 bp (nucleosome-free)
@@ -1234,15 +1235,15 @@ FragInRegions <- function (fragment = NULL,
 #'
 #' @keywords internal
 #'
-nsQC <- function(frags = NULL,
+scNucleosomeQC <- function(frags = NULL,
                  n = NULL,
                  verbose = TRUE,
                  ...){
-    
+
     if (!inherits(x = frags, what = "Fragment")) {
         stop("The input frags shoule be a 'Fragment' object!")
     }
-    
+
     if (is.null(n)) {
         if (is.null(frags@cells)) {
             n = 4e7
@@ -1250,51 +1251,49 @@ nsQC <- function(frags = NULL,
             n = length(frags@cells) * 5e3
         }
     }
-    
+
     verbose <- as.logical(x = verbose)
-    
+
     counts <- ExtractFragments(
         fragments = frags,
         n = n,
         verbose = verbose
     )
-    
-    if (is.null(fragments@cells)) {
+
+    if (is.null(frags@cells)) {
         cells.keep <- fastmatch::fmatch(x = counts$CB,
                                         table = counts$CB,
                                         nomatch = 0L)
     } else {
         cells.keep <- fastmatch::fmatch(x = counts$CB,
-                                        table = as.character(fragments@cells),
+                                        table = as.character(frags@cells),
                                         nomatch = 0L)
     }
-    
+
     rownames(x = counts) <- counts$CB
-    
+
     counts <- counts[
         cells.keep > 0, c("mononucleosomal", "nucleosome_free")
     ]
     af <- counts
-    
+
     af$nucleosome_signal <- af$mononucleosomal / af$nucleosome_free
-    
+
     e.dist <- ecdf(x = af$nucleosome_signal)
-    
+
     af$nucleosome_percentile <- round(
         x = e.dist(af$nucleosome_signal),
         digits = 2
     )
-    
+
     return(af)
 }
 
 
-#' @title tssQC
-#' 
-#' @description 
+#' @title
 #' Compute TSS enrichment score per cell
 #'
-#' @details 
+#' @details
 #' Compute the transcription start site (TSS) enrichment score for each cell,
 #' as defined by ENCODE:
 #' \url{https://www.encodeproject.org/data-standards/terms/}.
@@ -1308,9 +1307,9 @@ nsQC <- function(frags = NULL,
 #' @param process_n Number of regions to process at a time if using \code{fast}
 #' option.
 #' @param verbose Display messages
-#' 
+#'
 #' @return Returns two matrix
-#' 
+#'
 #' @importFrom Matrix rowMeans
 #' @importFrom methods slot
 #' @importFrom stats ecdf
@@ -1321,58 +1320,58 @@ nsQC <- function(frags = NULL,
 #'
 #' @keywords internal
 #'
-tssQC <- function (object = NULL,
+scTssQC <- function (object = NULL,
                    gene.annotation = NULL,
                    n = NULL,
                    cells = NULL,
                    process_n = 2000,
                    verbose = TRUE) {
-    
+
     # first check that fragments are present
     if (!inherits(x = object, what = "Fragment")) {
         stop("The input object shoule be a 'Fragment' object!")
     }
-    
+
     # convert to a list
     object <- list(object)
-    
+
     # check tss.positions
     if (is.null(x = gene.annotation)) {
         stop("No gene annotations present in assay")
     }
-    
+
     tss.positions <- GetTSSPositions(ranges = gene.annotation)
-    
-    
+
+
     if (!is.null(x = n)) {
         if (n > length(x = tss.positions)) {
             n <- length(x = tss.positions)
         }
         tss.positions <- tss.positions[seq(n), ]
     }
-    
+
     # exclude chrM
     sn <- seqnames(x = tss.positions)
     tss.positions <- tss.positions[!as.character(sn) %in% c("chrM", "Mt", "MT")]
-    
+
     regions <- Extend(
         x = tss.positions,
         upstream = 1000,
         downstream = 1000,
         from.midpoint = TRUE
     )
-    
+
     if (length(x = regions) == 0) {
         stop("No gene supplied")
     }
-    
+
     # split into strands
     on_plus <- GenomicRanges::strand(x = regions) == "+" | GenomicRanges::strand(x = regions) == "*"
     plus.strand <- regions[on_plus, ]
     minus.strand <- regions[!on_plus, ]
-    
+
     if (verbose) {
-        message("Finding + strand cut sites")
+        message("Processing forward strand cut sites......")
     }
     cut.matrix.plus <- MultiRegionCutMatrix(
         regions = plus.strand,
@@ -1381,9 +1380,9 @@ tssQC <- function (object = NULL,
         cells = cells,
         verbose = verbose
     )
-    
+
     if (verbose) {
-        message("Finding - strand cut sites")
+        message("Processing reverse strand cut sites......")
     }
     cut.matrix.minus <- MultiRegionCutMatrix(
         regions = minus.strand,
@@ -1392,7 +1391,7 @@ tssQC <- function (object = NULL,
         cells = cells,
         verbose = FALSE
     )
-    
+
     # reverse minus strand and add together
     if (is.null(x = cut.matrix.plus)) {
         full.matrix <- cut.matrix.minus[, rev(x = colnames(x = cut.matrix.minus))]
@@ -1403,41 +1402,41 @@ tssQC <- function (object = NULL,
             x = colnames(x = cut.matrix.minus)
         )]
     }
-    
+
     # rename so 0 is center
     region.width <- GenomicRanges::width(x = regions)[[1]]
     midpoint <- round(x = (region.width / 2))
     colnames(full.matrix) <- seq_len(length.out = region.width) - midpoint
-    
+
     cutmatrix <- full.matrix
-    
+
     if (verbose) {
         message("Computing mean insertion frequency in flanking regions")
     }
-    
+
     flanking.mean <- Matrix::rowMeans(x = cutmatrix[, c(seq(from = 1, to = 100), seq(from = 1902, to = 2001))])
     flanking.mean[is.na(x = flanking.mean)] <- 0
     flanking.mean[flanking.mean == 0] <- mean(flanking.mean, na.rm = TRUE)
-    
+
     if (verbose) {
         message("Normalizing TSS score")
     }
     norm.matrix <- cutmatrix / flanking.mean
-    
+
     # compute TSS enrichment
     TSS.enrichment <- Matrix::rowMeans(x = norm.matrix[, 500:1500], na.rm = TRUE)
     e.dist <- ecdf(x = TSS.enrichment)
-    
+
     # compute TSS percentile
     TSS.percentile <- round(
         x = e.dist(TSS.enrichment),
         digits = 2
     )
-    
+
     expected.insertions <- rep(1, ncol(x = cutmatrix))
     expected.insertions <- t(x = as.matrix(x = expected.insertions))
     rownames(x = expected.insertions) <- "expected"
-    
+
     motif.vec <- t(x = matrix(
         data = c(
             rep(x = 0, 1000),
@@ -1447,30 +1446,29 @@ tssQC <- function (object = NULL,
     )
     )
     rownames(x = motif.vec) <- "motif"
-    
+
     norm.matrix <- rbind(norm.matrix, expected.insertions)
     norm.matrix <- rbind(norm.matrix, motif.vec)
-    
+
     positionEnrichment <- norm.matrix
-    
+
     out <- list(TSS.enrichment = TSS.enrichment,
                 TSS.percentile = TSS.percentile,
                 positionEnrichment = positionEnrichment)
-    
+
     return(out)
-    
+
 }
 
-#' @title plotTssQC
-#' 
-#' @description 
+
+#' @title
 #' Plot signal enrichment around TSSs
 #'
-#' @details 
+#' @details
 #' Plot the normalized TSS enrichment score at each position relative to the
 #' TSS.
 #'
-#' @param tssInfo TSS enrichment information from function 'tssQC'
+#' @param tssInfo TSS enrichment information from function 'scTssQC'
 #' @param threshold Threshold to separate low and high quality cells
 #'
 #' @return Returns a \code{\link[ggplot2]{ggplot2}} object
@@ -1481,19 +1479,19 @@ tssQC <- function (object = NULL,
 #'
 #' @keywords internal
 #'
-plotTssQC <- function (tssInfo = NULL,
+scPlotTssQC <- function (tssInfo = NULL,
                        threshold = 3) {
     if (is.null(tssInfo)) {
         stop("tssInfo is NULL!")
     }
-    
+
     groups <- ifelse(tssInfo$TSS.enrichment > threshold, 'High', 'Low')
-    
+
     enrichment.matrix <- tssInfo$positionEnrichment
-    
+
     # remove motif and expected
     enrichment.matrix <- enrichment.matrix[seq((nrow(x = enrichment.matrix) - 2)), ]
-    
+
     # average the signal per group per base
     groupmeans <- ApplyMatrixByGroup(
         mat = enrichment.matrix,
@@ -1501,7 +1499,7 @@ plotTssQC <- function (tssInfo = NULL,
         fun = colMeans,
         normalize = FALSE
     )
-    
+
     p <- ggplot(data = groupmeans,
                 mapping = aes(x = position, y = norm.value, color = group)) +
         geom_line(stat = "identity", size = 0.2) +
@@ -1514,8 +1512,167 @@ plotTssQC <- function (tssInfo = NULL,
             strip.background = element_blank()
         ) +
         ggtitle("TSS enrichment")
+
+    return(p)
+}
+
+
+
+#' @title
+#' Plot Nucleosome signal enrichment
+#'
+#' @details
+#' Plot the normalized Nucleosome signal enrichment score.
+#'
+#' @param fragment a fragment object.
+#' @param nsQC Nucleosome QC information from function 'scNucleosomeQC'
+#' @param region Genome region, like "chr1-1-2000000"
+#' @param threshold Threshold to separate low and high quality cells
+#' @param log.scale plot in log scale or not.
+#'
+#' @return Returns a \code{\link[ggplot2]{ggplot2}} object
+#'
+#' @importFrom Rsamtools TabixFile
+#' @importFrom ggplot2 ggplot geom_histogram theme_classic aes facet_wrap xlim
+#' scale_y_log10 theme element_blank
+#'
+#' @keywords internal
+#'
+scPlotNucleosomeQC <- function (fragment = NULL,
+                                nsQC = NULL,
+                                region = "chr1-1-2000000",
+                                threshold = 4,
+                                log.scale = FALSE) {
+    if (is.null(fragment)) {
+        stop("fragment is NULL!")
+    }
+    
+    if (is.null(nsQC)) {
+        stop("fragment is NULL!")
+    }
+    
+    frag <- fragment
+    
+    tag1 <- paste0("NS > ", threshold)
+    tag2 <- paste0("NS <= ", threshold)
+    
+    nsQC$nucleosome_group <- ifelse(nsQC$nucleosome_signal > 4,
+                                    'NS > 4', 
+                                    'NS < 4')
+    object <- frag
+    group.by = 'nucleosome_group'
+    
+    fragment.list <- list(object)
+    
+    # get fragment data
+    res <- data.frame()
+    for (i in seq_along(along.with = fragment.list)) {
+        tbx.path <- GetFragmentData(object = fragment.list[[i]], slot = "path")
+        cellmap <- GetFragmentData(object = fragment.list[[i]], slot = "cells")
+        tabix.file <- TabixFile(file = tbx.path)
+        open(con = tabix.file)
+        reads <- GetReadsInRegion(
+            cellmap = cellmap,
+            region = region,
+            tabix.file = tabix.file
+        )
+        res <- rbind(res, reads)
+        close(con = tabix.file)
+    }
+    reads <- res
+    
+    groups <- nsQC[[group.by]]
+    names(x = groups) <- rownames(x = nsQC)
+    
+    reads$group <- groups[reads$cell]
+    
+    if (length(x = unique(x = reads$group)) == 1) {
+        p <- ggplot(data = reads, aes(length)) +
+            geom_histogram(bins = 200)
+    } else {
+        p <- ggplot(data = reads, mapping = aes(x = length, fill = group)) +
+            geom_histogram(bins = 200) +
+            facet_wrap(~group, scales = "free_y")
+    }
+    
+    p <- p + xlim(c(0, 800)) +
+        theme_classic() +
+        theme(
+            legend.position = "none",
+            strip.background = element_blank()
+        ) +
+        xlab("Fragment length (bp)") +
+        ylab("Count")
+    
+    if (log.scale) {
+        p <- p + scale_y_log10()
+    }
     
     return(p)
 }
 
 
+#' @title
+#' Create Fragment object
+#'
+#'
+#' @param fragment fragment file
+#' @param csv csv file
+#'
+#' @return Returns a fragment object
+#'
+#' @keywords internal
+#'
+#' @importFrom tools file_path_as_absolute
+#'
+fragCreate <- function(fragment = NULL, csv = NULL) {
+    fragment <- file_path_as_absolute(fragment)
+    csv <- file_path_as_absolute(csv)
+
+    mess <- paste0("Now, reading ",
+                   csv,
+                   "......")
+    print(mess)
+
+    metadata <- read.csv(file = csv,
+                         header = TRUE,
+                         row.names = 1)
+    cells <- rownames(metadata)
+
+    mess <- paste0("Updating Fragment Object......")
+    print(mess)
+    fragments <- CreateFragmentObject(fragment,
+                                      cells = cells)
+
+    return(fragments)
+}
+
+
+#' @title
+#' Merge two dataframe by rowname
+#'
+#'
+#' @param x dataframe
+#' @param y dataframe
+#'
+#' @return Returns a dataframe
+#'
+#' @keywords internal
+#' 
+#' @importFrom tibble column_to_rownames
+#'
+mergeDF <- function(x, y) {
+    data <- merge(x = x, y = y, by = 'row.names', all = TRUE)
+    data <- tibble::column_to_rownames(.data = data, var = "Row.names")
+    return(data)
+}
+
+
+#' @title
+#' replace NA to 0
+.f_dowle2 = function(DT) {
+    for (i in names(DT)) {
+        DT[is.na(get(i)), (i):=0]
+    }
+    return(DT)
+}

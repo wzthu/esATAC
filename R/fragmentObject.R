@@ -457,7 +457,7 @@ CreateFragmentObject <- function(
     }
     # compute hash of the file and index
     if (verbose) {
-        message("Computing hash")
+        message("Computing hash......")
     }
     if (!is.remote) {
         path <- normalizePath(path = path, mustWork = TRUE)
