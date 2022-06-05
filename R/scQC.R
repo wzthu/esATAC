@@ -17,13 +17,6 @@ setMethod(
         n <- allparam[["n"]]
         
         
-        
-        param(.Object)[["n"]] <- allparam[["n"]]
-        param(.Object)[["gene.annotation"]] <- allparam[["gene.annotation"]]
-        param(.Object)[["peak"]] <- allparam[["peak"]]
-        param(.Object)[["blacklist"]] <- allparam[["blacklist"]]
-        
-        
         atacProcFrag <- NULL
         if(length(prevSteps) > 0){
             atacProcFrag <- prevSteps[[1]]
@@ -77,7 +70,7 @@ setMethod(
         
         output(.Object)[["fragInBlacklist.rds"]] <- getStepWorkDir(.Object, filename = "fragInBlacklist.rds")
         
-        output(.Object)[["Violin.pdf"]] <- getStepWorkDir(.Object, filename = "Violin.pdf")
+        output(.Object)[["csvOutput"]] <- getStepWorkDir(.Object, filename = "singlecell.csv")
         
         .Object
     }
@@ -86,6 +79,7 @@ setMethod(
 #' @importFrom rtracklayer import
 #' @importFrom ggplot2 ggsave
 #' @importFrom Matrix colSums
+#' @importFrom data.table merge.data.table fread data.table fwrite
 setMethod(
     f = "processing",
     signature = "SCQC",
@@ -97,7 +91,11 @@ setMethod(
         
         cells <- as.character(fragment@cells)
         
-        # nucleosome QC
+        
+        ## reading single cell information
+        metadata <- fread(file = input(.Object)[["csvInput"]])
+        
+        ## nucleosome QC
         print("Now, processing scATAC-seq nucleosome QC......")
         nucleosomeQC <- scNucleosomeQC(frags = fragment, n = NULL)
         
@@ -109,6 +107,13 @@ setMethod(
                                              nsQC = nucleosomeQC)
         
         ggsave(output(.Object)[["nucleosomeQC.pdf"]], plot = p_NucleosomeQC)
+        
+        ## update metadata
+        tmp_data <- data.table(barcode = rownames(nucleosomeQC), 
+                               nucleosome_signal = round(x = nucleosomeQC$nucleosome_signal, digits = 4))
+        metadata <- merge.data.table(x = metadata, y = tmp_data, 
+                                     by = "barcode", all = TRUE)
+        
         
         ## TSS QC
         print("Now, processing scATAC-seq TSS QC......")
@@ -133,6 +138,14 @@ setMethod(
         
         ggsave(output(.Object)[["tssQC.pdf"]], plot = p_TssQC)
         
+        ## update metadata
+        tmp_data <- data.table(barcode = names(tssQC$TSS.enrichment), 
+                               TSS.enrichment = round(x = tssQC$TSS.enrichment, digits = 4))
+        tmp_data <- .f_dowle2(tmp_data)
+        metadata <- merge.data.table(x = metadata, y = tmp_data, 
+                                     by = "barcode", all = TRUE)
+        
+        
         ## fragInPeaks QC
         print("Now, processing scATAC-seq FRiP QC......")
         print("Fetching single cell data in peaks......")
@@ -152,15 +165,23 @@ setMethod(
                                         process_n = param(.Object)[["n"]])
         
         print("Saving Peak x Barcode Matrix............")
-        .write10xCounts(path = output(.Object)[["peak_bc_matrix.h5"]], x = peak_BC_matrix)
+        .write10xCounts(path = output(.Object)[["peak_bc_matrix.h5"]], 
+                        x = peak_BC_matrix,
+                        overwrite=TRUE)
         saveRDS(object = peak_BC_matrix,
                 file = output(.Object)[["peak_bc_matrix.rds"]])
         
         frag_in_peaks <- colSums(peak_BC_matrix)
-        
+        tmp_data <- .f_dowle2(tmp_data)
         saveRDS(object = frag_in_peaks, 
                 file = output(.Object)[["fragInPeaks.rds"]])
         
+        ## update metadata
+        tmp_data <- data.table(barcode = names(frag_in_peaks), 
+                               frag_in_peaks = frag_in_peaks)
+        
+        metadata <- merge.data.table(x = metadata, y = tmp_data, 
+                                     by = "barcode", all = TRUE)
         
         ## fragInBlacklist QC
         print("Now, processing scATAC-seq fragInBlacklist QC......")
@@ -187,6 +208,16 @@ setMethod(
         saveRDS(object = frag_in_blacklist, 
                 file = output(.Object)[["fragInBlacklist.rds"]])
         
+        ## update metadata
+        tmp_data <- data.table(barcode = names(frag_in_blacklist), 
+                               frag_in_blacklist = frag_in_blacklist)
+        tmp_data <- .f_dowle2(tmp_data)
+        metadata <- merge.data.table(x = metadata, y = tmp_data, 
+                                     by = "barcode", all = TRUE)
+        
+        ## update csv
+        fwrite(x = metadata, file = output(.Object)[["csvOutput"]], na = "Na")
+        
         .Object
     }
 )
@@ -203,7 +234,7 @@ setMethod(
         report(.Object)[["peak_bc_matrix.rds"]] <- output(.Object)[["peak_bc_matrix.rds"]]
         report(.Object)[["fragInPeaks.rds"]] <- output(.Object)[["fragInPeaks.rds"]]
         report(.Object)[["fragInBlacklist.rds"]] <- output(.Object)[["fragInBlacklist.rds"]]
-        report(.Object)[["Violin.pdf"]] <- output(.Object)[["Violin.pdf"]]
+        report(.Object)[["csvOutput"]] <- output(.Object)[["csvOutput"]]
         .Object
     }
 )

@@ -1648,3 +1648,31 @@ fragCreate <- function(fragment = NULL, csv = NULL) {
 }
 
 
+#' @title
+#' Merge two dataframe by rowname
+#'
+#'
+#' @param x dataframe
+#' @param y dataframe
+#'
+#' @return Returns a dataframe
+#'
+#' @keywords internal
+#' 
+#' @importFrom tibble column_to_rownames
+#'
+mergeDF <- function(x, y) {
+    data <- merge(x = x, y = y, by = 'row.names', all = TRUE)
+    data <- tibble::column_to_rownames(.data = data, var = "Row.names")
+    return(data)
+}
+
+
+#' @title
+#' replace NA to 0
+.f_dowle2 = function(DT) {
+    for (i in names(DT)) {
+        DT[is.na(get(i)), (i):=0]
+    }
+    return(DT)
+}
