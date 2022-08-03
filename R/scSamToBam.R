@@ -14,6 +14,9 @@ setMethod(
         allparam <- list(...)
         samInput <- allparam[["samInput"]]
         bamOutput <- allparam[["bamOutput"]]
+        uniqueBamOutput <- allparam[["uniqueBamOutput"]]
+        statCsvOutput <- allparam[["statCsvOutput"]]
+        tsvOutput <-allparam[["tsvOutput"]]
         isSort <- allparam[["isSort"]]
         
         # necessary parameters
@@ -39,6 +42,27 @@ setMethod(
             }
             
         }
+        if(is.null(uniqueBamOutput)){
+            param(.Object)[["unique_name_tmp"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","unique" )
+
+            output(.Object)[["uniqueBamOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","unique.bam")
+            if(isSort){
+                output(.Object)[["uniqueBaiOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","unique.bam.bai")
+            }
+        }else{
+            uniqueBamOutput <- addFileSuffix(uniqueBamOutput,".bam")
+            param(.Object)[["unique_name_tmp"]] <- substring(uniqueBamOutput,first = 1,last = nchar(uniqueBamOutput) - 4)
+            output(.Object)[["uniqueBamOutput"]] <- uniqueBamOutput
+            if(isSort){
+                output(.Object)[["uniqueBaiOutput"]] <- addFileSuffix(bamOutput,".bai")
+            }
+        }
+        if(is.null(statCsvOutput)){
+            output(.Object)[["statCsvOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","stat.tsv")
+        }
+        if(is.null(tsvOutput)){
+            output(.Object)[["tsvOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","stat.tsv")
+        }
         param(.Object)[['isSort']] <- isSort
         .Object
 
@@ -52,10 +76,89 @@ setMethod(
     f = "processing",
     signature = "SCSamToBam",
     definition = function(.Object,...){
+        samInput <- input(.Object)[["samInput"]]
+        bamOutput <- output(.Object)[["bamOutput"]]
+        desOutput <- param(.Object)[["name_tmp"]]
+        uniqueBamOutput <- output(.Object)[["uniqueBamOutput"]]
+        uniqueDesOutput <- param(.Object)[["unique_name_tmp"]]
+        statCsvOutput <- output(.Object)[["statCsvOutput"]]
+        tsvOutput <- output(.Object)[["tsvOutput"]]
+        isSort <- param(.Object)[["isSort"]]        
+        if(file.exists(bamOutput)){
+            file.remove(bamOutput)
+        }
+        if(file.exists(uniqueBamOutput)){
+            file.remove(uniqueBamOutput)
+        }
+        if(file.exists(tsvOutput)){
+            file.remove(tsvOutput)
+        }
+        if(file.exists(statCsvOutput)){
+            file.remove(statCsvOutput)
+        }
+        Rsamtools::asBam(file = samInput, 
+                         destination = desOutput,
+                         overwrite = TRUE, indexDestination = isSort)
+        samfile <- file(samInput,'r')
+        headLine <- c()
+        while(TRUE){
+            lines <- readLines(samfile,n=1)
+            if(length(lines)==0||!startsWith(lines,'@')){
+                break
+            }else{
+                headLine <- c(headLine,lines)
+            }
+        }
+        lines <- c(lines, readLines(samfile,n=10000000))
+        barcode <- NULL
+        while(length(lines)>0){
+            lb <- unlist(lapply(strsplit(lines,':'), function(x) x[1]))
+            barcode<-c(barcode,unique(lb))
+            lapply(barcode, function(b){
+                if(!file.exists(paste0(desOutput,'.',b,'.sam'))){
+                    write(headLine,file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                }
+                write(lines[lb==b],file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+            })
+            lines <- readLines(samfile,n=10000000)
+        }
+        lapply(barcode, function(b){
+            asBam(paste0(desOutput,'.',b,'.sam'),overwrite=TRUE)
+        })
+        bams <- paste0(desOutput,'.',barcode,'.bam')
+        uniqueBams <- paste0(desOutput,'.',barcode,'.uniqued.bam')
+        statrs <- lapply(1:length(barcode), function(i){
+            rs <- readGAlignmentPairs(bams[i],param=ScanBamParam(what=scanBamWhat()),use.names = T)
+        #    rtracklayer::export(rs,BamFile(bams[i]))
+        #    asSam(file=bams[i])
+            st1 <- start(first(rs))
+            ed1 <- end(first(rs))
+            st2 <- start(second(rs))
+            ed2 <- end(second(rs))
+            st <- st1
+            ed <- ed2
+            sel1 <- as.logical(strand(first(rs)) == '-')
+            st[sel1] <- st2[sel1]
+            ed[sel1] <- st1[sel1]
+            bed <- paste(rname(first(rs)),st,ed,sep='\t')
+            sel <- duplicated(bed)
+            rtracklayer::export(rs[!sel],BamFile(uniqueBams[i]))
+            bed1 <- as.data.frame(table(bed))
+            write(paste(bed1$bed,barcode[i], bed1$Freq,sep='\t'),file=tsvOutput, append = TRUE, sep = "\n")
+            return(data.frame(barcode=barcode[i],
+                              total = length(rs),
+                              duplicate = sum(bed1$Freq>1),
+                              chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
+                              unmapped = sum(mcols(first(rs))$flag==4 | mcols(second(rs))$flag==4),
+                              lowmapq = sum(mcols(first(rs))$mapq < 30 | mcols(second(rs))$mapq < 30),
+                              mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
+                              nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
+                              passed_filters = sum(!sel)))
+        })
+        write.csv(do.call(rbind,statrs),file=statCsvOutput,quote = FALSE, row.names=FALSE)
+        mergeBam(files=uniqueBams, destination=uniqueBamOutput,overwrite = TRUE)
+        indexBam(file=uniqueBamOutput)
         
-        Rsamtools::asBam(file = input(.Object)[["samInput"]], 
-                         destination = param(.Object)[["name_tmp"]],
-                         overwrite = TRUE, indexDestination = param(.Object)[['isSort']])
         .Object
     }
 )
@@ -112,7 +215,7 @@ setMethod(
 
 
 setGeneric("atacSCSam2Bam",function(atacProc,
-                                  samInput = NULL, bamOutput = NULL, isSort=TRUE, ...) standardGeneric("atacSCSam2Bam"))
+                                  samInput = NULL, bamOutput = NULL,uniqueBamOutput = NULL, tsvOutput = NULL, statCsvOutput = NULL, isSort=TRUE, ...) standardGeneric("atacSCSam2Bam"))
 #' @rdname SCSamToBam
 #' @aliases atacSCSam2Bam
 #' @export
@@ -120,7 +223,7 @@ setMethod(
     f = "atacSCSam2Bam",
     signature = "ATACProc",
     definition = function(atacProc,
-                          samInput = NULL, bamOutput = NULL, isSort=TRUE, ...){
+                          samInput = NULL, bamOutput = NULL, uniqueBamOutput = NULL, tsvOutput = NULL, statCsvOutput = NULL,isSort=TRUE, ...){
         allpara <- c(list(Class = "SCSamToBam", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
         invisible(step)
@@ -129,7 +232,7 @@ setMethod(
 #' @rdname SCSamToBam
 #' @aliases scSam2bam
 #' @export
-scSam2bam <- function(samInput, bamOutput = NULL, isSort=TRUE, ...){
+scSam2bam <- function(samInput, bamOutput = NULL, uniqueBamOutput = NULL, tsvOutput = NULL, statCsvOutput = NULL, isSort=TRUE, ...){
     allpara <- c(list(Class = "SCSamToBam", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)

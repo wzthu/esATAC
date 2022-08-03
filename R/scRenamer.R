@@ -9,16 +9,15 @@ setMethod(
         allparam <- list(...)
         fastqOutput1 <- allparam[["fastqOutput1"]]
         fastqOutput2 <- allparam[["fastqOutput2"]]
+        fastqBarcodeInput <- allparam[["fastqBarcodeInput"]]
         fastqInput1 <- allparam[["fastqInput1"]]
         fastqInput2 <- allparam[["fastqInput2"]]
-        interleave <- allparam[["interleave"]]
         threads <- allparam[["threads"]]
         if(length(prevSteps)>0){
             atacProc <- prevSteps[[1]]
             input(.Object)[["fastqInput1"]] <- output(atacProc)[["fastqOutput1"]]
+            input(.Object)[["fastqBarcodeInput"]] <- output(atacProc)[["fastqBarcodeOutput"]]
             input(.Object)[["fastqInput2"]] <- output(atacProc)[["fastqOutput2"]]
-            param(.Object)[["interleave"]] <- property(atacProc)[["interleave"]]
-            param(.Object)[["singleEnd"]] <- property(atacProc)[["singleEnd"]]
         }else{
             param(.Object)[["interleave"]] <- interleave
             if(is.null(fastqInput2)){
@@ -33,6 +32,9 @@ setMethod(
         }
         if(!is.null(fastqInput2)){
             input(.Object)[["fastqInput2"]] <- fastqInput2;
+        }
+        if(!is.null(fastqBarcodeInput)){
+            input(.Object)[["fastqBarcodeInput"]] <- fastqBarcodeInput;
         }
 
 
@@ -65,26 +67,55 @@ setMethod(
         writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput1"]]))
         threads <- param(.Object)[["threads"]]
       
-        if(param(.Object)$singleEnd||param(.Object)[["interleave"]]){
-            singleCall(number=1,.renamer_call=.sc_renamer_call, .Object=.Object)
-        }else if(threads>=2){
+        if(threads>=2){
             writeLog(.Object,paste0("processing file:"))
             writeLog(.Object,sprintf("source:%s",input(.Object)[["fastqInput2"]]))
             writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput2"]]))
             cl <- makeCluster(2)
-            parLapply(cl = cl, X = 1:2, fun = singleCall,.renamer_call=.sc_renamer_call, .Object=.Object)
+            parLapply(cl = cl, X = 1:2, fun = scSingleCall,.renamer_call=.sc_renamer_call, .Object=.Object)
             stopCluster(cl)
 #            mclapply(X = 1:2,FUN = singleCall,.renamer_call=.renamer_call, .Object=.Object, mc.cores=2)
         }else{
-            singleCall(1,.renamer_call=.sc_renamer_call,.Object=.Object)
+            scSingleCall(1,.renamer_call=.sc_renamer_call,.Object=.Object)
             writeLog(.Object,paste0("processing file:"))
             writeLog(.Object,sprintf("source:%s",input(.Object)[["fastqInput2"]]))
             writeLog(.Object,sprintf("destination:%s",output(.Object)[["fastqOutput2"]]))
-            singleCall(2,.renamer_call=.sc_renamer_call,.Object=.Object)
+            scSingleCall(2,.renamer_call=.sc_renamer_call,.Object=.Object)
         }
         .Object
     }
 )
+
+
+rename_fq <- function(inputfq,barcodefq,outputfq){
+    f <- file(inputfq,'r')
+    b <- file(barcodefq, 'r')
+    if(file.exists(outputfq)){
+        file.remove(outputfq)
+    }
+    line_size <- 10000000
+    while(TRUE){
+        lines <- readLines(f, n=line_size)
+        blines <- readLines(b, n=line_size)
+        if(length(lines)==0){
+            break
+        }
+        lines[seq(2,line_size,4)] <- paste0('@',lines[seq(2,line_size,4)],':',substring(lines[seq(1,line_size,4)],2)
+        write(lines,file = outputfq, append = TRUE, sep = "\n")
+    }
+}
+
+scSingleCall<-function(number,.renamer_call,.Object){
+    if(number==1){
+        rename_fq(inputfq=input(.Object)[["fastqInput1"]],
+              barcodefq=input(.Object)[["fastqBarcodeInput1"]],
+              outputfq=output(.Object)[["fastqOutput1"]])
+    }else if(number==2){
+        rename_fq(inputfq=input(.Object)[["fastqInput2"]],
+              barcodefq=input(.Object)[["fastqBarcodeInput2"]],
+              outputfq=output(.Object)[["fastqOutput2"]])
+    }
+}
 
 setMethod(
   f = "genReport",
@@ -112,6 +143,7 @@ setMethod(
 #' with file path in file2
 #' And it can also be interleaved file paths when argument
 #' interleave=\code{TRUE}
+#' @param fastqBarcodeInput \code{Character} scalar. It contains file path with barcode.
 #' @param fastqInput2 \code{Character} scalar. It contains file path with #2
 #' mates paired with file paths in fastqInput1
 #' For single-end sequencing files and interleaved paired-end sequencing
@@ -121,9 +153,6 @@ setMethod(
 #' The output file path of renamed fastqInput1.
 #' @param fastqOutput2 \code{Character} scalar.
 #' The output file path of renamed fastqInput2.
-#' @param interleave \code{Character} scalar.
-#' Set \code{TRUE} when files are
-#' interleaved paired-end sequencing data.
 #' @param threads \code{Integer} scalar.
 #' The threads will be created in this process. default: 1
 #' @param ... Additional arguments, currently unused.
@@ -170,6 +199,7 @@ setMethod(
 setGeneric("atacSCRenamer",function(atacProc,fastqOutput1=NULL,
                                   fastqOutput2=NULL,
                                   fastqInput1=NULL,
+                                  fastqBarcodeInput = NULL,
                                   fastqInput2=NULL,
                                   interleave = FALSE, 
                                   threads = getThreads(), 
@@ -185,6 +215,7 @@ setMethod(
              fastqOutput1=NULL,
              fastqOutput2=NULL,
              fastqInput1=NULL,
+             fastqBarcodeInput = NULL,
              fastqInput2=NULL,
              interleave = FALSE, 
              threads = getThreads(), ...){
@@ -199,6 +230,7 @@ setMethod(
 scRenamer <- function(fastqInput1=NULL,
                     fastqInput2=NULL,
                     fastqOutput1=NULL,
+                    fastqBarcodeInput = NULL,
                     fastqOutput2=NULL,
                     interleave = FALSE,
                     threads = getThreads(), ...){

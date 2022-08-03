@@ -9,48 +9,35 @@ setMethod(
         allparam <- list(...)
         fastqInput1 <- allparam[["fastqInput1"]]
         fastqInput2 <- allparam[["fastqInput2"]]
+        fastqBarcodeInput <- allparam[["fastqBarcodeInput"]] 
         fastqOutput1 <- allparam[["fastqOutput1"]]
         fastqOutput2 <- allparam[["fastqOutput2"]]
-        interleave <- allparam[["interleave"]]
-        param(.Object)$interleave <- interleave
-        property(.Object)$interleave <- interleave
-        if(interleave){
-            property(.Object)$singleEnd <- FALSE
-            input(.Object)$fastqInput1 <- fastqInput1
-            if(!is.null(fastqOutput1)){
-                output(.Object)$fastqOutput1 <- fastqOutput1
-            }else{
-                output(.Object)$fastqOutput1 <- getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
-            }
+        fastqBarcodeOutput <- allparam[["fastqBarcodeOutput"]]
+        interleave <- FALSE
+        input(.Object)$fastqInput1 <-fastqInput1
+        input(.Object)$fastqInput2 <-fastqInput2
+        if(length(input(.Object)[["fastqInput1"]])!=length(input(.Object)[["fastqInput2"]])){
+            stop("The number of pair-end fastq files should be equal.")
+        }
+        if(length(input(.Object)[["fastqInput1"]])!=length(input(.Object)[["fastqBarcodeInput"]])){
+            stop("The number of Barcode fastq files should match fastq.")
+        }
+        if(!is.null(fastqOutput1)){
+            #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
+            output(.Object)$fastqOutput1 <- fastqOutput1
         }else{
-            if(is.null(fastqInput2)){
-                property(.Object)$singleEnd <- TRUE
-                input(.Object)$fastqInput1 <-fastqInput1
-                if(!is.null(fastqOutput1)){
-                    output(.Object)$fastqOutput1 <-fastqOutput1
-                }else{
-                    output(.Object)$fastqOutput1 <-getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
-                }
-            }else{
-                property(.Object)$singleEnd <-FALSE
-                input(.Object)$fastqInput1 <-fastqInput1
-                input(.Object)$fastqInput2 <-fastqInput2
-                if(length(input(.Object)[["fastqInput1"]])!=length(input(.Object)[["fastqInput2"]])){
-                    stop("The number of pair-end fastq files should be equal.")
-                }
-                if(!is.null(fastqOutput1)){
-                    #add check of private$paramlist[["fastqInput1"]][i]!=fastqOutput1
-                    output(.Object)$fastqOutput1 <- fastqOutput1
-                }else{
-                    output(.Object)$fastqOutput1 <- getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
-                }
-                if(!is.null(fastqOutput2)){
-                    #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
-                    output(.Object)$fastqOutput2 <- fastqOutput2
-                }else{
-                    output(.Object)$fastqOutput2 <- getAutoPath(.Object,input(.Object)[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
-                }
-            }
+            output(.Object)$fastqOutput1 <- getAutoPath(.Object,input(.Object)[["fastqInput1"]][1], "(fastq|fq|bz2|gz)","fq")
+        }
+        if(!is.null(fastqOutput2)){
+            #add check of private$paramlist[["fastqInput2"]][i]!=fastqOutput2
+            output(.Object)$fastqOutput2 <- fastqOutput2
+        }else{
+            output(.Object)$fastqOutput2 <- getAutoPath(.Object,input(.Object)[["fastqInput2"]][1], "(fastq|fq|bz2|gz)","fq")
+        }
+        if(!is.null(fastqBarcodeOutput)){
+            output(.Object)$fastqBarcodeOutput <- fastqBarcodeOutput
+        }else{
+            output(.Object)$fastqBarcodeOutput <- getAutoPath(.Object,input(.Object)[["fastqBarcodeInput"]][1], "(fastq|fq|bz2|gz)","fq")
         }
         .Object
     }
@@ -60,38 +47,31 @@ setMethod(
     f = "processing",
     signature = "SCUnzipAndMerge",
     definition = function(.Object,...){
-        if(property(.Object)[["singleEnd"]]||(!property(.Object)[["singleEnd"]]&&param(.Object)[["interleave"]])){
-            fileNumber<-length(input(.Object)[["fastqInput1"]])
-            decompress(.Object,input(.Object)[["fastqInput1"]][1],output(.Object)[["fastqOutput1"]])
-            if(fileNumber>1){
-                for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput1"]][i],dirname(output(.Object)[["fastqOutput1"]]));
-                    file.append(output(.Object)[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=input(.Object)[["fastqInput1"]][i]){
-                        unlink(tempfastqfile)
-                    }
+        fileNumber<-length(input(.Object)[["fastqInput1"]])
+        decompress(.Object,input(.Object)[["fastqInput1"]][1],output(.Object)[["fastqOutput1"]])
+        decompress(.Object,input(.Object)[["fastqBarcodeInput"]][1],output(.Object)[["fastqBarcodeOutput"]])
+        decompress(.Object,input(.Object)[["fastqInput2"]][1],output(.Object)[["fastqOutput2"]])
+
+        if(fileNumber>1){
+            for(i in 2:fileNumber){
+                tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput1"]][i],dirname(output(.Object)[["fastqOutput1"]]));
+                file.append(output(.Object)[["fastqOutput1"]],tempfastqfile)
+                if(tempfastqfile!=input(.Object)[["fastqInput1"]][i]){
+                    unlink(tempfastqfile)
                 }
-            }
-        }else{
-            fileNumber<-length(input(.Object)[["fastqInput1"]])
-            decompress(.Object,input(.Object)[["fastqInput1"]][1],output(.Object)[["fastqOutput1"]])
-            decompress(.Object,input(.Object)[["fastqInput2"]][1],output(.Object)[["fastqOutput2"]])
-            if(fileNumber>1){
-                for(i in 2:fileNumber){
-                    tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput1"]][i],dirname(output(.Object)[["fastqOutput1"]]));
-                    file.append(output(.Object)[["fastqOutput1"]],tempfastqfile)
-                    if(tempfastqfile!=input(.Object)[["fastqInput1"]][i]){
-                        unlink(tempfastqfile)
-                    }
-                    tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput2"]][i],dirname(output(.Object)[["fastqOutput2"]]));
-                    file.append(output(.Object)[["fastqOutput2"]],tempfastqfile)
-                    if(tempfastqfile!=input(.Object)[["fastqInput2"]][i]){
-                        unlink(tempfastqfile)
-                    }
+                tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqBarcodeInput"]][i],dirname(output(.Object)[["fastqBarcodeOutput"]]));
+                file.append(output(.Object)[["fastqBarcodeOutput"]],tempfastqfile)
+                if(tempfastqfile!=input(.Object)[["fastqBarcodeInput"]][i]){
+                    unlink(tempfastqfile)
+                }
+                tempfastqfile<-decompressFastq(.Object,input(.Object)[["fastqInput2"]][i],dirname(output(.Object)[["fastqOutput2"]]));
+                file.append(output(.Object)[["fastqOutput2"]],tempfastqfile)
+                if(tempfastqfile!=input(.Object)[["fastqInput2"]][i]){
+                    unlink(tempfastqfile)
                 }
             }
         }
-        
+            
         .Object
     }
 )
@@ -145,22 +125,13 @@ setMethod(
     f = "genReport",
     signature = "SCUnzipAndMerge",
     definition = function(.Object, ...){
-        if(param(.Object)$interleave){
-            report(.Object)$seqtype <- "paired end (PE,interleave)"
-            report(.Object)$frag <- 2
-        }else if(is.null(input(.Object)$fastqInput2)){
-            report(.Object)$seqtype  <- "single end (SE)"
-            report(.Object)$frag <- 1
-        }else{
-            report(.Object)$seqtype  <- "paired end (PE)"
-            report(.Object)$frag <- 2
-        }
-        if(is.null(input(.Object)$fastqInput2)){
-            report(.Object)$filelist <- data.frame(`File(s)`= input(.Object)$fastqInput1)
-        }else{
-            report(.Object)$filelist <- data.frame(`Mate1 files`=input(.Object)$fastqInput1,
-                                                   `Mate2 files`=input(.Object)$fastqInput2)
-        }
+        report(.Object)$seqtype  <- "paired end (PE)"
+        report(.Object)$frag <- 2
+        report(.Object)$filelist <- data.frame(`Mate1 files`=input(.Object)$fastqInput1,
+                                                   `Mate2 files`=input(.Object)$fastqInput2,
+`Barcode files`=input(.Object)$fastqBarcodeInput,
+)
+        
         .Object
     }
 )
@@ -174,19 +145,15 @@ setMethod(
 #' it contains sequence file paths.
 #' For paired-end sequencing, it can be file paths with #1 mates paired
 #' with file paths in fastqInput2
-#' And it can also be interleaved file paths when argument
-#' interleaved=\code{TRUE}
+#' @param fastqBarcodeInput \code{Character} vector. Fastq file that save barcode.
 #' @param fastqInput2 \code{Character} vector. It contains file paths with #2
 #' mates paired with file paths in fastqInput1
-#' For single-end sequencing files and interleaved paired-end sequencing
-#' files(argument interleaved=\code{TRUE}),
-#' it must be \code{NULL}.
 #' @param fastqOutput1 \code{Character}. The trimmed mate1 reads output file
-#' path for fastqInput2.
+#' path for fastqInput1.
+#' @param fastqBarcodeOutput \code{Character}. The trimmed mate1 reads output file
+#' path for fastqInput1.
 #' @param fastqOutput2 \code{Character}. The trimmed mate2 reads output file
 #' path for fastqInput2.
-#' @param interleave \code{Logical}. Set \code{TRUE} when files are
-#' interleaved paired-end sequencing data.
 #' @param ... Additional arguments, currently unused.
 #' @return An invisible \code{\link{ATACProc-class}} object scalar for downstream analysis.
 #' @author Zheng Wei
@@ -211,9 +178,8 @@ setMethod(
 # 
 #' @rdname SCUnzipAndMerge
 #' @export
-atacSCUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
-                             fastqOutput1=NULL,fastqOutput2=NULL,
-                             interleave = FALSE, ...){
+atacSCUnzipAndMerge<- function(fastqInput1,fastqBarcodeInput, fastqInput2,
+                             fastqOutput1=NULL,fastqBarcodeOutput=NULL,fastqOutput2=NULL, ...){
     allpara <- c(list(Class = "SCUnzipAndMerge", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
@@ -221,9 +187,8 @@ atacSCUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
 
 #' @rdname SCUnzipAndMerge
 #' @export
-scUnzipAndMerge<- function(fastqInput1, fastqInput2=NULL,
-                             fastqOutput1=NULL,fastqOutput2=NULL,
-                             interleave = FALSE, ...){
+scUnzipAndMerge<- function(fastqInput1,fastqBarcodeInput, fastqInput2,
+                             fastqOutput1=NULL,fastqBarcodeOutput=NULL,fastqOutput2=NULL, ...){
     allpara <- c(list(Class = "SCUnzipAndMerge", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)
