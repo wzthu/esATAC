@@ -58,7 +58,7 @@ setMethod(
             }
         }
         if(is.null(statCsvOutput)){
-            output(.Object)[["statCsvOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","stat.tsv")
+            output(.Object)[["statCsvOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","csv")
         }
         if(is.null(tsvOutput)){
             output(.Object)[["tsvOutput"]] <- getAutoPath(.Object, input(.Object)[["samInput"]],"sam|SAM","stat.tsv")

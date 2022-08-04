@@ -100,19 +100,22 @@ rename_fq <- function(inputfq,barcodefq,outputfq){
         if(length(lines)==0){
             break
         }
-        lines[seq(2,line_size,4)] <- paste0('@',lines[seq(2,line_size,4)],':',substring(lines[seq(1,line_size,4)],2)
+        sz <- length(lines)
+        lines[seq(1,min(line_size,sz),4)] <- paste0('@',blines[seq(2,min(line_size,sz),4)],':',substring(lines[seq(1,min(line_size,sz),4)],2))
         write(lines,file = outputfq, append = TRUE, sep = "\n")
     }
+    close(f)
+    close(b)
 }
 
 scSingleCall<-function(number,.renamer_call,.Object){
     if(number==1){
         rename_fq(inputfq=input(.Object)[["fastqInput1"]],
-              barcodefq=input(.Object)[["fastqBarcodeInput1"]],
+              barcodefq=input(.Object)[["fastqBarcodeInput"]],
               outputfq=output(.Object)[["fastqOutput1"]])
     }else if(number==2){
         rename_fq(inputfq=input(.Object)[["fastqInput2"]],
-              barcodefq=input(.Object)[["fastqBarcodeInput2"]],
+              barcodefq=input(.Object)[["fastqBarcodeInput"]],
               outputfq=output(.Object)[["fastqOutput2"]])
     }
 }

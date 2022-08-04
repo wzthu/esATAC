@@ -13,31 +13,11 @@ setMethod(
         findParamList <- allparam[["findParamList"]]
         reportPrefix <- allparam[["reportPrefix"]]
         threads <- allparam[["threads"]]
-        interleave <-  allparam[["interleave"]]
         
         if(length(prevSteps) >0){
             prevSteps <- prevSteps[[1]]
-            param(.Object)[["interleave"]] <- property(.Object)[["interleave"]]
-            param(.Object)[["singleEnd"]] <- property(.Object)[["singleEnd"]]
-            if(param(.Object)[["singleEnd"]]){
-                stop(paste("Previous step", stepName(prevSteps), 
-                           "is single end data. SCFindAdapter is not available for single end data"))
-            }
             input(.Object)[["fastqInput1"]] <- output(prevSteps)[["fastqOutput1"]]
-            if(!param(.Object)[["interleave"]]){
-                input(.Object)[["fastqInput2"]] <- output(prevSteps)[["fastqOutput2"]]
-            }
-        }else{
-            param(.Object)[["interleave"]] <- interleave
-            property(.Object)[["interleave"]] <- interleave
-            if(!interleave && is.null(fastqInput2)){
-                stop("SCFindAdapter is not available for single end data")
-            }else if(is.null(fastqInput2)){
-                stop("Pair end interleved data should not be stored in two fastq files")
-            }else{
-                property(.Object)[["singleEnd"]] <- FALSE
-                property(.Object)[["singleEnd"]] <- FALSE
-            }
+            input(.Object)[["fastqInput2"]] <- output(prevSteps)[["fastqOutput2"]]
         }
         
         if(!is.null(fastqInput1)){
@@ -92,22 +72,6 @@ setMethod(
             threadparam<-NULL
         }
         findParamList <- paste(c(threadparam, param(.Object)$findParamList),collapse = " ")
-        if(param(.Object)[["interleave"]]){
-            writeLog(.Object,"begin to find adapter")
-            if(length(findParamList)>0){
-                adapters<-identify_adapters(file1 = input(.Object)[["fastqInput1"]],
-                                            file2 = NULL,
-                                            findParamList,
-                                            basename = param(.Object)[["reportPrefix"]], overwrite=TRUE)
-            }else{
-                adapters<-identify_adapters(file1 = output(.Object)[["fastqInput1"]],
-                                            file2 = NULL,
-                                            basename = param(.Object)[["reportPrefix"]],overwrite=TRUE)
-            }
-            
-            property(.Object)[["adapter1"]] <- adapters[1]
-            property(.Object)[["adapter2"]] <- adapters[2]
-        }else{
             writeLog(.Object,"begin to find adapter")
             if(length(findParamList)>0){
                 print(input(.Object)[["fastqInput1"]])
@@ -125,7 +89,6 @@ setMethod(
             }
             property(.Object)[["adapter1"]] <- adapters[1]
             property(.Object)[["adapter2"]] <- adapters[2]
-        }
         
        
         
@@ -224,7 +187,7 @@ setMethod(
 
 
 setGeneric("atacSCFindAdapter",function(atacProc,fastqInput1=NULL,
-                                        fastqInput2=NULL, reportPrefix = NULL, interleave=FALSE,
+                                        fastqInput2=NULL, reportPrefix = NULL,
                                         findParamList=NULL, threads = getThreads(), ...) standardGeneric("atacSCFindAdapter"))
 #' @rdname SCFindAdapter
 #' @aliases atacSCFindAdapter
@@ -233,7 +196,7 @@ setMethod(
     f = "atacSCFindAdapter",
     signature = "ATACProc",
     definition = function(atacProc,fastqInput1=NULL,
-                          fastqInput2=NULL, reportPrefix = NULL, interleave=FALSE,
+                          fastqInput2=NULL, reportPrefix = NULL, 
                           findParamList=NULL, threads = getThreads(), ...){
         allpara <- c(list(Class = "SCFindAdapter", prevSteps = list(atacProc)),as.list(environment()),list(...))
         step <- do.call(new,allpara)
@@ -245,7 +208,7 @@ setMethod(
 #' @aliases scFindAdapter
 #' @export
 scFindAdapter <- function(fastqInput1, fastqInput2 = NULL, reportPrefix = NULL,
-                          interleave=FALSE, findParamList = NULL, threads = getThreads(), ...){
+                           findParamList = NULL, threads = getThreads(), ...){
     allpara <- c(list(Class = "SCFindAdapter", prevSteps = list()),as.list(environment()),list(...))
     step <- do.call(new,allpara)
     invisible(step)

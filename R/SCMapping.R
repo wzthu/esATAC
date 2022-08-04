@@ -22,22 +22,6 @@ setMethod(
             fastqStep <- prevSteps[[1]]
             input(.Object)[["fastqInput1"]] <- output(fastqStep)[["fastqOutput1"]]
             input(.Object)[["fastqInput2"]] <- output(fastqStep)[["fastqOutput2"]]
-            param(.Object)[["interleave"]] <- property(fastqStep)[["interleave"]]
-            param(.Object)[["singleEnd"]] <- property(fastqStep)[["singleEnd"]]
-        }else{
-            param(.Object)[["interleave"]] <- interleave
-            property(.Object)[["interleave"]] <- interleave
-            if(interleave){
-                if(!is.null(fastqInput2)){
-                    stop("interleave data should put in one fastq file")
-                }else{
-                    property(.Object)$singleEnd <- TRUE
-                    param(.Object)$singleEnd <- TRUE
-                }
-            }else{
-                property(.Object)$singleEnd <- is.null(fastqInput2)
-                param(.Object)$singleEnd<-is.null(fastqInput2)
-            }
         }
 
         if(!is.null(fastqInput1)){
@@ -117,14 +101,14 @@ setMethod(
                         seq1 = input(.Object)[["fastqInput1"]],
                         paramList,
                         seq2 = input(.Object)[["fastqInput2"]],
-                        interleaved = param(.Object)[["interleave"]],
+                        interleaved = FALSE,
                         overwrite=TRUE)
         }else{
             rs<-bowtie2(bt2Index = param(.Object)[["bt2Idx"]],
                         samOutput = output(.Object)[["samOutput"]],
                         seq1 = input(.Object)[["fastqInput1"]],
                         seq2 = input(.Object)[["fastqInput2"]],
-                        interleaved = param(.Object)[["interleave"]],
+                        interleaved = FALSE,
                         overwrite=TRUE)
         }
 

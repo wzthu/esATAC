@@ -16,6 +16,7 @@ setMethod(
         interleave <- FALSE
         input(.Object)$fastqInput1 <-fastqInput1
         input(.Object)$fastqInput2 <-fastqInput2
+        input(.Object)$fastqBarcodeInput <- fastqBarcodeInput
         if(length(input(.Object)[["fastqInput1"]])!=length(input(.Object)[["fastqInput2"]])){
             stop("The number of pair-end fastq files should be equal.")
         }
@@ -127,9 +128,8 @@ setMethod(
     definition = function(.Object, ...){
         report(.Object)$seqtype  <- "paired end (PE)"
         report(.Object)$frag <- 2
-        report(.Object)$filelist <- data.frame(`Mate1 files`=input(.Object)$fastqInput1,
-                                                   `Mate2 files`=input(.Object)$fastqInput2,
-`Barcode files`=input(.Object)$fastqBarcodeInput,
+        report(.Object)$filelist <- data.frame(`Mate1 files`=input(.Object)$fastqInput1,`Mate2 files`=input(.Object)$fastqInput2,
+`Barcode files`=input(.Object)$fastqBarcodeInput
 )
         
         .Object
