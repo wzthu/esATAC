@@ -32,12 +32,14 @@ atacTSSQC(
 )
 
 tssQC(
-  object = NULL,
-  gene.annotation = NULL,
-  n = NULL,
-  cells = NULL,
-  process_n = 2000,
-  verbose = TRUE
+  bedInput,
+  txdbKnownGene = NULL,
+  bsgenome = NULL,
+  reportPrefix = NULL,
+  fragLenRange = c(0, 2000),
+  tssUpdownstream = 1000,
+  newStepType = "TSSQC",
+  ...
 )
 }
 \arguments{
