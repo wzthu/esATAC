@@ -127,38 +127,68 @@ setMethod(
         })
         bams <- paste0(desOutput,'.',barcode,'.bam')
         uniqueBams <- paste0(desOutput,'.',barcode,'.uniqued.bam')
-        statrs <- lapply(1:length(barcode), function(i){
-            rs <- readGAlignmentPairs(bams[i],param=ScanBamParam(what=scanBamWhat()),use.names = T)
-        #    rtracklayer::export(rs,BamFile(bams[i]))
-        #    asSam(file=bams[i])
-            st1 <- start(first(rs))
-            ed1 <- end(first(rs))
-            st2 <- start(second(rs))
-            ed2 <- end(second(rs))
-            st <- st1
-            ed <- ed2
-            sel1 <- as.logical(strand(first(rs)) == '-')
-            st[sel1] <- st2[sel1]
-            ed[sel1] <- st1[sel1]
-            bed <- paste(rname(first(rs)),st,ed,sep='\t')
-            sel <- duplicated(bed)
-            rtracklayer::export(rs[!sel],BamFile(uniqueBams[i]))
-            bed1 <- as.data.frame(table(bed))
-            write(paste(bed1$bed,barcode[i], bed1$Freq,sep='\t'),file=tsvOutput, append = TRUE, sep = "\n")
-            return(data.frame(barcode=barcode[i],
-                              total = length(rs),
-                              duplicate = sum(bed1$Freq>1),
-                              chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
-                              unmapped = sum(mcols(first(rs))$flag==4 | mcols(second(rs))$flag==4),
-                              lowmapq = sum(mcols(first(rs))$mapq < 30 | mcols(second(rs))$mapq < 30),
-                              mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
-                              nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
-                              passed_filters = sum(!sel)))
+        batch_size <- 10000
+        cl <- makeCluster(28)
+        statrs <- lapply(seq(1,length(barcode), batch_size),function(batch){
+            tsv_csv <- parLapply(cl = cl, X=batch:min(batch+batch_size-1,length(barcode)), 
+                fun=function(i,bams,readGAlignmentPairs ,ScanBamParam, scanBamWhat,start,end ,first,second,strand,mcols,rname,BamFile,uniqueBams,barcode){
+                Sys.sleep(runif(10))
+                rs <- readGAlignmentPairs(bams[i],param=ScanBamParam(what=scanBamWhat()),use.names = T)
+            #    rtracklayer::export(rs,BamFile(bams[i]))
+            #    asSam(file=bams[i])
+                st1 <- start(first(rs))
+                ed1 <- end(first(rs))
+                st2 <- start(second(rs))
+                ed2 <- end(second(rs))
+                st <- st1
+                ed <- ed2
+                sel1 <- as.logical(strand(first(rs)) == '-')
+                st[sel1] <- st2[sel1]
+                ed[sel1] <- st1[sel1]
+                bed <- paste(rname(first(rs)),st,ed,sep='\t')
+                sel <- duplicated(bed)
+          #      rtracklayer::export(rs[!sel],BamFile(uniqueBams[i]))
+                bed1 <- as.data.frame(table(bed))
+#                write(paste(bed1$bed,barcode[i], bed1$Freq,sep='\t'),file=tsvOutput, append = TRUE, sep = "\n")
+                return(list(tsv=paste(bed1$bed,barcode[i], bed1$Freq,sep='\t'),
+                            bed= rs[!sel],
+                            bf = BamFile(uniqueBams[i]),
+                            stat=data.frame(barcode=barcode[i],
+                                  total = length(rs),
+                                  duplicate = sum(bed1$Freq>1),
+                                  chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
+                                  unmapped = sum(mcols(first(rs))$flag==4 | mcols(second(rs))$flag==4),
+                                  lowmapq = sum(mcols(first(rs))$mapq < 30 | mcols(second(rs))$mapq < 30),
+                                  mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
+                                  nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
+                                  passed_filters = sum(!sel))))
+            },bams = bams,
+                readGAlignmentPairs = readGAlignmentPairs,
+                ScanBamParam = ScanBamParam,
+                scanBamWhat = scanBamWhat,
+                start = start,
+                end = end,
+                first = first,
+                second = second,
+                strand = strand,
+                mcols = mcols,
+                rname = rname,
+                BamFile = BamFile,
+                uniqueBams = uniqueBams,
+                barcode = barcode)
+            tsv <- write(unlist(lapply(tsv_csv, function(v){v$tsv})),file=tsvOutput, append = TRUE, sep = "\n")
+            csv <- do.call(rbind,lapply(tsv_csv, function(v){v$stat}))
+            lapply(tsv_csv, function(v){ rtracklayer::export(v$bed,v$bf)})
+            return(csv)
         })
         write.csv(do.call(rbind,statrs),file=statCsvOutput,quote = FALSE, row.names=FALSE)
         mergeBam(files=uniqueBams, destination=uniqueBamOutput,overwrite = TRUE)
         indexBam(file=uniqueBamOutput)
-        
+        file.remove(uniqueBams)
+        file.remove(paste0(uniqueBams,'.bai'))
+        file.remove(bams)
+        file.remove(paste0(bams,'.bai'))
+        file.remove(paste0(desOutput,'.',barcode,'.sam'))
         .Object
     }
 )
