@@ -79,6 +79,7 @@ setMethod(
         samInput <- input(.Object)[["samInput"]]
         bamOutput <- output(.Object)[["bamOutput"]]
         desOutput <- param(.Object)[["name_tmp"]]
+        desOutputByBarcode <- paste0(desOutput,'.byBarcode')
         uniqueBamOutput <- output(.Object)[["uniqueBamOutput"]]
         uniqueDesOutput <- param(.Object)[["unique_name_tmp"]]
         statCsvOutput <- output(.Object)[["statCsvOutput"]]
@@ -99,7 +100,10 @@ setMethod(
         Rsamtools::asBam(file = samInput, 
                          destination = desOutput,
                          overwrite = TRUE, indexDestination = isSort)
-        samfile <- file(samInput,'r')
+        Rsamtools::sortBam(file = bamOutput, destination = desOutputByBarcode, byQname=TRUE, maxMemory=15 * 1024)
+        Rsamtools::asSam(file=paste0(desOutputByBarcode,'.bam'),overwrite=TRUE)
+        
+        samfile <- file(paste0(desOutputByBarcode,'.sam'),'r')
         headLine <- c()
         while(TRUE){
             lines <- readLines(samfile,n=1)
@@ -109,51 +113,57 @@ setMethod(
                 headLine <- c(headLine,lines)
             }
         }
-        lines <- c(lines, readLines(samfile,n=10000000))
+        lines <- c(lines, readLines(samfile,n=10000000+1))
         barcode <- NULL
-        while(length(lines)>0){
-            lb <- unlist(lapply(strsplit(lines,':'), function(x) x[1]))
-            barcode<-c(barcode,unique(lb))
-            lapply(barcode, function(b){
-                if(!file.exists(paste0(desOutput,'.',b,'.sam'))){
-                    write(headLine,file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
-                }
-                write(lines[lb==b],file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
-            })
-            lines <- readLines(samfile,n=10000000)
-        }
-        lapply(barcode, function(b){
-            asBam(paste0(desOutput,'.',b,'.sam'),overwrite=TRUE)
-        })
-        bams <- paste0(desOutput,'.',barcode,'.bam')
-        uniqueBams <- paste0(desOutput,'.',barcode,'.uniqued.bam')
-        batch_size <- 10000
-        cl <- makeCluster(28)
-        statrs <- lapply(seq(1,length(barcode), batch_size),function(batch){
-            tsv_csv <- parLapply(cl = cl, X=batch:min(batch+batch_size-1,length(barcode)), 
-                fun=function(i,bams,readGAlignmentPairs ,ScanBamParam, scanBamWhat,start,end ,first,second,strand,mcols,rname,BamFile,uniqueBams,barcode){
-                Sys.sleep(runif(10))
-                rs <- readGAlignmentPairs(bams[i],param=ScanBamParam(what=scanBamWhat()),use.names = T)
-            #    rtracklayer::export(rs,BamFile(bams[i]))
-            #    asSam(file=bams[i])
-                st1 <- start(first(rs))
-                ed1 <- end(first(rs))
-                st2 <- start(second(rs))
-                ed2 <- end(second(rs))
-                st <- st1
-                ed <- ed2
-                sel1 <- as.logical(strand(first(rs)) == '-')
-                st[sel1] <- st2[sel1]
-                ed[sel1] <- st1[sel1]
-                bed <- paste(rname(first(rs)),st,ed,sep='\t')
-                sel <- duplicated(bed)
-          #      rtracklayer::export(rs[!sel],BamFile(uniqueBams[i]))
-                bed1 <- as.data.frame(table(bed))
-#                write(paste(bed1$bed,barcode[i], bed1$Freq,sep='\t'),file=tsvOutput, append = TRUE, sep = "\n")
-                return(list(tsv=paste(bed1$bed,barcode[i], bed1$Freq,sep='\t'),
-                            bed= rs[!sel],
-                            bf = BamFile(uniqueBams[i]),
-                            stat=data.frame(barcode=barcode[i],
+        vec_left_list <- list()
+        left_lines <- c()
+        endflag <- FALSE
+        stat_list <- list()
+        count <- 1
+        nb_barcode <- 0
+        while(TRUE){
+            vec_list <- c(vec_left_list,strsplit(lines, '\t'))
+            lines <- c(left_lines, lines)
+            barcodes <- lapply(vec_list,function(x) x[1])
+            barcodes <- unlist(lapply(strsplit(unlist(barcodes),':'), function(x) x[1]))
+            bs <- unique(barcodes)
+            ed <- min(length(bs) - 1,10000)
+            if(endflag){
+                ed <- length(bs)
+            }
+            nb_barcode <- nb_barcode + ed
+            print(nb_barcode)
+            vec_left_list <- vec_list[!(barcodes %in% bs[1:ed])]
+            left_lines <- lines[!(barcodes %in% bs[1:ed])]
+            if(ed>=1){
+                stat_rs <- lapply(1:ed, function(i){
+                    b <- bs[i]
+                    if(!file.exists(paste0(desOutput,'.',b,'.sam'))){
+                        write(headLine,file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                    }
+                    write(lines[barcodes==b],file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                    asBam(paste0(desOutput,'.',b,'.sam'),overwrite=TRUE)
+                    file.remove(paste0(desOutput,'.',b,'.sam'))
+                    rs <- readGAlignmentPairs(paste0(desOutput,'.',b,'.bam'),param=ScanBamParam(what=scanBamWhat()),use.names = T)
+                    file.remove(paste0(desOutput,'.',b,'.bam'))
+                    file.remove(paste0(desOutput,'.',b,'.bam.bai'))
+                    st1 <- start(first(rs))
+                    ed1 <- end(first(rs))
+                    st2 <- start(second(rs))
+                    ed2 <- end(second(rs))
+                    st <- st1
+                    ed <- ed2
+                    sel1 <- as.logical(strand(first(rs)) == '-')
+                    st[sel1] <- st2[sel1]
+                    ed[sel1] <- st1[sel1]
+                    bed <- paste(rname(first(rs)),st,ed,sep='\t')
+                    sel <- duplicated(bed)
+                    rtracklayer::export(rs[!sel],BamFile(paste0(desOutput,'.',b,'.unique.sam')))
+                    bed1 <- as.data.frame(table(bed))
+                    return(list(tsv=paste(bed1$bed,b, bed1$Freq,sep='\t'),
+           #                 bed= rs[!sel],
+           #                 bf = BamFile(uniqueBams[i]),
+                            stat=data.frame(barcode=b,
                                   total = length(rs),
                                   duplicate = sum(bed1$Freq>1),
                                   chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
@@ -162,33 +172,37 @@ setMethod(
                                   mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
                                   nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
                                   passed_filters = sum(!sel))))
-            },bams = bams,
-                readGAlignmentPairs = readGAlignmentPairs,
-                ScanBamParam = ScanBamParam,
-                scanBamWhat = scanBamWhat,
-                start = start,
-                end = end,
-                first = first,
-                second = second,
-                strand = strand,
-                mcols = mcols,
-                rname = rname,
-                BamFile = BamFile,
-                uniqueBams = uniqueBams,
-                barcode = barcode)
-            tsv <- write(unlist(lapply(tsv_csv, function(v){v$tsv})),file=tsvOutput, append = TRUE, sep = "\n")
-            csv <- do.call(rbind,lapply(tsv_csv, function(v){v$stat}))
-            lapply(tsv_csv, function(v){ rtracklayer::export(v$bed,v$bf)})
-            return(csv)
-        })
-        write.csv(do.call(rbind,statrs),file=statCsvOutput,quote = FALSE, row.names=FALSE)
-        mergeBam(files=uniqueBams, destination=uniqueBamOutput,overwrite = TRUE)
-        indexBam(file=uniqueBamOutput)
-        file.remove(uniqueBams)
-        file.remove(paste0(uniqueBams,'.bai'))
-        file.remove(bams)
-        file.remove(paste0(bams,'.bai'))
-        file.remove(paste0(desOutput,'.',barcode,'.sam'))
+                })
+                if(ed==1){
+                    file.rename(from=paste0(desOutput,'.',bs[1:ed],'.unique.bam'),to=paste0(desOutput,'.',count,'.unique.bam'))
+                }else{
+                    mergeBam(files=paste0(desOutput,'.',bs[1:ed],'.unique.bam'),destination=paste0(desOutput,'.',count,'.unique.bam'))
+                }
+                file.remove(paste0(desOutput,'.',bs[1:ed],'.unique.bam'))
+                file.remove(paste0(desOutput,'.',bs[1:ed],'.unique.bam.bai'))
+                count <- count + 1
+                tsv <- write(unlist(lapply(stat_rs, function(v){v$tsv})),file=tsvOutput, append = TRUE, sep = "\n")
+                stat_list <- c(stat_list, lapply(stat_rs, function(v){v$stat}))
+            }
+            if(endflag){
+                break
+            }
+            if(length(bs) < 2 * 10000){
+                lines <- readLines(samfile,n=10000000)
+            }else{
+                lines <- readLines(samfile,n=100)
+            }
+                 if(length(lines)==0 && length(bs) == 0){
+                    break
+                }
+                if(length(lines)==0 && length(bs) < 2*10000){
+                    endflag <- TRUE
+                }
+        }
+        Rsamtools::mergeBam(files=paste0(desOutput,'.',1:(count-1),'.unique.bam'), destination=uniqueBamOutput,overwrite = TRUE)
+        Rsamtools::indexBam(file=uniqueBamOutput)
+        write.csv(do.call(rbind,stat_list),file=statCsvOutput,quote = FALSE, row.names=FALSE)
+        file.remove(paste0(desOutput,'.',1:(count-1),'.unique.bam'))
         .Object
     }
 )

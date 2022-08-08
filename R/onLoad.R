@@ -91,6 +91,7 @@
                   "SCUnzipAndMerge","SCRenamer",
                   "SCRenamer","SCFindAdapter",
                   "SCRenamer","SCRemoveAdapter",
+                  "SCRenamer","SCBowtie2Mapping",
                   "SCRemoveAdapter", "SCBowtie2Mapping",
                   "SCBowtie2Mapping", "SCSamToBam",
                   "SCQC", "SCCellFilter"
