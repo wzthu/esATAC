@@ -113,7 +113,7 @@ setMethod(
                 headLine <- c(headLine,lines)
             }
         }
-        lines <- c(lines, readLines(samfile,n=10000000+1))
+        lines <- c(lines, readLines(samfile,n=1000000+1))
         barcode <- NULL
         vec_left_list <- list()
         left_lines <- c()
@@ -121,6 +121,7 @@ setMethod(
         stat_list <- list()
         count <- 1
         nb_barcode <- 0
+  #      cl <- makeCluster(20)
         while(TRUE){
             vec_list <- c(vec_left_list,strsplit(lines, '\t'))
             lines <- c(left_lines, lines)
@@ -136,59 +137,100 @@ setMethod(
             vec_left_list <- vec_list[!(barcodes %in% bs[1:ed])]
             left_lines <- lines[!(barcodes %in% bs[1:ed])]
             if(ed>=1){
-                stat_rs <- lapply(1:ed, function(i){
-                    b <- bs[i]
-                    if(!file.exists(paste0(desOutput,'.',b,'.sam'))){
-                        write(headLine,file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
-                    }
-                    write(lines[barcodes==b],file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
-                    asBam(paste0(desOutput,'.',b,'.sam'),overwrite=TRUE)
-                    file.remove(paste0(desOutput,'.',b,'.sam'))
-                    rs <- readGAlignmentPairs(paste0(desOutput,'.',b,'.bam'),param=ScanBamParam(what=scanBamWhat()),use.names = T)
-                    file.remove(paste0(desOutput,'.',b,'.bam'))
-                    file.remove(paste0(desOutput,'.',b,'.bam.bai'))
-                    st1 <- start(first(rs))
-                    ed1 <- end(first(rs))
-                    st2 <- start(second(rs))
-                    ed2 <- end(second(rs))
-                    st <- st1
-                    ed <- ed2
-                    sel1 <- as.logical(strand(first(rs)) == '-')
-                    st[sel1] <- st2[sel1]
-                    ed[sel1] <- st1[sel1]
-                    bed <- paste(rname(first(rs)),st,ed,sep='\t')
-                    sel <- duplicated(bed)
-                    rtracklayer::export(rs[!sel],BamFile(paste0(desOutput,'.',b,'.unique.sam')))
-                    bed1 <- as.data.frame(table(bed))
-                    return(list(tsv=paste(bed1$bed,b, bed1$Freq,sep='\t'),
-           #                 bed= rs[!sel],
-           #                 bf = BamFile(uniqueBams[i]),
-                            stat=data.frame(barcode=b,
-                                  total = length(rs),
-                                  duplicate = sum(bed1$Freq>1),
-                                  chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
-                                  unmapped = sum(mcols(first(rs))$flag==4 | mcols(second(rs))$flag==4),
-                                  lowmapq = sum(mcols(first(rs))$mapq < 30 | mcols(second(rs))$mapq < 30),
-                                  mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
-                                  nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
-                                  passed_filters = sum(!sel))))
-                })
-                if(ed==1){
-                    file.rename(from=paste0(desOutput,'.',bs[1:ed],'.unique.bam'),to=paste0(desOutput,'.',count,'.unique.bam'))
+                if(Sys.info()[['sysname']]=='Linux' || Sys.info()[['sysname']]=='Darwin'){
+                    stat_rs <- mclapply( 1:ed, function(i){
+                        b <- bs[i]
+                        if(!file.exists(paste0(desOutput,'.',b,'.sam'))){
+                            write(headLine,file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                        }
+                        write(lines[barcodes==b],file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                        asBam(paste0(desOutput,'.',b,'.sam'),overwrite=TRUE)
+                        file.remove(paste0(desOutput,'.',b,'.sam'))
+                        rs <- readGAlignmentPairs(paste0(desOutput,'.',b,'.bam'),param=ScanBamParam(what=scanBamWhat()),use.names = T)
+                        file.remove(paste0(desOutput,'.',b,'.bam'))
+                        file.remove(paste0(desOutput,'.',b,'.bam.bai'))
+                        st1 <- start(first(rs))
+                        ed1 <- end(first(rs))
+                        st2 <- start(second(rs))
+                        ed2 <- end(second(rs))
+                        st <- st1
+                        ed <- ed2
+                        sel1 <- as.logical(strand(first(rs)) == '-')
+                        st[sel1] <- st2[sel1]
+                        ed[sel1] <- st1[sel1]
+                        bed <- paste(rname(first(rs)),st,ed,sep='\t')
+                        sel <- duplicated(bed)
+                        rtracklayer::export(rs[!sel],BamFile(paste0(desOutput,'.',b,'.unique.sam')))
+                        bed1 <- as.data.frame(table(bed))
+                        return(list(tsv=paste(bed1$bed,b, bed1$Freq,sep='\t'),
+               #                 bed= rs[!sel],
+               #                 bf = BamFile(uniqueBams[i]),
+                                stat=data.frame(barcode=b,
+                                      total = length(rs),
+                                      duplicate = sum(bed1$Freq>1),
+                                      chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
+                                      unmapped = sum(mcols(first(rs))$flag==4 | mcols(second(rs))$flag==4),
+                                      lowmapq = sum(mcols(first(rs))$mapq < 30 | mcols(second(rs))$mapq < 30),
+                                      mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
+                                      nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
+                                      passed_filters = sum(!sel))))
+                    },mc.cores=20)
                 }else{
-                    mergeBam(files=paste0(desOutput,'.',bs[1:ed],'.unique.bam'),destination=paste0(desOutput,'.',count,'.unique.bam'))
+                         stat_rs <- lapply( 1:ed, function(i){
+                        b <- bs[i]
+                        if(!file.exists(paste0(desOutput,'.',b,'.sam'))){
+                            write(headLine,file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                        }
+                        write(lines[barcodes==b],file = paste0(desOutput,'.',b,'.sam'), append = TRUE, sep = "\n")
+                        asBam(paste0(desOutput,'.',b,'.sam'),overwrite=TRUE)
+                        file.remove(paste0(desOutput,'.',b,'.sam'))
+                        rs <- readGAlignmentPairs(paste0(desOutput,'.',b,'.bam'),param=ScanBamParam(what=scanBamWhat()),use.names = T)
+                        file.remove(paste0(desOutput,'.',b,'.bam'))
+                        file.remove(paste0(desOutput,'.',b,'.bam.bai'))
+                        st1 <- start(first(rs))
+                        ed1 <- end(first(rs))
+                        st2 <- start(second(rs))
+                        ed2 <- end(second(rs))
+                        st <- st1
+                        ed <- ed2
+                        sel1 <- as.logical(strand(first(rs)) == '-')
+                        st[sel1] <- st2[sel1]
+                        ed[sel1] <- st1[sel1]
+                        bed <- paste(rname(first(rs)),st,ed,sep='\t')
+                        sel <- duplicated(bed)
+                        rtracklayer::export(rs[!sel],BamFile(paste0(desOutput,'.',b,'.unique.sam')))
+                        bed1 <- as.data.frame(table(bed))
+#                        write(paste(bed1$bed,b, bed1$Freq,sep='\t'),file=tsvOutput, sep = "\n")
+                        return(list(tsv=paste(bed1$bed,b, bed1$Freq,sep='\t'),
+               #                 bed= rs[!sel],
+               #                 bf = BamFile(uniqueBams[i]),
+                                stat=data.frame(barcode=b,
+                                      total = length(rs),
+                                      duplicate = sum(bed1$Freq>1),
+                                      chimeric = sum(mcols(first(rs))$flag==2048 | mcols(second(rs))$flag==2048),
+                                      unmapped = sum(mcols(first(rs))$flag==4 | mcols(second(rs))$flag==4),
+                                      lowmapq = sum(mcols(first(rs))$mapq < 30 | mcols(second(rs))$mapq < 30),
+                                      mitochondrial = sum(rname(first(rs))=='chrM' | rname(second(rs))=='chrM'),
+                                      nonprimary = sum(mcols(first(rs))$flag==256 | mcols(second(rs))$flag==256),
+                                      passed_filters = sum(!sel))))
+                    })
                 }
-                file.remove(paste0(desOutput,'.',bs[1:ed],'.unique.bam'))
-                file.remove(paste0(desOutput,'.',bs[1:ed],'.unique.bam.bai'))
-                count <- count + 1
-                tsv <- write(unlist(lapply(stat_rs, function(v){v$tsv})),file=tsvOutput, append = TRUE, sep = "\n")
-                stat_list <- c(stat_list, lapply(stat_rs, function(v){v$stat}))
+                    if(ed==1){
+                        file.rename(from=paste0(desOutput,'.',bs[1:ed],'.unique.bam'),to=paste0(desOutput,'.',count,'.unique.bam'))
+                    }else{
+                        mergeBam(files=paste0(desOutput,'.',bs[1:ed],'.unique.bam'),destination=paste0(desOutput,'.',count,'.unique.bam'))
+                    }
+                    file.remove(paste0(desOutput,'.',bs[1:ed],'.unique.bam'))
+                    file.remove(paste0(desOutput,'.',bs[1:ed],'.unique.bam.bai'))
+                    count <- count + 1
+                    tsv <- write(unlist(lapply(stat_rs, function(v){v$tsv})),file=tsvOutput, append = TRUE, sep = "\n")
+                    stat_list <- c(stat_list, lapply(stat_rs, function(v){v$stat}))
             }
             if(endflag){
                 break
             }
             if(length(bs) < 2 * 10000){
-                lines <- readLines(samfile,n=10000000)
+                lines <- readLines(samfile,n=1000000)
             }else{
                 lines <- readLines(samfile,n=100)
             }
